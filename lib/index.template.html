@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:image" content="{{ogImage}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#AD2940">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/invitation.css">
+</head>
+<body class="locked">
+<div id="loader"><div class="ld"></div></div>
+<main id="app" class="col"></main>
+<div id="coverRoot"></div>
+<div class="fixwrap" id="fixwrap">
+  <div id="petals"></div>
+  <button id="musicBtn" class="music" aria-label="Putar / jeda musik" hidden>
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+  </button>
+  <div id="toast" class="toast" role="status"></div>
+</div>
+<div id="lightbox" class="lb" hidden>
+  <button class="lb-x" aria-label="Tutup">&times;</button>
+  <button class="lb-p" aria-label="Sebelumnya">&#8249;</button>
+  <img alt="">
+  <button class="lb-n" aria-label="Berikutnya">&#8250;</button>
+</div>
+<audio id="bgm" loop preload="none"></audio>
+<script src="/invitation.js"></script>
+</body>
+</html>

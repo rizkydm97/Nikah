@@ -1,0 +1,11 @@
+{
+  "outputDirectory": "public",
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/", "destination": "/api/page" },
+    { "source": "/index.html", "destination": "/api/page" }
+  ],
+  "functions": {
+    "api/page.js": { "includeFiles": "lib/index.template.html" }
+  }
+}
