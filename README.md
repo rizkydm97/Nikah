@@ -21,7 +21,7 @@ Frontend statis di `public/`, API berupa fungsi Vercel di `api/`, data di Supaba
 
 ### 3. Pakai
 - Undangan: `https://domain-anda/?to=Nama+Tamu`
-- Admin: `https://domain-anda/admin/` — login, lalu atur isi undangan. Password admin = nilai `ADMIN_PASSWORD` di Vercel (atau `admin123` bila kosong). Untuk menggantinya, ubah variabel itu lalu Redeploy.
+- Admin: `https://domain-anda/admin/` — login, lalu atur isi undangan. Ganti password di menu Keamanan.
 
 ## Catatan teknis
 - Foto/musik diunggah langsung dari browser ke Supabase Storage (lewat URL bertanda tangan), jadi tidak terkena batas 4,5MB fungsi Vercel. Bukti transfer tamu dibatasi 2,5MB.

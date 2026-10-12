@@ -313,7 +313,7 @@
       snap = JSON.stringify(cfg);
       $('#login').hidden = true; $('#app').hidden = false;
       buildNav(); show(defaultPw ? 'security' : current); loadPreview();
-    } catch (er) { showLogin(); if (er && er.message && er.message !== 'Sesi berakhir') $('#loginErr').textContent = 'Gagal memuat admin: ' + er.message; }
+    } catch { showLogin(); }
   }
   boot();
 })();
