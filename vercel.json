@@ -1,0 +1,29 @@
+{
+  "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/admin/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/page"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/api/page"
+    },
+    {
+      "source": "/api/:p*",
+      "destination": "/api/index?__p=:p*"
+    }
+  ],
+  "functions": {
+    "api/page.js": {
+      "includeFiles": "lib/index.template.html"
+    }
+  }
+}

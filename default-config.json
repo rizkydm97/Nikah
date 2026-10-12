@@ -1,0 +1,203 @@
+{
+  "general": {
+    "title": "The Wedding of Robert & Cristina",
+    "description": "Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda di hari bahagia kami.",
+    "ogImage": "/assets/default/cover-photo.svg",
+    "eventDate": "2027-04-11T08:30",
+    "eventEnd": "2027-04-11T13:00",
+    "eventLocation": "Kediaman Mempelai Wanita, Subang, Jawa Barat",
+    "calendarTitle": "Pernikahan Robert & Cristina",
+    "whatsapp": "",
+    "musicUrl": "",
+    "musicLabel": "Musik latar",
+    "blockRightClick": false
+  },
+  "theme": {
+    "primary": "#AD2940",
+    "accent": "#A50A18",
+    "gold": "#C9A24A",
+    "paper": "#F7F1EC",
+    "ink": "#2A0E14",
+    "body": "#3B2A2E",
+    "sideBg": "#EDE6E2",
+    "fontDisplay": "Cormorant Infant",
+    "fontHeading": "Playfair Display",
+    "fontBody": "Lora",
+    "fontScript": "Great Vibes",
+    "colWidth": 480
+  },
+  "effects": {
+    "animSpeed": "normal",
+    "butterflies": true,
+    "butterflyCount": 5,
+    "petals": true,
+    "parallax": true,
+    "sway": true,
+    "openZoom": true,
+    "glow": true
+  },
+  "scene": {
+    "sky": "/assets/default/sky.svg",
+    "floralTop": "/assets/default/floral-top.svg",
+    "floralBottom": "/assets/default/floral-bottom.svg",
+    "house": "/assets/default/house.svg",
+    "paper": "/assets/default/paper.svg",
+    "butterflyColor1": "#B8334F",
+    "butterflyColor2": "#F0B6C2"
+  },
+  "cover": {
+    "photo": "/assets/default/cover-photo.svg",
+    "kicker": "The Wedding Of",
+    "names": "Fiktor & Stella",
+    "toLabel": "Kepada Bapak/Ibu/Saudara/i",
+    "defaultGuest": "Tamu Undangan",
+    "placeText": "Di Tempat",
+    "button": "Buka Undangan"
+  },
+  "hero": {
+    "kicker": "The Wedding Of",
+    "groom": "Robert",
+    "bride": "Cristina",
+    "dateText": "11.04.2027",
+    "hashtag": "#HastAgKamUDanDia"
+  },
+  "quote": {
+    "bg": "/assets/default/couple-wide.svg",
+    "text": "Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.",
+    "source": "Ar-Rum Ayat 21",
+    "labels": { "days": "Hari", "hours": "Jam", "minutes": "Min", "seconds": "Det" },
+    "saveButton": "Save The Date"
+  },
+  "greeting": {
+    "text": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu. Atas kehadiran dan doa restunya kami ucapkan terima kasih.",
+    "photo": "/assets/default/cover-photo.svg"
+  },
+  "couple": {
+    "bg": "/assets/default/paper.svg",
+    "groom": {
+      "photo": "/assets/default/groom.svg",
+      "script": "Robert",
+      "fullName": "Robert Saputra",
+      "parents": "Putra dari Bapak Nasrudin Hatta & Ibu Elma Muna",
+      "instagram": "https://instagram.com/galeriundangan_official"
+    },
+    "bride": {
+      "photo": "/assets/default/bride.svg",
+      "script": "Cristina",
+      "fullName": "Cristina Saputri",
+      "parents": "Putri dari Bapak Nasrudin Hatta & Ibu Elma Muna",
+      "instagram": "https://instagram.com/galeriundangan_official"
+    },
+    "instagramLabel": "Instagram",
+    "connector": "&"
+  },
+  "events": {
+    "bg": "/assets/default/couple-wide.svg",
+    "title": "Wedding Event",
+    "intro": "Dengan memohon puji dan syukur kepada Tuhan, kami bermaksud mengundang Anda untuk dapat menghadiri acara pernikahan kami yang akan dilaksanakan pada :",
+    "mapLabel": "Google Map",
+    "items": [
+      {
+        "title": "Akad Nikah",
+        "date": "Minggu, 11 April 2027",
+        "time": "08.30 WIB - 09.30 WIB",
+        "place": "Kediaman Mempelai Wanita",
+        "address": "Kampung Kalipace Rt 37 Rw 12 Desa Prapatan Kecamatan Purwadadi Kabupaten Subang - Jawa Barat.",
+        "mapUrl": "https://maps.google.com"
+      },
+      {
+        "title": "Resepsi Pernikahan",
+        "date": "Minggu, 11 April 2027",
+        "time": "08.30 WIB - 09.30 WIB",
+        "place": "Kediaman Mempelai Wanita",
+        "address": "Kampung Kalipace Rt 37 Rw 12 Desa Prapatan Kecamatan Purwadadi Kabupaten Subang - Jawa Barat.",
+        "mapUrl": "https://maps.google.com"
+      }
+    ]
+  },
+  "live": {
+    "bg": "/assets/default/couple-wide.svg",
+    "title": "Live Streaming",
+    "text": "Pernikahan kami dapat disaksikan secara langsung melalui live streaming di bawah ini.",
+    "button": "Join Live",
+    "url": "https://instagram.com/galeriundangan_official"
+  },
+  "gallery": {
+    "title": "Our Gallery",
+    "video": "",
+    "items": [
+      { "image": "/assets/default/gallery-1.svg" },
+      { "image": "/assets/default/gallery-2.svg" },
+      { "image": "/assets/default/gallery-3.svg" },
+      { "image": "/assets/default/gallery-4.svg" },
+      { "image": "/assets/default/gallery-5.svg" },
+      { "image": "/assets/default/gallery-6.svg" },
+      { "image": "/assets/default/gallery-7.svg" },
+      { "image": "/assets/default/gallery-8.svg" },
+      { "image": "/assets/default/gallery-9.svg" }
+    ]
+  },
+  "story": {
+    "title": "Love Story",
+    "items": [
+      { "image": "/assets/default/story-1.svg", "title": "Awal Bertemu", "text": "Di dunia yang luas ini, kami percaya bahwa tidak ada pertemuan yang benar-benar kebetulan. Tuhan mempertemukan dua hati pada waktu yang tepat dengan cara yang sederhana tapi bermakna." },
+      { "image": "/assets/default/story-2.svg", "title": "Lamaran", "text": "Pada bulan Mei 2026, dengan restu kedua keluarga, kami memutuskan untuk melangkah ke jenjang yang lebih serius dan mengikat janji untuk saling menjaga." },
+      { "image": "/assets/default/story-3.svg", "title": "Acara Resepsi", "text": "Aku memandangmu tanpa perlu menatap, aku mendengarmu tanpa perlu alat, aku memelukmu tanpa perlu hadir. Karena kini kau telah menjadi bagian dari hidupku." }
+    ]
+  },
+  "gift": {
+    "bg": "/assets/default/couple-wide.svg",
+    "title": "Wedding Gift",
+    "intro": "Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih, Anda dapat memberi kado secara cashless.",
+    "copyBank": "Copy Rekening",
+    "banks": [
+      { "bank": "Bank Mandiri", "number": "123123123", "name": "Elyana Azkiya Nur" },
+      { "bank": "Bank BCA", "number": "456456456", "name": "Robert Saputra" }
+    ],
+    "addressTitle": "Kirim Kado",
+    "addressName": "Elyana Azkiya Nur",
+    "address": "Jalan Raya Bojongsari No.5, Gunung Putri, Cileungsi, Bogor, Jawa Barat",
+    "copyAddress": "Copy Alamat",
+    "formEnabled": true,
+    "formTitle": "Gift Confirmation",
+    "formText": "Mohon konfirmasi untuk pengiriman gift Terima kasih",
+    "formButton": "Konfirmasi"
+  },
+  "rsvp": {
+    "bg": "/assets/default/couple-wide.svg",
+    "title": "RSVP",
+    "text": "Mohon konfirmasi kehadiran Anda.",
+    "maxGuests": 2,
+    "button": "Submit",
+    "thanks": "Terima kasih, konfirmasi kehadiran Anda sudah kami terima.",
+    "sendWhatsapp": false
+  },
+  "wishes": {
+    "title": "Ucapan & Doa",
+    "text": "Berikan harapan dan doa terbaik Anda di sini karena kami sangat menantikan untuk memulai lembaran baru bersama.",
+    "button": "Kirim Ucapan",
+    "bg": "/assets/default/paper.svg"
+  },
+  "closing": {
+    "photo": "/assets/default/closing.svg",
+    "kicker": "Terima Kasih",
+    "names": "Robert & Cristine",
+    "text": "Merupakan suatu kebahagiaan dan kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.",
+    "footer": "Dibuat dengan cinta",
+    "footerUrl": ""
+  },
+  "sections": [
+    { "id": "hero", "enabled": true, "anim": "fade-up" },
+    { "id": "quote", "enabled": true, "anim": "fade-up" },
+    { "id": "greeting", "enabled": true, "anim": "zoom-in" },
+    { "id": "couple", "enabled": true, "anim": "fade-up" },
+    { "id": "events", "enabled": true, "anim": "zoom-in" },
+    { "id": "live", "enabled": true, "anim": "fade-up" },
+    { "id": "gallery", "enabled": true, "anim": "zoom-in" },
+    { "id": "story", "enabled": true, "anim": "fade-left" },
+    { "id": "gift", "enabled": true, "anim": "fade-up" },
+    { "id": "rsvp", "enabled": true, "anim": "fade-up" },
+    { "id": "wishes", "enabled": true, "anim": "fade-up" },
+    { "id": "closing", "enabled": true, "anim": "zoom-in" }
+  ]
+}
