@@ -46,6 +46,8 @@ a{color:inherit}
 .rv[data-a=bloom]{transform:translate(38%,30%) scale(.35) rotate(-16deg);transform-origin:100% 100%;transition-duration:calc(var(--dur)*2.2)}
 .rv[data-a=bloom-l]{transform:translateX(-85%) scale(.92);transition-duration:calc(var(--dur)*2.4)}
 .rv[data-a=bloom-r]{transform:translateX(85%) scale(.92);transition-duration:calc(var(--dur)*2.4)}
+.rv[data-a=bloom-ul]{transform:translate(-40%,45%) scale(.9) rotate(-4deg);transform-origin:0 100%;transition-duration:calc(var(--dur)*2.4)}
+.rv[data-a=bloom-ur]{transform:translate(40%,45%) scale(.9) rotate(4deg);transform-origin:100% 100%;transition-duration:calc(var(--dur)*2.4)}
 .rv[data-a=none]{opacity:1}
 .rv.in{opacity:1;transform:none;filter:none}
 .fl-acc.rv.in{filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
@@ -340,7 +342,7 @@ a{color:inherit}
 .story .card .tx{padding:14px 4px 0}
 .story .card h4{font-family:var(--fDisplay);font-weight:700;font-size:23px;color:var(--accent);line-height:1.2;margin-bottom:4px}
 .story .card p{font-family:var(--fBody);font-weight:600;font-size:14.5px;line-height:1.5;color:var(--body)}
-.story .fl{position:absolute;left:0;right:0;bottom:0;pointer-events:none}
+.story .fl{position:absolute;left:0;right:0;bottom:0;pointer-events:none;z-index:2}
 .story .fl img{width:100%}
 
 /* form umum */
@@ -445,3 +447,45 @@ a{color:inherit}
 .pop-x{width:100%;border:0;background:#1f0c10;color:#fff;padding:13px;font:600 11px 'Poppins',sans-serif;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;transition:filter .25s}
 .pop-x:hover{filter:brightness(1.4)}
 @media (prefers-reduced-motion:reduce){.cover .cv-col,.cover .half,.arch,.arch-in>*{opacity:1!important;transform:none!important;filter:none!important}}
+
+/* ======== v6.1: sentuhan mewah ======== */
+/* bunga tepi galeri & love story ikut bergoyang tertiup angin */
+.edge.sway-t img,.story .fl.sway-b img{animation-duration:7.4s}
+/* kilau emas berkelip */
+.sparkles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.sparkles i{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,#fff8dc 0,#f3d98b 35%,rgba(243,217,139,0) 70%);box-shadow:0 0 6px 2px rgba(255,226,150,.55);opacity:0;animation:twinkle 7s ease-in-out infinite}
+@keyframes twinkle{0%{opacity:0;transform:translate3d(0,0,0) scale(.4)}20%{opacity:.95;transform:translate3d(4px,-10px,0) scale(1)}50%{opacity:.25;transform:translate3d(-3px,-26px,0) scale(.7)}75%{opacity:.85;transform:translate3d(5px,-40px,0) scale(1)}100%{opacity:0;transform:translate3d(0,-56px,0) scale(.4)}}
+.hero.pre .sparkles{opacity:0}.hero .sparkles{transition:opacity 2s ease 1s}
+/* judul berkilau: pantulan cahaya emas lewat perlahan */
+.h-display,.script-h,.h-head,.closing .names,.couple .script,.rsvp .big{--tc:var(--primary);background:linear-gradient(110deg,var(--tc) 0 42%,#f7e2a8 50%,var(--tc) 58% 100%) 120% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.bgi .h-display,.script-h,.h-head,.rsvp .big{--tc:#fff}
+.couple .script{--tc:var(--accent);text-shadow:none;filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 3px #fff)}
+.script-h,.wishes .h-display{text-shadow:none;filter:drop-shadow(0 2px 10px rgba(0,0,0,.35))}
+.rv.in.h-display,.rv.in.script-h,.rv.in.h-head,.rv.in.names,.rv.in.script,.rv.in.big{animation:gleam 7s ease-in-out 1.2s infinite}
+@keyframes gleam{0%{background-position:120% 0}35%,100%{background-position:-20% 0}}
+/* foto: kilatan cahaya sekali saat muncul */
+.pho::after,.cpho::after,.story .im::after,.grid .gi::after,.cp::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 48%,transparent 62%) -150% 0/250% 100% no-repeat}
+.rv.in.pho::after,.rv.in.cpho::after,.rv.in .im::after,.rv.in.gi::after,.cover.shown .cp::after{animation:flash 1.6s ease .9s both}
+@keyframes flash{to{background-position:150% 0}}
+/* garis pembatas & hati tergambar dari tengah */
+.divider::before,.divider::after{transform:scaleX(0);transition:transform 1.4s var(--lux) .5s}
+.divider::before{transform-origin:100% 50%}.divider::after{transform-origin:0 50%}
+.rv.in .divider::before,.rv.in .divider::after{transform:none}
+.divider svg{transform:scale(0);transition:transform .8s cubic-bezier(.34,1.6,.64,1) .3s}
+.rv.in .divider svg{transform:scale(1);animation:beat 2.4s ease-in-out 2s infinite}
+@keyframes beat{0%,60%,100%{transform:scale(1)}20%{transform:scale(1.25)}40%{transform:scale(.95)}}
+/* bingkai kapsul: lengkung bunga mekar, sisi muncul perlahan, lalu bergoyang halus */
+.fr-arc,.fr-side{opacity:0;transition:opacity 1.2s ease .5s,transform 1.6s var(--lux) .5s}
+.fr-arc.t{transform:scale(.9) translateY(4%)}
+.fr-arc.b{transform:scaleY(-1) scale(.9) translateY(4%)}
+.rv.in .fr-arc,.rv.in .fr-side{opacity:1}
+.rv.in .fr-arc.t{transform:none;animation:arcT 8s ease-in-out 2.2s infinite}
+.rv.in .fr-arc.b{transform:scaleY(-1);animation:arcB 8.6s ease-in-out 2.2s infinite}
+@keyframes arcT{0%,100%{transform:rotate(0)}50%{transform:rotate(.6deg) scale(1.006)}}
+@keyframes arcB{0%,100%{transform:scaleY(-1) rotate(0)}50%{transform:scaleY(-1) rotate(-.6deg) scale(1.006)}}
+/* buket di sudut foto mempelai bergoyang setelah mekar */
+.fl-acc.rv.in{animation:sway2 6s ease-in-out 2.5s infinite;transform-origin:20% 90%}
+@keyframes sway2{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg) scale(1.02)}}
+/* tombol: lift lembut */
+.btn{box-shadow:0 4px 14px rgba(120,10,25,.18)}
+@media (prefers-reduced-motion:reduce){.sparkles{display:none}}

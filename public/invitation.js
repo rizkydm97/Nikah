@@ -141,6 +141,8 @@
     const L = [[6, 70, 120, 0.95, 0], [17, 52, 95, 0.85, 1], [28, 64, 140, 0.9, 2], [40, 46, 105, 0.75, 3], [12, 40, 160, 0.6, 1], [48, 58, 125, 0.8, 0]];
     return `<div class="ly clouds">${L.map(([top, w, dur, op, i], n) => `<img class="cl" src="${CLOUDS[i]}" alt="" style="top:${top}%;width:${w}%;opacity:${op};animation-duration:calc(${dur}s * var(--cloudK,1));animation-delay:calc(${-(dur * ((n * 0.37) % 1)).toFixed(1)}s * var(--cloudK,1))">`).join('')}</div>`;
   }
+  // titik cahaya keemasan yang berkelip & melayang pelan
+  const sparkles = (n) => `<div class="sparkles" aria-hidden="true">${Array.from({ length: n }, (_, i) => { const r = (k) => ((Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2); return `<i style="left:${(r(1) * 96 + 2).toFixed(1)}%;top:${(r(2) * 80 + 8).toFixed(1)}%;--s:${(2 + r(3) * 4).toFixed(1)}px;animation-duration:${(5 + r(4) * 6).toFixed(1)}s;animation-delay:${(-r(5) * 10).toFixed(1)}s"></i>`; }).join('')}</div>`;
   const halves = (src) => safeUrl(src) ? `<div class="half l">${img(src)}</div><div class="half r">${img(src)}</div>` : '';
   function scene(c) {
     const s = c.scene;
@@ -156,6 +158,7 @@
       ${safeUrl(s.column) ? `<div class="ly cols"><div class="colc l">${img(s.column)}</div><div class="colc r">${img(s.column)}</div></div>` : ''}
       ${safeUrl(s.column) ? '' : `<div class="ly ft sway-t">${halves(s.floralTop)}</div>`}
       <div class="ly fb sway-b">${halves(s.floralBottom)}</div>
+      ${sparkles(16)}
       <div class="flyers"></div>
     </div>`;
   }
@@ -209,7 +212,7 @@
     },
     gallery(c) {
       const o = c.gallery, s = c.scene;
-      const edge = (pos, src) => `<div class="edge ${pos}"><div class="half l rv" data-a="bloom-l" style="--i:0">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:1">${img(src)}</div></div>`;
+      const edge = (pos, src) => `<div class="edge ${pos} ${pos === 'top' ? 'sway-t' : 'sway-b'}"><div class="half l rv" data-a="${pos === 'top' ? 'bloom-l' : 'bloom-ul'}" style="--i:0">${img(src)}</div><div class="half r rv" data-a="${pos === 'top' ? 'bloom-r' : 'bloom-ur'}" style="--i:1">${img(src)}</div></div>`;
       return `<section class="sec paperbg gallery">${bgl(o, 'bg', pick(o.bg, s.paper))}${edge('top', s.floralTop)}${edge('bottom', s.floralBottom)}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
         ${videoEmbed(o.video)}
         <div class="grid">${(o.items || []).map((g, i) => `<div class="rv gi" data-i="${i}" data-a="zoom-in" style="--i:${i % 3}"><div class="phb">${photo(g, 'image')}</div></div>`).join('')}</div></section>`;
@@ -218,7 +221,7 @@
       const o = c.story;
       return `<section class="sec story" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.scene.sky))}<h2 class="rv script-h">${esc(o.title)}</h2>
         <div class="tl">${(o.items || []).map((s) => `<div class="rv card" data-a="soft"><span class="mk">${ICON.heart}</span><div class="im"><div class="phb">${photo(s, 'image', s.title)}</div></div><div class="tx"><h4>${esc(s.title)}</h4><p>${br(s.text)}</p></div></div>`).join('')}</div>
-        <div class="fl">${img(c.scene.floralBottom)}</div></section>`;
+        <div class="fl sway-b"><div class="half l rv" data-a="bloom-ul" style="--i:0">${img(c.scene.floralBottom)}</div><div class="half r rv" data-a="bloom-ur" style="--i:1">${img(c.scene.floralBottom)}</div></div>${sparkles(10)}</section>`;
     },
     gift(c) {
       const o = c.gift, wa = hasWA(c) && o.sendWhatsapp;
@@ -253,7 +256,7 @@
       const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${img(src)}</div>`;
       return `<section class="sec closing"><div class="stage">${safeUrl(o.bg) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
         <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
-        <div class="rv panel" data-a="soft" style="--i:5"></div>
+        <div class="rv panel" data-a="soft" style="--i:5"></div>${sparkles(10)}
         <div class="cl-in"><div class="rv cpho" data-a="zoom-in" style="--i:8"><div class="phb">${photo(o, 'photo')}</div></div><div class="rv kick" data-a="soft" style="--i:10">${esc(o.kicker)}</div><div class="rv names" data-a="soft" style="--i:11">${esc(o.names)}</div><p class="rv txt" data-a="soft" style="--i:12">${br(o.text)}</p></div></div>
         <div class="footer">${safeUrl(o.footerUrl) ? `<a href="${link(o.footerUrl)}" target="_blank" rel="noopener">${esc(o.footer)}</a>` : esc(o.footer)}</div></section>`;
     },
@@ -281,7 +284,7 @@
         <div class="guest"><div class="to">${esc(o.toLabel)}</div><div class="g">${esc(guest || o.defaultGuest)}</div><div class="pl">${esc(o.placeText)}</div>
         <button class="btn sq shine" id="openBtn">${ICON.mail}${esc(o.button)}</button></div></div></div>
       <div class="cv-fb">${halves(c.scene.floralBottom)}</div>
-      <div class="flyers"></div></div>`;
+      ${sparkles(12)}<div class="flyers"></div></div>`;
   }
 
   // ---------- render (dipakai juga oleh pratinjau admin tanpa reload) ----------
