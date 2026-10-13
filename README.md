@@ -56,3 +56,8 @@ Unggah gambar Anda sendiri di Admin → *Adegan & Gambar Dekorasi*: langit, bung
 - Admin → **Tema, Warna & Font → Tema warna**: Bawaan, Merah Marun, Pink Blush, Ungu Lilac, Dusty Blue, Peach Terakota, Champagne Emas.
 - Sekali klik: warna judul, tombol, latar, lapisan foto, bingkai kapsul, kelopak, dan **bunga** (versi warna di `public/assets/pal/`) ikut berganti. Daun tetap hijau.
 - Berlaku untuk Tema 1 dan Tema 2. Gambar bunga yang Anda unggah sendiri tidak diubah.
+
+## Istana & Taman Tema 2 (v9)
+- Lukisan istana pink + tangga ke gapura mawar + air mancur + pagar tanaman + pohon bunga pink (`public/assets/rose/rose-palace.jpg`, versi tiap warna di `assets/pal/`).
+- Dipakai otomatis sebagai latar section Tema 2 yang belum diberi foto sendiri (Ayat, Sambutan, Mempelai, Acara, Live, Galeri, Love Story, Gift, RSVP, Ucapan, Penutup), dengan efek muncul dari cahaya lalu kamera mundur perlahan.
+- Bisa diganti di Admin → Dekorasi Tema 2 → "Lukisan istana & taman".

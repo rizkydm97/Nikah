@@ -327,6 +327,7 @@
     "frameSide": "/assets/rose/rose-frame-side.webp",
     "flowers": "/assets/rose/rose-bouquet.webp",
     "butterflyColor1": "#FFFFFF",
-    "butterflyColor2": "#F6D3DA"
+    "butterflyColor2": "#F6D3DA",
+    "palace": "/assets/rose/rose-palace.jpg"
   }
 }
