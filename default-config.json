@@ -316,8 +316,8 @@
   ],
   "scene2": {
     "sky": "/assets/rose/rose-sky.jpg",
-    "house": "/assets/rose/rose-pavilion.svg",
-    "curtain": "/assets/rose/rose-curtain.svg",
+    "house": "/assets/rose/rose-pavilion.webp",
+    "curtain": "/assets/rose/rose-curtain.webp",
     "treeline": "/assets/rose/rose-trees.webp",
     "tree": "",
     "column": "/assets/rose/rose-column.webp",
