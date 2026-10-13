@@ -137,3 +137,13 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .seg+.seg{border-left:1px solid var(--line)}
 .seg.on{background:var(--p);color:#fff;font-weight:600}
 .gl .g .im{cursor:pointer}
+
+/* pilihan tema warna */
+.pals{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.pal{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 8px 10px;cursor:pointer;display:grid;gap:4px;justify-items:center;text-align:center;transition:.15s}
+.pal:hover{border-color:var(--p)}
+.pal.on{border-color:var(--p);box-shadow:0 0 0 3px rgba(173,41,64,.15)}
+.pal img{width:74px;height:74px;object-fit:contain}
+.pal b{font-size:12.5px}
+.pal small{font-size:10.5px;color:var(--mu)}
+.dots{display:flex;gap:4px}.dots i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}

@@ -1,7 +1,7 @@
 :root{
   --primary:#A00818;--accent:#A00818;--rose:#A82840;--gold:#A98B57;--paper:#F7F1EC;--ink:#2A0E14;--body:#3B2A2E;--sideBg:#EDE6E2;
   --fDisplay:'Cormorant Infant',Georgia,serif;--fHeading:'Playfair Display',Georgia,serif;--fBody:'Cormorant Garamond',Georgia,serif;--fScript:'Allura',cursive;
-  --col:480px;--dur:1s;--lux:cubic-bezier(.22,.8,.24,1);
+  --col:480px;--dur:1s;--tint:color-mix(in srgb,var(--accent) 15%,var(--paper));--tint2:color-mix(in srgb,var(--accent) 38%,#fff);--tint3:color-mix(in srgb,var(--accent) 55%,#fff);--shade:color-mix(in srgb,var(--primary) 32%,#140306);--lux:cubic-bezier(.22,.8,.24,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -184,8 +184,8 @@ a{color:inherit}
 
 /* ---------- Umum section ---------- */
 .sec{position:relative;padding:56px 22px;text-align:center;isolation:isolate}
-.sec.bgi{color:#fff;background:#3a1a20}
-.sec.bgi::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(30,5,10,.5),rgba(20,3,8,.62));z-index:0;opacity:var(--ov,1);pointer-events:none}
+.sec.bgi{color:#fff;background:var(--shade)}
+.sec.bgi::before{content:"";position:absolute;inset:0;background:linear-gradient(color-mix(in srgb,var(--shade) 55%,transparent),color-mix(in srgb,var(--shade) 70%,transparent));z-index:0;opacity:var(--ov,1);pointer-events:none}
 .sec.bgi>*{position:relative;z-index:1}
 .sec.paperbg{background-color:var(--paper)}
 .h-display{font-family:var(--fDisplay);font-weight:700;text-transform:uppercase;font-size:29px;line-height:1.25;color:var(--primary);letter-spacing:.02em}
@@ -201,7 +201,7 @@ a{color:inherit}
 
 /* ---------- Kartu kapsul berbingkai bunga (acara & gift) ----------
    Bingkai = lengkung atas + lengkung bawah (ukuran ikut lebar kartu, tidak melar) + sisi bunga yang diulang sesuai tinggi kartu */
-.cap{position:relative;width:min(80%,376px);margin:46px auto 0;padding:13px;border-radius:999px;background:#5a1224;box-shadow:0 0 0 2px #6c1426,0 18px 42px rgba(15,2,6,.5);container-type:inline-size}
+.cap{position:relative;width:min(80%,376px);margin:46px auto 0;padding:13px;border-radius:999px;background:color-mix(in srgb,var(--primary) 58%,#000);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 70%,#000),0 18px 42px rgba(15,2,6,.5);container-type:inline-size}
 .cap+.cap{margin-top:64px}
 .fr-side{position:absolute;left:-6cqw;right:-6cqw;top:50cqw;bottom:50cqw;z-index:2;pointer-events:none}
 .fr-side::before,.fr-side::after{content:"";position:absolute;top:0;bottom:0;width:12cqw;background:var(--side) center top/100% auto;background-repeat:no-repeat round}
@@ -457,12 +457,12 @@ a{color:inherit}
 @keyframes twinkle{0%{opacity:0;transform:translate3d(0,0,0) scale(.4)}20%{opacity:.95;transform:translate3d(4px,-10px,0) scale(1)}50%{opacity:.25;transform:translate3d(-3px,-26px,0) scale(.7)}75%{opacity:.85;transform:translate3d(5px,-40px,0) scale(1)}100%{opacity:0;transform:translate3d(0,-56px,0) scale(.4)}}
 .hero.pre .sparkles{opacity:0}.hero .sparkles{transition:opacity 2s ease 1s}
 /* judul berkilau: pantulan cahaya emas lewat perlahan */
-.h-display,.script-h,.h-head,.closing .names,.couple .script,.rsvp .big{--tc:var(--primary);background:linear-gradient(110deg,var(--tc) 0 42%,#f7e2a8 50%,var(--tc) 58% 100%) 120% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.h-display,.script-h,.h-head,.closing .names,.couple .script,.rsvp .big{--tc:var(--primary);background:linear-gradient(110deg,var(--tc) 0 45%,#f7e2a8 50%,var(--tc) 55% 100%) 100% 0/300% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .bgi .h-display,.script-h,.h-head,.rsvp .big{--tc:#fff}
 .couple .script{--tc:var(--accent);text-shadow:none;filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 3px #fff)}
 .script-h,.wishes .h-display{text-shadow:none;filter:drop-shadow(0 2px 10px rgba(0,0,0,.35))}
 .rv.in.h-display,.rv.in.script-h,.rv.in.h-head,.rv.in.names,.rv.in.script,.rv.in.big{animation:gleam 7s ease-in-out 1.2s infinite}
-@keyframes gleam{0%{background-position:120% 0}35%,100%{background-position:-20% 0}}
+@keyframes gleam{0%{background-position:100% 0}35%,100%{background-position:0 0}}
 /* foto: kilatan cahaya sekali saat muncul */
 .pho::after,.cpho::after,.story .im::after,.grid .gi::after,.cp::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 48%,transparent 62%) -150% 0/250% 100% no-repeat}
 .rv.in.pho::after,.rv.in.cpho::after,.rv.in .im::after,.rv.in.gi::after,.cover.shown .cp::after{animation:flash 1.6s ease .9s both}
@@ -489,3 +489,102 @@ a{color:inherit}
 /* tombol: lift lembut */
 .btn{box-shadow:0 4px 14px rgba(120,10,25,.18)}
 @media (prefers-reduced-motion:reduce){.sparkles{display:none}}
+
+/* ======== TEMA 2 — Rose Garden ======== */
+.t-rose #loader{background:radial-gradient(circle at 50% 42%,var(--tint),var(--tint) 72%)}
+.t-rose .scene{background:var(--tint);--hw:min(116cqw,70cqh)}
+.t-rose .scene .hs{bottom:0}
+.t-rose .scene .trees{bottom:calc(var(--hw)*.33);left:-20cqw;width:140cqw;opacity:.9}
+.t-rose .scene .tree{display:none}
+.t-rose .glow{left:20%;right:20%;top:26%;height:58%;background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.75),color-mix(in srgb,var(--tint) 0%,transparent) 65%);mix-blend-mode:normal;animation-duration:5s}
+.curt{position:absolute;top:26.5%;width:22%;height:61.5%;pointer-events:none;opacity:.88}
+.curt.l{left:19%}
+.curt.r{right:19%;transform:scaleX(-1)}
+.scene .curt img{width:100%;height:100%;max-width:none;transform-origin:50% 0;animation:curtain 7s ease-in-out infinite}
+.curt.r img{animation-delay:-3.2s}
+@keyframes curtain{0%,100%{transform:skewX(0) scaleX(1)}50%{transform:skewX(1.6deg) scaleX(1.03)}}
+.nosway .curt img{animation:none}
+.flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 48%,#fff 0,#fff7f5 60%,#fbe9e7);opacity:0;pointer-events:none;z-index:4}
+.t-rose .haze{background:linear-gradient(color-mix(in srgb,var(--tint) 0%,transparent),color-mix(in srgb,var(--tint) 70%,transparent))}
+.t-rose .hero{--ph:calc(1.444 * min(1.16 * min(100vw,var(--col)),70svh))}
+.t-rose .hero-text{top:max(150px,calc(100svh - var(--ph) * .69));padding:0 22%;color:var(--gold)}
+.t-rose .hero-text .kick{font-family:var(--fHeading);font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:#9c7a4e}
+.t-rose .hero-text .names{font-family:var(--fScript);font-weight:400;text-transform:none;letter-spacing:0;font-size:clamp(44px,12.5vw,60px);line-height:1.05;margin:6px 0 10px;color:var(--gold);text-shadow:0 0 14px rgba(255,255,255,.9),0 1px 2px rgba(120,80,40,.25)}
+.t-rose .hero-text .names .amp{font-family:var(--fBody);font-style:italic;font-size:.38em;color:#9c7a4e;margin:2px 0}
+.t-rose .hero-text .date,.t-rose .hero-text .tag{font-family:var(--fHeading);font-size:13px;letter-spacing:.2em;color:#9c7a4e}
+.t-rose .scroll-hint{border-color:rgba(160,110,90,.7)}.t-rose .scroll-hint::after{background:#b08a5a}
+/* cover: kartu berornamen emas (sudut tidak melar) */
+.t-rose .arch{top:6cqh;bottom:7cqh;width:min(80cqw,54cqh);margin-left:calc(min(80cqw,54cqh)/-2);background:none;border:20px solid transparent;border-radius:0;
+  border-image:url('/assets/rose/rose-cardframe.svg') 80 fill / 56px / 0 stretch;box-shadow:none;filter:drop-shadow(0 18px 34px rgba(120,50,70,.25))}
+.t-rose .arch-in{padding-top:9%;border-radius:0}
+.t-rose .cbox{width:94%;border-radius:4px}
+.t-rose .ttl .k{font-family:var(--fHeading);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#9c7a4e}
+.t-rose .ttl .n{font-family:var(--fScript);font-weight:400;font-size:clamp(34px,10vw,44px);color:var(--gold)}
+.t-rose .guest{padding-bottom:max(11cqh,70px)}
+.t-rose .guest .to,.t-rose .guest .pl{color:#9c7a4e}
+.t-rose .guest .g{color:var(--primary)}
+.cv-ft{position:absolute;left:0;right:0;top:-1cqh;z-index:4;pointer-events:none}
+.cv-ft img{width:100%;animation:windT 7s ease-in-out infinite;transform-origin:50% 0}
+.cover .cv-ft .half.l{transform:translate(-45%,-35%) scale(.92);opacity:0}
+.cover .cv-ft .half.r{transform:translate(45%,-35%) scale(.92);opacity:0}
+.cover .cv-ft .half{transition:transform calc(2*var(--dur)) var(--lux),opacity calc(1.4*var(--dur)) ease}
+.cover.play .cv-ft .half{transform:none;opacity:1;transition-delay:calc(.25*var(--dur))}
+.cover.opening .cv-ft{transform:translateY(-6cqh) scale(2.6);opacity:0;transform-origin:50% 0;transition:transform calc(2*var(--dur)) cubic-bezier(.5,0,.35,1),opacity calc(.8*var(--dur)) ease calc(1*var(--dur))}
+.t-rose .cover.opening .arch{transform:scale(1.6);opacity:0;transition:transform calc(1.8*var(--dur)) cubic-bezier(.5,0,.3,1),opacity calc(1.1*var(--dur)) ease calc(.4*var(--dur))}
+.t-rose .cv-veil{background:linear-gradient(color-mix(in srgb,var(--tint) 55%,transparent),color-mix(in srgb,var(--tint) 20%,transparent) 45%,color-mix(in srgb,var(--tint) 50%,transparent))}
+/* kartu kapsul & section bertema pink */
+.t-rose .cap{background:var(--tint2);box-shadow:0 0 0 2px var(--tint3),0 18px 42px color-mix(in srgb,var(--shade) 35%,transparent)}
+.t-rose .cap-in{background:color-mix(in srgb,var(--tint) 95%,transparent);box-shadow:inset 0 0 0 1.5px var(--gold)}
+.t-rose .sec.bgi::before{background:linear-gradient(color-mix(in srgb,var(--shade) 38%,transparent),color-mix(in srgb,var(--shade) 58%,transparent))}
+.t-rose .h-display,.t-rose .h-head{font-family:var(--fScript);text-transform:none;font-weight:400;font-size:44px;letter-spacing:0}
+.t-rose .wpanel{background:color-mix(in srgb,var(--shade) 35%,transparent)}
+.t-rose .closing .panel{border-color:var(--gold)}
+
+.t-rose .hero .cols{display:none}
+.t-rose .scene .ft img{width:100%}
+
+/* ======== Tema 2: semua section pink (lapisan blush, teks rose/emas) ======== */
+.t-rose .sec.bgi{background:var(--tint);color:var(--ink)}
+.t-rose .sec.bgi::before,.t-rose .quote::before,.t-rose .live::before,.t-rose .wishes::before{background:linear-gradient(color-mix(in srgb,var(--tint) 72%,transparent),color-mix(in srgb,var(--tint) 86%,transparent))!important}
+.t-rose .quote::before{background:linear-gradient(color-mix(in srgb,var(--tint) 0%,transparent) 30%,color-mix(in srgb,var(--tint) 82%,transparent) 58%,color-mix(in srgb,var(--tint) 95%,transparent))!important}
+.t-rose .live::before{background:linear-gradient(color-mix(in srgb,var(--tint) 0%,transparent) 25%,color-mix(in srgb,var(--tint) 93%,transparent))!important}
+.t-rose .story::before{background:linear-gradient(color-mix(in srgb,var(--tint) 55%,transparent),color-mix(in srgb,var(--tint) 25%,transparent) 55%,color-mix(in srgb,var(--tint) 60%,transparent))}
+.t-rose .bgi .h-display,.t-rose .h-head,.t-rose .script-h,.t-rose .rsvp .big{--tc:var(--primary)}
+.t-rose .quote .qt,.t-rose .quote .src,.t-rose .lead,.t-rose .live p,.t-rose .rsvp .sub,.t-rose .wtxt{color:var(--ink);text-shadow:0 1px 6px rgba(255,255,255,.7)}
+.t-rose .cd b{color:var(--primary)}.t-rose .cd span,.t-rose .cds .sep{color:var(--gold)}
+.t-rose .script-h,.t-rose .wishes .h-display{filter:drop-shadow(0 1px 6px rgba(255,255,255,.8))}
+.t-rose .btn{background:var(--accent);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 25%,transparent)}
+.t-rose .btn.dark{background:var(--primary);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+/* love story */
+.t-rose .story{color:var(--ink)}
+.t-rose .tl::before{background:var(--gold)}
+.t-rose .story .mk{box-shadow:0 0 0 1.5px var(--gold),0 2px 8px color-mix(in srgb,var(--accent) 25%,transparent)}
+.t-rose .story .card{box-shadow:0 12px 28px color-mix(in srgb,var(--accent) 22%,transparent)}
+/* rsvp */
+.t-rose .rsvp .fm label{color:var(--ink)}
+.t-rose .rsvp .fm input,.t-rose .rsvp .fm select{background:rgba(255,255,255,.75);border-color:var(--accent);color:var(--ink)}
+.t-rose .rsvp .fm input::placeholder{color:var(--tint3)}
+.t-rose .rsvp .fm select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23C0607A' stroke-width='2'/%3E%3C/svg%3E")}
+.t-rose .rsvp .btn.ghostw{background:var(--accent);box-shadow:none;color:#fff}
+.t-rose .msg.err{color:#b3261e}.t-rose .msg.ok{color:#1b7a37}
+/* ucapan & doa */
+.t-rose .wpanel{background:color-mix(in srgb,var(--tint) 72%,transparent);border-color:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--ink);box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 18%,transparent)}
+.t-rose .stats div{background:#fff;border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+.t-rose .stats b{color:var(--primary)}
+.t-rose .wbox{border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+.t-rose .wbox input,.t-rose .wbox textarea{border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.t-rose .more{border-color:var(--accent);color:var(--accent)}
+.t-rose .wl-item{box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 15%,transparent)}
+/* galeri, penutup, footer, samping */
+.t-rose .gallery,.t-rose .sec.paperbg{background-color:var(--paper)}
+.t-rose .closing,.t-rose .footer{background:var(--tint);color:var(--primary)}
+.t-rose .closing .stage{background:var(--tint)}
+.t-rose .gpanel,.t-rose .cpanel{background:color-mix(in srgb,var(--tint) 94%,transparent);border-color:var(--accent)}
+.t-rose .rsvp .ph{box-shadow:0 0 0 4px #fff,0 0 0 5.5px var(--gold)}
+.t-rose .music{background:var(--accent)}
+.t-rose .toast{background:color-mix(in srgb,var(--accent) 95%,transparent)}
+.t-rose .pop{background:color-mix(in srgb,var(--shade) 45%,transparent)}
+.t-rose .pop-x{background:var(--primary)}
+
+/* tema warna: langit, gapura & tirai Tema 2 ikut bergeser warnanya */
+.t-rose .scene .sky,.t-rose .clouds,.t-rose .trees,.t-rose .hs-in>img,.t-rose .curt{filter:hue-rotate(var(--hr,0deg)) saturate(var(--hs,1))}

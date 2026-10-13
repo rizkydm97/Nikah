@@ -23,7 +23,9 @@ const SCHEMA = [
     { k: 'general.musicUrl', l: 'Musik latar (upload mp3 atau tempel URL)', t: 'audio' },
     { k: 'general.blockRightClick', l: 'Matikan klik kanan', t: 'bool' },
   ] },
-  { id: 'theme', title: 'Tema, Warna & Font', fields: [
+  { id: 'theme', title: 'Tema, Warna & Font', hint: 'Pilih tema tampilan. Isi undangan (nama, acara, foto, rekening, RSVP) tetap sama — hanya desain, animasi & dekorasi yang berganti.', fields: [
+    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)']], preset: 1 },
+    { k: 'theme.palette', l: 'Tema warna — klik salah satu; warna tulisan, tombol, latar & bunga ikut berganti', t: 'palette' },
     { k: 'theme.primary', l: 'Warna utama (judul)', t: 'color' }, { k: 'theme.accent', l: 'Warna tombol', t: 'color' }, { k: 'theme.rose', l: 'Warna merah muda (kartu Wedding Gift)', t: 'color' },
     { k: 'theme.gold', l: 'Warna emas (garis lengkung cover & penutup)', t: 'color' }, { k: 'theme.paper', l: 'Warna latar kertas', t: 'color' },
     { k: 'theme.ink', l: 'Warna teks judul', t: 'color' }, { k: 'theme.body', l: 'Warna teks isi', t: 'color' },
@@ -48,7 +50,7 @@ const SCHEMA = [
     { k: 'effects.sway', l: 'Bunga bergoyang pelan', t: 'bool' },
     { k: 'effects.glow', l: 'Cahaya lampu rumah berkedip', t: 'bool' },
   ] },
-  { id: 'scene', title: 'Adegan & Gambar Dekorasi', hint: 'Semua gambar dekorasi sudah memakai ilustrasi baru (rumah Jawa, rumah pohon, awan, buket & daun). Klik "Default" untuk kembali ke gambar bawaan. Gunakan PNG/WebP transparan bila mengganti.', fields: [
+  { id: 'scene', title: 'Dekorasi Tema 1 (Jawa Merah)', hint: 'Semua gambar dekorasi sudah memakai ilustrasi baru (rumah Jawa, rumah pohon, awan, buket & daun). Klik "Default" untuk kembali ke gambar bawaan. Gunakan PNG/WebP transparan bila mengganti.', fields: [
     { k: 'scene.sky', l: 'Latar langit', t: 'image', deco: 1 },
     { k: 'scene.house', l: 'Rumah / ilustrasi tengah (PNG transparan)', t: 'image', deco: 1 },
     { k: 'scene.treeline', l: 'Barisan pohon berkabut di belakang rumah', t: 'image', deco: 1 },
@@ -62,6 +64,20 @@ const SCHEMA = [
     { k: 'scene.ornament', l: 'Ikon emas di atas kartu acara (gunungan)', t: 'image', deco: 1 },
     { k: 'scene.butterflyColor1', l: 'Warna sayap kupu-kupu 1', t: 'color' },
     { k: 'scene.butterflyColor2', l: 'Warna sayap kupu-kupu 2', t: 'color' },
+  ] },
+  { id: 'scene2', title: 'Dekorasi Tema 2 (Rose Garden)', hint: 'Gambar khusus Tema 2. Dipakai bila "Tema undangan" = Tema 2. Ganti dengan PNG/WebP/SVG transparan bila ingin.', fields: [
+    { k: 'scene2.sky', l: 'Latar langit pink', t: 'image', deco: 1 },
+    { k: 'scene2.house', l: 'Gapura klasik (tengah)', t: 'image', deco: 1 },
+    { k: 'scene2.curtain', l: 'Tirai tipis (kanan otomatis dicerminkan; kosongkan untuk menyembunyikan)', t: 'image', deco: 1 },
+    { k: 'scene2.treeline', l: 'Pepohonan pink di balik gapura', t: 'image', deco: 1 },
+    { k: 'scene2.column', l: 'Kolom mawar kiri-kanan', t: 'image', deco: 1 },
+    { k: 'scene2.floralTop', l: 'Rangkaian mawar atas', t: 'image', deco: 1 },
+    { k: 'scene2.floralBottom', l: 'Rangkaian mawar bawah', t: 'image', deco: 1 },
+    { k: 'scene2.frameArc', l: 'Bingkai kapsul — lengkung mawar', t: 'image', deco: 1 },
+    { k: 'scene2.frameSide', l: 'Bingkai kapsul — sisi mawar', t: 'image', deco: 1 },
+    { k: 'scene2.flowers', l: 'Buket di sudut foto mempelai', t: 'image', deco: 1 },
+    { k: 'scene2.butterflyColor1', l: 'Warna sayap kupu-kupu 1', t: 'color' },
+    { k: 'scene2.butterflyColor2', l: 'Warna sayap kupu-kupu 2', t: 'color' },
   ] },
   { id: 'cover', title: 'Cover (Sampul Undangan)', fields: [
     { k: 'cover.photo', l: 'Foto cover — klik "Atur posisi" agar wajah pas di bingkai', t: 'image', arKey: 'cover.photoRatio' },
@@ -125,4 +141,21 @@ const SCHEMA = [
     { k: 'closing.photo', l: 'Foto', t: 'image', ar: '0.7', arch: 1 }, { k: 'closing.bg', l: 'Foto latar (kosongkan untuk pakai langit bawaan)', t: 'image', ar: '1/1.9' }, { k: 'closing.kicker', l: 'Teks kecil', t: 'text' }, { k: 'closing.names', l: 'Nama mempelai', t: 'text' },
     { k: 'closing.text', l: 'Teks penutup', t: 'area' }, { k: 'closing.footer', l: 'Teks footer', t: 'text' }, { k: 'closing.footerUrl', l: 'Link footer (opsional)', t: 'url' },
   ] },
+];
+
+// warna & font bawaan tiap tema (ditawarkan saat tema diganti)
+const THEME_PRESETS = {
+  jawa: { primary: '#A00818', accent: '#A00818', rose: '#A82840', gold: '#A98B57', paper: '#F7F1EC', ink: '#1F0C10', body: '#3B2A2E', sideBg: '#EDE6E2', fontDisplay: 'Cormorant Infant', fontHeading: 'Playfair Display', fontBody: 'Cormorant Garamond', fontScript: 'Allura' },
+  rose: { primary: '#B4536D', accent: '#C0607A', rose: '#C0607A', gold: '#B8955A', paper: '#FBF1EF', ink: '#4A2530', body: '#5A3A42', sideBg: '#F3E3E1', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Pinyon Script' },
+};
+
+// tema warna: warna CSS + bunga ikut berganti (dipakai di Tema 1 & Tema 2)
+const PALETTES = [
+  { id: 'auto', name: 'Bawaan tema', note: 'Jawa = marun, Rose = pink' },
+  { id: 'maroon', name: 'Merah Marun', c: { primary: '#A00818', accent: '#A00818', rose: '#A82840', gold: '#A98B57', paper: '#F7F1EC', ink: '#1F0C10', body: '#3B2A2E', sideBg: '#EDE6E2' } },
+  { id: 'pink', name: 'Pink Blush', c: { primary: '#B4536D', accent: '#C0607A', rose: '#C0607A', gold: '#B8955A', paper: '#FBF1EF', ink: '#4A2530', body: '#5A3A42', sideBg: '#F3E3E1' } },
+  { id: 'lilac', name: 'Ungu Lilac', c: { primary: '#7A5696', accent: '#8B67A8', rose: '#8B67A8', gold: '#B8955A', paper: '#F7F2F9', ink: '#33223F', body: '#4C3C58', sideBg: '#ECE4F1' } },
+  { id: 'blue', name: 'Dusty Blue', c: { primary: '#3E5E85', accent: '#4D6F98', rose: '#4D6F98', gold: '#B39A6B', paper: '#F2F5F9', ink: '#1E2E44', body: '#3A4757', sideBg: '#E3E9F0' } },
+  { id: 'peach', name: 'Peach Terakota', c: { primary: '#B0603C', accent: '#C0714B', rose: '#C0714B', gold: '#B8955A', paper: '#FBF4EF', ink: '#46281C', body: '#5A4038', sideBg: '#F2E6DE' } },
+  { id: 'champagne', name: 'Champagne Emas', c: { primary: '#977548', accent: '#A68457', rose: '#A68457', gold: '#B8955A', paper: '#FBF8F2', ink: '#3E3222', body: '#54483A', sideBg: '#EFE9DF' } },
 ];

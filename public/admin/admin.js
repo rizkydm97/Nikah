@@ -197,7 +197,11 @@
       wrap.querySelector('textarea').value = get() || '';
     } else if (f.t === 'select') {
       const opts = f.o.map((o) => (Array.isArray(o) ? o : [o, o]));
-      const sel = h('select', { onchange: (e) => set(e.target.value) }, opts.map(([v, t]) => h('option', { value: v }, t)));
+      const sel = h('select', { onchange: (e) => {
+        set(e.target.value);
+        const pr = f.preset && typeof THEME_PRESETS !== 'undefined' && THEME_PRESETS[e.target.value];
+        if (pr && confirm('Terapkan juga warna & font bawaan tema ini? (bisa diubah lagi setelahnya)')) { Object.assign(cfg.theme, pr); changed(true); show(current); }
+      } }, opts.map(([v, t]) => h('option', { value: v }, t)));
       sel.value = get(); wrap.append(label, sel);
     } else if (f.t === 'color') {
       const tx = h('input', { type: 'text', value: get() || '', oninput: (e) => { set(e.target.value); if (/^#[0-9a-f]{6}$/i.test(e.target.value)) cp.value = e.target.value; } });
@@ -226,6 +230,22 @@
         !isImg ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();
       wrap.append(label, h('div', { class: 'imgf' }, th, h('div', { style: 'flex:1;min-width:0' }, tx, btns, au)));
+    } else if (f.t === 'palette') {
+      const grid = h('div', { class: 'pals' });
+      const paint = () => grid.querySelectorAll('.pal').forEach((b) => b.classList.toggle('on', b.dataset.id === (get() || 'auto')));
+      PALETTES.forEach((pl) => {
+        const lay = cfg.theme.preset === 'rose' ? 'rose' : 'jawa';
+        const nat = { jawa: 'maroon', rose: 'pink' }[lay];
+        const fl = pl.id === 'auto' || pl.id === nat ? (lay === 'rose' ? '/assets/rose/rose-bouquet.webp' : '/assets/scene/bouquet.webp') : `/assets/pal/${pl.id}/${lay}-bouquet.webp`;
+        const cols = pl.c ? [pl.c.primary, pl.c.accent, pl.c.gold, pl.c.paper] : [];
+        grid.append(h('button', { type: 'button', class: 'pal', 'data-id': pl.id, onclick: () => {
+          obj[key] = pl.id;
+          if (pl.c) Object.assign(cfg.theme, pl.c);
+          else if (typeof THEME_PRESETS !== 'undefined') Object.assign(cfg.theme, THEME_PRESETS[lay]);
+          changed(true); show(current);
+        } }, h('img', { src: fl, alt: '' }), h('b', {}, pl.name), h('span', { class: 'dots' }, cols.map((c) => h('i', { style: `background:${c}` }))), pl.note ? h('small', {}, pl.note) : null));
+      });
+      paint(); wrap.append(label, grid);
     } else if (f.t === 'list') {
       wrap.append(label, listField(f, obj, key, onChange));
     } else {
@@ -410,8 +430,8 @@
   function buildNav() {
     const n = $('#nav'); n.textContent = '';
     const add = (id, t) => n.append(h('button', { 'data-id': id, onclick: () => { show(id); n.classList.remove('open'); } }, t));
-    n.append(h('h6', {}, 'Isi Undangan')); SCHEMA.slice(0, 4).forEach((g) => add(g.id, g.title)); add('sections', 'Urutan & Animasi Section');
-    n.append(h('h6', {}, 'Konten Section')); SCHEMA.slice(4).forEach((g) => add(g.id, g.title));
+    n.append(h('h6', {}, 'Isi Undangan')); SCHEMA.slice(0, 5).forEach((g) => add(g.id, g.title)); add('sections', 'Urutan & Animasi Section');
+    n.append(h('h6', {}, 'Konten Section')); SCHEMA.slice(5).forEach((g) => add(g.id, g.title));
     n.append(h('h6', {}, 'Data Tamu')); add('d-rsvp', 'RSVP / Kehadiran'); add('d-wishes', 'Ucapan Tamu'); add('d-gifts', 'Konfirmasi Gift'); add('links', 'Buat Link Tamu');
     n.append(h('h6', {}, 'Lainnya')); add('security', 'Keamanan & Cadangan');
   }

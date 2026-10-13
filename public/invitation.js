@@ -12,7 +12,29 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // font -> [bobot, punya-italic]. Hanya yang punya italic asli diminta italic (hindari italic palsu).
   const FONTS = { 'Cormorant Infant': ['400;500;600;700', 1], 'Cormorant Garamond': ['400;500;600;700', 1], 'Playfair Display': ['400;500;600;700', 1], 'Lora': ['400;500;600;700', 1], 'Poppins': ['400;500;600;700', 0], 'Libre Baskerville': ['400;700', 1], 'EB Garamond': ['400;500;600;700', 1], 'Marcellus': ['', 0], 'Cinzel': ['400;500;600;700', 0], 'Great Vibes': ['', 0], 'Allura': ['', 0], 'Parisienne': ['', 0], 'Pinyon Script': ['', 0], 'Dancing Script': ['400;500;600;700', 0], 'Alice': ['', 0], 'Abhaya Libre': ['400;500;600;700', 0], 'Montserrat': ['400;500;600;700', 1], 'Josefin Sans': ['400;500;600;700', 1] };
-  const CLOUDS = ['/assets/scene/cloud1.webp', '/assets/scene/cloud2.webp', '/assets/scene/cloud3.webp', '/assets/scene/cloud4.webp'];
+  const CLOUD_SETS = { jawa: [1, 2, 3, 4].map((i) => `/assets/scene/cloud${i}.webp`), rose: [1, 2, 3, 4].map((i) => `/assets/rose/rose-cloud${i}.webp`) };
+  let CLOUDS = CLOUD_SETS.jawa, THEME = 'jawa';
+  // tema aktif: gambar dekorasi tema 2 disimpan terpisah (scene2) supaya pindah tema tidak menimpa gambar tema 1
+  // tema warna: bunga bawaan diganti versi warna lain (gambar yang diunggah sendiri tidak disentuh)
+  const PAL_HUE = { maroon: 0.985, pink: 0.95, lilac: 0.78, blue: 0.6, peach: 0.045, champagne: 0.1 };
+  const NATIVE = { jawa: 'maroon', rose: 'pink' };
+  const DEF_FL = {
+    jawa: { floralTop: '/assets/scene/floral-top-v2.webp', floralBottom: '/assets/scene/floral-bottom-v2.webp', column: '/assets/scene/column.webp', frameArc: '/assets/scene/frame-arc.webp', frameSide: '/assets/scene/frame-side.webp', flowers: '/assets/scene/bouquet.webp' },
+    rose: { floralTop: '/assets/rose/rose-top.webp', floralBottom: '/assets/rose/rose-bottom.webp', column: '/assets/rose/rose-column.webp', frameArc: '/assets/rose/rose-frame-arc.webp', frameSide: '/assets/rose/rose-frame-side.webp', flowers: '/assets/rose/rose-bouquet.webp' },
+  };
+  const FL_FILE = { floralTop: 'top', floralBottom: 'bottom', column: 'column', frameArc: 'frame-arc', frameSide: 'frame-side', flowers: 'bouquet' };
+  let PAL = 'auto';
+  function effective(cfg) {
+    THEME = (cfg.theme && cfg.theme.preset) === 'rose' ? 'rose' : 'jawa';
+    CLOUDS = CLOUD_SETS[THEME];
+    const out = THEME === 'rose' ? Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene, cfg.scene2 || {}) }) : Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene) });
+    PAL = PAL_HUE[cfg.theme && cfg.theme.palette] !== undefined ? cfg.theme.palette : 'auto';
+    if (PAL !== 'auto' && PAL !== NATIVE[THEME]) {
+      for (const k in FL_FILE) if (out.scene[k] === DEF_FL[THEME][k]) out.scene[k] = `/assets/pal/${PAL}/${THEME}-${FL_FILE[k]}.webp`;
+      if (THEME === 'jawa' && out.couple && out.couple.flower === DEF_FL.jawa.flowers) out.couple = Object.assign({}, out.couple, { flower: out.scene.flowers });
+    }
+    return out;
+  }
 
   const ICON = {
     heart: '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6 5c2 0 3.3 1.1 4 2.3h4C14.7 6.1 16 5 18 5c3.3 0 5.1 3.4 3.6 6.8C19.5 16.4 12 21 12 21z" transform="translate(0 -1)"/></svg>',
@@ -96,7 +118,7 @@
     if (c.effects.intro !== false) ld.innerHTML = `<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
     ld.classList.add('ready');
     const s = c.scene;
-    const urls = [s.sky, s.house, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS].map(safeUrl).filter(Boolean);
+    const urls = [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS].map(safeUrl).filter(Boolean);
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
@@ -132,6 +154,8 @@
     r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide));
     document.title = c.general.title || document.title;
     const b = document.body.classList;
+    { let d = PAL === 'auto' ? 0 : (PAL_HUE[PAL] - 0.95) * 360; d = ((d + 540) % 360) - 180; r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', PAL === 'champagne' ? '.45' : '1'); }
+    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose');
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
   }
 
@@ -152,11 +176,12 @@
         ${clouds()}
         ${safeUrl(s.treeline) ? `<div class="ly trees">${img(s.treeline)}</div>` : ''}
         ${c.effects.showTree !== false && safeUrl(s.tree) ? `<div class="ly tree"><div class="tree-in">${img(s.tree)}<i class="lamp"></i></div></div>` : ''}
-        <div class="ly hs"><div class="hs-in">${img(s.house)}<div class="glow"></div></div></div>
+        <div class="ly hs"><div class="hs-in">${img(s.house)}${safeUrl(s.curtain) ? `<div class="curt l">${img(s.curtain)}</div><div class="curt r">${img(s.curtain)}</div>` : ''}<div class="glow"></div></div></div>
         <div class="haze"></div>
       </div>
+      <div class="flash"></div>
       ${safeUrl(s.column) ? `<div class="ly cols"><div class="colc l">${img(s.column)}</div><div class="colc r">${img(s.column)}</div></div>` : ''}
-      ${safeUrl(s.column) ? '' : `<div class="ly ft sway-t">${halves(s.floralTop)}</div>`}
+      ${safeUrl(s.column) && THEME !== 'rose' ? '' : `<div class="ly ft sway-t">${halves(s.floralTop)}</div>`}
       <div class="ly fb sway-b">${halves(s.floralBottom)}</div>
       ${sparkles(16)}
       <div class="flyers"></div>
@@ -192,7 +217,7 @@
         <div class="rv gpanel"><p>${br(o.text)}</p>${safeUrl(o.photo) ? `<div class="circ"><div class="phb">${photo(o, 'photo')}</div></div>` : ''}</div></section>`;
     },
     couple(c) {
-      const o = c.couple;
+      const o = Object.assign({}, c.couple, THEME === 'rose' && safeUrl(c.scene.flowers) ? { flower: c.scene.flowers } : {});
       const p = (x) => `<div class="person"><div class="pho-w"><div class="rv pho" data-a="zoom-in" style="--i:2"><div class="phb">${photo(x, 'photo', x.fullName)}</div></div>${safeUrl(o.flower) ? `<img class="rv fl-acc" data-a="bloom" style="--i:4" src="${link(o.flower)}" alt="">` : ''}</div>
         <div class="rv script" data-a="soft" style="--i:6">${esc(x.script)}</div><div class="rv fn" data-a="soft" style="--i:7">${esc(x.fullName)}</div><div class="rv par" data-a="soft" style="--i:8">${esc(x.parents)}</div>${safeUrl(x.instagram) ? `<a class="rv btn pill" data-a="soft" style="--i:9" href="${link(x.instagram)}" target="_blank" rel="noopener">${ICON.ig}${esc(o.instagramLabel)}</a>` : ''}</div>`;
       return `<section class="sec paperbg couple">${bgl(o, 'bg')}<div class="rv cpanel" data-a="soft" style="--i:0">${p(o.groom)}<div class="rv amp" data-a="zoom-in" style="--i:2">${esc(o.connector)}</div>${p(o.bride)}</div></section>`;
@@ -283,13 +308,15 @@
         <div class="ttl"><div class="k">${esc(o.kicker)}</div><div class="n">${esc(o.names)}</div></div></div>
         <div class="guest"><div class="to">${esc(o.toLabel)}</div><div class="g">${esc(guest || o.defaultGuest)}</div><div class="pl">${esc(o.placeText)}</div>
         <button class="btn sq shine" id="openBtn">${ICON.mail}${esc(o.button)}</button></div></div></div>
+      ${THEME === 'rose' ? `<div class="cv-ft">${halves(c.scene.floralTop)}</div>` : ''}
       <div class="cv-fb">${halves(c.scene.floralBottom)}</div>
       ${sparkles(12)}<div class="flyers"></div></div>`;
   }
 
   // ---------- render (dipakai juga oleh pratinjau admin tanpa reload) ----------
   let observers = [], cdsTimer = null;
-  function render(cfg) {
+  function render(raw) {
+    const cfg = effective(raw);
     C = cfg;
     if (AC) AC.abort(); AC = new AbortController();
     observers.forEach((o) => o.disconnect()); observers = [];
@@ -329,9 +356,11 @@
     // titik fokus = pintu rumah
     const cam = $('.cam', hero), house = $('.hs img', hero);
     const cr = cam.getBoundingClientRect(), hr = house.getBoundingClientRect();
-    const ox = ((hr.left + hr.width * 0.5 - cr.left) / cr.width * 100).toFixed(2), oy = ((hr.top + hr.height * 0.66 - cr.top) / cr.height * 100).toFixed(2);
+    const ox = ((hr.left + hr.width * 0.5 - cr.left) / cr.width * 100).toFixed(2), oy = ((hr.top + hr.height * (THEME === 'rose' ? 0.47 : 0.66) - cr.top) / cr.height * 100).toFixed(2);
     cam.style.transformOrigin = `${ox}% ${oy}%`;
-    const zin = 1900 * D, zout = 4200 * D, peak = 2.35;
+    const zin = 1900 * D, zout = 4200 * D, peak = THEME === 'rose' ? 2.8 : 2.35;
+    // tema 2: masuk menembus gapura -> cahaya putih lembut -> taman terlihat saat kamera mundur
+    const fl = $('.flash', hero); if (fl && THEME === 'rose') fl.animate([{ opacity: 0 }, { opacity: 0, offset: 0.55 }, { opacity: 0.9, offset: 0.92 }, { opacity: 0 }], { duration: zin + zout * 0.35, easing: 'ease-in-out' });
     const anim = cam.animate([
       { transform: 'scale(1)', easing: 'cubic-bezier(.55,.05,.45,1)' },
       { transform: `scale(${peak})`, offset: zin / (zin + zout), easing: 'cubic-bezier(.42,0,.18,1)' },
@@ -346,7 +375,7 @@
   }
 
   function gotoSection(id) {
-    const map = { scene: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
+    const map = { scene: 'hero', scene2: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
     const el = $('#s-' + (map[id] || id)); if (!el) return;
     const y = el.getBoundingClientRect().top + scrollY;
     scrollTo({ top: Math.max(0, y - 6), behavior: 'smooth' });
@@ -462,7 +491,7 @@
   let petalsOn = false;
   function petals() {
     if (!C.effects.petals || reduce || petalsOn) return; petalsOn = true;
-    const box = $('#petals'), cols = [C.theme.primary, '#d96a7f', '#f3b8c2', '#e8909f'];
+    const box = $('#petals'), cols = ['var(--primary)', 'var(--accent)', 'var(--tint2)', 'var(--tint3)'];
     box.style.opacity = '0'; setTimeout(() => (box.style.opacity = ''), 2600 * sp);
     const hide = () => box.classList.toggle('off', scrollY > innerHeight * 0.85); hide();
     addEventListener('scroll', hide, { passive: true });
