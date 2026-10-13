@@ -587,4 +587,5 @@ a{color:inherit}
 .t-rose .pop-x{background:var(--primary)}
 
 /* tema warna: langit, gapura & tirai Tema 2 ikut bergeser warnanya */
-.t-rose .scene .sky,.t-rose .clouds,.t-rose .trees,.t-rose .hs-in>img,.t-rose .curt{filter:hue-rotate(var(--hr,0deg)) saturate(var(--hs,1))}
+/* (warna langit/gapura Tema 2 sudah disiapkan sebagai gambar per tema warna — tanpa filter agar animasi ringan) */
+.t-rose .cover.opening .arch{filter:none}

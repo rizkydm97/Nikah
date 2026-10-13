@@ -31,6 +31,11 @@
     PAL = PAL_HUE[cfg.theme && cfg.theme.palette] !== undefined ? cfg.theme.palette : 'auto';
     if (PAL !== 'auto' && PAL !== NATIVE[THEME]) {
       for (const k in FL_FILE) if (out.scene[k] === DEF_FL[THEME][k]) out.scene[k] = `/assets/pal/${PAL}/${THEME}-${FL_FILE[k]}.webp`;
+      if (THEME === 'rose') {
+        const RS = { sky: 'rose-sky.jpg', treeline: 'rose-trees.webp', house: 'rose-pavilion.webp', curtain: 'rose-curtain.webp' };
+        for (const k in RS) if (out.scene[k] === '/assets/rose/' + RS[k]) out.scene[k] = `/assets/pal/${PAL}/${RS[k]}`;
+        CLOUDS = [1, 2, 3, 4].map((i) => `/assets/pal/${PAL}/rose-cloud${i}.webp`);
+      }
       if (THEME === 'jawa' && out.couple && out.couple.flower === DEF_FL.jawa.flowers) out.couple = Object.assign({}, out.couple, { flower: out.scene.flowers });
     }
     return out;
