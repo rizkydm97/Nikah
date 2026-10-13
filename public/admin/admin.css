@@ -52,7 +52,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .item.closed>.ib{display:none}
 .gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
 .gl .g{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
-.gl .g .im{aspect-ratio:3/4;background:#eee center/cover}
+.gl .g .im{aspect-ratio:3/4;background:#eee center/cover;background-size:cover}
 .gl .g .t{display:flex;justify-content:space-between;padding:3px 4px}
 .gl .g button{border:0;background:none;cursor:pointer;padding:2px 6px;font-size:13px}
 .gl .add{display:grid;place-items:center;aspect-ratio:3/4;border:2px dashed var(--line);border-radius:8px;cursor:pointer;color:var(--mu)}
@@ -109,3 +109,31 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .glist .gr:last-child{border-bottom:0}
 .glist .gr small{display:block;color:var(--mu)}
 @media(max-width:560px){.total b{font-size:38px}}
+
+/* editor posisi foto */
+.thumb{cursor:pointer;background-size:cover}
+.thumb.contain{cursor:default}
+.thumb.round{border-radius:999px;width:58px}
+.adjbox{max-width:900px}
+.adj-wrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.adj-sw{flex:1 1 300px;display:flex;justify-content:center;background:repeating-conic-gradient(#f1ebe7 0 25%,#faf7f5 0 50%) 0 0/18px 18px;border-radius:10px;padding:14px}
+.adj-stage{position:relative;overflow:hidden;border-radius:6px;background:#ddd;cursor:grab;touch-action:none;user-select:none;box-shadow:0 0 0 2px var(--p),0 10px 30px rgba(0,0,0,.2)}
+.adj-stage.round{border-radius:999px}
+.adj-stage.arch{border-radius:999px 999px 10px 10px}
+.adj-stage.drag{cursor:grabbing}
+.adj-stage img{position:absolute;inset:0;width:100%;height:100%;max-width:none;pointer-events:none}
+.adj-stage .bfill{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(20px) brightness(.92);transform:scale(1.08)}
+.adj-stage .grid3{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent calc(33.33% - .5px),rgba(255,255,255,.55) 0 calc(33.33% + .5px),transparent 0 calc(66.66% - .5px),rgba(255,255,255,.55) 0 calc(66.66% + .5px),transparent 0),linear-gradient(transparent calc(33.33% - .5px),rgba(255,255,255,.55) 0 calc(33.33% + .5px),transparent 0 calc(66.66% - .5px),rgba(255,255,255,.55) 0 calc(66.66% + .5px),transparent 0);opacity:0;transition:opacity .2s}
+.adj-stage:hover .grid3,.adj-stage.drag .grid3{opacity:1}
+.adj-stage .shade{position:absolute;inset:0;background:linear-gradient(rgba(30,5,10,.5),rgba(20,3,8,.62));pointer-events:none}
+.adj-ctl{flex:1 1 240px;display:grid;gap:12px;min-width:220px}
+.adj-ctl label{display:grid;gap:4px;font-size:12.5px;font-weight:600;color:#4a393d}
+.adj-ctl label span{display:flex;justify-content:space-between}
+.adj-ctl label b{font-weight:600;color:var(--p)}
+.adj-ctl input[type=range]{width:100%;accent-color:var(--p)}
+.adj-ctl select{padding:7px 9px;border:1px solid var(--line);border-radius:8px}
+.segs{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg{flex:1;border:0;background:#fff;padding:8px 6px;cursor:pointer;font-size:12.5px}
+.seg+.seg{border-left:1px solid var(--line)}
+.seg.on{background:var(--p);color:#fff;font-weight:600}
+.gl .g .im{cursor:pointer}

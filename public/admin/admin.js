@@ -43,13 +43,16 @@
 
   // ---------- dirty & preview ----------
   let pvT;
-  function changed() {
+  function changed(fast) {
     $('#dirty').hidden = JSON.stringify(cfg) === snap;
-    clearTimeout(pvT); pvT = setTimeout(sendPreview, 500);
+    clearTimeout(pvT); pvT = setTimeout(sendPreview, fast === true ? 120 : 450);
   }
-  function sendPreview() { const f = $('#pvFrame'); try { f.contentWindow.postMessage({ type: 'cfg', cfg }, location.origin); } catch { /* iframe belum siap */ } }
+  const post = (msg) => { const f = $('#pvFrame'); try { f.contentWindow.postMessage(msg, location.origin); } catch { /* iframe belum siap */ } };
+  function sendPreview() { post({ type: 'cfg', cfg }); }
+  // pratinjau ikut melompat ke section yang sedang diedit
+  function gotoPreview() { if (current && current !== 'cover') post({ type: 'goto', id: current }); }
   function loadPreview() { const g = $('#pvGuest').value; $('#pvFrame').src = '/?preview=1' + ($('#pvMode').value ? '&cover=1' : '') + (g ? '&to=' + encodeURIComponent(g) : ''); }
-  $('#pvFrame').addEventListener('load', sendPreview);
+  $('#pvFrame').addEventListener('load', () => { sendPreview(); setTimeout(gotoPreview, 700); });
   $('#pvReload').onclick = () => { try { sessionStorage.removeItem('pvCfg'); } catch { /* */ } loadPreview(); };
   $('#pvGuest').onchange = loadPreview; $('#pvMode').onchange = loadPreview;
   $('#pvToggle').onclick = () => $('#preview').classList.toggle('show');
@@ -119,6 +122,68 @@
     });
   }
 
+  // ---------- editor posisi foto: geser, zoom, mode utuh/penuh, kegelapan latar ----------
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  function openAdjust(f, obj, key, onChange) {
+    const url = obj[key]; if (!url) { toast('Unggah / pilih foto dulu', true); return; }
+    const ch = () => { obj[key + 'Adj'] = { ...a }; (onChange || (() => changed(true)))(); };
+    const A0 = { x: 50, y: 50, z: 1, fit: 'cover', o: 100 };
+    let a = { ...A0, ...(obj[key + 'Adj'] || {}) };
+    const ratio = () => (f.arKey ? getPath(cfg, f.arKey) : f.ar) || '4/5';
+    const m = $('#adj'), body = $('#adjBody'); body.textContent = '';
+    const im = h('img', { src: url, alt: '', draggable: 'false' });
+    const fill = h('span', { class: 'bfill', style: `background-image:url("${String(url).replace(/"/g, '')}")` });
+    const stage = h('div', { class: 'adj-stage' + (f.round ? ' round' : '') + (f.arch ? ' arch' : '') }, fill, im, h('i', { class: 'grid3' }));
+    const shade = h('i', { class: 'shade' }); if (f.bg) stage.append(shade);
+    const paintStage = () => {
+      const r = ratio(); stage.style.aspectRatio = r; stage.style.width = `min(460px, 100%, calc(58vh * (${r})))`;
+      im.style.objectFit = a.fit === 'contain' ? 'contain' : 'cover';
+      im.style.objectPosition = `${a.x}% ${a.y}%`; im.style.transformOrigin = `${a.x}% ${a.y}%`; im.style.transform = `scale(${a.z})`;
+      fill.style.display = a.fit === 'contain' ? '' : 'none';
+      shade.style.opacity = a.o / 100;
+      zr.value = Math.round(a.z * 100); zv.textContent = Math.round(a.z * 100) + '%';
+      xr.value = a.x; yr.value = a.y; if (orr) { orr.value = a.o; ov.textContent = a.o + '%'; }
+      bc.classList.toggle('on', a.fit !== 'contain'); bu.classList.toggle('on', a.fit === 'contain');
+    };
+    const set = (patch) => { a = { ...a, ...patch }; a.x = clamp(+a.x, 0, 100); a.y = clamp(+a.y, 0, 100); a.z = clamp(+a.z, 1, 4); paintStage(); ch(); };
+    // geser dengan mouse / jari
+    let drag = null;
+    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; stage.setPointerCapture(e.pointerId); stage.classList.add('drag'); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag = { x: e.clientX, y: e.clientY };
+      const W = stage.clientWidth, H = stage.clientHeight, iw = im.naturalWidth || W, ih = im.naturalHeight || H;
+      const sc = a.fit === 'contain' ? Math.min(W / iw, H / ih) : Math.max(W / iw, H / ih);
+      const rx = Math.max(iw * sc - W, 0) + W * (a.z - 1), ry = Math.max(ih * sc - H, 0) + H * (a.z - 1);
+      set({ x: rx > 2 ? a.x - dx / rx * 100 : a.x, y: ry > 2 ? a.y - dy / ry * 100 : a.y });
+    });
+    const end = () => { drag = null; stage.classList.remove('drag'); };
+    stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+    stage.addEventListener('wheel', (e) => { e.preventDefault(); set({ z: a.z * (e.deltaY < 0 ? 1.06 : 1 / 1.06) }); }, { passive: false });
+    const zr = h('input', { type: 'range', min: 100, max: 400, step: 1, oninput: (e) => set({ z: e.target.value / 100 }) }), zv = h('b');
+    const xr = h('input', { type: 'range', min: 0, max: 100, step: 0.5, oninput: (e) => set({ x: +e.target.value }) });
+    const yr = h('input', { type: 'range', min: 0, max: 100, step: 0.5, oninput: (e) => set({ y: +e.target.value }) });
+    const orr = f.bg ? h('input', { type: 'range', min: 0, max: 100, step: 1, oninput: (e) => set({ o: +e.target.value }) }) : null, ov = h('b');
+    const bc = h('button', { type: 'button', class: 'seg', onclick: () => set({ fit: 'cover' }) }, 'Penuhi bingkai'), bu = h('button', { type: 'button', class: 'seg', onclick: () => set({ fit: 'contain', z: 1 }) }, 'Tampilkan foto utuh');
+    const ctl = h('div', { class: 'adj-ctl' },
+      h('div', { class: 'segs' }, bc, bu),
+      f.arKey ? h('label', {}, 'Bentuk bingkai', (() => { const fdef = SCHEMA.flatMap((g) => g.fields).find((x) => x.k === f.arKey); const sel = h('select', { onchange: (e) => { const [o, k] = parentOf(cfg, f.arKey); o[k] = e.target.value; paintStage(); changed(true); } }, (fdef ? fdef.o : []).map(([v, t]) => h('option', { value: v }, t))); sel.value = ratio(); return sel; })()) : null,
+      h('label', {}, h('span', {}, 'Zoom ', zv), zr),
+      h('label', {}, 'Geser kiri ↔ kanan', xr),
+      h('label', {}, 'Geser atas ↕ bawah', yr),
+      orr ? h('label', {}, h('span', {}, 'Kegelapan lapisan agar teks terbaca ', ov), orr) : null,
+      h('div', { class: 'row', style: 'margin-top:6px;flex-wrap:wrap' },
+        h('button', { type: 'button', class: 'btn sm', onclick: () => set({ x: 50, y: 50 }) }, 'Ke tengah'),
+        h('button', { type: 'button', class: 'btn sm', onclick: () => set({ ...A0 }) }, 'Reset'),
+        h('span', { class: 'sp' }),
+        h('button', { type: 'button', class: 'btn pri', onclick: () => close() }, 'Selesai')));
+    body.append(h('p', { class: 'hint', style: 'margin:0 0 10px' }, 'Seret foto untuk menggeser, scroll/slider untuk zoom. Pratinjau di kanan langsung ikut berubah. Pilih "Tampilkan foto utuh" bila tidak ingin foto terpotong (sisa ruang diisi versi blur).'),
+      h('div', { class: 'adj-wrap' }, h('div', { class: 'adj-sw' }, stage), ctl));
+    const close = () => { m.hidden = true; };
+    m.querySelector('[data-close]').onclick = close; m.onclick = (e) => { if (e.target === m) close(); };
+    m.hidden = false; paintStage();
+  }
+
   // ---------- render field ----------
   function field(f, obj, key, onChange) {
     const wrap = h('div', { class: 'fld' });
@@ -144,14 +209,19 @@
       wrap.append(label, h('input', { type: 'datetime-local', value: (get() || '').slice(0, 16), oninput: (e) => set(e.target.value) }));
     } else if (f.t === 'image' || f.t === 'audio' || f.t === 'video') {
       const isImg = f.t === 'image', isAud = f.t === 'audio';
-      const th = isImg ? h('div', { class: 'thumb' + (/floral|house|ornament/i.test(f.k || '') ? ' contain' : '') }) : null;
+      const th = isImg ? h('div', { class: 'thumb' + (f.deco ? ' contain' : '') + (f.round ? ' round' : ''), title: f.deco ? '' : 'Klik untuk atur posisi', onclick: () => { if (!f.deco) openAdjust(f, obj, key, () => { (onChange || changed)(true); if (wrap._paint) wrap._paint(); }); } }) : null;
       const tx = h('input', { type: 'text', placeholder: isImg ? 'URL gambar atau unggah…' : isAud ? 'URL mp3 atau unggah…' : 'Link YouTube, URL .mp4, atau unggah video…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
       const au = isAud ? h('audio', { controls: true, style: 'width:100%;margin-top:6px;height:34px' }) : null;
-      const paint = () => { if (th) th.style.backgroundImage = get() ? `url("${String(get()).replace(/"/g, '')}")` : 'none'; if (au) { au.hidden = !get(); if (get()) au.src = get(); } };
+      const paint = () => {
+        if (th) { th.style.backgroundImage = get() ? `url("${String(get()).replace(/"/g, '')}")` : 'none'; const a = obj[key + 'Adj']; if (!f.deco) th.style.backgroundPosition = a ? `${a.x ?? 50}% ${a.y ?? 50}%` : ''; }
+        if (au) { au.hidden = !get(); if (get()) au.src = get(); }
+      };
+      wrap._paint = paint;
       const apply = (u) => { tx.value = u; set(u); paint(); };
       const btns = h('div', { class: 'acts' },
         h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
         h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isImg ? 'image' : isAud ? 'audio' : 'video'); if (u) apply(u); } }, 'Pustaka'),
+        isImg && !f.deco ? h('button', { class: 'btn sm pri', type: 'button', onclick: () => openAdjust(f, obj, key, () => { (onChange || changed)(true); paint(); }) }, '✥ Atur posisi') : null,
         defVal !== undefined ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply(defVal) }, 'Default') : null,
         !isImg ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();
@@ -175,9 +245,10 @@
       box.textContent = '';
       if (photoOnly) {
         const g = h('div', { class: 'gl' });
-        arr.forEach((it, i) => g.append(h('div', { class: 'g' }, h('div', { class: 'im', style: `background-image:url("${String(it[f.fields[0].k] || '').replace(/"/g, '')}")` }),
+        arr.forEach((it, i) => g.append(h('div', { class: 'g' }, h('div', { class: 'im', title: 'Klik untuk atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }), style: `background-image:url("${String(it[f.fields[0].k] || '').replace(/"/g, '')}");background-position:${(it[f.fields[0].k + 'Adj'] || {}).x ?? 50}% ${(it[f.fields[0].k + 'Adj'] || {}).y ?? 50}%;aspect-ratio:${f.fields[0].ar || '3/4'}` }),
           h('div', { class: 't' },
             h('span', {}, h('button', { title: 'Geser kiri', onclick: () => { if (i > 0) { [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]]; ch(); render(); } } }, '←'), h('button', { title: 'Geser kanan', onclick: () => { if (i < arr.length - 1) { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; ch(); render(); } } }, '→')),
+            h('button', { title: 'Atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }) }, '✥'),
             h('button', { title: 'Hapus', onclick: () => { arr.splice(i, 1); ch(); render(); } }, '🗑')))));
         g.append(h('div', { class: 'add', onclick: async () => {
           const files = await pickFile('image/*', true); if (!files.length) return;
@@ -353,6 +424,7 @@
       const g = SCHEMA.find((x) => x.id === id);
       const v = g ? groupView(g) : id === 'sections' ? sectionsView() : /^d-(rsvp|wishes|gifts)$/.test(id) ? await dataView(id.slice(2)) : id === 'links' ? linksView() : securityView();
       main.textContent = ''; main.append(v); scrollTo(0, 0);
+      gotoPreview();
     } catch (e) { main.textContent = e.message; }
   }
 

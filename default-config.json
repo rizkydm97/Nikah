@@ -35,19 +35,27 @@
     "parallax": true,
     "sway": true,
     "openZoom": true,
-    "glow": true
+    "glow": true,
+    "clouds": true,
+    "cloudSpeed": "normal",
+    "intro": true,
+    "showTree": true
   },
   "scene": {
-    "sky": "/assets/default/sky.svg",
-    "floralTop": "/assets/default/floral-top.svg",
-    "floralBottom": "/assets/default/floral-bottom.svg",
-    "house": "/assets/default/house.svg",
+    "sky": "/assets/scene/sky-v2.jpg",
+    "floralTop": "/assets/scene/floral-top-v2.webp",
+    "floralBottom": "/assets/scene/floral-bottom-v2.webp",
+    "house": "/assets/scene/house-jawa.webp",
     "paper": "/assets/default/paper.svg",
     "butterflyColor1": "#B8334F",
     "butterflyColor2": "#F0B6C2",
-    "frame": "/assets/default/frame.svg",
     "ornament": "/assets/default/ornament.svg",
-    "flowers": "/assets/default/flowers.svg"
+    "flowers": "/assets/scene/bouquet.webp",
+    "column": "/assets/scene/column.webp",
+    "treeline": "/assets/scene/treeline.webp",
+    "tree": "/assets/scene/treehouse.webp",
+    "frameArc": "/assets/scene/frame-arc.webp",
+    "frameSide": "/assets/scene/frame-side.webp"
   },
   "cover": {
     "photo": "/assets/default/cover-photo.svg",
@@ -57,7 +65,8 @@
     "toLabel": "Kepada Bapak/Ibu/Saudara/i",
     "defaultGuest": "Tamu Undangan",
     "placeText": "Di Tempat",
-    "button": "Buka Undangan"
+    "button": "Buka Undangan",
+    "photoRatio": "16/9"
   },
   "hero": {
     "kicker": "The Wedding Of",
@@ -101,7 +110,7 @@
     },
     "instagramLabel": "Instagram",
     "connector": "&",
-    "flower": "/assets/default/flowers.svg"
+    "flower": "/assets/scene/bouquet.webp"
   },
   "events": {
     "bg": "/assets/default/couple-wide.svg",
@@ -227,7 +236,7 @@
     "photo": "/assets/default/cover-photo.svg"
   },
   "wishes": {
-    "title": "",
+    "title": "Ucapan & Doa",
     "text": "Berikan harapan dan doa tulus Anda di sini karena kami sangat bersemangat untuk memulai perjalanan baru bersama.",
     "button": "Kirim Ucapan",
     "bg": "/assets/default/couple-wide.svg"
