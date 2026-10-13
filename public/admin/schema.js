@@ -68,6 +68,7 @@ const SCHEMA = [
   { id: 'scene2', title: 'Dekorasi Tema 2 (Rose Garden)', hint: 'Gambar khusus Tema 2. Dipakai bila "Tema undangan" = Tema 2. Ganti dengan PNG/WebP/SVG transparan bila ingin.', fields: [
     { k: 'scene2.sky', l: 'Latar langit pink', t: 'image', deco: 1 },
     { k: 'scene2.house', l: 'Gapura klasik (tengah)', t: 'image', deco: 1 },
+    { k: 'scene2.palace', l: 'Lukisan istana & taman (latar section Tema 2 yang belum diberi foto sendiri)', t: 'image', deco: 1 },
     { k: 'scene2.curtain', l: 'Tirai tipis (kanan otomatis dicerminkan; kosongkan untuk menyembunyikan)', t: 'image', deco: 1 },
     { k: 'scene2.treeline', l: 'Pepohonan pink di balik gapura', t: 'image', deco: 1 },
     { k: 'scene2.column', l: 'Kolom mawar kiri-kanan', t: 'image', deco: 1 },

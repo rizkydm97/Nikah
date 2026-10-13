@@ -32,7 +32,7 @@
     if (PAL !== 'auto' && PAL !== NATIVE[THEME]) {
       for (const k in FL_FILE) if (out.scene[k] === DEF_FL[THEME][k]) out.scene[k] = `/assets/pal/${PAL}/${THEME}-${FL_FILE[k]}.webp`;
       if (THEME === 'rose') {
-        const RS = { sky: 'rose-sky.jpg', treeline: 'rose-trees.webp', house: 'rose-pavilion.webp', curtain: 'rose-curtain.webp' };
+        const RS = { sky: 'rose-sky.jpg', treeline: 'rose-trees.webp', house: 'rose-pavilion.webp', curtain: 'rose-curtain.webp', palace: 'rose-palace.jpg' };
         for (const k in RS) if (out.scene[k] === '/assets/rose/' + RS[k]) out.scene[k] = `/assets/pal/${PAL}/${RS[k]}`;
         CLOUDS = [1, 2, 3, 4].map((i) => `/assets/pal/${PAL}/rose-cloud${i}.webp`);
       }
@@ -74,8 +74,12 @@
     return `<img class="pimg" src="${esc(u)}" alt="${esc(alt)}" decoding="async" style="${adjStyle(a)}">`;
   }
   // foto latar section
+  // Tema 2: latar kosong / foto contoh bawaan diganti lukisan istana & taman
+  const PLACEHOLDER = ['/assets/default/couple-wide.svg', '/assets/default/paper.svg', '/assets/default/sky.svg', '/assets/scene/sky-v2.jpg'];
   function bgl(o, k, src) {
-    const u = safeUrl(src !== undefined ? src : o && o[k]); if (!u) return '';
+    let u = safeUrl(src !== undefined ? src : o && o[k]);
+    if (THEME === 'rose' && C && safeUrl(C.scene.palace) && (!u || PLACEHOLDER.includes(u))) return `<div class="bgl palace"><img class="pimg" src="${esc(C.scene.palace)}" alt="" decoding="async"></div>`;
+    if (!u) return '';
     const a = adj(o, k);
     if (a.fit === 'contain') return `<div class="bgl"><span class="bfill" style="background-image:${cssUrl(u)}"></span><img class="pimg contain" src="${esc(u)}" alt="" decoding="async" style="${adjStyle(a)}"></div>`;
     return `<div class="bgl"><img class="pimg" src="${esc(u)}" alt="" decoding="async" style="${adjStyle(a)}"></div>`;
@@ -284,7 +288,7 @@
     closing(c) {
       const o = c.closing, s = c.scene;
       const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${img(src)}</div>`;
-      return `<section class="sec closing"><div class="stage">${safeUrl(o.bg) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
+      return `<section class="sec closing"><div class="stage">${safeUrl(o.bg) || (THEME === 'rose' && safeUrl(s.palace)) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
         <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
         <div class="rv panel" data-a="soft" style="--i:5"></div>${sparkles(10)}
         <div class="cl-in"><div class="rv cpho" data-a="zoom-in" style="--i:8"><div class="phb">${photo(o, 'photo')}</div></div><div class="rv kick" data-a="soft" style="--i:10">${esc(o.kicker)}</div><div class="rv names" data-a="soft" style="--i:11">${esc(o.names)}</div><p class="rv txt" data-a="soft" style="--i:12">${br(o.text)}</p></div></div>
@@ -430,6 +434,7 @@
       });
     }), { threshold: 0.12, rootMargin: '0px 0px -4% 0px' });
     observers.push(io);
+    $$('#app .bgl.palace').forEach((el) => { if (!groups.has(el)) { groups.set(el, [el]); io.observe(el); } });
     $$('#app .rv').forEach((el) => {
       const tgt = /^bloom/.test(el.dataset.a || '') && el.parentElement ? el.parentElement : el;
       if (!groups.has(tgt)) { groups.set(tgt, []); io.observe(tgt); }

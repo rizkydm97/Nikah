@@ -201,7 +201,7 @@ a{color:inherit}
 
 /* ---------- Kartu kapsul berbingkai bunga (acara & gift) ----------
    Bingkai = lengkung atas + lengkung bawah (ukuran ikut lebar kartu, tidak melar) + sisi bunga yang diulang sesuai tinggi kartu */
-.cap{position:relative;width:min(80%,376px);margin:46px auto 0;padding:13px;border-radius:999px;background:color-mix(in srgb,var(--primary) 58%,#000);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 70%,#000),0 18px 42px rgba(15,2,6,.5);container-type:inline-size}
+.cap{position:relative;width:min(80%,376px);margin:46px auto 0;padding:0;border-radius:999px;background:color-mix(in srgb,var(--primary) 58%,#000);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 70%,#000),0 18px 42px rgba(15,2,6,.5);container-type:inline-size}
 .cap+.cap{margin-top:64px}
 .fr-side{position:absolute;left:-6cqw;right:-6cqw;top:50cqw;bottom:50cqw;z-index:2;pointer-events:none}
 .fr-side::before,.fr-side::after{content:"";position:absolute;top:0;bottom:0;width:12cqw;background:var(--side) center top/100% auto;background-repeat:no-repeat round}
@@ -210,7 +210,7 @@ a{color:inherit}
 .fr-arc{position:absolute;left:-6cqw;width:112cqw;max-width:none;height:auto;z-index:2;pointer-events:none}
 .fr-arc.t{top:-10cqw}
 .fr-arc.b{bottom:-10cqw;transform:scaleY(-1)}
-.cap-in{position:relative;z-index:1;border-radius:999px;background:rgba(252,247,241,.93);box-shadow:inset 0 0 0 1.5px #9a7d4e;padding:22% 10% 20%;color:var(--body);overflow-wrap:anywhere;min-width:0}
+.cap-in{position:relative;z-index:1;margin:3.5cqw;border-radius:999px;background:rgba(252,247,241,.93);box-shadow:inset 0 0 0 1.5px #9a7d4e;padding:22% 10% 20%;color:var(--body);overflow-wrap:anywhere;min-width:0}
 .cap-in *{max-width:100%}
 .cap-in .orn{width:58px;margin:0 auto 8px}
 .cap-in h3{font-family:var(--fDisplay);font-weight:700;font-size:clamp(24px,6.6vw,29px);text-transform:uppercase;color:var(--primary);line-height:1.15;letter-spacing:.02em}
@@ -589,3 +589,12 @@ a{color:inherit}
 /* tema warna: langit, gapura & tirai Tema 2 ikut bergeser warnanya */
 /* (warna langit/gapura Tema 2 sudah disiapkan sebagai gambar per tema warna — tanpa filter agar animasi ringan) */
 .t-rose .cover.opening .arch{filter:none}
+
+/* Tema 2: lukisan istana & taman — muncul dari cahaya terang lalu kamera mundur perlahan */
+.bgl.palace img{object-position:50% 38%;transform:scale(1.22);filter:brightness(1.35) saturate(.8);transition:transform 6.5s cubic-bezier(.2,.65,.2,1),filter 2.6s ease}
+.bgl.palace.in img{transform:none;filter:none}
+.t-rose .greeting,.t-rose .couple,.t-rose .gallery{background-color:transparent}
+.t-rose .closing .stage>.bgl.palace{z-index:0}
+.t-rose .closing .stage>.bgl.palace img{object-position:50% 30%}
+.t-rose .sec.bgi:has(>.bgl.palace)::before{opacity:.6}
+.t-rose .rsvp .fm select{background-color:rgba(255,255,255,.75);background-repeat:no-repeat;background-position:right 10px center;background-size:12px 8px}
