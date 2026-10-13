@@ -107,13 +107,13 @@
   }
   async function openLibrary(filter) {
     const m = $('#lib'), g = $('#libGrid'); g.textContent = 'Memuat…'; m.hidden = false;
-    const items = (await api('/api/admin/uploads')).filter((u) => filter === 'audio' ? /\.(mp3|m4a|ogg|wav)$/i.test(u.url) : /\.(png|jpe?g|webp|gif|svg)$/i.test(u.url));
+    const items = (await api('/api/admin/uploads')).filter((u) => filter === 'audio' ? /\.(mp3|m4a|ogg|wav)$/i.test(u.url) : filter === 'video' ? /\.(mp4|webm)$/i.test(u.url) : /\.(png|jpe?g|webp|gif|svg)$/i.test(u.url));
     return new Promise((res) => {
       const close = (v) => { m.hidden = true; res(v); };
       m.querySelector('[data-close]').onclick = () => close(null); m.onclick = (e) => { if (e.target === m) close(null); };
       g.textContent = '';
       if (!items.length) g.textContent = 'Belum ada file yang diunggah.';
-      items.forEach((u) => g.append(h('button', { onclick: () => close(u.url) }, filter === 'audio' ? h('div', { class: 'im' }, '♪') : h('div', { class: 'im', style: `background-image:url("${u.url}")` }), h('small', {}, u.url.split('/').pop()))));
+      items.forEach((u) => g.append(h('button', { onclick: () => close(u.url) }, filter === 'audio' ? h('div', { class: 'im' }, '♪') : filter === 'video' ? h('div', { class: 'im' }, '▶') : h('div', { class: 'im', style: `background-image:url("${u.url}")` }), h('small', {}, u.url.split('/').pop()))));
     });
   }
 
@@ -140,16 +140,16 @@
       wrap.append(label, h('input', { type: 'number', min: f.min, max: f.max, value: get(), oninput: (e) => set(e.target.value === '' ? '' : +e.target.value) }));
     } else if (f.t === 'datetime') {
       wrap.append(label, h('input', { type: 'datetime-local', value: (get() || '').slice(0, 16), oninput: (e) => set(e.target.value) }));
-    } else if (f.t === 'image' || f.t === 'audio') {
-      const isImg = f.t === 'image';
+    } else if (f.t === 'image' || f.t === 'audio' || f.t === 'video') {
+      const isImg = f.t === 'image', isAud = f.t === 'audio';
       const th = isImg ? h('div', { class: 'thumb' + (/floral|house|ornament/i.test(f.k || '') ? ' contain' : '') }) : null;
-      const tx = h('input', { type: 'text', placeholder: isImg ? 'URL gambar atau unggah…' : 'URL mp3 atau unggah…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
-      const au = !isImg ? h('audio', { controls: true, style: 'width:100%;margin-top:6px;height:34px' }) : null;
+      const tx = h('input', { type: 'text', placeholder: isImg ? 'URL gambar atau unggah…' : isAud ? 'URL mp3 atau unggah…' : 'Link YouTube, URL .mp4, atau unggah video…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
+      const au = isAud ? h('audio', { controls: true, style: 'width:100%;margin-top:6px;height:34px' }) : null;
       const paint = () => { if (th) th.style.backgroundImage = get() ? `url("${String(get()).replace(/"/g, '')}")` : 'none'; if (au) { au.hidden = !get(); if (get()) au.src = get(); } };
       const apply = (u) => { tx.value = u; set(u); paint(); };
       const btns = h('div', { class: 'acts' },
-        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isImg ? 'image/*' : 'audio/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
-        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isImg ? 'image' : 'audio'); if (u) apply(u); } }, 'Pustaka'),
+        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
+        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isImg ? 'image' : isAud ? 'audio' : 'video'); if (u) apply(u); } }, 'Pustaka'),
         defVal !== undefined ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply(defVal) }, 'Default') : null,
         !isImg ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();
@@ -234,7 +234,41 @@
   }
 
   const fmtT = (ts) => new Date(ts).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+  const escH = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const STATUS = { hadir: 'Hadir', tidak: 'Tidak hadir', ragu: 'Masih ragu' };
+  function printRsvp(rows) {
+    const w = window.open('', '_blank'); if (!w) { toast('Izinkan pop-up untuk mencetak PDF', true); return; }
+    const hadir = rows.filter((r) => r.status === 'hadir'), tot = hadir.reduce((a, r) => a + (+r.count || 1), 0);
+    const title = (cfg && cfg.general && cfg.general.title) || 'Undangan';
+    const tr = rows.map((r, i) => `<tr><td>${i + 1}</td><td>${escH(r.name)}</td><td>${STATUS[r.status] || r.status}</td><td style="text-align:center">${r.status === 'hadir' ? (+r.count || 1) : '-'}</td><td>${escH(fmtT(r.ts))}</td></tr>`).join('');
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>Data Kehadiran</title><style>body{font:13px system-ui,Arial,sans-serif;color:#222;margin:28px}h1{font-size:20px;margin:0}p{color:#666;margin:4px 0 14px}.s{display:flex;gap:10px;margin-bottom:14px}.s div{border:1px solid #ddd;border-radius:8px;padding:8px 14px}.s b{display:block;font-size:20px}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid #ddd;padding:7px 8px;text-align:left}th{background:#f5f0ee;font-size:11px;text-transform:uppercase}@media print{body{margin:12mm}}</style>
+      <h1>Data Kehadiran Tamu</h1><p>${escH(title)} • dicetak ${escH(new Date().toLocaleString('id-ID'))}</p>
+      <div class="s"><div><b>${tot}</b>Total tamu hadir</div><div><b>${hadir.length}</b>Konfirmasi hadir</div><div><b>${rows.filter((r) => r.status === 'tidak').length}</b>Tidak hadir</div><div><b>${rows.filter((r) => r.status === 'ragu').length}</b>Masih ragu</div></div>
+      <table><thead><tr><th>No</th><th>Nama</th><th>Status</th><th>Jumlah</th><th>Waktu</th></tr></thead><tbody>${tr}</tbody></table>`);
+    w.document.close(); w.focus(); setTimeout(() => w.print(), 450);
+  }
+  async function rsvpView() {
+    const m = h('div', {});
+    const rows = await api('/api/admin/rsvp');
+    const hadir = rows.filter((r) => r.status === 'hadir'), tidak = rows.filter((r) => r.status === 'tidak'), ragu = rows.filter((r) => r.status === 'ragu');
+    const tot = hadir.reduce((a, r) => a + (+r.count || 1), 0);
+    m.append(h('div', { class: 'rhead' }, h('div', {}, h('h2', {}, 'Konfirmasi Kehadiran'), h('p', { class: 'hint', style: 'margin:0' }, 'Terpisah dari ucapan & doa')),
+      h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => show('d-rsvp') }, 'Refresh'), h('a', { class: 'btn', href: '/api/admin/rsvp.csv' }, '⬇ CSV'), h('button', { class: 'btn pri', onclick: () => printRsvp(rows) }, 'Cetak PDF'))));
+    m.append(h('div', { class: 'total' }, h('small', {}, 'TOTAL TAMU YANG AKAN DATANG'), h('b', {}, tot), h('span', {}, 'orang')));
+    m.append(h('div', { class: 'stats three' }, h('div', {}, h('small', {}, 'Respons'), h('b', {}, rows.length)), h('div', {}, h('small', {}, 'Hadir'), h('b', { class: 'ok' }, hadir.length)), h('div', {}, h('small', {}, 'Berhalangan'), h('b', { class: 'bad' }, tidak.length)), h('div', {}, h('small', {}, 'Masih ragu'), h('b', { class: 'wait' }, ragu.length))));
+    const group = (title, list, cls, withCount) => {
+      if (!list.length) return;
+      const box = h('div', { class: 'glist ' + cls }, h('div', { class: 'gh' }, title + ' — ' + list.length + ' konfirmasi' + (withCount ? ' · ' + list.reduce((a, r) => a + (+r.count || 1), 0) + ' orang' : '')));
+      list.forEach((r) => { const row = h('div', { class: 'gr' }, h('div', {}, h('b', {}, r.name), h('small', {}, (r.status === 'hadir' ? (+r.count || 1) + ' orang · ' : '') + fmtT(r.ts))),
+        h('button', { class: 'ghost sm', onclick: async () => { if (!confirm('Hapus data ini?')) return; await api('/api/admin/rsvp/' + r.id, { method: 'DELETE' }); show('d-rsvp'); } }, 'Hapus')); box.append(row); });
+      m.append(box);
+    };
+    group('Akan hadir', hadir, 'g-ok', true); group('Tidak hadir', tidak, 'g-bad', false); group('Masih ragu', ragu, 'g-wait', false);
+    if (!rows.length) m.append(h('p', { class: 'hint' }, 'Belum ada konfirmasi kehadiran.'));
+    return m;
+  }
   async function dataView(kind) {
+    if (kind === 'rsvp') return rsvpView();
     const titles = { rsvp: 'Data RSVP / Kehadiran', wishes: 'Ucapan & Doa', gifts: 'Konfirmasi Gift' };
     const m = h('div', {}, h('h2', {}, titles[kind]));
     const rows = await api('/api/admin/' + kind);

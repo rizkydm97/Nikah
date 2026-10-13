@@ -2,7 +2,7 @@
 const F_SERIF = ['Cormorant Infant', 'Cormorant Garamond', 'Playfair Display', 'Lora', 'Libre Baskerville', 'EB Garamond', 'Marcellus', 'Cinzel', 'Alice', 'Abhaya Libre', 'Poppins', 'Montserrat', 'Josefin Sans'];
 const F_SCRIPT = ['Great Vibes', 'Allura', 'Parisienne', 'Pinyon Script', 'Dancing Script'];
 const ANIMS = [
-  ['none', 'Tanpa animasi'], ['fade-in', 'Fade (muncul perlahan)'], ['fade-up', 'Naik dari bawah'], ['fade-down', 'Turun dari atas'],
+  ['none', 'Tanpa animasi'], ['soft', 'Lembut mewah (naik + blur halus)'], ['fade-in', 'Fade (muncul perlahan)'], ['fade-up', 'Naik dari bawah'], ['fade-down', 'Turun dari atas'],
   ['fade-left', 'Geser dari kiri'], ['fade-right', 'Geser dari kanan'], ['zoom-in', 'Zoom masuk'], ['zoom-out', 'Zoom keluar'],
   ['flip', 'Flip'], ['rotate-in', 'Putar masuk'], ['blur-in', 'Blur ke tajam'], ['bounce', 'Memantul'],
 ];
@@ -91,7 +91,7 @@ const SCHEMA = [
     { k: 'live.button', l: 'Teks tombol', t: 'text' }, { k: 'live.url', l: 'Link live (YouTube/Instagram/Zoom)', t: 'url' },
   ] },
   { id: 'gallery', title: 'Galeri', fields: [
-    { k: 'gallery.title', l: 'Judul', t: 'text' }, { k: 'gallery.video', l: 'Video (link YouTube atau .mp4) — opsional', t: 'url' },
+    { k: 'gallery.title', l: 'Judul', t: 'text' }, { k: 'gallery.video', l: 'Video galeri — tempel link YouTube / URL .mp4, atau unggah video (autoplay tanpa suara, opsional)', t: 'video' },
     { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image' }] },
   ] },
   { id: 'story', title: 'Love Story', fields: [

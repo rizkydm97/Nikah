@@ -241,62 +241,62 @@
     {
       "id": "hero",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "quote",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "greeting",
       "enabled": true,
-      "anim": "zoom-in"
+      "anim": "soft"
     },
     {
       "id": "couple",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "events",
       "enabled": true,
-      "anim": "zoom-in"
+      "anim": "soft"
     },
     {
       "id": "live",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "gallery",
       "enabled": true,
-      "anim": "zoom-in"
+      "anim": "soft"
     },
     {
       "id": "story",
       "enabled": true,
-      "anim": "fade-left"
+      "anim": "soft"
     },
     {
       "id": "gift",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "rsvp",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "wishes",
       "enabled": true,
-      "anim": "fade-up"
+      "anim": "soft"
     },
     {
       "id": "closing",
       "enabled": true,
-      "anim": "zoom-in"
+      "anim": "soft"
     }
   ]
 }

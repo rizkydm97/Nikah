@@ -52,6 +52,8 @@
     applyTheme(cfg);
     build(cfg);
     $('#loader').classList.add('off');
+    const cv = $('#cover'), sp = SPEED[cfg.effects.animSpeed] || 1;
+    if (cv) { setTimeout(() => cv.classList.add('play'), 350); setTimeout(() => cv.classList.add('shown'), 350 + 2600 * sp); }
     if (PREVIEW && !q.has('cover')) { openInvitation(true); const y = +sessionStorage.getItem('pvY') || 0; if (y) setTimeout(() => scrollTo(0, y), 150); }
   }
 
@@ -133,9 +135,9 @@
     },
     couple(c) {
       const o = c.couple;
-      const p = (x) => `<div class="rv person"><div class="pho-w"><div class="pho">${img(x.photo, x.fullName)}</div>${safeUrl(o.flower) ? `<img class="fl-acc" src="${link(o.flower)}" alt="">` : ''}</div>
-        <div class="script">${esc(x.script)}</div><div class="fn">${esc(x.fullName)}</div><div class="par">${esc(x.parents)}</div>${safeUrl(x.instagram) ? `<a class="btn pill" href="${link(x.instagram)}" target="_blank" rel="noopener">${ICON.ig}${esc(o.instagramLabel)}</a>` : ''}</div>`;
-      return `<section class="sec paperbg couple" style="background-image:${cssUrl(o.bg)}"><div class="cpanel">${p(o.groom)}<div class="rv amp">${esc(o.connector)}</div>${p(o.bride)}</div></section>`;
+      const p = (x) => `<div class="person"><div class="pho-w"><div class="rv pho" data-a="zoom-in" style="--i:2">${img(x.photo, x.fullName)}</div>${safeUrl(o.flower) ? `<img class="rv fl-acc" data-a="bloom" style="--i:4" src="${link(o.flower)}" alt="">` : ''}</div>
+        <div class="rv script" data-a="soft" style="--i:6">${esc(x.script)}</div><div class="rv fn" data-a="soft" style="--i:7">${esc(x.fullName)}</div><div class="rv par" data-a="soft" style="--i:8">${esc(x.parents)}</div>${safeUrl(x.instagram) ? `<a class="rv btn pill" data-a="soft" style="--i:9" href="${link(x.instagram)}" target="_blank" rel="noopener">${ICON.ig}${esc(o.instagramLabel)}</a>` : ''}</div>`;
+      return `<section class="sec paperbg couple" style="background-image:${cssUrl(o.bg)}"><div class="rv cpanel" data-a="soft" style="--i:0">${p(o.groom)}<div class="rv amp" data-a="zoom-in" style="--i:2">${esc(o.connector)}</div>${p(o.bride)}</div></section>`;
     },
     events(c) {
       const o = c.events, orn = safeUrl(c.scene.ornament);
@@ -151,15 +153,16 @@
         <a class="rv btn sq dark up" href="${link(o.url)}" target="_blank" rel="noopener">${ICON.cam}${esc(o.button)}</a></div></section>`;
     },
     gallery(c) {
-      const o = c.gallery;
-      return `<section class="sec paperbg gallery" style="background-image:${cssUrl(c.scene.paper)}"><h2 class="rv h-display">${esc(o.title)}</h2>
+      const o = c.gallery, s = c.scene;
+      const edge = (pos, src) => `<div class="edge ${pos}"><div class="half l rv" data-a="bloom-l" style="--i:0">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:1">${img(src)}</div></div>`;
+      return `<section class="sec paperbg gallery" style="background-image:${cssUrl(s.paper)}">${edge('top', s.floralTop)}${edge('bottom', s.floralBottom)}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
         ${videoEmbed(o.video)}
         <div class="grid">${(o.items || []).map((g, i) => `<div class="rv gi" data-i="${i}" data-a="zoom-in" style="--i:${i % 3}">${img(g.image)}</div>`).join('')}</div></section>`;
     },
     story(c) {
       const o = c.story, bg = safeUrl(o.bg) ? o.bg : c.scene.sky;
       return `<section class="sec story" style="background-image:${cssUrl(bg)}"><h2 class="rv script-h">${esc(o.title)}</h2>
-        <div class="tl">${(o.items || []).map((s) => `<div class="rv card" data-a="fade-left"><span class="mk">${ICON.heart}</span><div class="im">${img(s.image, s.title)}</div><div class="tx"><h4>${esc(s.title)}</h4><p>${br(s.text)}</p></div></div>`).join('')}</div>
+        <div class="tl">${(o.items || []).map((s) => `<div class="rv card" data-a="soft"><span class="mk">${ICON.heart}</span><div class="im">${img(s.image, s.title)}</div><div class="tx"><h4>${esc(s.title)}</h4><p>${br(s.text)}</p></div></div>`).join('')}</div>
         <div class="fl">${img(c.scene.floralBottom)}</div></section>`;
     },
     gift(c) {
@@ -167,8 +170,8 @@
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
       const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank"><div>${esc(b.bank)}</div><div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
       const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}">${esc(o.copyAddress)} ${ICON.copy}</button></div>` : '';
-      const main = `<div class="rv cap rosecap"><div class="cap-in gf"><h3 class="gt"><span class="s">${esc(t1)}</span><span class="d">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}</div></div>`;
-      const form = o.formEnabled ? `<div class="rv cap rosecap"><div class="cap-in gf"><h3 class="gt"><span class="s">${esc(f1)}</span><span class="d">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
+      const main = `<div class="rv cap rosecap"><div class="cap-in gf"><h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}</div></div>`;
+      const form = o.formEnabled ? `<div class="rv cap rosecap"><div class="cap-in gf"><h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
         <form class="fm" id="giftForm"><label>Nama :</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Nama Bank :</label><input name="bank" maxlength="60" placeholder="Nama Bank"><label>Nominal :</label><input name="amount" maxlength="40" inputmode="numeric" placeholder="Nominal"><label>Ucapan :</label><input name="message" maxlength="500" placeholder="Ucapan"><label>Bukti TF :</label><input type="file" name="proof" accept="image/png,image/jpeg,image/webp"><button class="btn sq full" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.formButton)}</button><div class="msg" id="giftMsg"></div></form></div></div>` : '';
       return `<section class="sec bgi gift" style="background-image:${cssUrl(o.bg)}">${main}${form}</section>`;
     },
@@ -192,18 +195,20 @@
     },
     closing(c) {
       const o = c.closing, s = c.scene;
-      return `<section class="sec closing"><div class="stage"><div class="sk" style="background-image:${cssUrl(s.sky)}"></div><div class="panel"></div>
-        <div class="ft sway-t">${img(s.floralTop)}</div><div class="fb sway-b">${img(s.floralBottom)}</div>
-        <div class="cl-in"><div class="rv cpho">${img(o.photo)}</div><div class="rv kick">${esc(o.kicker)}</div><div class="rv names">${esc(o.names)}</div><p class="rv txt">${br(o.text)}</p></div></div>
+      const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${img(src)}</div>`;
+      return `<section class="sec closing"><div class="stage"><div class="sk" style="background-image:${cssUrl(s.sky)}"></div>
+        <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
+        <div class="rv panel" data-a="soft" style="--i:5"></div>
+        <div class="cl-in"><div class="rv cpho" data-a="zoom-in" style="--i:8">${img(o.photo)}</div><div class="rv kick" data-a="soft" style="--i:10">${esc(o.kicker)}</div><div class="rv names" data-a="soft" style="--i:11">${esc(o.names)}</div><p class="rv txt" data-a="soft" style="--i:12">${br(o.text)}</p></div></div>
         <div class="footer">${safeUrl(o.footerUrl) ? `<a href="${link(o.footerUrl)}" target="_blank" rel="noopener">${esc(o.footer)}</a>` : esc(o.footer)}</div></section>`;
     },
   };
 
   function videoEmbed(u) {
     u = String(u || '').trim(); if (!u) return '';
-    const m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/.exec(u);
-    if (m) return `<div class="rv vid"><iframe src="https://www.youtube.com/embed/${m[1]}" allow="accelerometer;encrypted-media;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
-    if (/\.(mp4|webm)(\?|$)/i.test(u) && safeUrl(u)) return `<div class="rv vid"><video src="${link(u)}" controls playsinline></video></div>`;
+    const m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{6,})/.exec(u);
+    if (m) return `<div class="rv vid" data-a="soft" data-yt="${m[1]}"></div>`;
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(u) && safeUrl(u)) return `<div class="rv vid" data-a="soft"><video src="${link(u)}" muted loop playsinline controls preload="metadata"></video></div>`;
     return '';
   }
 
@@ -216,7 +221,7 @@
       $$('.rv', sec).forEach((el, i) => { if (!el.dataset.a) el.dataset.a = anim; if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', Math.min(i, 5)); });
     });
     // cover
-    $('#coverRoot').innerHTML = `<div class="cover" id="cover">${scene(c)}
+    $('#coverRoot').innerHTML = `<div class="cover" id="cover">${heroScene(c)}
       <div class="cover-arch"><div class="cp">${img(c.cover.photo)}</div>
       <div class="ttl"><div class="k">${esc(c.cover.kicker)}</div><div class="n">${esc(c.cover.names)}</div></div>
       <div class="guest"><div class="to">${esc(c.cover.toLabel)}</div><div class="g">${esc(guest || c.cover.defaultGuest)}</div><div class="pl">${esc(c.cover.placeText)}</div>
@@ -244,9 +249,45 @@
     setTimeout(finish, 1500);
   }
 
+  let cdsRun = null;
+  function vidCtl(el, on) {
+    const yt = el.dataset.yt;
+    if (yt) {
+      let f = $('iframe', el);
+      if (!f) {
+        if (!on) return;
+        f = document.createElement('iframe');
+        f.allow = 'autoplay;accelerometer;encrypted-media;picture-in-picture;fullscreen'; f.allowFullscreen = true; f.title = 'Video';
+        f.src = `https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
+        el.appendChild(f); return;
+      }
+      try { f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: on ? 'playVideo' : 'pauseVideo', args: [] }), '*'); } catch (e) { /* abaikan */ }
+      return;
+    }
+    const v = $('video', el); if (!v) return;
+    if (on) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
+  }
   function startObserver() {
-    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-    $$('.rv').forEach((el) => io.observe(el));
+    // elemen yang digeser keluar layar (bunga) tidak bisa dideteksi sendiri -> amati wadah induknya
+    const groups = new Map();
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      const on = e.isIntersecting;
+      (groups.get(e.target) || []).forEach((t) => {
+        t.classList.toggle('in', on);
+        if (on && t.id === 'cds' && cdsRun) cdsRun();
+        if (t.classList.contains('vid')) vidCtl(t, on);
+      });
+    }), { threshold: 0.14, rootMargin: '0px 0px -4% 0px' });
+    $$('.rv').forEach((el) => {
+      const tgt = /^bloom/.test(el.dataset.a || '') && el.parentElement ? el.parentElement : el;
+      if (!groups.has(tgt)) { groups.set(tgt, []); io.observe(tgt); }
+      groups.get(tgt).push(el);
+    });
+    // hero: bunga masuk lagi setiap kali kembali ke atas
+    const hero = $('#s-hero');
+    if (hero) new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { hero.classList.remove('pre'); hero.classList.add('play'); } else { hero.classList.remove('play'); hero.classList.add('pre'); }
+    }), { threshold: 0.45 }).observe(hero);
   }
 
   function parallax() {
@@ -325,6 +366,14 @@
     document.addEventListener('visibilitychange', () => { if (document.hidden) au.pause(); else if (btn.classList.contains('on')) au.play().catch(() => {}); });
   }
 
+  function popup(title, text) {
+    const old = $('#pop'); if (old) old.remove();
+    const d = document.createElement('div'); d.id = 'pop'; d.className = 'pop';
+    d.innerHTML = `<div class="pop-card"><div class="pop-ic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>${esc(title)}</h3><p>${br(text)}</p><div class="pop-names">${esc(C.cover.names)}</div><button type="button" class="pop-x">Tutup</button></div>`;
+    document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('show'));
+    const close = () => { d.classList.remove('show'); setTimeout(() => d.remove(), 350); };
+    d.addEventListener('click', (e) => { if (e.target === d || e.target.classList.contains('pop-x')) close(); });
+  }
   function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800); }
 
   // ---------- interaksi ----------
@@ -333,10 +382,18 @@
     const target = new Date(c.general.eventDate).getTime();
     const box = $('#cds');
     if (box && !isNaN(target)) {
-      const last = {};
-      const upd = () => {
-        let d = Math.max(0, target - Date.now()); const v = { d: Math.floor(d / 864e5), h: Math.floor(d / 36e5) % 24, m: Math.floor(d / 6e4) % 60, s: Math.floor(d / 1e3) % 60 };
-        for (const k in v) { const el = $(`[data-k=${k}]`, box); const t = k === 'd' ? String(v[k]) : pad(v[k]); if (last[k] !== t) { el.textContent = t; if (last[k] !== undefined) { el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); } last[k] = t; } }
+      const last = {}; let counting = false;
+      const calc = () => { const d = Math.max(0, target - Date.now()); return { d: Math.floor(d / 864e5), h: Math.floor(d / 36e5) % 24, m: Math.floor(d / 6e4) % 60, s: Math.floor(d / 1e3) % 60 }; };
+      const put = (k, n, tick) => { const el = $(`[data-k=${k}]`, box); const t = k === 'd' ? String(n) : pad(n); if (last[k] !== t) { el.textContent = t; if (tick && last[k] !== undefined) { el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); } last[k] = t; } };
+      const upd = () => { if (counting) return; const v = calc(); for (const k in v) put(k, v[k], true); };
+      cdsRun = () => { // hitung naik cepat dari 0 sampai nilai sebenarnya
+        counting = true; const t0 = performance.now(), D = 1700;
+        const step = (now) => {
+          const p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - p, 3), v = calc();
+          for (const k in v) put(k, Math.round(v[k] * e), false);
+          if (p < 1) requestAnimationFrame(step); else { counting = false; upd(); }
+        };
+        requestAnimationFrame(step);
       };
       upd(); setInterval(upd, 1000);
     }
@@ -376,7 +433,7 @@
         const body = { name: rf.name.value, status: rf.status.value, count: rf.count.value };
         const r = await post('/api/rsvp', body);
         if (r.ok) {
-          m.className = 'msg ok'; m.textContent = c.rsvp.thanks; loadWishes(true);
+          m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + body.name + '!', c.rsvp.thanks); loadWishes(true);
           const wa = String(c.general.whatsapp || '').replace(/\D/g, '');
           if (c.rsvp.sendWhatsapp && wa) { const st = { hadir: `akan hadir (${body.count} orang)`, tidak: 'tidak dapat hadir', ragu: 'masih ragu untuk hadir' }[body.status]; window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo, saya ${body.name} ${st} di acara pernikahan ${c.general.calendarTitle || ''}.`)}`, '_blank'); }
         } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
@@ -390,7 +447,7 @@
       if (f) { if (f.size > 2.5e6) { m.className = 'msg err'; m.textContent = 'Bukti maksimal 2,5MB'; return; } proofData = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(f); }); }
       const r = await post('/api/gift', { name: gf.name.value, bank: gf.bank.value, amount: gf.amount.value, message: gf.message.value, proofData });
       if (r.ok) {
-        m.className = 'msg ok'; m.textContent = 'Terima kasih, konfirmasi gift diterima 🙏';
+        m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + gf.name.value + '!', 'Konfirmasi gift Anda telah kami terima.');
         const wa = String(c.general.whatsapp || '').replace(/\D/g, '');
         if (c.gift.sendWhatsapp && wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo, saya ${gf.name.value} sudah mengirim gift${gf.amount.value ? ' sebesar ' + gf.amount.value : ''}${gf.bank.value ? ' via ' + gf.bank.value : ''}. ${gf.message.value || ''}`.trim())}`, '_blank');
         gf.reset();
@@ -402,7 +459,7 @@
       wf.addEventListener('submit', async (e) => {
         e.preventDefault(); const m = $('#wishMsg'); m.className = 'msg'; m.textContent = 'Mengirim…';
         const r = await post('/api/wishes', { name: wf.name.value, message: wf.message.value });
-        if (r.ok) { m.className = 'msg ok'; m.textContent = 'Terima kasih atas ucapannya 💌'; wf.message.value = ''; loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
+        if (r.ok) { m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
       });
       $('#wishMore').onclick = () => loadWishes(false);
       loadWishes(true);
