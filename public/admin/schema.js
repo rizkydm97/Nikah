@@ -57,7 +57,7 @@ const SCHEMA = [
     { k: 'scene.butterflyColor2', l: 'Warna sayap kupu-kupu 2', t: 'color' },
   ] },
   { id: 'cover', title: 'Cover (Sampul Undangan)', fields: [
-    { k: 'cover.photo', l: 'Foto cover', t: 'image' }, { k: 'cover.kicker', l: 'Teks kecil atas', t: 'text' },
+    { k: 'cover.photo', l: 'Foto cover', t: 'image' }, { k: 'cover.bg', l: 'Latar cover satu gambar penuh (opsional — mis. bingkai bunga utuh; kosongkan untuk pakai bunga atas/bawah di Adegan)', t: 'image' }, { k: 'cover.kicker', l: 'Teks kecil atas', t: 'text' },
     { k: 'cover.names', l: 'Nama mempelai di cover', t: 'text' }, { k: 'cover.toLabel', l: 'Label "Kepada"', t: 'text' },
     { k: 'cover.defaultGuest', l: 'Nama tamu bila link tanpa ?to=', t: 'text' }, { k: 'cover.placeText', l: 'Teks tempat', t: 'text' },
     { k: 'cover.button', l: 'Teks tombol buka', t: 'text' },
@@ -72,7 +72,7 @@ const SCHEMA = [
     { k: 'quote.labels.minutes', l: 'Label menit', t: 'text' }, { k: 'quote.labels.seconds', l: 'Label detik', t: 'text' },
     { k: 'quote.saveButton', l: 'Teks tombol Save The Date', t: 'text' },
   ] },
-  { id: 'greeting', title: 'Sambutan', fields: [{ k: 'greeting.text', l: 'Teks sambutan', t: 'area' }, { k: 'greeting.photo', l: 'Foto bulat (opsional — kosongkan untuk menyembunyikan)', t: 'image' }] },
+  { id: 'greeting', title: 'Sambutan', fields: [{ k: 'greeting.text', l: 'Teks sambutan', t: 'area' }, { k: 'greeting.bg', l: 'Foto latar (kosongkan untuk pakai latar Mempelai)', t: 'image' }, { k: 'greeting.photo', l: 'Foto bulat (opsional — kosongkan untuk menyembunyikan)', t: 'image' }] },
   { id: 'couple', title: 'Mempelai', fields: [
     { k: 'couple.bg', l: 'Latar section', t: 'image' }, { k: 'couple.flower', l: 'Buket bunga di sudut foto (PNG transparan)', t: 'image' }, { k: 'couple.connector', l: 'Simbol penghubung', t: 'text' }, { k: 'couple.instagramLabel', l: 'Label tombol Instagram', t: 'text' },
     { k: 'couple.groom.photo', l: 'Pria — foto', t: 'image' }, { k: 'couple.groom.script', l: 'Pria — nama panggilan (tulisan tangan)', t: 'text' },
@@ -91,7 +91,7 @@ const SCHEMA = [
     { k: 'live.button', l: 'Teks tombol', t: 'text' }, { k: 'live.url', l: 'Link live (YouTube/Instagram/Zoom)', t: 'url' },
   ] },
   { id: 'gallery', title: 'Galeri', fields: [
-    { k: 'gallery.title', l: 'Judul', t: 'text' }, { k: 'gallery.video', l: 'Video galeri — tempel link YouTube / URL .mp4, atau unggah video (autoplay tanpa suara, opsional)', t: 'video' },
+    { k: 'gallery.title', l: 'Judul', t: 'text' }, { k: 'gallery.bg', l: 'Foto latar (kosongkan untuk pakai tekstur kertas bawaan)', t: 'image' }, { k: 'gallery.video', l: 'Video galeri — tempel link YouTube / URL .mp4, atau unggah video (autoplay tanpa suara, opsional)', t: 'video' },
     { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image' }] },
   ] },
   { id: 'story', title: 'Love Story', fields: [
@@ -113,7 +113,7 @@ const SCHEMA = [
     { k: 'wishes.bg', l: 'Foto latar', t: 'image' }, { k: 'wishes.title', l: 'Judul (kosongkan untuk menyembunyikan)', t: 'text' }, { k: 'wishes.text', l: 'Teks', t: 'area' }, { k: 'wishes.button', l: 'Teks tombol', t: 'text' },
   ] },
   { id: 'closing', title: 'Penutup', fields: [
-    { k: 'closing.photo', l: 'Foto', t: 'image' }, { k: 'closing.kicker', l: 'Teks kecil', t: 'text' }, { k: 'closing.names', l: 'Nama mempelai', t: 'text' },
+    { k: 'closing.photo', l: 'Foto', t: 'image' }, { k: 'closing.bg', l: 'Foto latar (kosongkan untuk pakai langit bawaan)', t: 'image' }, { k: 'closing.kicker', l: 'Teks kecil', t: 'text' }, { k: 'closing.names', l: 'Nama mempelai', t: 'text' },
     { k: 'closing.text', l: 'Teks penutup', t: 'area' }, { k: 'closing.footer', l: 'Teks footer', t: 'text' }, { k: 'closing.footerUrl', l: 'Link footer (opsional)', t: 'url' },
   ] },
 ];

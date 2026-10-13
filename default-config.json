@@ -51,6 +51,7 @@
   },
   "cover": {
     "photo": "/assets/default/cover-photo.svg",
+    "bg": "",
     "kicker": "The Wedding Of",
     "names": "Fiktor & Stella",
     "toLabel": "Kepada Bapak/Ibu/Saudara/i",
@@ -78,6 +79,7 @@
     "saveButton": "Save The Date"
   },
   "greeting": {
+    "bg": "",
     "text": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu. Atas kehadiran dan doa restunya kami ucapkan terima kasih.",
     "photo": ""
   },
@@ -133,6 +135,7 @@
     "url": "https://instagram.com/galeriundangan_official"
   },
   "gallery": {
+    "bg": "",
     "title": "Our Gallery",
     "video": "",
     "items": [
@@ -230,6 +233,7 @@
     "bg": "/assets/default/couple-wide.svg"
   },
   "closing": {
+    "bg": "",
     "photo": "/assets/default/closing.svg",
     "kicker": "Terima Kasih",
     "names": "Robert & Cristine",

@@ -78,16 +78,18 @@
   function pickFile(accept, multiple) {
     return new Promise((res) => { const i = h('input', { type: 'file', accept, multiple: multiple || null }); i.onchange = () => res([...i.files]); i.click(); });
   }
+  // Kecilkan foto besar. PNG/gambar transparan -> WebP (transparansi tetap, ukuran jauh lebih kecil)
   async function shrink(file) {
-    if (!/^image\/(jpeg|webp)$/.test(file.type) && !(file.type === 'image/png' && file.size > 2.5e6)) return file;
-    if (file.size < 900e3) return file;
+    if (!/^image\/(jpeg|webp|png)$/.test(file.type) || file.size < 700e3) return file;
     try {
-      const bmp = await createImageBitmap(file); const max = 1800; const sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      const bmp = await createImageBitmap(file); const max = 2000; const sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
       const c = document.createElement('canvas'); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
       c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
-      const keepPng = file.type === 'image/png';
-      const blob = await new Promise((r) => c.toBlob(r, keepPng ? 'image/png' : 'image/jpeg', 0.86));
-      return blob && blob.size < file.size ? new File([blob], file.name.replace(/\.\w+$/, keepPng ? '.png' : '.jpg'), { type: blob.type }) : file;
+      const isPng = file.type === 'image/png';
+      const mime = isPng ? 'image/webp' : 'image/jpeg', ext = isPng ? '.webp' : '.jpg';
+      const blob = await new Promise((r) => c.toBlob(r, mime, 0.88));
+      if (!blob || blob.type !== mime || blob.size >= file.size) return file;
+      return new File([blob], file.name.replace(/\.\w+$/, ext), { type: mime });
     } catch { return file; }
   }
   async function upload(file) {
@@ -95,14 +97,14 @@
     if (f.size <= 3.8e6) { // file kecil: lewat server (paling andal)
       const r = await fetch('/api/admin/upload?name=' + encodeURIComponent(f.name), { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: f, credentials: 'same-origin' });
       const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.error || 'Upload gagal (' + r.status + ')');
+      if (!r.ok) throw new Error(d.error || (r.status === 401 ? 'Sesi login habis — muat ulang halaman admin lalu login lagi' : r.status === 413 ? 'File terlalu besar (maks ±4MB lewat jalur ini)' : 'Upload gagal (' + r.status + ')'));
       return d.url;
     }
     // file besar (musik/video): langsung ke Supabase lewat URL bertanda tangan
     const d = await api('/api/admin/upload-url?name=' + encodeURIComponent(f.name), { method: 'POST' });
     const fd = new FormData(); fd.append('cacheControl', '31536000'); fd.append('', f);
     const r = await fetch(d.uploadUrl, { method: 'PUT', body: fd });
-    if (!r.ok) throw new Error('Upload gagal (' + r.status + ')');
+    if (!r.ok) throw new Error('Upload ke Supabase gagal (' + r.status + '). Cek bucket "uploads" & batas ukuran file di Supabase.');
     return d.url;
   }
   async function openLibrary(filter) {

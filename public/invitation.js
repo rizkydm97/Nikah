@@ -5,7 +5,7 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const br = (s) => esc(s).replace(/\n/g, '<br>');
   const safeUrl = (u) => { u = String(u || '').trim(); return /^(https?:\/\/|\/(?!\/)|tel:|mailto:)/i.test(u) ? u : ''; };
-  const cssUrl = (u) => { u = safeUrl(u); return u ? `url("${u.replace(/["\\\n\r]/g, '')}")` : 'none'; };
+  const cssUrl = (u) => { u = safeUrl(u); return u ? `url('${u.replace(/['"\\\n\r]/g, '')}')` : 'none'; };
   const q = new URLSearchParams(location.search);
   const guest = (q.get('to') || '').trim().slice(0, 80);
   const SPEED = { slow: 1.6, normal: 1, fast: 0.6 };
@@ -107,6 +107,11 @@
     </div>`;
   }
 
+  // cover dengan satu gambar latar penuh (mis. bingkai bunga utuh dari template)
+  function coverBgScene(c) {
+    return `<div class="scene fullbg"><div class="ly sky" style="background-image:${cssUrl(c.cover.bg)}"></div><div class="flyers"></div></div>`;
+  }
+
   // ---------- render section ----------
   const splitTitle = (t) => { t = String(t || '').trim(); const i = t.indexOf(' '); return i < 0 ? [t, ''] : [t.slice(0, i), t.slice(i + 1)]; };
   const hasWA = (c) => !!String(c.general.whatsapp || '').replace(/\D/g, '');
@@ -130,7 +135,7 @@
     },
     greeting(c) {
       const o = c.greeting;
-      return `<section class="sec paperbg greeting" style="background-image:${cssUrl(c.couple.bg)}">
+      return `<section class="sec paperbg greeting" style="background-image:${cssUrl(safeUrl(o.bg) ? o.bg : c.couple.bg)}">
         <div class="rv gpanel"><p>${br(o.text)}</p>${safeUrl(o.photo) ? `<div class="circ">${img(o.photo)}</div>` : ''}</div></section>`;
     },
     couple(c) {
@@ -155,7 +160,7 @@
     gallery(c) {
       const o = c.gallery, s = c.scene;
       const edge = (pos, src) => `<div class="edge ${pos}"><div class="half l rv" data-a="bloom-l" style="--i:0">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:1">${img(src)}</div></div>`;
-      return `<section class="sec paperbg gallery" style="background-image:${cssUrl(s.paper)}">${edge('top', s.floralTop)}${edge('bottom', s.floralBottom)}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
+      return `<section class="sec paperbg gallery" style="background-image:${cssUrl(safeUrl(o.bg) ? o.bg : s.paper)}">${edge('top', s.floralTop)}${edge('bottom', s.floralBottom)}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
         ${videoEmbed(o.video)}
         <div class="grid">${(o.items || []).map((g, i) => `<div class="rv gi" data-i="${i}" data-a="zoom-in" style="--i:${i % 3}">${img(g.image)}</div>`).join('')}</div></section>`;
     },
@@ -196,7 +201,7 @@
     closing(c) {
       const o = c.closing, s = c.scene;
       const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${img(src)}</div>`;
-      return `<section class="sec closing"><div class="stage"><div class="sk" style="background-image:${cssUrl(s.sky)}"></div>
+      return `<section class="sec closing"><div class="stage"><div class="sk" style="background-image:${cssUrl(safeUrl(o.bg) ? o.bg : s.sky)}"></div>
         <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
         <div class="rv panel" data-a="soft" style="--i:5"></div>
         <div class="cl-in"><div class="rv cpho" data-a="zoom-in" style="--i:8">${img(o.photo)}</div><div class="rv kick" data-a="soft" style="--i:10">${esc(o.kicker)}</div><div class="rv names" data-a="soft" style="--i:11">${esc(o.names)}</div><p class="rv txt" data-a="soft" style="--i:12">${br(o.text)}</p></div></div>
@@ -204,11 +209,13 @@
     },
   };
 
+  const MUTE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><path class="x" d="M23 9l-6 6M17 9l6 6"/><path class="w" d="M15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>';
   function videoEmbed(u) {
     u = String(u || '').trim(); if (!u) return '';
+    const btn = `<button type="button" class="vmute" aria-label="Suara video">${MUTE_ICON}</button>`;
     const m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]{6,})/.exec(u);
-    if (m) return `<div class="rv vid" data-a="soft" data-yt="${m[1]}"></div>`;
-    if (/\.(mp4|webm|mov)(\?|$)/i.test(u) && safeUrl(u)) return `<div class="rv vid" data-a="soft"><video src="${link(u)}" muted loop playsinline controls preload="metadata"></video></div>`;
+    if (m) return `<div class="rv vid clean" data-a="soft" data-yt="${m[1]}"><div class="vcurtain"></div><div class="vshield"></div>${btn}</div>`;
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(u) && safeUrl(u)) return `<div class="rv vid clean" data-a="soft"><video src="${link(u)}" muted loop playsinline autoplay disablepictureinpicture disableremoteplayback preload="auto"></video><div class="vshield"></div>${btn}</div>`;
     return '';
   }
 
@@ -221,9 +228,9 @@
       $$('.rv', sec).forEach((el, i) => { if (!el.dataset.a) el.dataset.a = anim; if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', Math.min(i, 5)); });
     });
     // cover
-    $('#coverRoot').innerHTML = `<div class="cover" id="cover">${heroScene(c)}
-      <div class="cover-arch"><div class="cp">${img(c.cover.photo)}</div>
-      <div class="ttl"><div class="k">${esc(c.cover.kicker)}</div><div class="n">${esc(c.cover.names)}</div></div>
+    $('#coverRoot').innerHTML = `<div class="cover" id="cover">${c.cover.bg ? coverBgScene(c) : heroScene(c)}
+      <div class="cover-arch"><div class="cbox"><div class="cp">${img(c.cover.photo)}</div>
+      <div class="ttl"><div class="k">${esc(c.cover.kicker)}</div><div class="n">${esc(c.cover.names)}</div></div></div>
       <div class="guest"><div class="to">${esc(c.cover.toLabel)}</div><div class="g">${esc(guest || c.cover.defaultGuest)}</div><div class="pl">${esc(c.cover.placeText)}</div>
       <button class="btn sq" id="openBtn">${ICON.mail}${esc(c.cover.button)}</button></div></div></div>`;
     $('#openBtn').addEventListener('click', () => openInvitation(false));
@@ -257,9 +264,11 @@
       if (!f) {
         if (!on) return;
         f = document.createElement('iframe');
-        f.allow = 'autoplay;accelerometer;encrypted-media;picture-in-picture;fullscreen'; f.allowFullscreen = true; f.title = 'Video';
-        f.src = `https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`;
-        el.appendChild(f); return;
+        f.allow = 'autoplay;encrypted-media'; f.title = 'Video'; f.setAttribute('tabindex', '-1');
+        f.src = `https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&playsinline=1&controls=0&disablekb=1&fs=0&rel=0&iv_load_policy=3&cc_load_policy=0&modestbranding=1&enablejsapi=1`;
+        el.insertBefore(f, el.firstChild);
+        const cu = $('.vcurtain', el); if (cu) setTimeout(() => cu.classList.add('off'), 4200);
+        return;
       }
       try { f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: on ? 'playVideo' : 'pauseVideo', args: [] }), '*'); } catch (e) { /* abaikan */ }
       return;
@@ -267,7 +276,20 @@
     const v = $('video', el); if (!v) return;
     if (on) { v.muted = true; const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
   }
+  // tombol suara video: nyalakan/matikan suara (musik latar dijeda saat video bersuara)
+  function bindVideoMute() {
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest && e.target.closest('.vmute'); if (!b) return;
+      const el = b.closest('.vid'), unmute = !b.classList.contains('on');
+      b.classList.toggle('on', unmute);
+      const yf = $('iframe', el), v = $('video', el);
+      if (yf) { try { yf.contentWindow.postMessage(JSON.stringify({ event: 'command', func: unmute ? 'unMute' : 'mute', args: [] }), '*'); if (unmute) yf.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [100] }), '*'); } catch (x) { /* abaikan */ } }
+      if (v) { v.muted = !unmute; if (unmute) v.play().catch(() => {}); }
+      const mb = $('#musicBtn'); if (unmute && mb && mb.classList.contains('on')) { mb.click(); el.dataset.pausedBgm = '1'; } else if (!unmute && el.dataset.pausedBgm && mb && !mb.classList.contains('on')) { mb.click(); delete el.dataset.pausedBgm; }
+    });
+  }
   function startObserver() {
+    if (!window.__vm) { window.__vm = 1; bindVideoMute(); }
     // elemen yang digeser keluar layar (bunga) tidak bisa dideteksi sendiri -> amati wadah induknya
     const groups = new Map();
     const io = new IntersectionObserver((es) => es.forEach((e) => {
