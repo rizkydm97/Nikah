@@ -25,7 +25,9 @@
     "fontBody": "Cormorant Garamond",
     "fontScript": "Allura",
     "colWidth": 480,
-    "rose": "#A82840"
+    "rose": "#A82840",
+    "preset": "jawa",
+    "palette": "auto"
   },
   "effects": {
     "animSpeed": "normal",
@@ -311,5 +313,20 @@
       "enabled": true,
       "anim": "soft"
     }
-  ]
+  ],
+  "scene2": {
+    "sky": "/assets/rose/rose-sky.jpg",
+    "house": "/assets/rose/rose-pavilion.svg",
+    "curtain": "/assets/rose/rose-curtain.svg",
+    "treeline": "/assets/rose/rose-trees.webp",
+    "tree": "",
+    "column": "/assets/rose/rose-column.webp",
+    "floralTop": "/assets/rose/rose-top.webp",
+    "floralBottom": "/assets/rose/rose-bottom.webp",
+    "frameArc": "/assets/rose/rose-frame-arc.webp",
+    "frameSide": "/assets/rose/rose-frame-side.webp",
+    "flowers": "/assets/rose/rose-bouquet.webp",
+    "butterflyColor1": "#FFFFFF",
+    "butterflyColor2": "#F6D3DA"
+  }
 }
