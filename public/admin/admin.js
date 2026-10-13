@@ -18,10 +18,14 @@
     return e;
   }
   const api = async (url, opt = {}) => {
-    const r = await fetch(url, { credentials: 'same-origin', ...opt });
+    const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), opt.timeout || 20000);
+    let r;
+    try { r = await fetch(url, { credentials: 'same-origin', ...opt, signal: ctl.signal }); }
+    catch (e) { throw new Error(e.name === 'AbortError' ? 'Server terlalu lama merespons (' + url + ')' : 'Tidak dapat terhubung ke server (' + url + ')'); }
+    finally { clearTimeout(tm); }
     let d = null; try { d = await r.json(); } catch { /* bukan JSON */ }
-    if (r.status === 401 && !url.includes('/login')) { showLogin(); throw new Error('Sesi berakhir'); }
-    if (!r.ok) throw new Error((d && d.error) || 'Terjadi kesalahan');
+    if (r.status === 401 && !url.includes('/login')) { showLogin(); throw Object.assign(new Error('Sesi berakhir'), { auth: true }); }
+    if (!r.ok) throw new Error((d && d.error) || ('Server membalas ' + r.status + (d ? '' : ' (bukan JSON — rute API mungkin tidak terpasang)') + ' • ' + url));
     return d;
   };
   let toastT;
@@ -54,7 +58,7 @@
   addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
 
   // ---------- login ----------
-  function showLogin() { $('#app').hidden = true; $('#login').hidden = false; }
+  function showLogin() { $('#boot').hidden = true; $('#app').hidden = true; $('#login').hidden = false; setTimeout(() => { const p = $('#pw'); if (p) p.focus(); }, 50); }
   $('#loginForm').addEventListener('submit', async (e) => {
     e.preventDefault(); $('#loginErr').textContent = '';
     try { const r = await api('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value }) }); defaultPw = r.defaultPassword; $('#pw').value = ''; boot(); }
@@ -88,10 +92,17 @@
   }
   async function upload(file) {
     const f = await shrink(file);
+    if (f.size <= 3.8e6) { // file kecil: lewat server (paling andal)
+      const r = await fetch('/api/admin/upload?name=' + encodeURIComponent(f.name), { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: f, credentials: 'same-origin' });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Upload gagal (' + r.status + ')');
+      return d.url;
+    }
+    // file besar (musik/video): langsung ke Supabase lewat URL bertanda tangan
     const d = await api('/api/admin/upload-url?name=' + encodeURIComponent(f.name), { method: 'POST' });
     const fd = new FormData(); fd.append('cacheControl', '31536000'); fd.append('', f);
     const r = await fetch(d.uploadUrl, { method: 'PUT', body: fd });
-    if (!r.ok) throw new Error('Upload gagal');
+    if (!r.ok) throw new Error('Upload gagal (' + r.status + ')');
     return d.url;
   }
   async function openLibrary(filter) {
@@ -137,7 +148,7 @@
       const paint = () => { if (th) th.style.backgroundImage = get() ? `url("${String(get()).replace(/"/g, '')}")` : 'none'; if (au) { au.hidden = !get(); if (get()) au.src = get(); } };
       const apply = (u) => { tx.value = u; set(u); paint(); };
       const btns = h('div', { class: 'acts' },
-        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isImg ? 'image/*' : 'audio/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
+        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isImg ? 'image/*' : 'audio/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
         h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isImg ? 'image' : 'audio'); if (u) apply(u); } }, 'Pustaka'),
         defVal !== undefined ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply(defVal) }, 'Default') : null,
         !isImg ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
@@ -271,10 +282,14 @@
 
   function securityView() {
     const m = h('div', {}, h('h2', {}, 'Keamanan & Cadangan'));
-    if (defaultPw) m.append(h('div', { class: 'warn' }, '⚠ Anda masih memakai password bawaan (admin123). Segera ganti di bawah.'));
-    const cur = h('input', { type: 'password', autocomplete: 'current-password' }), nx = h('input', { type: 'password', autocomplete: 'new-password' });
-    m.append(h('div', { class: 'card' }, h('div', { class: 'fld' }, h('label', {}, 'Password saat ini'), cur), h('div', { class: 'fld' }, h('label', {}, 'Password baru (min. 6 karakter)'), nx),
-      h('button', { class: 'btn pri', onclick: async () => { try { await api('/api/admin/password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ current: cur.value, next: nx.value }) }); defaultPw = false; cur.value = nx.value = ''; toast('Password diganti ✓'); show('security'); } catch (e) { toast(e.message, true); } } }, 'Ganti password')));
+    if (defaultPw) m.append(h('div', { class: 'warn' }, '⚠ Anda masih memakai password bawaan (admin123). Segera ganti lewat Vercel agar tidak mudah ditebak.'));
+    m.append(h('div', { class: 'card' },
+      h('p', { style: 'font-weight:600;margin-bottom:6px' }, 'Cara mengganti password admin'),
+      h('ol', { style: 'padding-left:20px;display:grid;gap:4px' },
+        h('li', {}, 'Buka Vercel → proyek ini → Settings → Environment Variables.'),
+        h('li', {}, 'Isi/ubah variabel ', h('code', {}, 'ADMIN_PASSWORD'), ' dengan password baru.'),
+        h('li', {}, 'Klik Redeploy. Password lama langsung tidak berlaku.')),
+      h('p', { class: 'hint', style: 'margin:10px 0 0' }, 'Password disimpan di Vercel (bukan di database) sehingga tidak bisa bocor dari data undangan.')));
     m.append(h('div', { class: 'card' }, h('p', { class: 'hint' }, 'Cadangan: unduh seluruh konfigurasi isi undangan sebagai file JSON, atau pulihkan dari file cadangan.'),
       h('div', { class: 'row' },
         h('button', { class: 'btn', onclick: () => { const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' })), download: 'undangan-config.json' }); a.click(); } }, '⬇ Unduh konfigurasi'),
@@ -290,7 +305,7 @@
     const add = (id, t) => n.append(h('button', { 'data-id': id, onclick: () => { show(id); n.classList.remove('open'); } }, t));
     n.append(h('h6', {}, 'Isi Undangan')); SCHEMA.slice(0, 4).forEach((g) => add(g.id, g.title)); add('sections', 'Urutan & Animasi Section');
     n.append(h('h6', {}, 'Konten Section')); SCHEMA.slice(4).forEach((g) => add(g.id, g.title));
-    n.append(h('h6', {}, 'Data Tamu')); add('rsvp', 'RSVP / Kehadiran'); add('wishes', 'Ucapan & Doa'); add('gifts', 'Konfirmasi Gift'); add('links', 'Buat Link Tamu');
+    n.append(h('h6', {}, 'Data Tamu')); add('d-rsvp', 'RSVP / Kehadiran'); add('d-wishes', 'Ucapan Tamu'); add('d-gifts', 'Konfirmasi Gift'); add('links', 'Buat Link Tamu');
     n.append(h('h6', {}, 'Lainnya')); add('security', 'Keamanan & Cadangan');
   }
   async function show(id) {
@@ -300,20 +315,26 @@
     const main = $('#main'); main.textContent = 'Memuat…';
     try {
       const g = SCHEMA.find((x) => x.id === id);
-      const v = g ? groupView(g) : id === 'sections' ? sectionsView() : ['rsvp', 'wishes', 'gifts'].includes(id) ? await dataView(id) : id === 'links' ? linksView() : securityView();
+      const v = g ? groupView(g) : id === 'sections' ? sectionsView() : /^d-(rsvp|wishes|gifts)$/.test(id) ? await dataView(id.slice(2)) : id === 'links' ? linksView() : securityView();
       main.textContent = ''; main.append(v); scrollTo(0, 0);
     } catch (e) { main.textContent = e.message; }
   }
 
   async function boot() {
+    $('#boot').hidden = false; $('#bootMsg').textContent = 'Memuat…'; $('#bootMsg').className = '';
     try {
       const me = await api('/api/admin/me'); defaultPw = me.defaultPassword;
       const d = await api('/api/admin/config'); cfg = d.config; defaults = d.defaults;
       SCHEMA.forEach((g) => attachDefaults(g.fields));
       snap = JSON.stringify(cfg);
-      $('#login').hidden = true; $('#app').hidden = false;
+      $('#boot').hidden = true; $('#login').hidden = true; $('#app').hidden = false;
+      window.__adminReady = true;
       buildNav(); show(defaultPw ? 'security' : current); loadPreview();
-    } catch { showLogin(); }
+    } catch (er) {
+      window.__adminReady = true;
+      if (er && er.auth) return; // sudah diarahkan ke form login
+      window.__adminFail('Gagal memuat admin: ' + ((er && er.message) || er));
+    }
   }
   boot();
 })();

@@ -158,6 +158,50 @@ photo('story-3.svg', 600, 700, 355, 'couple');
 for (let i = 1; i <= 9; i++) photo(`gallery-${i}.svg`, 600, i % 3 === 0 ? 800 : i % 2 ? 720 : 760, 335 + i * 6, 'couple');
 photo('closing.svg', 700, 560, 350, 'couple');
 
-// ---------- Ikon joglo kecil (ornamen kartu) ----------
-write('ornament.svg', svg(60, 44, `<path d="M30 3 L40 14 L20 14Z" fill="#c9a24a"/><path d="M22 14 L38 14 L46 23 L14 23Z" fill="#c9a24a"/><path d="M8 23 L52 23 L58 31 L2 31Z" fill="#c9a24a"/><rect x="10" y="31" width="40" height="9" fill="#c9a24a"/>`));
+
+
+// ---------- Ornamen gunungan emas (ikon di atas kartu acara) ----------
+{
+  const g = 'url(#au)';
+  let o = `<path d="M40 4 C46 20 66 28 68 56 C70 80 60 96 40 98 C20 96 10 80 12 56 C14 28 34 20 40 4Z" fill="none" stroke="${g}" stroke-width="2.4"/>`;
+  o += `<path d="M40 12 C44 24 58 32 60 54 C61 74 54 88 40 90 C26 88 19 74 20 54 C22 32 36 24 40 12Z" fill="none" stroke="${g}" stroke-width="1.2" opacity=".8"/>`;
+  o += `<path d="M40 22 V88" stroke="${g}" stroke-width="2"/>`;
+  for (let i = 0; i < 6; i++) { const y = 34 + i * 9, w = 6 + i * 2.2; o += `<path d="M40 ${y} q ${w} -8 ${w + 4} -2 M40 ${y} q ${-w} -8 ${-w - 4} -2" fill="none" stroke="${g}" stroke-width="1.6" stroke-linecap="round"/>`; }
+  o += `<path d="M30 98 V72 q 10 -12 20 0 V98" fill="${g}" opacity=".9"/><path d="M33 98 V74 q 7 -9 14 0 V98" fill="#fff" fill-opacity=".35"/>`;
+  o += `<circle cx="40" cy="8" r="3" fill="${g}"/>`;
+  write('ornament.svg', svg(80, 104, o, `<linearGradient id="au" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8892f"/><stop offset=".5" stop-color="#e7c66f"/><stop offset="1" stop-color="#a97b25"/></linearGradient>`));
+}
+
+// ---------- Bingkai bunga untuk kartu kapsul (diregangkan 100%x100% mengikuti bentuk kapsul) ----------
+{
+  seed = 33;
+  const W = 600, H = 1000, R = W / 2, band = 26;
+  const POS = [];
+  const per = (t) => { // titik di sepanjang keliling kapsul (setengah lingkaran atas + sisi + bawah)
+    const straight = H - W, L = Math.PI * R * 2 + straight * 2; let d = t * L;
+    if (d < Math.PI * R) { const a = Math.PI + d / R; return [R + (R - band) * Math.cos(a), R + (R - band) * Math.sin(a)]; }
+    d -= Math.PI * R; if (d < straight) return [W - band, R + d];
+    d -= straight; if (d < Math.PI * R) { const a = d / R; return [R + (R - band) * Math.cos(a), H - R + (R - band) * Math.sin(a)]; }
+    d -= Math.PI * R; return [band, H - R - d];
+  };
+  const N = 78; for (let i = 0; i < N; i++) POS.push(per(i / N));
+  const sm = (x, y, r, pal) => `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rnd(0, 360))})"><circle r="${f(r)}" fill="${pal[0]}"/>` +
+    [[1, 7, pal[1]], [0.68, 6, pal[2]], [0.4, 5, pal[1]]].map(([k, n, c], ri) => Array.from({ length: n }, (_, i) => `<ellipse cx="0" cy="${f(-r * k * 0.55)}" rx="${f(r * k * 0.42)}" ry="${f(r * k * 0.48)}" transform="rotate(${f((i / n) * 360 + ri * 21)})" fill="${c}"/>`).join('')).join('') + `<circle r="${f(r * 0.12)}" fill="${pal[3]}"/></g>`;
+  let b = `<rect width="${W}" height="${H}" fill="#4f1020"/>`;
+  POS.forEach(([x, y]) => { b += leaf(x + rnd(-14, 14), y + rnd(-14, 14), rnd(38, 60), rnd(0, 360), GREEN[Math.floor(rnd(0, 3))]); });
+  POS.forEach(([x, y], i) => { const k = i % 5; b += sm(x + rnd(-10, 10), y + rnd(-10, 10), rnd(20, 32), k < 2 ? RED : k < 3 ? WINE : PINK); });
+  POS.forEach(([x, y], i) => { if (i % 3 === 0) b += blossom(x + rnd(-18, 18), y + rnd(-18, 18), rnd(9, 13), '#fbeaec', '#d9a0ab'); });
+  write('frame.svg', svg(W, H, b));
+}
+
+// ---------- Buket bunga kecil (menempel di sudut foto mempelai) ----------
+{
+  seed = 52;
+  let b = '';
+  for (let i = 0; i < 4; i++) b += leaf(150 + rnd(-30, 30), 250, rnd(90, 140), rnd(-70, 70), GREEN[Math.floor(rnd(0, 3))]);
+  b += sprig(70, 240, 150, -25);
+  [[120, 170, 40, WINE], [190, 130, 34, RED], [190, 200, 38, PINK], [95, 105, 30, PINK], [150, 235, 30, RED], [60, 190, 26, RED]].forEach(([x, y, r, pal]) => { b += rose(x, y, r, pal); });
+  b += blossom(220, 80, 13, '#fbeaec', '#d9a0ab') + blossom(60, 60, 12, '#fbeaec', '#d9a0ab') + blossom(230, 235, 11, '#fff3c9', '#e0b95c');
+  write('flowers.svg', svg(280, 290, b));
+}
 console.log('Aset dibuat di', out);

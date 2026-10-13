@@ -89,3 +89,7 @@ th{background:#faf6f4;font-size:12px;text-transform:uppercase;letter-spacing:.5p
 .linkrow span{flex:1;min-width:140px;font-weight:600}
 @media(max-width:1280px){.wrap{grid-template-columns:200px minmax(0,1fr)}.preview{display:none}.preview.show{display:flex;position:fixed;inset:57px 0 0 0;z-index:30;height:auto}.preview.show .phone{max-width:420px}}
 @media(max-width:760px){.menu{display:inline-flex}.wrap{grid-template-columns:1fr}.nav{display:none;position:fixed;z-index:40;top:57px;left:0;bottom:0;width:240px;box-shadow:8px 0 30px rgba(0,0,0,.2)}.nav.open{display:block}.brand{display:none}.main{padding:14px}}
+.bootact{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+#bootMsg.err{color:#b3261e;min-height:0;font-size:14px;line-height:1.5}
+code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
+.hint code{font-size:12px}

@@ -13,18 +13,19 @@
     "blockRightClick": false
   },
   "theme": {
-    "primary": "#AD2940",
-    "accent": "#A50A18",
-    "gold": "#C9A24A",
+    "primary": "#A00818",
+    "accent": "#A00818",
+    "gold": "#A98B57",
     "paper": "#F7F1EC",
-    "ink": "#2A0E14",
+    "ink": "#1F0C10",
     "body": "#3B2A2E",
     "sideBg": "#EDE6E2",
     "fontDisplay": "Cormorant Infant",
     "fontHeading": "Playfair Display",
-    "fontBody": "Lora",
-    "fontScript": "Great Vibes",
-    "colWidth": 480
+    "fontBody": "Cormorant Garamond",
+    "fontScript": "Allura",
+    "colWidth": 480,
+    "rose": "#A82840"
   },
   "effects": {
     "animSpeed": "normal",
@@ -43,7 +44,10 @@
     "house": "/assets/default/house.svg",
     "paper": "/assets/default/paper.svg",
     "butterflyColor1": "#B8334F",
-    "butterflyColor2": "#F0B6C2"
+    "butterflyColor2": "#F0B6C2",
+    "frame": "/assets/default/frame.svg",
+    "ornament": "/assets/default/ornament.svg",
+    "flowers": "/assets/default/flowers.svg"
   },
   "cover": {
     "photo": "/assets/default/cover-photo.svg",
@@ -65,12 +69,17 @@
     "bg": "/assets/default/couple-wide.svg",
     "text": "Di antara tanda-tanda (kebesaran)-Nya ialah bahwa Dia menciptakan pasangan-pasangan untukmu dari (jenis) dirimu sendiri agar kamu merasa tenteram kepadanya. Dia menjadikan di antaramu rasa cinta dan kasih sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.",
     "source": "Ar-Rum Ayat 21",
-    "labels": { "days": "Hari", "hours": "Jam", "minutes": "Min", "seconds": "Det" },
+    "labels": {
+      "days": "Hari",
+      "hours": "Jam",
+      "minutes": "Min",
+      "seconds": "Det"
+    },
     "saveButton": "Save The Date"
   },
   "greeting": {
     "text": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu. Atas kehadiran dan doa restunya kami ucapkan terima kasih.",
-    "photo": "/assets/default/cover-photo.svg"
+    "photo": ""
   },
   "couple": {
     "bg": "/assets/default/paper.svg",
@@ -89,7 +98,8 @@
       "instagram": "https://instagram.com/galeriundangan_official"
     },
     "instagramLabel": "Instagram",
-    "connector": "&"
+    "connector": "&",
+    "flower": "/assets/default/flowers.svg"
   },
   "events": {
     "bg": "/assets/default/couple-wide.svg",
@@ -126,42 +136,82 @@
     "title": "Our Gallery",
     "video": "",
     "items": [
-      { "image": "/assets/default/gallery-1.svg" },
-      { "image": "/assets/default/gallery-2.svg" },
-      { "image": "/assets/default/gallery-3.svg" },
-      { "image": "/assets/default/gallery-4.svg" },
-      { "image": "/assets/default/gallery-5.svg" },
-      { "image": "/assets/default/gallery-6.svg" },
-      { "image": "/assets/default/gallery-7.svg" },
-      { "image": "/assets/default/gallery-8.svg" },
-      { "image": "/assets/default/gallery-9.svg" }
+      {
+        "image": "/assets/default/gallery-1.svg"
+      },
+      {
+        "image": "/assets/default/gallery-2.svg"
+      },
+      {
+        "image": "/assets/default/gallery-3.svg"
+      },
+      {
+        "image": "/assets/default/gallery-4.svg"
+      },
+      {
+        "image": "/assets/default/gallery-5.svg"
+      },
+      {
+        "image": "/assets/default/gallery-6.svg"
+      },
+      {
+        "image": "/assets/default/gallery-7.svg"
+      },
+      {
+        "image": "/assets/default/gallery-8.svg"
+      },
+      {
+        "image": "/assets/default/gallery-9.svg"
+      }
     ]
   },
   "story": {
     "title": "Love Story",
     "items": [
-      { "image": "/assets/default/story-1.svg", "title": "Awal Bertemu", "text": "Di dunia yang luas ini, kami percaya bahwa tidak ada pertemuan yang benar-benar kebetulan. Tuhan mempertemukan dua hati pada waktu yang tepat dengan cara yang sederhana tapi bermakna." },
-      { "image": "/assets/default/story-2.svg", "title": "Lamaran", "text": "Pada bulan Mei 2026, dengan restu kedua keluarga, kami memutuskan untuk melangkah ke jenjang yang lebih serius dan mengikat janji untuk saling menjaga." },
-      { "image": "/assets/default/story-3.svg", "title": "Acara Resepsi", "text": "Aku memandangmu tanpa perlu menatap, aku mendengarmu tanpa perlu alat, aku memelukmu tanpa perlu hadir. Karena kini kau telah menjadi bagian dari hidupku." }
-    ]
+      {
+        "image": "/assets/default/story-1.svg",
+        "title": "Awal Bertemu",
+        "text": "Di dunia yang luas ini, kami percaya bahwa tidak ada pertemuan yang benar-benar kebetulan. Tuhan mempertemukan dua hati pada waktu yang tepat dengan cara yang sederhana tapi bermakna."
+      },
+      {
+        "image": "/assets/default/story-2.svg",
+        "title": "Lamaran",
+        "text": "Pada bulan Mei 2026, dengan restu kedua keluarga, kami memutuskan untuk melangkah ke jenjang yang lebih serius dan mengikat janji untuk saling menjaga."
+      },
+      {
+        "image": "/assets/default/story-3.svg",
+        "title": "Acara Resepsi",
+        "text": "Aku memandangmu tanpa perlu menatap, aku mendengarmu tanpa perlu alat, aku memelukmu tanpa perlu hadir. Karena kini kau telah menjadi bagian dari hidupku."
+      }
+    ],
+    "bg": ""
   },
   "gift": {
     "bg": "/assets/default/couple-wide.svg",
     "title": "Wedding Gift",
-    "intro": "Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih, Anda dapat memberi kado secara cashless.",
+    "intro": "Tanpa mengurangi rasa hormat, bagi rekan-rekan dan sahabat yang hendak memberikan tanda kasih untuk kami, dapat melalui nomor rekening di bawah ini.",
     "copyBank": "Copy Rekening",
     "banks": [
-      { "bank": "Bank Mandiri", "number": "123123123", "name": "Elyana Azkiya Nur" },
-      { "bank": "Bank BCA", "number": "456456456", "name": "Robert Saputra" }
+      {
+        "bank": "Bank Mandiri",
+        "number": "123123123",
+        "name": "Elyana Azkiya Nur"
+      },
+      {
+        "bank": "Bank BCA",
+        "number": "456456456",
+        "name": "Robert Saputra"
+      }
     ],
-    "addressTitle": "Kirim Kado",
+    "addressTitle": "Kirim Kado:",
     "addressName": "Elyana Azkiya Nur",
     "address": "Jalan Raya Bojongsari No.5, Gunung Putri, Cileungsi, Bogor, Jawa Barat",
     "copyAddress": "Copy Alamat",
     "formEnabled": true,
-    "formTitle": "Gift Confirmation",
-    "formText": "Mohon konfirmasi untuk pengiriman gift Terima kasih",
-    "formButton": "Konfirmasi"
+    "formTitle": "Gift Confirm",
+    "formText": "Mohon konfirmasi untuk pengiriman gift\nTerima kasih",
+    "formButton": "Konfirmasi",
+    "sendWhatsapp": true
   },
   "rsvp": {
     "bg": "/assets/default/couple-wide.svg",
@@ -170,13 +220,14 @@
     "maxGuests": 2,
     "button": "Submit",
     "thanks": "Terima kasih, konfirmasi kehadiran Anda sudah kami terima.",
-    "sendWhatsapp": false
+    "sendWhatsapp": false,
+    "photo": "/assets/default/cover-photo.svg"
   },
   "wishes": {
-    "title": "Ucapan & Doa",
-    "text": "Berikan harapan dan doa terbaik Anda di sini karena kami sangat menantikan untuk memulai lembaran baru bersama.",
+    "title": "",
+    "text": "Berikan harapan dan doa tulus Anda di sini karena kami sangat bersemangat untuk memulai perjalanan baru bersama.",
     "button": "Kirim Ucapan",
-    "bg": "/assets/default/paper.svg"
+    "bg": "/assets/default/couple-wide.svg"
   },
   "closing": {
     "photo": "/assets/default/closing.svg",
@@ -187,17 +238,65 @@
     "footerUrl": ""
   },
   "sections": [
-    { "id": "hero", "enabled": true, "anim": "fade-up" },
-    { "id": "quote", "enabled": true, "anim": "fade-up" },
-    { "id": "greeting", "enabled": true, "anim": "zoom-in" },
-    { "id": "couple", "enabled": true, "anim": "fade-up" },
-    { "id": "events", "enabled": true, "anim": "zoom-in" },
-    { "id": "live", "enabled": true, "anim": "fade-up" },
-    { "id": "gallery", "enabled": true, "anim": "zoom-in" },
-    { "id": "story", "enabled": true, "anim": "fade-left" },
-    { "id": "gift", "enabled": true, "anim": "fade-up" },
-    { "id": "rsvp", "enabled": true, "anim": "fade-up" },
-    { "id": "wishes", "enabled": true, "anim": "fade-up" },
-    { "id": "closing", "enabled": true, "anim": "zoom-in" }
+    {
+      "id": "hero",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "quote",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "greeting",
+      "enabled": true,
+      "anim": "zoom-in"
+    },
+    {
+      "id": "couple",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "events",
+      "enabled": true,
+      "anim": "zoom-in"
+    },
+    {
+      "id": "live",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "gallery",
+      "enabled": true,
+      "anim": "zoom-in"
+    },
+    {
+      "id": "story",
+      "enabled": true,
+      "anim": "fade-left"
+    },
+    {
+      "id": "gift",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "rsvp",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "wishes",
+      "enabled": true,
+      "anim": "fade-up"
+    },
+    {
+      "id": "closing",
+      "enabled": true,
+      "anim": "zoom-in"
+    }
   ]
 }

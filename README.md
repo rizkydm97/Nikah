@@ -21,7 +21,7 @@ Frontend statis di `public/`, API berupa fungsi Vercel di `api/`, data di Supaba
 
 ### 3. Pakai
 - Undangan: `https://domain-anda/?to=Nama+Tamu`
-- Admin: `https://domain-anda/admin/` — login, lalu atur isi undangan. Ganti password di menu Keamanan.
+- Admin: `https://domain-anda/admin/` — login, lalu atur isi undangan. Password admin = nilai `ADMIN_PASSWORD` di Vercel (atau `admin123` bila kosong). Untuk menggantinya, ubah variabel itu lalu Redeploy.
 
 ## Catatan teknis
 - Foto/musik diunggah langsung dari browser ke Supabase Storage (lewat URL bertanda tangan), jadi tidak terkena batas 4,5MB fungsi Vercel. Bukti transfer tamu dibatasi 2,5MB.
@@ -29,3 +29,12 @@ Frontend statis di `public/`, API berupa fungsi Vercel di `api/`, data di Supaba
 - Pembatas laju (anti-spam RSVP/ucapan) bersifat best-effort per instance serverless.
 - Lokal: `npm install`, salin `.env.example` ke `.env.local`, lalu `npx vercel dev`.
 - Ilustrasi bawaan adalah SVG buatan sendiri; unggah PNG berlisensi Anda di admin untuk mengganti.
+
+## Jika admin tidak bisa dibuka / kosong
+1. Buka `https://domain-anda/api/health` — halaman ini menjelaskan apa yang kurang (variabel Vercel, tabel Supabase, bucket storage).
+2. Admin sekarang selalu menampilkan pesan galat di layar (tidak lagi kosong) dan tombol "Coba lagi".
+3. Pastikan ketiga variabel (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`) terisi, `supabase/schema.sql` sudah dijalankan, lalu **Redeploy**.
+
+## Mengganti ilustrasi agar sama persis dengan template
+Tata letak, bentuk kartu, font, dan animasi sudah mengikuti referensi. Gambar bawaan hanyalah placeholder buatan sendiri.
+Unggah gambar Anda sendiri di Admin → *Adegan & Gambar Dekorasi*: langit, bunga atas, rumah, bunga bawah, bingkai bunga kapsul, ikon gunungan, buket sudut foto; serta foto latar tiap section.

@@ -6,6 +6,7 @@ const C = require('../lib/core');
 const { sb, BUCKET } = C;
 
 const ADMIN_UPLOAD_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.mp3', '.m4a', '.ogg', '.wav', '.mp4', '.webm', '.ico'];
+const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.webm': 'video/webm', '.ico': 'image/x-icon' };
 const MAX_PROOF = 2.5 * 1024 * 1024; // batas body fungsi Vercel ±4.5MB (base64 membesar ~33%)
 
 // ---------- pembatas laju (best-effort, per instance serverless) ----------
@@ -45,6 +46,23 @@ const listAll = async (t) => must(await sb().from(t).select('*').order('ts', { a
 // ---------- rute ----------
 async function route(req, res, url) {
   const m = req.method, p = url.pathname.replace(/\/+$/, '');
+
+  // diagnosa (publik, hanya mengembalikan ya/tidak — tanpa rahasia)
+  if (m === 'GET' && p === '/api/health') {
+    const out = { ok: true, env: { SUPABASE_URL: !!process.env.SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY, ADMIN_PASSWORD: !!process.env.ADMIN_PASSWORD }, database: 'belum dicek', storage: 'belum dicek' };
+    if (!out.env.SUPABASE_URL || !out.env.SUPABASE_SERVICE_ROLE_KEY) { out.ok = false; out.database = 'Variabel SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY belum diisi di Vercel'; return send(res, 200, out, { 'Cache-Control': 'no-store' }); }
+    try {
+      const r = await sb().from('settings').select('key').limit(1);
+      out.database = r.error ? 'GAGAL: ' + (r.error.code === '42P01' || /does not exist|schema cache/i.test(r.error.message || '') ? 'tabel belum dibuat — jalankan supabase/schema.sql di SQL Editor' : (r.error.message || 'tidak diketahui')) : 'OK';
+      if (r.error) out.ok = false;
+    } catch (e) { out.ok = false; out.database = 'GAGAL terhubung ke Supabase (cek SUPABASE_URL & key)'; }
+    try {
+      const b = await sb().storage.from(BUCKET).list('', { limit: 1 });
+      out.storage = b.error ? 'GAGAL: bucket "' + BUCKET + '" belum ada — jalankan supabase/schema.sql' : 'OK';
+      if (b.error) out.ok = false;
+    } catch (e) { out.ok = false; out.storage = 'GAGAL terhubung ke Storage'; }
+    return send(res, 200, out, { 'Cache-Control': 'no-store' });
+  }
 
   // publik
   if (m === 'GET' && p === '/api/config') return send(res, 200, await C.getConfig(), { 'Cache-Control': 'no-cache' });
@@ -124,6 +142,19 @@ async function route(req, res, url) {
     return send(res, 400, { error: 'Password diatur lewat ADMIN_PASSWORD di Vercel (Settings → Environment Variables), lalu Redeploy.' });
   }
 
+  // Upload langsung (≤ 4MB): isi file dikirim ke sini dan diteruskan server ke Supabase Storage.
+  if (m === 'POST' && p === '/api/admin/upload') {
+    const name = clean(url.searchParams.get('name') || 'file', 100).replace(/[^a-zA-Z0-9._-]/g, '_');
+    const ext = path.extname(name).toLowerCase();
+    if (!ADMIN_UPLOAD_EXT.includes(ext)) return send(res, 400, { error: 'Tipe file tidak didukung' });
+    let buf = Buffer.isBuffer(req.body) ? req.body : null;
+    if (!buf) { const chunks = []; for await (const c of req) chunks.push(c); buf = Buffer.concat(chunks); }
+    if (!buf.length) return send(res, 400, { error: 'File kosong' });
+    if (buf.length > 4 * 1024 * 1024) return send(res, 413, { error: 'File terlalu besar untuk jalur ini' });
+    const key = `${Date.now().toString(36)}-${name}`;
+    must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: MIME[ext] || 'application/octet-stream', upsert: false }));
+    return send(res, 200, { url: C.publicUrl(key) });
+  }
   // Upload: file besar tidak lewat Vercel (batas 4,5MB). Server hanya membuat URL upload bertanda tangan,
   // lalu browser mengunggah langsung ke Supabase Storage.
   if (m === 'POST' && p === '/api/admin/upload-url') {

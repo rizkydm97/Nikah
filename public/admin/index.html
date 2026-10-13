@@ -5,14 +5,27 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Admin Undangan</title>
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="/admin/admin.css">
 </head>
 <body>
+<!-- Layar status: selalu tampil lebih dulu supaya halaman TIDAK PERNAH kosong -->
+<div id="boot" class="login">
+  <div class="lcard" id="bootCard">
+    <h1>Admin Undangan</h1>
+    <p id="bootMsg">Memuat…</p>
+    <div id="bootAct" class="bootact" hidden>
+      <button class="btn pri" type="button" onclick="location.reload()">Coba lagi</button>
+      <a class="btn" href="/api/health" target="_blank" rel="noopener">Cek status server</a>
+    </div>
+  </div>
+</div>
+<noscript><div class="login"><div class="lcard"><h1>Admin Undangan</h1><p>JavaScript harus aktif untuk membuka halaman admin.</p></div></div></noscript>
+
 <div id="login" class="login" hidden>
   <form id="loginForm" class="lcard">
     <h1>Admin Undangan</h1>
     <p>Masuk untuk mengubah seluruh isi undangan.</p>
-    <input type="password" id="pw" placeholder="Password" autocomplete="current-password" autofocus required>
+    <input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
     <button class="btn pri" type="submit">Masuk</button>
     <div id="loginErr" class="err"></div>
   </form>
@@ -46,7 +59,26 @@
   <div class="mbox"><div class="mh"><strong>Pustaka file</strong><button class="ghost" data-close>✕</button></div><div id="libGrid" class="libgrid"></div></div>
 </div>
 <div id="toast" class="toast"></div>
-<script src="schema.js"></script>
-<script src="admin.js"></script>
+
+<script>
+/* Penangkap galat paling awal: bila skrip admin gagal dimuat/jalan, pesannya tampil di layar (bukan layar kosong). */
+(function () {
+  window.__adminFail = function (msg) {
+    var m = document.getElementById('bootMsg'), a = document.getElementById('bootAct'), b = document.getElementById('boot');
+    if (!m) return;
+    ['login', 'app'].forEach(function (i) { var e = document.getElementById(i); if (e) e.hidden = true; });
+    b.hidden = false; m.textContent = msg; m.className = 'err'; a.hidden = false;
+  };
+  window.addEventListener('error', function (e) {
+    var t = e.target;
+    if (t && t.tagName === 'SCRIPT') window.__adminFail('File ' + (t.getAttribute('src') || 'skrip') + ' gagal dimuat. Pastikan folder public/admin ikut ter-deploy.');
+    else if (!window.__adminReady) window.__adminFail('Terjadi galat: ' + (e.message || 'tidak diketahui'));
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) { if (!window.__adminReady) window.__adminFail('Terjadi galat: ' + ((e.reason && e.reason.message) || e.reason)); });
+  setTimeout(function () { if (!window.__adminReady) window.__adminFail('Admin tidak merespons. Periksa koneksi, lalu klik "Cek status server" untuk melihat apa yang kurang.'); }, 20000);
+})();
+</script>
+<script src="/admin/schema.js"></script>
+<script src="/admin/admin.js"></script>
 </body>
 </html>

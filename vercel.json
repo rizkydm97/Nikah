@@ -1,9 +1,13 @@
 {
   "outputDirectory": "public",
-  "cleanUrls": false,
   "rewrites": [
     { "source": "/", "destination": "/api/page" },
-    { "source": "/index.html", "destination": "/api/page" }
+    { "source": "/index.html", "destination": "/api/page" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/api/:p*", "destination": "/api/index?__p=:p*" }
+  ],
+  "headers": [
+    { "source": "/admin/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-cache" }, { "key": "X-Robots-Tag", "value": "noindex" } ] }
   ],
   "functions": {
     "api/page.js": { "includeFiles": "lib/index.template.html" }
