@@ -57,12 +57,10 @@ const SCHEMA = [
     { k: 'effects.scrollReveal', l: 'Tema 3-8: judul muncul kata per kata saat scroll (gaya mengikuti tema)', t: 'bool' },
     { k: 'effects.bgParallax', l: 'Tema 3-8: gambar latar tiap bagian bergeser lebih pelan dari isi (kedalaman)', t: 'bool' },
     { k: 'effects.bloomOrnament', l: 'Tema 3-8: cahaya (bulan/lampu) & kunang-kunang bertambah pelan ke bawah (tanpa bunga)', t: 'bool' },
-    { k: 'effects.journeyLine', l: 'Tema 3-8: garis perjalanan di tepi kanan dengan ikon yang turun mengikuti scroll', t: 'bool' },
     { k: 'effects.skyShift', l: 'Tema 3-8: warna suasana berubah halus dari pagi ke senja ke malam sepanjang undangan', t: 'bool' },
     { k: 'effects.galleryFx', l: 'Tema 3-8: foto galeri membesar & terang saat di tengah layar', t: 'bool' },
     { k: 'effects.countdownFlip', l: 'Tema 3-8: angka hitung mundur membalik dengan kilau saat berganti', t: 'bool' },
     { k: 'effects.wishFloat', l: 'Tema 3-8: kartu ucapan tamu naik pelan lalu melayang halus', t: 'bool' },
-    { k: 'effects.frontLayer', l: 'Tema 3-8: kelopak/daun/awan tipis lewat di depan layar saat scroll (bisa terasa patah di HP lambat, default mati)', t: 'bool' },
     { k: 'effects.sectionVeil', l: 'Tema 3-8: tirai kabut lewat saat pindah bagian', t: 'bool' },
   ] },
   { id: 'soundfx', title: 'Suara & Sentuhan (Tema 3-8)', fields: [

@@ -1165,6 +1165,7 @@
   }
   let petalsOn = false;
   function petals() {
+    if (PT) return; // Tema 3-8: tanpa kelopak/bunga jatuh di dalam undangan
     if (!C.effects.petals || reduce || petalsOn) return; petalsOn = true;
     const box = $('#petals'), cols = ['var(--primary)', 'var(--accent)', 'var(--tint2)', 'var(--tint3)'];
     box.style.opacity = '0'; setTimeout(() => (box.style.opacity = ''), 2600 * sp);

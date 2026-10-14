@@ -9,7 +9,7 @@
       text: '#7a4a12', glowText: 'rgba(255,240,205,.95)',
       wf: [[641, 630, 60, 200]], mist: [[560, 770, 190, 110], [250, 430, 330, 110, 1]], water: [[300, 800, 300, 130], [330, 1040, 260, 80]],
       glow: [[650, 330, 170, 'rgba(255,236,190,.55)']], clouds: ['cloudw1', 'cloudw2', 'cloudw3'], cloudBand: [120, 330],
-      birds: 'bird_gold', bf: ['bf_bali1', 'bf_bali2'], petals: ['frangi1', 'frangi2', 'leafm'], sparkle: 0, flies: 0,
+      birds: 'bird_gold', bf: ['bf_bali1', 'bf_bali2'], petals: ['frangi1', 'frangi2'], sparkle: 0, flies: 0,
       shots: [[392, 740, 1.35, 2400, 0], [520, 600, 2.0, 2500, 300, 'birds'], [660, 690, 2.0, 2100, 200], [250, 800, 1.6, 2100, 0, 'bf'], ['end', 2400, 0, 'bf']],
     },
     princess: {
@@ -27,7 +27,7 @@
       text: '#f6dd9a', glowText: 'rgba(60,30,5,.85)',
       wf: [[601, 508, 62, 195]], mist: [[555, 670, 170, 100], [150, 440, 520, 130, 1], [330, 860, 260, 80, 1]], water: [[380, 780, 210, 170]],
       glow: [[650, 410, 140, 'rgba(255,224,140,.75)']], rays: [650, 410], clouds: [], cloudBand: [330, 400],
-      birds: 'bird_gold', bf: ['bf_gold', 'bf_gold2'], petals: ['frangi1', 'leafm'], sparkle: 10, flies: [520, 690, 760, 900],
+      birds: 'bird_gold', bf: ['bf_gold', 'bf_gold2'], petals: ['frangi1'], sparkle: 10, flies: [520, 690, 760, 900],
       shots: [[650, 430, 1.5, 1800, 0], [640, 520, 2.1, 2000, 350, 'birds'], [650, 740, 1.9, 2000, 200], [330, 610, 1.6, 2200, 0, 'bf'], ['end', 2400, 0, 'bf']],
     },
     biru: {
@@ -54,7 +54,7 @@
       text: '#f2d391', glowText: 'rgba(30,15,3,.9)',
       wf: [[541, 508, 58, 250]], mist: [[470, 720, 160, 70], [120, 430, 560, 110, 1]], water: [[460, 735, 150, 60]],
       glow: [[410, 625, 120, 'rgba(255,200,110,.75)'], [200, 420, 160, 'rgba(255,214,140,.35)']], lamp: 1, clouds: [], cloudBand: [0, 0],
-      birds: 'svg', bf: ['bf_bali1', 'bf_gold'], petals: ['leafm', 'frangi1'], sparkle: 8, flies: [250, 560, 560, 760], gunungan: 1,
+      birds: 'svg', bf: ['bf_bali1', 'bf_gold'], petals: ['frangi1'], sparkle: 8, flies: [250, 560, 560, 760], gunungan: 1,
       shots: [[400, 610, 1.4, 1900, 0], [400, 585, 2.4, 2100, 350], [565, 640, 2.3, 1900, 200], [180, 500, 1.9, 2000, 0, 'birds'], ['end', 2400, 0, 'bf']],
     },
   };

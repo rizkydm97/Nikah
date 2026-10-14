@@ -11,8 +11,8 @@
 .sx-bloom .bl{position:absolute;opacity:0;will-change:transform,opacity;transform-origin:50% 60%}
 .sx-bloom .bl img{display:block;width:100%;height:auto;animation:sxsway 7s ease-in-out infinite alternate;filter:drop-shadow(0 3px 5px rgba(0,0,0,.22))}
 @keyframes sxsway{from{transform:rotate(-4deg)}to{transform:rotate(5deg)}}
-.sx-glow{position:fixed;z-index:16;width:70vmin;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:screen;pointer-events:none;opacity:.2;transition:opacity .6s linear}
-.sx-bloom .ff{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff,var(--c) 45%,transparent 72%);opacity:0;transition:opacity 1.6s ease;animation:sxff 8s ease-in-out infinite alternate;mix-blend-mode:screen}
+.sx-glow{position:fixed;z-index:16;width:70vmin;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:.2;transition:opacity .6s linear}
+.sx-bloom .ff{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff,var(--c) 45%,transparent 72%);opacity:0;transition:opacity 1.6s ease;animation:sxff 8s ease-in-out infinite alternate}
 .sx-bloom .ff.on{opacity:.9}
 @keyframes sxff{0%{transform:translate3d(0,0,0) scale(.7)}50%{transform:translate3d(14px,-18px,0) scale(1.2)}100%{transform:translate3d(-12px,-34px,0) scale(.8)}}
 /* garis perjalanan */
@@ -22,7 +22,7 @@
 .sx-jr .jm{position:absolute;left:50%;width:22px;height:auto;margin:-11px 0 0 -11px;animation:sxjm 2.4s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(0,0,0,.35))}
 @keyframes sxjm{from{transform:rotate(-12deg) scale(.94)}to{transform:rotate(12deg) scale(1.06)}}
 /* warna suasana sepanjang undangan */
-.sx-sky{position:fixed;inset:0;z-index:17;pointer-events:none;mix-blend-mode:multiply;opacity:0;transition:opacity 2s ease}
+.sx-sky{position:fixed;inset:0;z-index:17;pointer-events:none;opacity:0;transition:opacity 2s ease}
 /* hitung mundur membalik */
 .sx-cd .cd{perspective:360px}
 .sx-cd .cd b.tick{animation:sxflip .8s cubic-bezier(.2,.8,.2,1)}
@@ -33,3 +33,5 @@
 @keyframes sxwfl{from{transform:translateY(0)}to{transform:translateY(-3px)}}
 .gallery .mi img,.gallery .gi img{will-change:transform,filter;transition:filter .3s linear}
 @media (prefers-reduced-motion:reduce){.sx-bloom,.sx-glow,.sx-jr,.sx-sky{display:none}.swx .sw{opacity:1;transform:none;filter:none;transition:none}}
+/* Tema 3-8: bagian dalam undangan bersih dari bunga/daun melayang */
+.t-pic #petals,.t-pic .zp,.t-pic .zl,.imm-fg,.sx-jr{display:none!important}

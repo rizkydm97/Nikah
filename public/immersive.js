@@ -7,11 +7,11 @@
   const SP = (n) => '/assets/t/spr/' + n + '.webp';
   const THEMES = {
     princess: { fg: ['rose1', 'rose2', 'rose1'], cl: 'cloudp3', col: '#ffc2dc', snd: { wind: 420, bell: { sc: [0, 2, 4, 7, 9], base: 880, gap: [1.6, 4], g: .05, k: 'bell' } } },
-    bali:     { fg: ['frangi1', 'frangi2', 'leafm'], cl: 'cloudw1', col: '#ffe29a', snd: { wind: 520, bird: 1, bell: { sc: [0, 2, 5, 7, 10], base: 392, gap: [1.2, 3], g: .06, k: 'gam' } } },
-    emas:     { fg: ['frangi1', 'leafm', 'frangi1'], cl: '', col: '#ffd36a', snd: { wind: 360, bell: { sc: [0, 2, 5, 7, 10], base: 330, gap: [2, 4.5], g: .06, k: 'gam' } } },
+    bali:     { fg: ['frangi1', 'frangi2', 'frangi1'], cl: 'cloudw1', col: '#ffe29a', snd: { wind: 520, bird: 1, bell: { sc: [0, 2, 5, 7, 10], base: 392, gap: [1.2, 3], g: .06, k: 'gam' } } },
+    emas:     { fg: ['frangi1', 'frangi2', 'frangi1'], cl: '', col: '#ffd36a', snd: { wind: 360, bell: { sc: [0, 2, 5, 7, 10], base: 330, gap: [2, 4.5], g: .06, k: 'gam' } } },
     biru:     { fg: ['frangi1', 'bf_silver', 'frangi1'], cl: 'cloudb', col: '#9fd0ff', snd: { water: 1100, bell: { sc: [0, 3, 5, 7, 10], base: 523, gap: [3, 6.5], g: .035, k: 'bell' } } },
-    rimba:    { fg: ['leafm', 'bf_blue1', 'leafm'], cl: 'cloudb', col: '#c8e0ff', snd: { wind: 300, cricket: 1, bell: { sc: [0, 3, 7, 10], base: 262, gap: [4, 8], g: .035, k: 'bell' } } },
-    klasik:   { fg: ['leafm', 'frangi1', 'leafm'], cl: '', col: '#ffc46e', snd: { wind: 260, crackle: 1, gong: [8, 14], bell: { sc: [0, 2, 5, 7, 10], base: 220, gap: [2.5, 5], g: .06, k: 'gam' } } },
+    rimba:    { fg: ['bf_blue1', 'bf_blue2', 'bf_blue1'], cl: 'cloudb', col: '#c8e0ff', snd: { wind: 300, cricket: 1, bell: { sc: [0, 3, 7, 10], base: 262, gap: [4, 8], g: .035, k: 'bell' } } },
+    klasik:   { fg: ['frangi1', 'frangi2', 'frangi1'], cl: '', col: '#ffc46e', snd: { wind: 260, crackle: 1, gong: [8, 14], bell: { sc: [0, 2, 5, 7, 10], base: 220, gap: [2.5, 5], g: .06, k: 'gam' } } },
   };
   const E = (k) => !(window.__CFG && window.__CFG.effects && window.__CFG.effects[k] === false);
   const VOLK = () => ({ low: .5, normal: 1, high: 1.6 }[(window.__CFG && window.__CFG.effects && window.__CFG.effects.soundVolume) || 'normal'] || 1);
@@ -62,21 +62,24 @@
   const chime = () => { if (ac && on) note({ ...(snd.bell || { sc: [0, 4, 7], base: 660, k: 'bell' }), g: .07 }, 2); };
 
   // ---------- sentuhan interaktif ----------
+  const proto = {};
+  function warm() { T.fg.concat(T.cl ? [] : []).forEach((n) => { if (proto[n]) return; const im = new Image(); im.alt = ''; im.decoding = 'async'; im.src = SP(n); if (im.decode) im.decode().catch(() => {}); proto[n] = im; }); }
   function tapFx(x, y) {
     if (reduce) return; const L = $('.imm-tap'); if (!L) return;
     const c = T.col; L.style.setProperty('--c', c);
     const ring = document.createElement('i'); ring.className = 'ring'; ring.style.cssText = `width:30px;height:30px;left:${x - 15}px;top:${y - 15}px`; L.appendChild(ring);
     ring.animate([{ transform: 'scale(.2)', opacity: .9 }, { transform: 'scale(3.2)', opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = () => ring.remove();
-    for (let i = 0; i < 9; i++) {
-      const a = Math.random() * Math.PI * 2, d = rnd(40, 120), sprite = i < 5, el = document.createElement(sprite ? 'img' : 'i'), s = sprite ? rnd(18, 32) : rnd(6, 12);
-      if (sprite) { el.src = SP(T.fg[i % T.fg.length]); el.alt = ''; } else el.className = 'dot';
+    for (let i = 0; i < 7; i++) {
+      const a = (i / 7) * Math.PI * 2 + rnd(-.3, .3), d = rnd(46, 110), sprite = i < 4, s = sprite ? rnd(20, 30) : rnd(7, 11);
+      const el = sprite ? proto[T.fg[i % T.fg.length]].cloneNode() : document.createElement('i');
+      if (!sprite) el.className = 'dot';
       el.style.width = s + 'px'; if (!sprite) el.style.height = s + 'px'; L.appendChild(el);
       const dx = Math.cos(a) * d, dy = Math.sin(a) * d - 26, fall = sprite ? rnd(30, 70) : 0, r = rnd(-160, 160);
       el.animate([
         { transform: `translate3d(${x - s / 2}px,${y - s / 2}px,0) scale(.3) rotate(0deg)`, opacity: 0 },
         { transform: `translate3d(${x + dx * .7 - s / 2}px,${y + dy * .7 - s / 2}px,0) scale(1) rotate(${r * .6}deg)`, opacity: 1, offset: .3 },
         { transform: `translate3d(${x + dx - s / 2}px,${y + dy + fall - s / 2}px,0) scale(.8) rotate(${r}deg)`, opacity: 0 },
-      ], { duration: rnd(1100, 1700), easing: 'cubic-bezier(.2,.6,.3,1)' }).onfinish = () => el.remove();
+      ], { duration: rnd(1300, 1700), easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'backwards' }).onfinish = () => el.remove();
     }
     chime(); if (window.__vib) window.__vib(8);
   }
@@ -139,7 +142,7 @@
   }
 
   function init() {
-    inited = true; T = THEMES[key];
+    inited = true; T = THEMES[key]; warm();
     const L = document.createElement('div'); L.className = 'imm-tap'; document.body.appendChild(L);
     const b = document.createElement('button'); b.className = 'imm-snd'; b.type = 'button'; b.setAttribute('aria-label', 'Suara suasana'); b.textContent = '\u266A'; b.onclick = toggleSound; document.body.appendChild(b);
     if (E('nightMode')) daytime(); if (E('guestInWorld')) guestInWorld(); if (E('sectionVeil') && !(window.__CFG.effects.scrollFx === false)) buildVeil();
@@ -148,7 +151,7 @@
     if (ob) ob.addEventListener('click', go, { once: true });
     addEventListener('pointerdown', go, { once: true, capture: true });
     if (E('tapFx')) addEventListener('pointerdown', onTap, { passive: true });
-    const wait = setInterval(() => { if (hero.classList.contains('shown')) { clearInterval(wait); if (E('frontLayer') && !(window.__CFG.effects.scrollFx === false)) buildFg(); if (E('guestInWorld')) guestInWorld(); } }, 400);
+    const wait = setInterval(() => { if (hero.classList.contains('shown')) { clearInterval(wait); if (E('guestInWorld')) guestInWorld(); } }, 400);
   }
   const boot = setInterval(() => {
     if (inited) return clearInterval(boot);

@@ -8,11 +8,11 @@
   const E = (k) => { const e = window.__CFG && window.__CFG.effects; return !(e && (e[k] === false || (k !== 'haptic' && e.scrollFx === false))); };
   const TH = {
     princess: { col: '#ffc2dc', mk: 'bf_pink1', bl: ['rose1', 'rose2', 'rose1'], glow: ['18%', '14%', 'rgba(255,205,230,.8)'], ff: 12 },
-    bali:     { col: '#ffe29a', mk: 'bf_bali1', bl: ['frangi1', 'frangi2', 'leafm'], glow: ['50%', '92%', 'rgba(255,225,150,.75)'], ff: 10 },
-    emas:     { col: '#ffd36a', mk: 'bf_gold', bl: ['frangi1', 'leafm', 'frangi1'], glow: ['50%', '94%', 'rgba(255,210,110,.8)'], ff: 16 },
-    biru:     { col: '#9fd0ff', mk: 'bf_silver', bl: ['frangi1', 'leafm', 'frangi1'], glow: ['84%', '10%', 'rgba(190,220,255,.85)'], ff: 18 },
-    rimba:    { col: '#c8e0ff', mk: 'bf_blue1', bl: ['leafm', 'leafm', 'frangi1'], glow: ['82%', '9%', 'rgba(210,230,255,.85)'], ff: 24 },
-    klasik:   { col: '#ffc46e', mk: 'bf_gold2', bl: ['leafm', 'frangi1', 'leafm'], glow: ['50%', '94%', 'rgba(255,190,100,.85)'], ff: 14 },
+    bali:     { col: '#ffe29a', mk: 'bf_bali1', bl: ['frangi1', 'frangi2', 'frangi2'], glow: ['50%', '92%', 'rgba(255,225,150,.75)'], ff: 10 },
+    emas:     { col: '#ffd36a', mk: 'bf_gold', bl: ['frangi1', 'frangi2', 'frangi1'], glow: ['50%', '94%', 'rgba(255,210,110,.8)'], ff: 16 },
+    biru:     { col: '#9fd0ff', mk: 'bf_silver', bl: ['frangi1', 'frangi2', 'frangi1'], glow: ['84%', '10%', 'rgba(190,220,255,.85)'], ff: 18 },
+    rimba:    { col: '#c8e0ff', mk: 'bf_blue1', bl: ['frangi2', 'frangi2', 'frangi1'], glow: ['82%', '9%', 'rgba(210,230,255,.85)'], ff: 24 },
+    klasik:   { col: '#ffc46e', mk: 'bf_gold2', bl: ['frangi2', 'frangi1', 'frangi2'], glow: ['50%', '94%', 'rgba(255,190,100,.85)'], ff: 14 },
   };
   let key, T, PT, hero, started = false;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t;
@@ -47,10 +47,6 @@
       L.glow = make('div', 'sx-glow'); L.glow.style.cssText = `left:${T.glow[0]};top:${T.glow[1]};background:radial-gradient(circle,${T.glow[2]},transparent 65%)`;
       L.ff = Array.from({ length: T.ff }, (_, i) => { const r = (k) => (Math.sin((i + 3) * 7919 + k * 4001) + 1) / 2, d = make('i', 'ff', L.bloom); d.style.cssText = `left:${(r(1) * 94 + 3).toFixed(1)}%;top:${(r(2) * 88 + 4).toFixed(1)}%;--c:${T.col};animation-duration:${(5 + r(3) * 6).toFixed(1)}s;animation-delay:${(-r(4) * 8).toFixed(1)}s`; return d; });
     }
-    if (E('journeyLine')) {
-      L.jr = make('div', 'sx-jr'); L.jf = make('i', 'jf', L.jr); L.jf.style.setProperty('--c', T.col);
-      const m = make('img', 'jm', L.jr); m.src = SP(T.mk); m.alt = ''; L.jm = m;
-    }
     if (E('skyShift')) L.sky = make('div', 'sx-sky');
   }
   const STOPS = [[0, [255, 255, 255, 0]], [.4, [255, 176, 120, .15]], [.75, [130, 80, 140, .22]], [1, [18, 28, 95, .3]]];
@@ -60,7 +56,7 @@
     const H = innerHeight, max = Math.max(1, document.documentElement.scrollHeight - H), sy = scrollY, p = clamp(sy / max, 0, 1), dark = !!PT.dark;
     if (L.glow) {
       const sh0 = hero && hero.classList.contains('shown'); L.bloom.style.opacity = sh0 ? 1 : 0; L.glow.style.opacity = sh0 ? (.15 + p * .6).toFixed(2) : 0; const n = Math.floor(3 + p * (L.ff.length - 3)); L.ff.forEach((d, i) => d.classList.toggle('on', i < n)); }
-    if (L.jr) { const sh = hero && hero.classList.contains('shown') && sy > H * .3; L.jr.classList.toggle('on', !!sh); L.jf.style.height = (p * 100).toFixed(1) + '%'; L.jm.style.top = (p * 100).toFixed(1) + '%'; }
+    if (false) { const sh = hero && hero.classList.contains('shown') && sy > H * .3; L.jr.classList.toggle('on', !!sh); L.jf.style.height = (p * 100).toFixed(1) + '%'; L.jm.style.top = (p * 100).toFixed(1) + '%'; }
     if (L.sky) { const c = skyAt(p), a = c[3] * (dark ? .6 : 1); L.sky.style.background = `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a.toFixed(3)})`; L.sky.style.opacity = hero && hero.classList.contains('shown') ? 1 : 0; }
     bgs.forEach(({ s, im }) => { if (!vis.has(s)) return; const r = s.getBoundingClientRect(), off = clamp(((r.top + r.height / 2) - H / 2) * -.1, -42, 42); im.style.scale = '1.12'; im.style.translate = `0 ${off.toFixed(1)}px`; });
     tiles.forEach(({ t, im }) => { if (!vis.has(t)) return; const r = t.getBoundingClientRect(), d = clamp(Math.abs(r.top + r.height / 2 - H / 2) / (H * .55), 0, 1); im.style.scale = (1 + (1 - d) * .06).toFixed(3); im.style.filter = `brightness(${(.8 + .2 * (1 - d)).toFixed(3)}) saturate(${(.9 + .15 * (1 - d)).toFixed(2)})`; });

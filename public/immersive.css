@@ -6,10 +6,10 @@
 @keyframes immsway{from{transform:translate3d(-14%,0,0) rotate(-14deg)}to{transform:translate3d(14%,3%,0) rotate(16deg)}}
 .imm-fg .it.cl img{animation-name:immcl;filter:none}
 @keyframes immcl{from{transform:translate3d(-6%,0,0)}to{transform:translate3d(8%,-2%,0)}}
-.imm-tap{position:fixed;inset:0;z-index:21;pointer-events:none;overflow:hidden}
+.imm-tap{position:fixed;inset:0;z-index:21;pointer-events:none;overflow:hidden;contain:strict;transform:translateZ(0)}
 .imm-tap i,.imm-tap img{position:absolute;left:0;top:0;pointer-events:none;will-change:transform,opacity}
-.imm-tap i.dot{border-radius:50%;background:radial-gradient(circle,#fff,var(--c,#ffd98a) 45%,transparent 72%);mix-blend-mode:screen}
-.imm-tap i.ring{border-radius:50%;border:2px solid var(--c,#ffd98a);box-shadow:0 0 12px var(--c,#ffd98a)}
+.imm-tap i.dot{border-radius:50%;background:radial-gradient(circle,#fff,var(--c,#ffd98a) 45%,transparent 72%)}
+.imm-tap i.ring{border-radius:50%;border:2px solid var(--c,#ffd98a)}
 .imm-veil{position:fixed;inset:0;z-index:19;pointer-events:none;opacity:0;overflow:hidden}
 .imm-veil img{position:absolute;left:-20%;width:140%;height:auto;opacity:.95}
 .imm-veil img:nth-child(1){top:6%}.imm-veil img:nth-child(2){top:46%}
