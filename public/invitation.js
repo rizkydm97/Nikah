@@ -715,6 +715,94 @@
     if (PT.gunungan && JFX() && PT.intro !== 'wayang') gunOpen(D * 0.8);
     if (PT.carriage) later(() => picCarriage(stage), camAt);
     later(() => picBirds(stage), camAt);
+    // ---------- momen puncak khas tiap tema (dipicu event 'cx' pada shot terakhir, tepat sebelum nama muncul) ----------
+    // Semua hanya memakai transform/opacity (jalur compositor) dan overlay dibersihkan otomatis oleh end().
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const put = (e, x, y) => { e.style.left = px(x) + '%'; e.style.top = py(y) + '%'; return e; };
+    const spawn = (cls, html, x, y) => put(mk(cls, html, pbox), x, y);
+    const imgP = (n) => `<img src="${sprite(n)}" alt="">`;
+    const cqx = (v) => +(v / BW * 100).toFixed(2); // jarak koordinat dasar -> cqw (lebar pbox)
+    const sparks = (n, x, y, spread, ms) => {
+      for (let i = 0; i < n; i++) {
+        const e = spawn('pe-sp', '', x, y), a = rnd(0, 6.283), d = spread * rnd(0.5, 1.1);
+        e.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: `translate(calc(-50% + ${(Math.cos(a) * d).toFixed(1)}cqw),calc(-50% + ${(Math.sin(a) * d - 4).toFixed(1)}cqw)) scale(${rnd(0.6, 1.5).toFixed(2)})`, opacity: 0 }], { duration: T(rnd(900, ms || 1500)), delay: T(rnd(0, 300)), easing: 'ease-out', fill: 'both' });
+      }
+    };
+    const pulse = (e, ms, peak, scale0, scale1) => e.animate([{ opacity: 0, transform: `translate(-50%,-50%) scale(${scale0})` }, { opacity: peak, transform: 'translate(-50%,-50%) scale(1)', offset: 0.42 }, { opacity: 0, transform: `translate(-50%,-50%) scale(${scale1})` }], { duration: T(ms), easing: 'ease-in-out', fill: 'both' });
+    const CX = {
+      // Princess: kastil menyala, kelopak mawar meledak ke atas lalu berguguran
+      petals() {
+        const [x, y] = PT.glow[0] ? [PT.glow[0][0], PT.glow[0][1]] : [520, 470];
+        pulse(spawn('pcx-glow', '', x, y), 2400, 1, 0.3, 1.9);
+        sparks(24, x, y, 30);
+        for (let i = 0; i < 16; i++) {
+          const p = spawn('pcx-p', imgP(i % 2 ? 'rose2' : 'rose1'), x, y), a = rnd(-2.6, -0.55), d = rnd(14, 34), dx = Math.cos(a) * d, dy = Math.sin(a) * d;
+          // naik cepat (ease-out), lalu melayang turun pelan sambil berputar
+          p.animate([
+            { transform: 'translate(-50%,-50%) scale(.2) rotate(0deg)', opacity: 0, easing: 'cubic-bezier(.15,.8,.3,1)' },
+            { transform: `translate(calc(-50% + ${dx.toFixed(1)}cqw),calc(-50% + ${dy.toFixed(1)}cqw)) scale(1) rotate(${rnd(-90, 90).toFixed(0)}deg)`, opacity: 1, offset: 0.28, easing: 'cubic-bezier(.35,.1,.65,.9)' },
+            { transform: `translate(calc(-50% + ${(dx * 1.3).toFixed(1)}cqw),calc(-50% + ${(dy + rnd(20, 38)).toFixed(1)}cqw)) scale(.9) rotate(${rnd(120, 300).toFixed(0)}deg)`, opacity: 0.85, offset: 0.8 },
+            { transform: `translate(calc(-50% + ${(dx * 1.4).toFixed(1)}cqw),calc(-50% + ${(dy + rnd(26, 42)).toFixed(1)}cqw)) scale(.85) rotate(${rnd(300, 400).toFixed(0)}deg)`, opacity: 0 }], { duration: T(rnd(2300, 3000)), delay: T(rnd(0, 400)), easing: 'linear', fill: 'both' });
+        }
+      },
+      // Bali: sapuan cahaya keemasan melintasi pura, kamboja hanyut tertiup angin
+      sweep() {
+        const s = mk('pcx-sweep', '', stage); // menempel ke layar (bukan dunia) supaya selalu melintasi layar
+        s.animate([{ transform: 'translateX(-80%) skewX(-18deg)', opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 1, offset: 0.7 }, { transform: 'translateX(330%) skewX(-18deg)', opacity: 0 }], { duration: T(2300), easing: 'ease-in-out', fill: 'both' });
+        sparks(14, 392, 720, 24);
+        for (let i = 0; i < 12; i++) {
+          const p = spawn('pcx-p', imgP(i % 2 ? 'frangi2' : 'frangi1'), rnd(20, 360), rnd(300, 820)), dx = rnd(34, 62), dy = rnd(-6, 12);
+          p.animate([
+            { transform: 'translate(-50%,-50%) scale(.3) rotate(0deg)', opacity: 0 },
+            { transform: `translate(calc(-50% + ${(dx * 0.3).toFixed(1)}cqw),calc(-50% + ${(dy * 0.2 - 3).toFixed(1)}cqw)) scale(1) rotate(80deg)`, opacity: 1, offset: 0.25 },
+            { transform: `translate(calc(-50% + ${dx.toFixed(1)}cqw),calc(-50% + ${dy.toFixed(1)}cqw)) scale(.85) rotate(${rnd(220, 380).toFixed(0)}deg)`, opacity: 0 }], { duration: T(rnd(2300, 3000)), delay: T(rnd(0, 500)), easing: 'ease-in-out', fill: 'both' });
+        }
+      },
+      // Jawa Emas: senja jatuh. Langit merona jingga ke ungu, matahari tenggelam, serbuk emas naik
+      dusk() {
+        const [sx, sy] = PT.glow[0] ? [PT.glow[0][0], PT.glow[0][1]] : [650, 410];
+        mk('pcx-dusk', '', stage).animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(2000), easing: 'ease-in-out', fill: 'both' });
+        spawn('pcx-sun', '', sx, sy).animate([
+          { opacity: 0, transform: 'translate(-50%,-50%) scale(.8)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: 0.2 },
+          { opacity: 0.95, transform: 'translate(-50%,calc(-50% + 22cqw)) scale(.78)', offset: 0.8 }, { opacity: 0, transform: 'translate(-50%,calc(-50% + 30cqw)) scale(.6)' }], { duration: T(2600), easing: 'ease-in', fill: 'both' });
+        for (let i = 0; i < 16; i++) {
+          const e = spawn('pcx-ember gold', '', rnd(120, 700), rnd(520, 900)), dx = rnd(-8, 8), dy = rnd(-34, -12);
+          e.animate([{ transform: 'translate(-50%,-50%) scale(.5)', opacity: 0 }, { opacity: 1, offset: 0.3 }, { transform: `translate(calc(-50% + ${dx.toFixed(1)}cqw),calc(-50% + ${dy.toFixed(1)}cqw)) scale(1)`, opacity: 0 }], { duration: T(rnd(1800, 2800)), delay: T(rnd(0, 700)), easing: 'ease-out', fill: 'both' });
+        }
+      },
+      // Biru: bintang jatuh melintasi langit malam, riak menyebar di kolam air terjun
+      star() {
+        const shoot = (x0, y0, x1, y1, delay, ms) => {
+          const e = spawn('pcx-star', '', x0, y0), ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+          e.animate([{ transform: `translate(0,0) rotate(${ang.toFixed(1)}deg)`, opacity: 0 }, { opacity: 1, offset: 0.15 }, { opacity: 1, offset: 0.7 }, { transform: `translate(${cqx(x1 - x0)}cqw,${cqx(y1 - y0)}cqw) rotate(${ang.toFixed(1)}deg)`, opacity: 0 }], { duration: T(ms), delay: T(delay), easing: 'cubic-bezier(.4,0,.6,1)', fill: 'both' });
+        };
+        shoot(90, 90, 560, 330, 150, 1000); shoot(300, 40, 700, 240, 850, 850);
+        const w = PT.water[0] || [120, 690, 550, 300], cx = w[0] + w[2] / 2, cy = w[1] + w[3] / 2;
+        for (let i = 0; i < 4; i++) spawn('pcx-ring', '', cx + rnd(-60, 60), cy + rnd(-40, 40)).animate([{ transform: 'translate(-50%,-50%) scale(.1)', opacity: 0 }, { opacity: 0.9, offset: 0.2 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 }], { duration: T(2000), delay: T(500 + i * 380), easing: 'ease-out', fill: 'both' });
+        sparks(16, cx, cy, 22);
+      },
+      // Rimba: halo bulan menguat, kunang-kunang dari seluruh hutan berkumpul ke bulan
+      moonfly() {
+        const [mx, my] = PT.moon || [475, 385];
+        pulse(spawn('pmoonf', '', mx, my), 3000, 0.95, 0.5, 1.5);
+        spawn('pcx-ring moon', '', mx, my).animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { opacity: 0.9, offset: 0.25 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 }], { duration: T(2400), delay: T(300), easing: 'ease-out', fill: 'both' });
+        for (let i = 0; i < 22; i++) {
+          const x = Math.min(BW - 20, Math.max(20, mx + rnd(-340, 340))), y = Math.min(BH - 100, Math.max(60, my + rnd(-140, 560))), e = spawn('pfb', '', x, y);
+          e.animate([{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: `translate(calc(-50% + ${cqx(mx - x)}cqw),calc(-50% + ${cqx(my - y)}cqw)) scale(1.3)`, opacity: 1, offset: 0.85 }, { transform: `translate(calc(-50% + ${cqx(mx - x)}cqw),calc(-50% + ${cqx(my - y)}cqw)) scale(.4)`, opacity: 0 }], { duration: T(rnd(2200, 3000)), delay: T(rnd(0, 600)), easing: 'cubic-bezier(.4,0,.3,1)', fill: 'both' });
+        }
+      },
+      // Klasik: blencong dinyalakan. Api membesar bergoyang, bara beterbangan
+      lamp() {
+        const [lx, ly] = PT.glow[0] ? [PT.glow[0][0], PT.glow[0][1]] : [410, 625];
+        spawn('pcx-flare', '', lx, ly).animate([
+          { opacity: 0, transform: 'translate(-50%,-50%) scale(.3)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.15)', offset: 0.25 }, { opacity: 0.65, offset: 0.38 }, { opacity: 1, offset: 0.5 },
+          { opacity: 0.75, offset: 0.62 }, { opacity: 1, offset: 0.75 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.6)' }], { duration: T(3000), easing: 'ease-out', fill: 'both' });
+        for (let i = 0; i < 16; i++) {
+          const e = spawn('pcx-ember', '', lx + rnd(-26, 26), ly + rnd(-10, 14)), dx = rnd(-10, 10), dy = rnd(-40, -14);
+          e.animate([{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(calc(-50% + ${dx.toFixed(1)}cqw),calc(-50% + ${dy.toFixed(1)}cqw)) scale(1)`, opacity: 0 }], { duration: T(rnd(1800, 2800)), delay: T(rnd(0, 800)), easing: 'ease-out', fill: 'both' });
+        }
+      },
+    };
     const fire = (ev) => {
       if (!ev) return;
       const [name, off] = String(ev).split('+');
@@ -722,6 +810,7 @@
         if (name === 'birds') picBirds(stage);
         if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 6, [r.width / 2, r.height * 0.5]); }
         if (name === 'curtain' && ctx.curtain) ctx.curtain();
+        if (name === 'cx' && PT.cx && CX[PT.cx]) CX[PT.cx]();
       };
       if (off) later(go, T(+off)); else go();
     };
