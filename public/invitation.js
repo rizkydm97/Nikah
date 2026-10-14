@@ -246,6 +246,7 @@
     return `<section class="sec hero pic pre" id="s-hero"><div class="pstage">
       <div class="pcam"><div class="pbox">
         <img class="pw" src="${t.world}" alt="" decoding="async">
+        <canvas class="pgl" aria-hidden="true"></canvas>
         <div class="pfxl">${picLayers()}</div>
         <img class="pcv" src="${t.cover}" alt="" decoding="async">
         <div class="ptext" style="${rectStyle([tx, ty, tx2 - tx, ty2 - ty])};--tc:${t.text};--tg:${t.glowText}">
@@ -306,6 +307,7 @@
     const box = $('.pbirds', stage); if (!box || !PT.birds || reduce) return;
     const [y0, y1] = PT.cloudBand[1] ? PT.cloudBand : [380, 470];
     const n = PT.birds === 'svg' ? 5 : 3, dir = Math.random() < 0.5 ? 1 : -1, y = y0 + Math.random() * (y1 - y0);
+    const flip = PT.birds === 'svg' ? 1 : -1; // sprite burung menghadap kiri, jadi dibalik saat terbang ke kanan
     for (let i = 0; i < n; i++) {
       const el = document.createElement('i'); el.className = 'pbd' + (PT.birds === 'svg' ? ' svg' : '');
       el.innerHTML = PT.birds === 'svg' ? SVGBIRD : `<img src="${sprite(PT.birds)}" alt="">`;
@@ -313,9 +315,9 @@
       box.appendChild(el);
       const sx = dir > 0 ? -12 : 108, ex = dir > 0 ? 112 : -14, yy = px(y) + i * 2.2 - (i % 2) * 3;
       const a = el.animate([
-        { transform: `translate(${sx - i * 4}cqw,${yy}cqw) scaleX(${dir})` },
-        { transform: `translate(${(sx + ex) / 2}cqw,${yy - 4}cqw) scaleX(${dir})`, offset: 0.5 },
-        { transform: `translate(${ex - i * 4}cqw,${yy - 1}cqw) scaleX(${dir})` },
+        { transform: `translate(${sx - i * 4}cqw,${yy}cqw) scaleX(${dir * flip})` },
+        { transform: `translate(${(sx + ex) / 2}cqw,${yy - 4}cqw) scaleX(${dir * flip})`, offset: 0.5 },
+        { transform: `translate(${ex - i * 4}cqw,${yy - 1}cqw) scaleX(${dir * flip})` },
       ], { duration: 9000 + i * 400, delay: i * 260, easing: 'linear', fill: 'both' });
       a.onfinish = () => el.remove();
     }
@@ -330,6 +332,79 @@
   function picAmbient(stage) { // efek yang terus hidup: burung sesekali lewat
     clearInterval(picAmb); if (reduce) return;
     picAmb = setInterval(() => { if (document.hidden || scrollY > innerHeight) return; picBirds(stage); }, 16000);
+  }
+
+  // ---------- parallax 3D: lukisan + peta kedalaman -> objek dekat bergerak lebih jauh dari objek jauh ----------
+  const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+  const FS = `precision highp float;varying vec2 v;uniform sampler2D uW,uD;uniform vec2 uF,uSw;uniform float uS;
+    const float A=.30,PK=.08;
+    void main(){
+      vec2 uv=v;
+      for(int i=0;i<2;i++){
+        float k=(texture2D(uD,uv).r-.5)*2.;
+        float sd=1.+(uS-1.)*(1.+A*k);
+        uv=uF+(v-uF)*uS/sd+((uF-.5)*PK+uSw)*k;
+      }
+      gl_FragColor=vec4(texture2D(uW,uv).rgb,1.);
+    }`;
+  let glRaf = 0, glPtr = [0, 0], glTgt = [0, 0];
+  function picGL(stage) {
+    cancelAnimationFrame(glRaf);
+    const cv = stage && $('.pgl', stage); if (!cv || reduce || !PT) return;
+    const box = cv.parentElement, cam = $('.pcam', stage), hero = stage.closest('.hero');
+    let gl = null;
+    try { gl = cv.getContext('webgl', { antialias: false, alpha: false }); } catch (e) { /* */ }
+    if (!gl) { cv.remove(); return; }
+    const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return gl.getShaderParameter(o, gl.COMPILE_STATUS) ? o : null; };
+    const vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS), pr = gl.createProgram();
+    if (!vs || !fs) { cv.remove(); return; }
+    gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { cv.remove(); return; }
+    gl.useProgram(pr);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = (n) => gl.getUniformLocation(pr, n);
+    const tex = (unit, im) => {
+      const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
+      [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]].forEach(([a, b]) => gl.texParameteri(gl.TEXTURE_2D, a, b));
+    };
+    const load = (u) => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = u; });
+    const key = PICT, coarse = matchMedia('(pointer:coarse)').matches;
+    Promise.all([load(PT.world), load('/assets/t/' + key + '/depth.png')]).then(([w, d]) => {
+      if (!cv.isConnected) return;
+      const cw = Math.min(coarse ? 1176 : 1568, w.naturalWidth || 1568);
+      cv.width = cw; cv.height = Math.round(cw * BH / BW); gl.viewport(0, 0, cv.width, cv.height);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      tex(0, w); tex(1, d);
+      gl.uniform1i(U('uW'), 0); gl.uniform1i(U('uD'), 1);
+      const uF = U('uF'), uS = U('uS'), uSw = U('uSw');
+      let vis = true, last = 0, shown = false;
+      if ('IntersectionObserver' in window) { const io = new IntersectionObserver((e) => { vis = e[0].isIntersecting; }); io.observe(stage); observers.push(io); }
+      const mv = (e) => { glTgt = [(e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2]; };
+      addEventListener('pointermove', mv, { passive: true, signal: AC.signal });
+      addEventListener('deviceorientation', (e) => { if (e.gamma == null) return; glTgt = [Math.max(-1, Math.min(1, e.gamma / 25)), Math.max(-1, Math.min(1, (e.beta - 50) / 25))]; }, { passive: true, signal: AC.signal });
+      const tick = (t) => {
+        glRaf = requestAnimationFrame(tick);
+        if (!cv.isConnected) { cancelAnimationFrame(glRaf); return; }
+        if (!vis || document.hidden) return;
+        const film = hero.classList.contains('filming');
+        if (!film && t - last < 33) return;
+        last = t;
+        glPtr[0] += (glTgt[0] - glPtr[0]) * 0.06; glPtr[1] += (glTgt[1] - glPtr[1]) * 0.06;
+        let s = 1, dx = 0, dy = 0;
+        const tr = getComputedStyle(cam).transform;
+        if (tr && tr !== 'none') { const m = new DOMMatrixReadOnly(tr); s = m.a || 1; dx = -m.e / s; dy = -m.f / s; }
+        const sec = t / 1000;
+        const sx = Math.sin(sec * 0.45) * 0.011 + glPtr[0] * 0.016, sy = Math.cos(sec * 0.33) * 0.007 + glPtr[1] * 0.010;
+        gl.uniform2f(uF, 0.5 + dx / box.offsetWidth, 0.5 + dy / box.offsetHeight);
+        gl.uniform1f(uS, s); gl.uniform2f(uSw, sx, sy);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        if (!shown) { shown = true; cv.classList.add('on'); }
+      };
+      glRaf = requestAnimationFrame(tick);
+    }).catch(() => cv.remove());
   }
   // kamera: titik (x,y) gambar ke tengah layar dengan perbesaran s (tidak keluar tepi gambar)
   function camT(stage, x, y, s) {
@@ -588,6 +663,7 @@
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
     }
     bind(cfg);
+    if (PT) picGL($('#s-hero .pstage'));
     if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
   }
 

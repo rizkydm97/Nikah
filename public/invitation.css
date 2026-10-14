@@ -687,6 +687,8 @@ a{color:inherit}
 .pbox{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * 784 / 1168));aspect-ratio:784/1168;transform:translate(-50%,-50%);container-type:inline-size;overflow:hidden}
 .pbox>.pw,.pbox>.pcv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none}
 .pbox>.pcv{z-index:4;transition:opacity 1s ease}
+.pbox>.pgl{position:absolute;inset:0;width:100%;height:100%;max-width:none;opacity:0;transition:opacity .5s ease}
+.pbox>.pgl.on{opacity:1}
 .hero.pic.shown .pcv{opacity:0!important;visibility:hidden}
 .pfxl{position:absolute;inset:0;z-index:2;pointer-events:none}
 .pfxl>*{position:absolute}
@@ -786,3 +788,6 @@ a{color:inherit}
 .t-pic .edge.top{height:auto;aspect-ratio:1000/700}.t-pic .edge.bottom{height:auto;aspect-ratio:1000/640}
 .t-pic .gallery>.h-display{--tc:#fff;text-shadow:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
 .t-pic .couple .script{--tc:var(--primary);color:var(--primary)}
+/* Tema 7 (Rimba): kotak judul pendek, kecilkan teks agar tidak menimpa bingkai emas */
+.t-rimba .ptext .pn{font-size:8.8cqw;margin-top:.4cqw}
+.t-rimba .ptext .pk{font-size:3.2cqw}
