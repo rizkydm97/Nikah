@@ -46,3 +46,17 @@
 /* bayangan pada sprite yang terus bergoyang di-raster ulang tiap frame -> dilepas */
 .imm-fg .it img,.sx-bloom .bl img{filter:none}
 .imm-veil{will-change:opacity}
+
+/* ===== perbaikan v30 ===== */
+/* Judul memakai teks gradien (background-clip:text, warna teks transparan). Tiap kata hasil pemisahan harus membawa gradiennya sendiri,
+   kalau tidak hurufnya transparan = judul "hilang". */
+.swx .sw{background:linear-gradient(110deg,var(--tc,currentColor) 0 45%,#f7e2a8 50%,var(--tc,currentColor) 55% 100%) 100% 0/300% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--tc,inherit)}
+.swx.in .sw{animation:gleam 7s ease-in-out 1.2s infinite}
+/* galeri Tema 3-8: hanya animasi yang jalan di compositor. Ken-Burns, kilau (background-position) dan slShine memaksa repaint tiap frame */
+.t-pic .gallery .masonry .mi.rv.in img{animation:none}
+.t-pic .gallery .mi::after,.t-pic .gallery .gi::after,.t-pic .gallery .sl::after{animation:none!important;display:none}
+.t-pic .gallery .mi img,.t-pic .gallery .gi img{transform:translateZ(0)}
+.t-pic .gallery .gslider{contain:layout paint;transform:translateZ(0)}
+.t-pic .gallery .masonry .mi{contain:layout paint}
+/* gradien dipindah ke tiap kata; h2 induk tidak perlu melukis gradien lagi */
+.swx{background:none!important;animation:none!important}

@@ -850,7 +850,7 @@
     const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
     let rest = '';
     if (lay === 'grid') rest = `<div class="grid">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
-    else if (lay === 'masonry') rest = `<div class="masonry">${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy"></figure>`).join('')}</div>`;
+    else if (lay === 'masonry') rest = `<div class="masonry">${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async"></figure>`).join('')}</div>`;
     return strip + rest;
   }
   let sliderStop = null;
@@ -1093,7 +1093,7 @@
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       const on = e.isIntersecting;
       (groups.get(e.target) || []).forEach((t) => {
-        t.classList.toggle('in', on);
+        if (on) t.classList.add('in'); else if (!(PT && t.closest && t.closest('.gallery'))) t.classList.remove('in'); // Tema 3-8: galeri cukup sekali animasi (tidak diulang tiap scroll)
         if (on && t.id === 'cds' && cdsRun) cdsRun();
         if (t.classList.contains('vid')) vidCtl(t, on);
       });

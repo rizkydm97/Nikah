@@ -40,7 +40,7 @@
       if (e.isIntersecting) { vis.add(el); if (im) im.style.willChange = 'transform'; } else { vis.delete(el); if (im) im.style.willChange = ''; }
     }), { rootMargin: '10% 0px' }) : null;
     if (E('bgParallax') && !lite) $$('.sec:not(.hero)').forEach((s) => { const im = $('.bgl img', s); if (im) { im.style.scale = '1.12'; s._sxim = im; bgs.push({ s, im, last: 1e9 }); io && io.observe(s); } });
-    if (E('galleryFx') && !lite) $$('.gallery .mi, .gallery .gi').forEach((t) => { const im = $('img', t); if (im) { t._sxim = im; tiles.push({ t, im, last: -1 }); io && io.observe(t); } });
+    // efek skala foto galeri per-scroll dihapus: mengubah `scale` tiap frame membuat galeri tersendat
     if (!io) bgs.concat(tiles).forEach((o) => vis.add(o.s || o.t));
   }
   // HP kelas bawah: matikan parallax latar & efek galeri (paling berat), sisanya tetap jalan
