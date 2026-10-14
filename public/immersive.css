@@ -2,7 +2,7 @@
 .imm-fg{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 2.2s ease}
 .imm-fg.on{opacity:1}
 .imm-fg .it{position:absolute;left:0;top:0;will-change:transform}
-.imm-fg .it img{display:block;width:100%;height:auto;animation:immsway var(--d,9s) ease-in-out var(--dl,0s) infinite alternate;will-change:transform;filter:drop-shadow(0 2px 3px rgba(0,0,0,.18))}
+.imm-fg .it img{display:block;width:100%;height:auto;animation:immsway var(--d,9s) ease-in-out var(--dl,0s) infinite alternate;will-change:transform;}
 @keyframes immsway{from{transform:translate3d(-14%,0,0) rotate(-14deg)}to{transform:translate3d(14%,3%,0) rotate(16deg)}}
 .imm-fg .it.cl img{animation-name:immcl;filter:none}
 @keyframes immcl{from{transform:translate3d(-6%,0,0)}to{transform:translate3d(8%,-2%,0)}}

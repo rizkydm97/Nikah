@@ -31,13 +31,20 @@
   }
 
   // ---- sorotan elemen bergantung scroll ----
+  // will-change hanya dipasang saat elemen terlihat (hemat memori GPU), dilepas saat keluar layar.
   const vis = new Set(); let tiles = [], bgs = [];
   function collect() {
-    const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { e.isIntersecting ? vis.add(e.target) : vis.delete(e.target); }), { rootMargin: '10% 0px' }) : null;
-    if (E('bgParallax')) $$('.sec:not(.hero)').forEach((s) => { const im = $('.bgl img', s); if (im) { bgs.push({ s, im }); io && io.observe(s); } });
-    if (E('galleryFx')) $$('.gallery .mi, .gallery .gi').forEach((t) => { const im = $('img', t); if (im) { tiles.push({ t, im }); io && io.observe(t); } });
+    const lite = lowEnd();
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => {
+      const el = e.target, im = el._sxim;
+      if (e.isIntersecting) { vis.add(el); if (im) im.style.willChange = 'transform'; } else { vis.delete(el); if (im) im.style.willChange = ''; }
+    }), { rootMargin: '10% 0px' }) : null;
+    if (E('bgParallax') && !lite) $$('.sec:not(.hero)').forEach((s) => { const im = $('.bgl img', s); if (im) { im.style.scale = '1.12'; s._sxim = im; bgs.push({ s, im, last: 1e9 }); io && io.observe(s); } });
+    if (E('galleryFx') && !lite) $$('.gallery .mi, .gallery .gi').forEach((t) => { const im = $('img', t); if (im) { t._sxim = im; tiles.push({ t, im, last: -1 }); io && io.observe(t); } });
     if (!io) bgs.concat(tiles).forEach((o) => vis.add(o.s || o.t));
   }
+  // HP kelas bawah: matikan parallax latar & efek galeri (paling berat), sisanya tetap jalan
+  function lowEnd() { const m = navigator.deviceMemory, c = navigator.hardwareConcurrency; return (m && m <= 3) || (c && c <= 3); }
 
   // ---- 3/4/5. ornamen mekar, garis perjalanan, langit ----
   let L = {};
@@ -45,23 +52,54 @@
     if (E('bloomOrnament')) {
       L.bloom = make('div', 'sx-bloom');
       L.glow = make('div', 'sx-glow'); L.glow.style.cssText = `left:${T.glow[0]};top:${T.glow[1]};background:radial-gradient(circle,${T.glow[2]},transparent 65%)`;
-      L.ff = Array.from({ length: T.ff }, (_, i) => { const r = (k) => (Math.sin((i + 3) * 7919 + k * 4001) + 1) / 2, d = make('i', 'ff', L.bloom); d.style.cssText = `left:${(r(1) * 94 + 3).toFixed(1)}%;top:${(r(2) * 88 + 4).toFixed(1)}%;--c:${T.col};animation-duration:${(5 + r(3) * 6).toFixed(1)}s;animation-delay:${(-r(4) * 8).toFixed(1)}s`; return d; });
+      L.ff = Array.from({ length: lowEnd() ? Math.ceil(T.ff / 2) : T.ff }, (_, i) => { const r = (k) => (Math.sin((i + 3) * 7919 + k * 4001) + 1) / 2, d = make('i', 'ff', L.bloom); d.style.cssText = `left:${(r(1) * 94 + 3).toFixed(1)}%;top:${(r(2) * 88 + 4).toFixed(1)}%;--c:${T.col};animation-duration:${(5 + r(3) * 6).toFixed(1)}s;animation-delay:${(-r(4) * 8).toFixed(1)}s`; return d; });
     }
-    if (E('skyShift')) L.sky = make('div', 'sx-sky');
+    if (E('skyShift')) { L.sky = make('div', 'sx-sky'); L.skyL = ['255,176,120,.15', '130,80,140,.22', '18,28,95,.3'].map((c) => { const d = make('i', '', L.sky); d.style.background = `rgba(${c})`; return d; }); }
   }
-  const STOPS = [[0, [255, 255, 255, 0]], [.4, [255, 176, 120, .15]], [.75, [130, 80, 140, .22]], [1, [18, 28, 95, .3]]];
-  function skyAt(p) { let i = 0; while (i < STOPS.length - 2 && p > STOPS[i + 1][0]) i++; const [a, A] = STOPS[i], [b, B] = STOPS[i + 1], t = clamp((p - a) / (b - a), 0, 1); return A.map((v, k) => lerp(v, B[k], t)); }
+  // Sky: tiga lapisan warna statis, hanya opacity yang berubah (jalur compositor, tanpa repaint layar penuh)
+  const tri = (p, a, b, c) => (p <= a || p >= c ? 0 : p < b ? (p - a) / (b - a) : 1 - (p - b) / (c - b));
+  let H = innerHeight, max = 1, lastP = -1, lastY = -1, shown = false;
+  const measure = () => { H = innerHeight; max = Math.max(1, document.documentElement.scrollHeight - H); lastY = -1; };
 
   function frame() {
-    const H = innerHeight, max = Math.max(1, document.documentElement.scrollHeight - H), sy = scrollY, p = clamp(sy / max, 0, 1), dark = !!PT.dark;
+    const sy = scrollY;
+    if (sy === lastY) return; lastY = sy;
+    const p = clamp(sy / max, 0, 1), dark = !!PT.dark;
+    if (!shown) shown = !!(hero && hero.classList.contains('shown'));
+    // --- fase BACA: semua getBoundingClientRect sekaligus (tanpa tulis di antaranya = tanpa layout thrash)
+    const bo = [], to = [];
+    for (const o of bgs) if (vis.has(o.s)) { const r = o.s.getBoundingClientRect(); bo.push([o, clamp(((r.top + r.height / 2) - H / 2) * -.1, -42, 42)]); }
+    for (const o of tiles) if (vis.has(o.t)) { const r = o.t.getBoundingClientRect(); to.push([o, clamp(Math.abs(r.top + r.height / 2 - H / 2) / (H * .55), 0, 1)]); }
+    // --- fase TULIS
     if (L.glow) {
-      const sh0 = hero && hero.classList.contains('shown'); L.bloom.style.opacity = sh0 ? 1 : 0; L.glow.style.opacity = sh0 ? (.15 + p * .6).toFixed(2) : 0; const n = Math.floor(3 + p * (L.ff.length - 3)); L.ff.forEach((d, i) => d.classList.toggle('on', i < n)); }
-    if (false) { const sh = hero && hero.classList.contains('shown') && sy > H * .3; L.jr.classList.toggle('on', !!sh); L.jf.style.height = (p * 100).toFixed(1) + '%'; L.jm.style.top = (p * 100).toFixed(1) + '%'; }
-    if (L.sky) { const c = skyAt(p), a = c[3] * (dark ? .6 : 1); L.sky.style.background = `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a.toFixed(3)})`; L.sky.style.opacity = hero && hero.classList.contains('shown') ? 1 : 0; }
-    bgs.forEach(({ s, im }) => { if (!vis.has(s)) return; const r = s.getBoundingClientRect(), off = clamp(((r.top + r.height / 2) - H / 2) * -.1, -42, 42); im.style.scale = '1.12'; im.style.translate = `0 ${off.toFixed(1)}px`; });
-    tiles.forEach(({ t, im }) => { if (!vis.has(t)) return; const r = t.getBoundingClientRect(), d = clamp(Math.abs(r.top + r.height / 2 - H / 2) / (H * .55), 0, 1); im.style.scale = (1 + (1 - d) * .06).toFixed(3); im.style.filter = `brightness(${(.8 + .2 * (1 - d)).toFixed(3)}) saturate(${(.9 + .15 * (1 - d)).toFixed(2)})`; });
+      L.bloom.style.opacity = shown ? 1 : 0; L.glow.style.opacity = shown ? (.15 + p * .6).toFixed(2) : 0;
+      const n = Math.floor(3 + p * (L.ff.length - 3));
+      if (n !== lastP) { lastP = n; L.ff.forEach((d, i) => d.classList.toggle('on', i < n)); }
+    }
+    if (L.sky) {
+      L.sky.style.opacity = shown ? (dark ? .6 : 1) : 0;
+      L.skyL[0].style.opacity = tri(p, -.01, .4, .75).toFixed(3); L.skyL[1].style.opacity = tri(p, .4, .75, 1.01).toFixed(3); L.skyL[2].style.opacity = clamp((p - .75) / .25, 0, 1).toFixed(3);
+    }
+    for (const [o, off] of bo) { const v = Math.round(off * 2) / 2; if (v !== o.last) { o.last = v; o.im.style.translate = `0 ${v}px`; } }
+    for (const [o, d] of to) { const v = (1 + (1 - d) * .05).toFixed(3); if (v !== o.last) { o.last = v; o.im.style.scale = v; } }
   }
   let busy = false; const sched = () => { if (!busy) { busy = true; requestAnimationFrame(() => { busy = false; frame(); }); } };
+
+  // Animasi tak-berujung (kilau, goyang, ken-burns) dijeda untuk bagian yang jauh dari layar
+  function pauseOffscreen() {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('sx-off', !e.isIntersecting)), { rootMargin: '25% 0px' });
+    const scan = () => $$('.sec:not(.hero):not([data-sxo])').forEach((s) => { s.dataset.sxo = 1; io.observe(s); });
+    scan(); const app = $('#app'); if (app && window.MutationObserver) { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(scan, 300); }).observe(app, { childList: true }); }
+  }
+  // Decode gambar saat browser menganggur supaya tidak decode (dan patah) saat pertama kali di-scroll
+  function predecode() {
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+    const q = []; const seen = new WeakSet();
+    const fill = () => $$('#app img').forEach((im) => { if (!seen.has(im) && im.decode) { seen.add(im); q.push(im); } });
+    const step = () => { const im = q.shift(); if (!im) return; (im.complete || im.src ? im.decode() : Promise.resolve()).catch(() => {}).then(() => idle(step)); };
+    setTimeout(() => { fill(); idle(step); }, 1200); setTimeout(() => { fill(); if (q.length) idle(step); }, 5000);
+  }
 
   function haptics() {
     if (!E('haptic') || !('IntersectionObserver' in window)) return;
@@ -74,9 +112,12 @@
     document.body.classList.toggle('sx-cd', E('countdownFlip')); document.body.classList.toggle('sx-wish', E('wishFloat'));
     document.body.style.setProperty('--sxc', T.col);
     if (!reduce) {
-      if (E('scrollReveal')) { splitHeads(); setInterval(splitHeads, 2500); } // bagian dirender bertahap -> pindai ulang
-      collect(); build(); frame();
-      addEventListener('scroll', sched, { passive: true }); addEventListener('resize', sched, { passive: true });
+      if (E('scrollReveal')) { splitHeads(); const app = $('#app'); if (app && window.MutationObserver) { let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(splitHeads, 250); }).observe(app, { childList: true, subtree: true }); } } // bagian dirender bertahap -> pindai saat DOM berubah
+      measure(); collect(); build(); frame(); pauseOffscreen(); predecode();
+      if (window.MutationObserver) new MutationObserver(() => { measure(); sched(); }).observe(hero, { attributes: true, attributeFilter: ['class'] }); // hero 'shown' -> tampilkan lapisan suasana tanpa menunggu scroll
+      addEventListener('scroll', sched, { passive: true });
+      let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { measure(); sched(); }, 150); }, { passive: true });
+      if (window.ResizeObserver) { let rt = 0; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { measure(); sched(); }, 200); }).observe(document.body); } // tinggi halaman berubah saat bagian dirender
     }
     haptics();
   }
