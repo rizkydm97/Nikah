@@ -23,13 +23,23 @@
     rose: { floralTop: '/assets/rose/rose-top.webp', floralBottom: '/assets/rose/rose-bottom.webp', column: '/assets/rose/rose-column.webp', frameArc: '/assets/rose/rose-frame-arc.webp', frameSide: '/assets/rose/rose-frame-side.webp', flowers: '/assets/rose/rose-bouquet.webp' },
   };
   const FL_FILE = { floralTop: 'top', floralBottom: 'bottom', column: 'column', frameArc: 'frame-arc', frameSide: 'frame-side', flowers: 'bouquet' };
-  let PAL = 'auto';
+  let PAL = 'auto', PT = null, PICT = null; // PT = data tema bergambar (Tema 3-8)
   function effective(cfg) {
-    THEME = (cfg.theme && cfg.theme.preset) === 'rose' ? 'rose' : 'jawa';
+    const pre = cfg.theme && cfg.theme.preset;
+    PT = (window.PIC_THEMES && window.PIC_THEMES[pre]) || null; PICT = PT ? pre : null;
+    THEME = PT ? PT.base : pre === 'rose' ? 'rose' : 'jawa';
     CLOUDS = CLOUD_SETS[THEME];
     const out = THEME === 'rose' ? Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene, cfg.scene2 || {}) }) : Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene) });
     PAL = PAL_HUE[cfg.theme && cfg.theme.palette] !== undefined ? cfg.theme.palette : 'auto';
-    if (PAL !== 'auto' && PAL !== NATIVE[THEME]) {
+    if (PT && PAL === 'auto') PAL = PT.pal;
+    if (PT) {
+      out.scene.palace = PT.bg; out.scene.sky = PT.bg;
+      // hiasan dalam milik tema (hanya mengganti gambar bawaan; gambar yang diunggah sendiri tetap dipakai)
+      const D0 = Object.assign({}, DEF_FL.jawa, { ornament: '/assets/default/ornament.svg' }), D1 = DEF_FL.rose;
+      for (const k in PT.deco) { const v = out.scene[k]; if (!v || v === D0[k] || v === D1[k] || /\/assets\/(pal|default)\//.test(v)) out.scene[k] = PT.deco[k]; }
+      if (out.couple && (!out.couple.flower || out.couple.flower === DEF_FL.jawa.flowers || out.couple.flower === DEF_FL.rose.flowers)) out.couple = Object.assign({}, out.couple, { flower: PT.deco.flowers });
+    }
+    if (!PT && PAL !== 'auto' && PAL !== NATIVE[THEME]) {
       for (const k in FL_FILE) if (out.scene[k] === DEF_FL[THEME][k]) out.scene[k] = `/assets/pal/${PAL}/${THEME}-${FL_FILE[k]}.webp`;
       if (THEME === 'rose') {
         const RS = { sky: 'rose-sky.jpg', treeline: 'rose-trees.webp', house: 'rose-pavilion.webp', curtain: 'rose-curtain.webp', palace: 'rose-palace.jpg' };
@@ -78,7 +88,7 @@
   const PLACEHOLDER = ['/assets/default/couple-wide.svg', '/assets/default/paper.svg', '/assets/default/sky.svg', '/assets/scene/sky-v2.jpg'];
   function bgl(o, k, src) {
     let u = safeUrl(src !== undefined ? src : o && o[k]);
-    if (THEME === 'rose' && C && safeUrl(C.scene.palace) && (!u || PLACEHOLDER.includes(u))) return `<div class="bgl palace"><img class="pimg" src="${esc(C.scene.palace)}" alt="" decoding="async"></div>`;
+    if ((THEME === 'rose' || PT) && C && safeUrl(C.scene.palace) && (!u || PLACEHOLDER.includes(u) || (PT && u === C.scene.sky && !src))) return `<div class="bgl palace"><img class="pimg" src="${esc(C.scene.palace)}" alt="" decoding="async"></div>`;
     if (!u) return '';
     const a = adj(o, k);
     if (a.fit === 'contain') return `<div class="bgl"><span class="bfill" style="background-image:${cssUrl(u)}"></span><img class="pimg contain" src="${esc(u)}" alt="" decoding="async" style="${adjStyle(a)}"></div>`;
@@ -127,7 +137,7 @@
     if (c.effects.intro !== false) ld.innerHTML = `<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
     ld.classList.add('ready');
     const s = c.scene;
-    const urls = [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS].map(safeUrl).filter(Boolean);
+    const urls = PT ? [PT.cover, PT.world, ...PT.bf.map((n) => PT.spr + n + '.webp')].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
@@ -160,11 +170,11 @@
     });
     let l = $('#gfonts'); if (!l) { l = document.createElement('link'); l.id = 'gfonts'; l.rel = 'stylesheet'; document.head.appendChild(l); }
     const href = 'https://fonts.googleapis.com/css2?' + fams.join('&') + '&display=swap'; if (l.href !== href) l.href = href;
-    r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide));
+    r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide)); r.setProperty('--div', PT ? cssUrl(PT.divider) : 'none'); r.setProperty('--motif', PT && PT.motif ? cssUrl(PT.motif) : 'none');
     document.title = c.general.title || document.title;
     const b = document.body.classList;
     { let d = PAL === 'auto' ? 0 : (PAL_HUE[PAL] - 0.95) * 360; d = ((d + 540) % 360) - 180; r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', PAL === 'champagne' ? '.45' : '1'); }
-    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose');
+    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
   }
 
@@ -176,16 +186,30 @@
   }
   // titik cahaya keemasan yang berkelip & melayang pelan
   const sparkles = (n) => `<div class="sparkles" aria-hidden="true">${Array.from({ length: n }, (_, i) => { const r = (k) => ((Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2); return `<i style="left:${(r(1) * 96 + 2).toFixed(1)}%;top:${(r(2) * 80 + 8).toFixed(1)}%;--s:${(2 + r(3) * 4).toFixed(1)}px;animation-duration:${(5 + r(4) * 6).toFixed(1)}s;animation-delay:${(-r(5) * 10).toFixed(1)}s"></i>`; }).join('')}</div>`;
-  const halves = (src) => safeUrl(src) ? `<div class="half l">${img(src)}</div><div class="half r">${img(src)}</div>` : '';
+  // daun pisang dipisah dari bunga -> tiap daun bergoyang sendiri (poros di pangkal daun)
+  // [nama, left%, top%, width%, originX%, originY%, amplitudo deg, durasi s]
+  const LEAVES = [['g', 0, 62.66, 9.3, 26.9, 90.8, 3.2, 5.4], ['a', 0, 24.06, 11.5, 43.5, 100, 2.1, 6.6], ['b', 4.7, 47.03, 11.9, 63, 84, 3, 5.1], ['e', 22.9, 72.5, 19.8, 35.9, 41, 2.6, 4.7], ['d', 22.8, 54.06, 16.3, 20.9, 67.5, -2.8, 5.8], ['f', 15.5, 73.28, 14, 42.9, 58.2, 2.4, 4.4], ['c', 13.1, 42.97, 16.1, 30.4, 92.3, -2.2, 6.2]];
+  const leafSplit = (u) => /\/assets\/scene\/floral-bottom-v2\.webp$/.test(u) ? u.replace('floral-bottom-v2', 'floral-bottom-nl') : /\/assets\/pal\/\w+\/jawa-bottom\.webp$/.test(u) ? u.replace('jawa-bottom.webp', 'jawa-bottom-nl.webp') : '';
+  const leafHtml = () => `<div class="lfg" aria-hidden="true"><div class="lfm">${LEAVES.map(([n, l, t, w, ox, oy, a, d], i) => `<i class="lf" style="left:${l}%;top:${t}%;width:${w}%;transform-origin:${ox}% ${oy}%;--a:${a}deg;--d:${d}s;--dl:${(-i * 1.37).toFixed(2)}s"><img src="/assets/scene/leaf-${n}.webp" alt="" decoding="async"></i>`).join('')}</div></div>`;
+  const fimg = (src) => { const u = safeUrl(src), nl = u && C && C.effects.sway !== false && !reduce ? leafSplit(u) : ''; return nl ? `${leafHtml()}<img class="fln" src="${esc(nl)}" alt="" decoding="async">` : img(src); };
+  const halves = (src) => safeUrl(src) ? `<div class="half l">${fimg(src)}</div><div class="half r">${fimg(src)}</div>` : '';
+  // ---------- nuansa Jawa: burung, kunang-kunang, sinar matahari, batik, gunungan ----------
+  const JFX = () => THEME !== 'rose' && C && C.effects.javaFx !== false && !reduce && (!PT || ['klasik', 'emas', 'bali'].includes(PICT));
+  const BIRD = '<svg viewBox="0 0 24 12"><path d="M0 4 Q6 0 12 6 Q18 0 24 4 Q18 2.6 12 8.4 Q6 2.6 0 4Z"/></svg>';
+  const birds = () => `<div class="ly birds" aria-hidden="true">${[[14, 46, 0, 4], [22, 58, -21, 3], [9, 38, -37, 2]].map(([top, dur, dl, n], f) => `<div class="flock" style="top:${top}%;animation-duration:${dur}s;animation-delay:${dl}s">${Array.from({ length: n }, (_, i) => `<i class="bd" style="left:${i * 17 + (i % 2) * 6}px;top:${(i % 2) * 9 + i * 3}px;--fl:${(0.42 + ((i + f) % 3) * 0.07).toFixed(2)}s;--sz:${(f === 2 ? 13 : 17) - i}px">${BIRD}</i>`).join('')}</div>`).join('')}</div>`;
+  const fireflies = (n) => `<div class="ffs" aria-hidden="true">${Array.from({ length: n }, (_, i) => { const r = (k) => ((Math.sin((i + 3) * 7919 + k * 3571) + 1) / 2); return `<i class="ff v${i % 3}" style="left:${(r(1) * 92 + 4).toFixed(1)}%;bottom:${(6 + r(2) * 30).toFixed(1)}%;animation-duration:${(7 + r(3) * 7).toFixed(1)}s,${(1.6 + r(4) * 2.2).toFixed(1)}s;animation-delay:${(-r(5) * 12).toFixed(1)}s,${(-r(6) * 3).toFixed(1)}s"></i>`; }).join('')}</div>`;
+  const GUN = '/assets/scene/gunungan.webp';
   function scene(c) {
     const s = c.scene;
     return `<div class="scene">
       <div class="cam">
         <div class="ly sky" style="background-image:${cssUrl(s.sky)}"></div>
         ${clouds()}
+        ${JFX() ? birds() : ''}
         ${safeUrl(s.treeline) ? `<div class="ly trees">${img(s.treeline)}</div>` : ''}
         ${c.effects.showTree !== false && safeUrl(s.tree) ? `<div class="ly tree"><div class="tree-in">${img(s.tree)}<i class="lamp"></i></div></div>` : ''}
         <div class="ly hs"><div class="hs-in">${img(s.house)}${safeUrl(s.curtain) ? `<div class="curt l">${img(s.curtain)}</div><div class="curt r">${img(s.curtain)}</div>` : ''}<div class="glow"></div></div></div>
+        ${JFX() ? `<div class="rays" aria-hidden="true"><i></i><i></i><i></i><i></i></div>${fireflies(14)}` : ''}
         <div class="haze"></div>
       </div>
       <div class="flash"></div>
@@ -197,6 +221,173 @@
     </div>`;
   }
 
+  // ================= Tema bergambar (3-8): cover = lukisan, "film" pembuka bertahap, efek hidup =================
+  const BW = 784, BH = 1168;
+  const px = (v) => +(v / BW * 100).toFixed(3); // koordinat dasar -> % lebar gambar
+  const py = (v) => +(v / BH * 100).toFixed(3);
+  const rectStyle = (r) => `left:${px(r[0])}%;top:${py(r[1])}%;width:${px(r[2])}%;height:${py(r[3])}%`;
+  const sprite = (n) => PT.spr + n + '.webp';
+  function picLayers() {
+    const t = PT; let h = '';
+    t.glow.forEach(([x, y, r, col], i) => { h += `<i class="pglow${t.lamp && i === 0 ? ' lamp' : ''}" style="left:${px(x - r)}%;top:${py(y - r)}%;width:${px(r * 2)}%;background:radial-gradient(circle,${col},transparent 68%);animation-delay:${-i * 1.7}s"></i>`; });
+    if (t.rays) h += `<div class="prays" style="left:${px(t.rays[0])}%;top:${py(t.rays[1])}%">${'<i></i>'.repeat(7)}</div>`;
+    t.clouds.forEach((n, i) => { const y = t.cloudBand[0] + (t.cloudBand[1] - t.cloudBand[0]) * ((i * 0.53) % 1); const d = 70 + i * 23; h += `<img class="pcl" src="${sprite(n)}" alt="" style="top:${py(y)}%;width:${15 + (i % 2) * 6}%;animation-duration:${d}s;animation-delay:${-d * ((i * 0.41 + 0.2) % 1)}s">`; });
+    t.wf.forEach(([x, y, w, hh]) => { h += `<div class="pwf" style="${rectStyle([x, y, w, hh])}"><i></i><i></i></div>`; });
+    t.water.forEach((r, i) => { h += `<div class="pwt" style="${rectStyle(r)}"><i style="animation-delay:${-i * 3}s"></i></div>`; });
+    t.mist.forEach(([x, y, w, hh, slow], i) => { h += `<img class="pms${slow ? ' slow' : ''}" src="/assets/t/fx/mist.webp" alt="" style="${rectStyle([x, y, w, hh])};animation-delay:${-i * 2.3}s">`; });
+    if (t.sparkle) h += sparkles(t.sparkle);
+    if (t.flies) { const [x0, y0, x1, y1] = t.flies; h += `<div class="pff" style="${rectStyle([x0, y0, x1 - x0, y1 - y0])}">${fireflies(16)}</div>`; }
+    h += '<div class="pbirds"></div>';
+    if (t.carriage) h += `<img class="pcar" src="${sprite('carriage')}" alt="">`;
+    return h;
+  }
+  function picHero(c) {
+    const h = c.hero, t = PT, [bx, by, bx2, by2, br] = t.btn, [tx, ty, tx2, ty2] = t.title;
+    return `<section class="sec hero pic pre" id="s-hero"><div class="pstage">
+      <div class="pcam"><div class="pbox">
+        <img class="pw" src="${t.world}" alt="" decoding="async">
+        <div class="pfxl">${picLayers()}</div>
+        <img class="pcv" src="${t.cover}" alt="" decoding="async">
+        <div class="ptext" style="${rectStyle([tx, ty, tx2 - tx, ty2 - ty])};--tc:${t.text};--tg:${t.glowText}">
+          <div class="pk">${esc(h.kicker)}</div><h1 class="pn"><span>${esc(h.groom)}</span><i>&amp;</i><span>${esc(h.bride)}</span></h1></div>
+        <div class="pplate" style="${rectStyle([bx, by, bx2 - bx, by2 - by])};--br:${px(br)}cqw"><b>${esc(h.dateText)}</b><span>${esc(h.hashtag)}</span></div>
+      </div></div>
+      <div class="pfx"></div><div class="pbars"><i></i><i></i></div>
+      <button class="pskip" type="button" hidden>Lewati &rsaquo;</button>
+      <div class="scroll-hint"></div></div></section>`;
+  }
+  function picCover(c) {
+    const o = c.cover, t = PT, [bx, by, bx2, by2, br] = t.btn;
+    return `<div class="cover pic" id="cover"><div class="pbox ui">
+      <div class="pc-names" style="top:${py(t.namesY)}%;--tc:${t.text};--tg:${t.glowText}">${esc(o.names)}</div>
+      <div class="pc-guest" style="top:${py(t.guestY)}%"><span>${esc(o.toLabel)}</span><b>${esc(guest || o.defaultGuest)}</b></div>
+      <button class="pc-btn" id="openBtn" aria-label="${esc(o.button)}" style="${rectStyle([bx, by, bx2 - bx, by2 - by])};border-radius:${px(br)}cqw"></button>
+    </div><div class="flyers"></div></div>`;
+  }
+  // kupu-kupu dari lembar aset: sayap kiri & kanan mengepak 3D
+  function rbf(n, size) {
+    const el = document.createElement('div'); el.className = 'rbf';
+    el.style.width = size + 'px'; el.style.height = size + 'px';
+    const u = sprite(n), d = (0.16 + Math.random() * 0.1).toFixed(2);
+    el.innerHTML = `<div class="rb-in"><i class="l" style="background-image:url(${u});animation-duration:${d}s"></i><i class="r" style="background-image:url(${u});animation-duration:${d}s"></i></div>`;
+    return el;
+  }
+  function picFlyers(box, n, from) {
+    if (!box || !C.effects.butterflies || reduce || !PT.bf.length) return;
+    const W0 = box.clientWidth || 400, H0 = box.clientHeight || 700;
+    for (let i = 0; i < n; i++) {
+      const s = 30 + Math.random() * 26, el = rbf(PT.bf[i % PT.bf.length], s);
+      box.appendChild(el);
+      let x = from ? from[0] - s / 2 : (i % 2 ? W0 + 40 : -s - 40), y = from ? from[1] - s / 2 : H0 * (0.15 + Math.random() * 0.5);
+      el.style.transform = `translate(${x}px,${y}px) scale(${from ? 0.2 : 1})`;
+      let first = !!from;
+      const go = () => {
+        if (!el.isConnected) return;
+        const W = box.clientWidth || 400, H = box.clientHeight || 700;
+        let nx, ny;
+        if (first) { const a = (i / n) * Math.PI * 2 + Math.random() * 0.5, r = Math.min(W, H) * (0.25 + Math.random() * 0.3); nx = x + Math.cos(a) * r; ny = y + Math.sin(a) * r * 0.8 - 40; }
+        else { nx = x < W / 2 ? W * (0.5 + Math.random() * 0.42) - s : W * (0.04 + Math.random() * 0.42); ny = H * (0.08 + Math.random() * 0.62); }
+        const ang = Math.atan2(ny - y, nx - x) * 180 / Math.PI + 90, dist = Math.hypot(nx - x, ny - y);
+        const dur = first ? 1800 + Math.random() * 600 : Math.max(2600, dist * (15 + Math.random() * 10));
+        const mx = (x + nx) / 2 + (Math.random() - 0.5) * 110, my = (y + ny) / 2 + (Math.random() - 0.5) * 120;
+        el.animate([
+          { transform: `translate(${x}px,${y}px) rotate(${ang}deg) scale(${first ? 0.2 : 1})`, opacity: first ? 0 : 1 },
+          { transform: `translate(${mx}px,${my}px) rotate(${ang + (Math.random() - 0.5) * 40}deg) scale(1)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(${nx}px,${ny}px) rotate(${ang}deg) scale(1)`, opacity: 1 },
+        ], { duration: dur, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => setTimeout(go, 200 + Math.random() * 900);
+        x = nx; y = ny; first = false;
+      };
+      setTimeout(go, from ? i * 90 : 800 + i * 500);
+    }
+  }
+  // burung terbang melintasi langit lukisan
+  const SVGBIRD = '<svg viewBox="0 0 24 12"><path d="M0 4 Q6 0 12 6 Q18 0 24 4 Q18 2.6 12 8.4 Q6 2.6 0 4Z"/></svg>';
+  function picBirds(stage) {
+    const box = $('.pbirds', stage); if (!box || !PT.birds || reduce) return;
+    const [y0, y1] = PT.cloudBand[1] ? PT.cloudBand : [380, 470];
+    const n = PT.birds === 'svg' ? 5 : 3, dir = Math.random() < 0.5 ? 1 : -1, y = y0 + Math.random() * (y1 - y0);
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('i'); el.className = 'pbd' + (PT.birds === 'svg' ? ' svg' : '');
+      el.innerHTML = PT.birds === 'svg' ? SVGBIRD : `<img src="${sprite(PT.birds)}" alt="">`;
+      el.style.width = (PT.birds === 'svg' ? 2.6 : 5.2) - i * 0.5 + '%';
+      box.appendChild(el);
+      const sx = dir > 0 ? -12 : 108, ex = dir > 0 ? 112 : -14, yy = px(y) + i * 2.2 - (i % 2) * 3;
+      const a = el.animate([
+        { transform: `translate(${sx - i * 4}cqw,${yy}cqw) scaleX(${dir})` },
+        { transform: `translate(${(sx + ex) / 2}cqw,${yy - 4}cqw) scaleX(${dir})`, offset: 0.5 },
+        { transform: `translate(${ex - i * 4}cqw,${yy - 1}cqw) scaleX(${dir})` },
+      ], { duration: 9000 + i * 400, delay: i * 260, easing: 'linear', fill: 'both' });
+      a.onfinish = () => el.remove();
+    }
+  }
+  function picCarriage(stage) {
+    const el = $('.pcar', stage); if (!el || reduce) return;
+    const P = [[440, 905, 1], [418, 800, 0.8], [468, 705, 0.62], [445, 640, 0.5], [482, 592, 0.38]];
+    el.animate(P.map(([x, y, s]) => ({ transform: `translate(${px(x)}cqw,${px(y)}cqw) translate(-50%,-90%) scale(${s})`, opacity: 1 })).concat([{ transform: `translate(${px(485)}cqw,${px(585)}cqw) translate(-50%,-90%) scale(.34)`, opacity: 0 }]),
+      { duration: 9000 * sp, easing: 'ease-in-out', fill: 'both' });
+  }
+  let picAmb = null;
+  function picAmbient(stage) { // efek yang terus hidup: burung sesekali lewat
+    clearInterval(picAmb); if (reduce) return;
+    picAmb = setInterval(() => { if (document.hidden || scrollY > innerHeight) return; picBirds(stage); }, 16000);
+  }
+  // kamera: titik (x,y) gambar ke tengah layar dengan perbesaran s (tidak keluar tepi gambar)
+  function camT(stage, x, y, s) {
+    const box = $('.pbox', stage), vw = stage.clientWidth, vh = stage.clientHeight, bw = box.offsetWidth, bh = box.offsetHeight;
+    let dx = x / BW * bw - bw / 2, dy = y / BH * bh - bh / 2;
+    const mx = Math.max(0, bw / 2 - vw / (2 * s)), my = Math.max(0, bh / 2 - vh / (2 * s));
+    dx = Math.max(-mx, Math.min(mx, dx)); dy = Math.max(-my, Math.min(my, dy));
+    return `translate(${(-s * dx).toFixed(1)}px,${(-s * dy).toFixed(1)}px) scale(${s})`;
+  }
+  function picShow(hero) { hero.classList.remove('pre'); hero.classList.add('play', 'shown', 'done'); }
+  function picOpen(instant, cover, hero, unlock, finish) {
+    const stage = $('.pstage', hero), cam = $('.pcam', stage);
+    const done = () => {
+      picShow(hero); unlock(); finish(); picAmbient(stage);
+      picFlyers($('.pfx', stage), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8));
+    };
+    if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
+    const D = sp;
+    cover.classList.add('opening'); hero.classList.add('filming');
+    const skip = $('.pskip', stage); skip.hidden = false;
+    // susun keyframe kamera dari daftar shot
+    const kf = [{ transform: 'translate(0px,0px) scale(1)', offset: 0 }], marks = [];
+    let t = 0;
+    const shots = PT.shots.map((sh) => sh[0] === 'end' ? { end: 1, tr: sh[1] * D, hold: 0, ev: sh[3] } : { x: sh[0], y: sh[1], s: sh[2], tr: sh[3] * D, hold: sh[4] * D, ev: sh[5] });
+    shots.forEach((sh) => { marks.push([t, sh.ev]); t += sh.tr + sh.hold; });
+    const total = t; t = 0;
+    shots.forEach((sh) => {
+      t += sh.tr;
+      if (sh.end) { kf.push({ transform: 'translate(0px,0px) scale(1)', offset: 1 }); return; }
+      kf[kf.length - 1].easing = 'cubic-bezier(.45,.05,.3,1)';
+      kf.push({ transform: camT(stage, sh.x, sh.y, sh.s), offset: t / total, easing: 'linear' });
+      t += sh.hold;
+      if (sh.hold) kf.push({ transform: camT(stage, sh.x, sh.y, sh.s * 1.035), offset: t / total });
+    });
+    const anim = cam.animate(kf, { duration: total, fill: 'both' });
+    $('.pcv', stage).animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1300 * D, delay: 250 * D, easing: 'ease-in-out', fill: 'forwards' });
+    later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
+    if (PT.gunungan && JFX()) gunOpen(D * 0.8);
+    if (PT.carriage) picCarriage(stage);
+    picBirds(stage);
+    const fire = (ev) => {
+      if (ev === 'birds') picBirds(stage);
+      if (ev === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 6, [r.width / 2, r.height * 0.5]); }
+    };
+    marks.forEach(([at, ev]) => ev && later(() => fire(ev), at));
+    let ended = false;
+    const end = () => {
+      if (ended) return; ended = true; skip.hidden = true; hero.classList.remove('filming');
+      try { anim.commitStyles(); } catch (e) { /* */ } anim.cancel();
+      cam.animate([{ transform: getComputedStyle(cam).transform === 'none' ? 'none' : getComputedStyle(cam).transform }, { transform: 'none' }], { duration: 900 * D, easing: 'ease-out' });
+      cam.style.transform = '';
+      $('.pcv', stage).style.opacity = '0';
+      done();
+    };
+    anim.onfinish = () => { cam.style.transform = ''; anim.cancel(); if (!ended) { ended = true; skip.hidden = true; hero.classList.remove('filming'); done(); } };
+    skip.onclick = end;
+  }
+
   // ---------- render section ----------
   const splitTitle = (t) => { t = String(t || '').trim(); const i = t.indexOf(' '); return i < 0 ? [t, ''] : [t.slice(0, i), t.slice(i + 1)]; };
   const hasWA = (c) => !!String(c.general.whatsapp || '').replace(/\D/g, '');
@@ -206,9 +397,10 @@
 
   const R = {
     hero(c) {
+      if (PT) return picHero(c);
       const h = c.hero;
       return `<section class="sec hero pre" id="s-hero">${scene(c)}
-        <div class="hero-text"><div class="rv kick">${esc(h.kicker)}</div>
+        <div class="hero-text">${JFX() ? `<img class="rv gun-s" src="${GUN}" alt="">` : ''}<div class="rv kick">${esc(h.kicker)}</div>
         <h1 class="names"><span class="rv nm">${esc(h.groom)}</span><i class="rv amp">&amp;</i><span class="rv nm">${esc(h.bride)}</span></h1>
         <div class="rv date">${esc(h.dateText)}</div><div class="rv tag">${esc(h.hashtag)}</div></div>
         <div class="scroll-hint"></div></section>`;
@@ -246,16 +438,15 @@
     },
     gallery(c) {
       const o = c.gallery, s = c.scene;
-      const edge = (pos, src) => `<div class="edge ${pos} ${pos === 'top' ? 'sway-t' : 'sway-b'}"><div class="half l rv" data-a="${pos === 'top' ? 'bloom-l' : 'bloom-ul'}" style="--i:0">${img(src)}</div><div class="half r rv" data-a="${pos === 'top' ? 'bloom-r' : 'bloom-ur'}" style="--i:1">${img(src)}</div></div>`;
+      const edge = (pos, src) => `<div class="edge ${pos} ${pos === 'top' ? 'sway-t' : 'sway-b'}"><div class="half l rv" data-a="${pos === 'top' ? 'bloom-l' : 'bloom-ul'}" style="--i:0">${fimg(src)}</div><div class="half r rv" data-a="${pos === 'top' ? 'bloom-r' : 'bloom-ur'}" style="--i:1">${fimg(src)}</div></div>`;
       return `<section class="sec paperbg gallery">${bgl(o, 'bg', pick(o.bg, s.paper))}${edge('top', s.floralTop)}${edge('bottom', s.floralBottom)}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
-        ${videoEmbed(o.video)}
-        <div class="grid">${(o.items || []).map((g, i) => `<div class="rv gi" data-i="${i}" data-a="zoom-in" style="--i:${i % 3}"><div class="phb">${photo(g, 'image')}</div></div>`).join('')}</div></section>`;
+        ${videoEmbed(o.video)}${galleryBody(o)}</section>`;
     },
     story(c) {
       const o = c.story;
       return `<section class="sec story" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.scene.sky))}<h2 class="rv script-h">${esc(o.title)}</h2>
         <div class="tl">${(o.items || []).map((s) => `<div class="rv card" data-a="soft"><span class="mk">${ICON.heart}</span><div class="im"><div class="phb">${photo(s, 'image', s.title)}</div></div><div class="tx"><h4>${esc(s.title)}</h4><p>${br(s.text)}</p></div></div>`).join('')}</div>
-        <div class="fl sway-b"><div class="half l rv" data-a="bloom-ul" style="--i:0">${img(c.scene.floralBottom)}</div><div class="half r rv" data-a="bloom-ur" style="--i:1">${img(c.scene.floralBottom)}</div></div>${sparkles(10)}</section>`;
+        <div class="fl sway-b"><div class="half l rv" data-a="bloom-ul" style="--i:0">${fimg(c.scene.floralBottom)}</div><div class="half r rv" data-a="bloom-ur" style="--i:1">${fimg(c.scene.floralBottom)}</div></div>${sparkles(10)}</section>`;
     },
     gift(c) {
       const o = c.gift, wa = hasWA(c) && o.sendWhatsapp;
@@ -287,14 +478,64 @@
     },
     closing(c) {
       const o = c.closing, s = c.scene;
-      const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${img(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${img(src)}</div>`;
+      const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${fimg(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${fimg(src)}</div>`;
       return `<section class="sec closing"><div class="stage">${safeUrl(o.bg) || (THEME === 'rose' && safeUrl(s.palace)) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
         <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
         <div class="rv panel" data-a="soft" style="--i:5"></div>${sparkles(10)}
-        <div class="cl-in"><div class="rv cpho" data-a="zoom-in" style="--i:8"><div class="phb">${photo(o, 'photo')}</div></div><div class="rv kick" data-a="soft" style="--i:10">${esc(o.kicker)}</div><div class="rv names" data-a="soft" style="--i:11">${esc(o.names)}</div><p class="rv txt" data-a="soft" style="--i:12">${br(o.text)}</p></div></div>
+        <div class="cl-in"><div class="rv cpho" data-a="zoom-in" style="--i:8"><div class="phb">${photo(o, 'photo')}</div></div>${JFX() ? `<img class="rv gun-s" data-a="zoom-in" style="--i:9" src="${GUN}" alt="">` : ''}<div class="rv kick" data-a="soft" style="--i:10">${esc(o.kicker)}</div><div class="rv names" data-a="soft" style="--i:11">${esc(o.names)}</div><p class="rv txt" data-a="soft" style="--i:12">${br(o.text)}</p></div></div>
         <div class="footer">${safeUrl(o.footerUrl) ? `<a href="${link(o.footerUrl)}" target="_blank" rel="noopener">${esc(o.footer)}</a>` : esc(o.footer)}</div></section>`;
     },
   };
+
+  // galeri: slider berjalan sendiri (foto utuh, landscape/portrait sesuai aslinya) + galeri bergaya majalah
+  function galleryBody(o) {
+    const items = (o.items || []).map((g) => ({ u: safeUrl(g.image), g })).filter((x) => x.u).map((x, i) => Object.assign(x, { i }));
+    if (!items.length) return '';
+    const lay = o.layout || 'masonry', slider = o.slider !== false && items.length > 1;
+    const slide = (x) => `<figure class="sl" data-lb="${x.i}"><img src="${esc(x.u)}" alt="" decoding="async" draggable="false"></figure>`;
+    const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
+    let rest = '';
+    if (lay === 'grid') rest = `<div class="grid">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
+    else if (lay === 'masonry') rest = `<div class="masonry">${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy"></figure>`).join('')}</div>`;
+    return strip + rest;
+  }
+  let sliderStop = null;
+  function startSliders() {
+    if (sliderStop) sliderStop();
+    const el = $('#app .gslider'); if (!el) return;
+    const tr = $('.gtrack', el), orig = [...tr.children];
+    const fill = () => { // gandakan isi sampai cukup panjang untuk berputar tanpa celah
+      $$('.dup', tr).forEach((d) => d.remove());
+      const w = tr.scrollWidth || 1, need = Math.max(2, Math.ceil((el.clientWidth * 2) / w) + 1);
+      for (let k = 1; k < need; k++) orig.forEach((n) => { const c = n.cloneNode(true); c.classList.add('dup'); tr.appendChild(c); });
+    };
+    fill();
+    const dir = el.dataset.dir === 'left' ? -1 : 1, v = { slow: 22, normal: 38, fast: 62 }[el.dataset.speed] || 38;
+    let setW = 0; const meas = () => { const d = $('.dup', tr); setW = d ? d.offsetLeft - orig[0].offsetLeft : tr.scrollWidth / 2; };
+    meas();
+    let x = dir > 0 ? -setW : 0, last = 0, raf = 0, vis = false, hold = false, drag = null, moved = 0;
+    const wrap = () => { if (setW <= 0) return; while (x > 0) x -= setW; while (x <= -setW) x += setW; };
+    const tick = (t) => {
+      raf = requestAnimationFrame(tick);
+      const dt = last ? Math.min(64, t - last) : 16; last = t;
+      if (!hold && !reduce) x += dir * v * dt / 1000;
+      wrap(); tr.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+    };
+    const run = () => { if (!raf && vis) { last = 0; raf = requestAnimationFrame(tick); } };
+    const halt = () => { cancelAnimationFrame(raf); raf = 0; };
+    const io = new IntersectionObserver((es) => { vis = es[0].isIntersecting; vis ? run() : halt(); }); io.observe(el); observers.push(io);
+    const onLoad = () => { const old = setW; fill(); meas(); if (old && setW) x = x / old * setW; };
+    $$('img', tr).forEach((im) => { if (!im.complete) im.addEventListener('load', onLoad, { once: true }); });
+    const ro = new ResizeObserver(() => meas()); ro.observe(el);
+    // geser manual (sentuh / tarik), lalu jalan sendiri lagi
+    el.addEventListener('pointerdown', (e) => { drag = { x0: e.clientX, p0: x }; moved = 0; hold = true; el.classList.add('drag'); }, { signal: AC.signal });
+    addEventListener('pointermove', (e) => { if (!drag) return; const d = e.clientX - drag.x0; moved = Math.max(moved, Math.abs(d)); x = drag.p0 + d; }, { signal: AC.signal, passive: true });
+    const up = () => { if (!drag) return; drag = null; el.classList.remove('drag'); later(() => { if (!drag) hold = false; }, 900); };
+    addEventListener('pointerup', up, { signal: AC.signal }); addEventListener('pointercancel', up, { signal: AC.signal });
+    el.addEventListener('mouseenter', () => (hold = true), { signal: AC.signal }); el.addEventListener('mouseleave', () => { if (!drag) hold = false; }, { signal: AC.signal });
+    el.addEventListener('click', (e) => { const f = e.target.closest('[data-lb]'); if (f && moved < 8) lbShow(+f.dataset.lb); }, { signal: AC.signal });
+    sliderStop = () => { halt(); ro.disconnect(); };
+  }
 
   const MUTE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/><path class="x" d="M23 9l-6 6M17 9l6 6"/><path class="w" d="M15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>';
   function videoEmbed(u) {
@@ -307,6 +548,7 @@
   }
 
   function coverHtml(c) {
+    if (PT) return picCover(c);
     const o = c.cover, ratio = /^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(o.photoRatio || '') ? o.photoRatio : '16/9';
     return `<div class="cover" id="cover">
       ${safeUrl(o.bg) ? `<div class="cv-bg">${bgl(o, 'bg')}</div>` : ''}
@@ -333,6 +575,7 @@
     applyTheme(cfg);
     const order = (cfg.sections || []).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
+    if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
     $$('#app section').forEach((sec, idx) => {
       if (!sec.id) sec.id = 's-' + order[idx].id;
       const anim = order[idx] && order[idx].anim || 'fade-up';
@@ -341,11 +584,11 @@
     if (!opened || q.has('cover')) {
       $('#coverRoot').innerHTML = coverHtml(cfg);
       $('#openBtn').addEventListener('click', () => openInvitation(false), { signal: AC.signal });
-      setupButterflies($('#cover .flyers'));
+      if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else setupButterflies($('#cover .flyers'));
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
     }
     bind(cfg);
-    if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant'); setupButterflies($('.flyers', hero), { sweep: true }); } }
+    if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
   }
 
   // ---------- buka undangan: kamera menembus bunga -> mendekat ke pintu rumah -> mundur perlahan ----------
@@ -356,12 +599,33 @@
     const unlock = () => { document.documentElement.classList.remove('locked'); document.body.classList.remove('locked'); window.scrollTo(0, 0); };
     const heroIn = () => { if (hero) { hero.classList.remove('pre'); hero.classList.add('play'); setupButterflies($('.flyers', hero), { sweep: true }); } };
     const finish = () => { startObserver(); parallax(); petals(); };
+    if (PT && hero) { picOpen(instant || !C.effects.openZoom || reduce, cover, hero, unlock, finish); return; }
     if (instant || !C.effects.openZoom || reduce || !hero) {
       unlock(); if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 900); }
       heroIn(); if (hero) hero.classList.add('done'); finish(); return;
     }
     const D = sp; // pengali kecepatan
     cover.classList.add('opening');
+    // nuansa Jawa: gunungan wayang dikibaskan dulu (seperti dalang membuka pertunjukan), lalu kamera masuk
+    const pre = JFX() ? gunOpen(D) : 0;
+    later(() => flyIn(cover, hero, D, unlock, heroIn, finish), pre);
+  }
+  function gunOpen(D) {
+    const g = document.createElement('div'); g.className = 'gun-open'; g.innerHTML = `<i class="gl"></i><img src="${GUN}" alt="">`; document.body.appendChild(g);
+    const im = $('img', g), T = 2500 * D;
+    im.animate([
+      { transform: 'translateY(60vh) scale(.45) rotateY(0deg) rotate(0deg)', opacity: 0 },
+      { transform: 'translateY(0) scale(1) rotateY(0deg) rotate(0deg)', opacity: 1, offset: 0.26 },
+      { transform: 'translateY(-1vh) scale(1) rotateY(180deg) rotate(-8deg)', offset: 0.42 },
+      { transform: 'translateY(0) scale(1.03) rotateY(360deg) rotate(7deg)', offset: 0.56 },
+      { transform: 'translateY(0) scale(1) rotateY(360deg) rotate(-3deg)', opacity: 1, offset: 0.64 },
+      { transform: 'translateY(-3vh) scale(3.4) rotateY(360deg) rotate(0deg)', opacity: 0 },
+    ], { duration: T, easing: 'cubic-bezier(.45,0,.35,1)', fill: 'both' });
+    $('.gl', g).animate([{ opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 1, offset: 0.62 }, { opacity: 0, transform: 'scale(2.4)' }], { duration: T, easing: 'ease-in-out', fill: 'both' });
+    later(() => g.remove(), T + 80);
+    return T * 0.6;
+  }
+  function flyIn(cover, hero, D, unlock, heroIn, finish) {
     // titik fokus = pintu rumah
     const cam = $('.cam', hero), house = $('.hs img', hero);
     const cr = cam.getBoundingClientRect(), hr = house.getBoundingClientRect();
@@ -376,11 +640,56 @@
       { transform: 'scale(1)' },
     ], { duration: zin + zout, fill: 'both' });
     hero.classList.add('flying');
+    if (C.effects.zoomFx !== false) zoomFx(zin, zout, hr);
     later(() => { cover.classList.add('gone'); }, zin * 0.82);
     later(() => { cover.remove(); unlock(); }, zin + 300);
     later(heroIn, zin + zout * 0.45);
     anim.onfinish = () => { hero.classList.remove('flying'); hero.classList.add('done'); try { anim.commitStyles(); anim.cancel(); } catch (e) { /* */ } cam.style.transform = ''; };
     later(finish, zin + 400);
+  }
+
+  // kupu-kupu terbang melewati kamera + daun gugur saat kamera menuju rumah
+  const LEAF_IMG = [1, 2, 3, 1, 2].map((i) => `/assets/scene/fall-leaf${i}.webp`);
+  function zoomFx(zin, zout, hr) {
+    if (reduce) return;
+    const box = document.createElement('div'); box.className = 'zfx'; box.setAttribute('aria-hidden', 'true'); document.body.appendChild(box);
+    const W = innerWidth, H = innerHeight, cx = hr.left + hr.width / 2, cy = hr.top + hr.height * 0.55;
+    const nB = C.effects.butterflies ? 8 : 0;
+    for (let i = 0; i < nB; i++) {
+      const el = document.createElement('div'); el.className = 'bf';
+      const s = 26 + Math.random() * 14; el.style.width = el.style.height = s + 'px';
+      el.innerHTML = bfSvg(C.scene.butterflyColor1, C.scene.butterflyColor2);
+      el.querySelectorAll('.wl,.wr').forEach((w) => { w.style.animationDuration = (0.12 + Math.random() * 0.1) + 's'; });
+      box.appendChild(el);
+      const ang = (i / nB) * Math.PI * 2 + Math.random() * 0.6, dist = Math.max(W, H) * (0.75 + Math.random() * 0.35);
+      const x0 = cx - s / 2, y0 = cy - s / 2;
+      const tx = x0 + Math.cos(ang) * dist, ty = y0 + Math.sin(ang) * dist * 0.85 - 60;
+      const mx = x0 + Math.cos(ang + 0.7) * dist * 0.3, my = y0 + Math.sin(ang + 0.7) * dist * 0.25 - 50;
+      const rot = ang * 180 / Math.PI + 90;
+      el.animate([
+        { transform: `translate(${x0}px,${y0}px) rotate(${rot}deg) scale(.2)`, opacity: 0 },
+        { opacity: 1, offset: 0.12 },
+        { transform: `translate(${mx}px,${my}px) rotate(${rot + 35}deg) scale(1)`, offset: 0.5 },
+        { transform: `translate(${tx}px,${ty}px) rotate(${rot - 10}deg) scale(2.4)`, opacity: 1 },
+      ], { duration: 2800 + Math.random() * 1400, delay: zin * 0.45 + i * 160, easing: 'cubic-bezier(.35,.1,.55,1)', fill: 'both' });
+    }
+    const rose = THEME === 'rose', cols = ['var(--primary)', 'var(--tint2)', 'var(--tint3)', 'var(--accent)'];
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement(rose ? 'i' : 'img'), near = i % 5 === 0;
+      if (rose) { el.className = 'zp'; el.style.background = cols[i % cols.length]; } else { el.src = LEAF_IMG[i % LEAF_IMG.length]; el.alt = ''; el.className = 'zl'; }
+      const sc = near ? 1.5 + Math.random() * 0.6 : 0.55 + Math.random() * 0.5;
+      el.style.width = (rose ? 14 : 22) * sc + 'px';
+      box.appendChild(el);
+      const x = Math.random() * W, dx = (Math.random() - 0.5) * 220, r0 = Math.random() * 360, rd = (Math.random() < 0.5 ? -1 : 1) * (300 + Math.random() * 420);
+      el.animate([
+        { transform: `translate(${x}px,-80px) rotate(${r0}deg) rotateX(0deg)`, opacity: 0 },
+        { opacity: 1, offset: 0.08 },
+        { transform: `translate(${x + dx * 0.6}px,${H * 0.3}px) rotate(${r0 + rd * 0.3}deg) rotateX(160deg)`, offset: 0.3 },
+        { transform: `translate(${x - dx * 0.3}px,${H * 0.62}px) rotate(${r0 + rd * 0.65}deg) rotateX(40deg)`, offset: 0.62 },
+        { transform: `translate(${x + dx}px,${H + 90}px) rotate(${r0 + rd}deg) rotateX(220deg)`, opacity: 0.9 },
+      ], { duration: (near ? 3600 : 5200) + Math.random() * 2600, delay: zin * 0.25 + Math.random() * (zin + zout * 0.5), easing: 'linear', fill: 'both' });
+    }
+    later(() => box.remove(), zin + zout + 9500);
   }
 
   function gotoSection(id) {
@@ -505,10 +814,13 @@
     box.style.opacity = '0'; setTimeout(() => (box.style.opacity = ''), 2600 * sp);
     const hide = () => box.classList.toggle('off', scrollY > innerHeight * 0.85); hide();
     addEventListener('scroll', hide, { passive: true });
-    for (let i = 0; i < 12; i++) {
-      const p = document.createElement('i'); p.className = 'petal';
-      const s = 8 + Math.random() * 10;
-      p.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s * 1.3}px;background:${cols[i % cols.length]};animation-duration:${9 + Math.random() * 9}s;animation-delay:${-Math.random() * 14}s;opacity:${0.55 + Math.random() * 0.35}`;
+    const jawa = THEME !== 'rose', ps = PT ? PT.petals.map(sprite) : null;
+    for (let i = 0; i < (jawa ? 14 : 12); i++) {
+      const sp2 = ps && ps.length && i % 3 !== 2 ? ps[i % ps.length] : '';
+      const lf = !sp2 && jawa && !PT && i % 2 === 0; // tema Jawa: daun gugur bercampur kelopak
+      const p = document.createElement('i'); p.className = lf || sp2 ? 'petal leafp' : 'petal';
+      const s = sp2 ? 14 + Math.random() * 10 : lf ? 13 + Math.random() * 9 : 8 + Math.random() * 10;
+      p.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s * (sp2 ? 1 : lf ? 1.66 : 1.3)}px;${sp2 ? `background-image:url(${sp2})` : lf ? `background-image:url(${LEAF_IMG[i % 5]})` : `background:${cols[i % cols.length]}`};animation-duration:${(lf ? 11 : 9) + Math.random() * 9}s;animation-delay:${-Math.random() * 14}s;opacity:${0.55 + Math.random() * 0.35}`;
       box.appendChild(p);
     }
   }
@@ -584,7 +896,8 @@
     }
     // lightbox
     lbItems = (c.gallery.items || []).map((g) => safeUrl(g.image)).filter(Boolean);
-    $$('.gi').forEach((g) => g.addEventListener('click', () => lbShow(+g.dataset.i), sig));
+    $$('#app .gallery .gi[data-lb], #app .gallery .mi[data-lb]').forEach((g) => g.addEventListener('click', () => lbShow(+g.dataset.lb), sig));
+    startSliders();
 
     // RSVP
     const rf = $('#rsvpForm');

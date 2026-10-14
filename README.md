@@ -61,3 +61,20 @@ Unggah gambar Anda sendiri di Admin → *Adegan & Gambar Dekorasi*: langit, bung
 - Lukisan istana pink + tangga ke gapura mawar + air mancur + pagar tanaman + pohon bunga pink (`public/assets/rose/rose-palace.jpg`, versi tiap warna di `assets/pal/`).
 - Dipakai otomatis sebagai latar section Tema 2 yang belum diberi foto sendiri (Ayat, Sambutan, Mempelai, Acara, Live, Galeri, Love Story, Gift, RSVP, Ucapan, Penutup), dengan efek muncul dari cahaya lalu kamera mundur perlahan.
 - Bisa diganti di Admin → Dekorasi Tema 2 → "Lukisan istana & taman".
+
+## v10 — Hidup & Nuansa Jawa
+- **Daun pisang bergerak sendiri**: bunga bawah (Tema 1) dipisah menjadi 7 daun (`assets/scene/leaf-*.webp`) + lapisan bunga (`floral-bottom-nl.webp`, juga per palet `pal/*/jawa-bottom-nl.webp`). Tiap daun bergoyang dari pangkalnya dengan irama berbeda. Mati bila "Bunga & daun bergoyang" dimatikan.
+- **Nuansa Jawa** (Efek → "Nuansa Jawa hidup", hanya Tema 1): gunungan wayang dikibaskan saat membuka undangan, burung terbang di langit, kunang-kunang, sinar matahari, lampu rumah berkedip seperti pelita, motif batik kawung berkilau di section bertekstur kertas, gunungan kecil di hero & penutup.
+- **Saat kamera menuju rumah** (Efek → "Kupu-kupu beterbangan & daun gugur"): kupu-kupu terbang melewati kamera + daun gugur (Tema 2: kelopak mawar). Setelahnya daun gugur bercampur kelopak terus melayang di hero.
+- **Galeri baru**: slider berjalan sendiri (default ke kanan, bisa digeser/ditahan, klik = lightbox), foto tampil utuh sesuai ukuran aslinya (landscape/portrait), lebih besar; di bawahnya galeri majalah 2 kolom (ukuran asli) dengan efek Ken Burns. Pengaturan di Admin → Galeri: slider on/off, arah, kecepatan, tampilan bawah (majalah / kotak 3 kolom / tidak ada).
+
+## v11 — 6 tema bergambar (Tema 3–8)
+Admin → Tema → "Tema undangan": Nusantara (Candi Bali), Princess, Jawa Emas, Biru Air Terjun, Kerajaan Rimba Bulan, Jawa Klasik.
+- Cover = lukisan asli; nama mempelai, nama tamu, dan tombol "Buka Undangan" (yang di gambar) jadi tombol sungguhan.
+- Pembuka seperti film (pita hitam sinematik + tombol "Lewati"): kamera berpindah bertahap antar bagian lukisan (air terjun → sungai → candi/kastil/joglo …) lalu mundur ke tampilan penuh. Urutan shot ada di `public/themes.js` (`shots`: [x, y, zoom, ms pindah, ms diam, event]).
+- Hidup terus: air terjun mengalir, riak air berkilau, kabut bergerak, cahaya matahari/bulan/lampu berdenyut, awan, burung lewat, kunang-kunang, kilau, kupu-kupu dari lembar aset (sayap mengepak 3D), kereta kencana (Princess), gunungan (Jawa Klasik), kelopak kamboja/mawar/daun gugur.
+- Section lain memakai lukisan tema sebagai latar + warna & font tema (bisa diubah di Tema Warna).
+- Aset: `public/assets/t/<tema>/{cover,world,bg}.webp`, sprite di `public/assets/t/spr/`, efek di `public/assets/t/fx/`.
+
+## v12 — Hiasan dalam per tema (Tema 3–8)
+Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga tepi atas/bawah (Galeri, Love Story, Penutup), bingkai kapsul kartu Acara & Gift (`frame-arc`/`frame-side`), buket di foto mempelai, ornamen kartu acara, ornamen di bawah judul, dan motif (batik/pola/songket) halus di panel. File: `public/assets/t/<tema>/{fl-top,fl-bottom,frame-arc,frame-side,bouquet,orn,divider,motif}.webp`. Gambar dekorasi yang diunggah sendiri lewat admin tetap diutamakan.

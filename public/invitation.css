@@ -598,3 +598,190 @@ a{color:inherit}
 .t-rose .closing .stage>.bgl.palace img{object-position:50% 30%}
 .t-rose .sec.bgi:has(>.bgl.palace)::before{opacity:.6}
 .t-rose .rsvp .fm select{background-color:rgba(255,255,255,.75);background-repeat:no-repeat;background-position:right 10px center;background-size:12px 8px}
+
+/* ======== v10: daun hidup, nuansa Jawa, galeri slider ======== */
+/* daun pisang bergoyang sendiri-sendiri (di belakang bunga) */
+.half.l{position:relative}
+.half>.fln{position:relative;z-index:1}
+.lfg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.lfm{position:absolute;inset:0}
+.half.r .lfm{transform:scaleX(-1)}
+.lf{position:absolute;display:block;animation:leaf var(--d) ease-in-out var(--dl) infinite;will-change:transform}
+.lfg .lf img,.sway-b .lfg .lf img,.cover .cv-fb .lfg .lf img{width:100%;height:auto;animation:none;transform:none}
+.half.r .lf{animation-delay:calc(var(--dl) - 2.3s);animation-duration:calc(var(--d) * 1.13)}
+@keyframes leaf{0%,100%{transform:rotate(0) skewX(0)}18%{transform:rotate(var(--a)) skewX(calc(var(--a) * -.35))}34%{transform:rotate(calc(var(--a) * -.45)) skewX(calc(var(--a) * .15))}52%{transform:rotate(calc(var(--a) * .8)) skewX(calc(var(--a) * -.25))}70%{transform:rotate(calc(var(--a) * -.25))}85%{transform:rotate(calc(var(--a) * .35))}}
+.nosway .lf{animation:none}
+
+/* lampu rumah & pohon berkedip seperti pelita / oncor */
+.t-jawa .glow{animation:flick 3.1s ease-in-out infinite}
+.t-jawa .tree-in .lamp{animation:flick 2.6s ease-in-out -1.2s infinite}
+@keyframes flick{0%{opacity:.62;transform:scale(1)}9%{opacity:.9}13%{opacity:.7;transform:scale(.985)}21%{opacity:1;transform:scale(1.02)}33%{opacity:.78}41%{opacity:.95;transform:scale(1.01)}52%{opacity:.66}60%{opacity:.88;transform:scale(1.015)}71%{opacity:.72}84%{opacity:1;transform:scale(1.02)}92%{opacity:.8}100%{opacity:.62;transform:scale(1)}}
+/* burung terbang di kejauhan */
+.scene .birds{top:0;height:60%;pointer-events:none;overflow:hidden}
+.flock{position:absolute;left:0;width:90px;height:40px;animation:flock linear infinite;will-change:transform}
+.bd{position:absolute;width:var(--sz);display:block}
+.bd svg{width:100%;height:auto;display:block;fill:#4a3530;opacity:.62;transform-origin:50% 60%;animation:wing var(--fl) ease-in-out infinite alternate}
+@keyframes wing{from{transform:scaleY(1)}to{transform:scaleY(-.55) translateY(-2px)}}
+@keyframes flock{0%{transform:translate3d(-25cqw,0,0)}30%{transform:translate3d(20cqw,-3cqh,0)}60%{transform:translate3d(65cqw,1cqh,0)}100%{transform:translate3d(125cqw,-4cqh,0)}}
+/* kunang-kunang */
+.ffs{position:absolute;inset:0;pointer-events:none}
+.ff{position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,#fffbd0 0,#f2f08a 40%,rgba(230,240,120,0) 72%);box-shadow:0 0 8px 3px rgba(240,236,130,.55);animation-name:ffa,ffb;animation-timing-function:ease-in-out,ease-in-out;animation-iteration-count:infinite,infinite;animation-direction:normal,alternate}
+.ff.v1{animation-name:ffa2,ffb}.ff.v2{animation-name:ffa3,ffb}
+@keyframes ffa{0%,100%{transform:translate3d(0,0,0)}25%{transform:translate3d(14px,-18px,0)}50%{transform:translate3d(-8px,-34px,0)}75%{transform:translate3d(-18px,-12px,0)}}
+@keyframes ffa2{0%,100%{transform:translate3d(0,0,0)}30%{transform:translate3d(-16px,-10px,0)}55%{transform:translate3d(6px,-28px,0)}80%{transform:translate3d(18px,-8px,0)}}
+@keyframes ffa3{0%,100%{transform:translate3d(0,0,0)}20%{transform:translate3d(10px,10px,0)}50%{transform:translate3d(22px,-14px,0)}75%{transform:translate3d(-6px,-22px,0)}}
+@keyframes ffb{0%,30%{opacity:0}55%{opacity:1}80%,100%{opacity:.15}}
+/* sinar matahari menembus pepohonan */
+.rays{position:absolute;left:-20%;top:-10%;width:90%;height:85%;pointer-events:none;mix-blend-mode:screen;transform:rotate(-24deg);transform-origin:0 0}
+.rays i{position:absolute;top:0;height:100%;background:linear-gradient(rgba(255,240,200,.55),rgba(255,232,180,0) 85%);filter:blur(6px);animation:ray 9s ease-in-out infinite;opacity:.0}
+.rays i:nth-child(1){left:22%;width:7%;animation-delay:0s}
+.rays i:nth-child(2){left:38%;width:4%;animation-delay:-3s}
+.rays i:nth-child(3){left:52%;width:9%;animation-delay:-5.5s}
+.rays i:nth-child(4){left:70%;width:5%;animation-delay:-7.2s}
+@keyframes ray{0%,100%{opacity:.12}50%{opacity:.65}}
+.flying .rays,.flying .ffs,.flying .birds,.hero.pre .rays,.hero.pre .ffs,.hero.pre .birds{visibility:hidden}
+/* gunungan kecil */
+.hero-text .gun-s{width:34px;margin:0 auto 6px;filter:drop-shadow(0 2px 4px rgba(60,10,15,.25));transform-origin:50% 100%}
+.hero-text .gun-s.rv.in,.hero.play .hero-text .gun-s{animation:gunSway 5s ease-in-out 3s infinite}
+.closing .gun-s{width:40px;margin:0 auto 8px;transform-origin:50% 100%}
+.closing .gun-s.rv.in{animation:gunSway 5s ease-in-out 2s infinite}
+@keyframes gunSway{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+/* gunungan saat membuka undangan */
+.gun-open{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;pointer-events:none;perspective:900px}
+.gun-open img{width:min(54vw,250px);height:auto;opacity:0;will-change:transform,opacity;backface-visibility:visible}
+.gun-open .gl{position:absolute;left:50%;top:50%;width:min(130vw,600px);aspect-ratio:1;margin:calc(min(130vw,600px)/-2) 0 0 calc(min(130vw,600px)/-2);border-radius:50%;background:radial-gradient(circle,rgba(255,226,150,.65),rgba(255,214,130,.22) 38%,rgba(255,214,130,0) 66%);opacity:0}
+/* efek saat kamera menuju rumah */
+.zfx{position:fixed;inset:0;z-index:8000;pointer-events:none;overflow:hidden;perspective:700px}
+.zfx .bf{position:absolute;left:0;top:0}
+.zfx .zl,.zfx .zp{position:absolute;left:0;top:0;height:auto;will-change:transform}
+.zfx .zp{aspect-ratio:1/1.3;border-radius:150% 0 150% 0;display:block}
+.petal.leafp{border-radius:0;background-size:contain;background-position:center;background-repeat:no-repeat}
+/* motif batik kawung berkilau halus */
+.sec>.batik{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.4'%3E%3Cellipse cx='24' cy='11' rx='6.5' ry='10'/%3E%3Cellipse cx='24' cy='37' rx='6.5' ry='10'/%3E%3Cellipse cx='11' cy='24' rx='10' ry='6.5'/%3E%3Cellipse cx='37' cy='24' rx='10' ry='6.5'/%3E%3C/g%3E%3Cg fill='%23000'%3E%3Ccircle cx='24' cy='24' r='2'/%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='48' cy='0' r='3'/%3E%3Ccircle cx='0' cy='48' r='3'/%3E%3Ccircle cx='48' cy='48' r='3'/%3E%3Ccircle cx='24' cy='11' r='1.6'/%3E%3Ccircle cx='24' cy='37' r='1.6'/%3E%3Ccircle cx='11' cy='24' r='1.6'/%3E%3Ccircle cx='37' cy='24' r='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0/48px 48px repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.4'%3E%3Cellipse cx='24' cy='11' rx='6.5' ry='10'/%3E%3Cellipse cx='24' cy='37' rx='6.5' ry='10'/%3E%3Cellipse cx='11' cy='24' rx='10' ry='6.5'/%3E%3Cellipse cx='37' cy='24' rx='10' ry='6.5'/%3E%3C/g%3E%3Cg fill='%23000'%3E%3Ccircle cx='24' cy='24' r='2'/%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='48' cy='0' r='3'/%3E%3Ccircle cx='0' cy='48' r='3'/%3E%3Ccircle cx='48' cy='48' r='3'/%3E%3Ccircle cx='24' cy='11' r='1.6'/%3E%3Ccircle cx='24' cy='37' r='1.6'/%3E%3Ccircle cx='11' cy='24' r='1.6'/%3E%3Ccircle cx='37' cy='24' r='1.6'/%3E%3C/g%3E%3C/svg%3E") 0 0/48px 48px repeat;background:color-mix(in srgb,var(--gold) 12%,transparent)}
+.sec>.batik i{position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(105deg,transparent 30%,color-mix(in srgb,var(--gold) 70%,#fff) 50%,transparent 70%);animation:batik 11s ease-in-out infinite;will-change:transform}
+@keyframes batik{0%{transform:translate3d(0,0,0)}60%,100%{transform:translate3d(200%,0,0)}}
+.story>.batik{opacity:.5}
+/* galeri: slider berjalan sendiri + galeri majalah */
+.gslider{position:relative;margin:22px -22px 14px;overflow:hidden;touch-action:pan-y;cursor:grab;padding:14px 0 18px;-webkit-mask:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.gslider.drag{cursor:grabbing}
+.gtrack{display:flex;gap:12px;width:max-content;will-change:transform}
+.gtrack .sl{position:relative;flex:none;height:clamp(250px,74vw,340px);margin:0;padding:5px;background:linear-gradient(145deg,#fffaf0,#efe2c6);border:1px solid color-mix(in srgb,var(--gold) 70%,transparent);box-shadow:0 10px 24px rgba(40,10,15,.22),0 2px 5px rgba(40,10,15,.12);border-radius:3px;overflow:hidden}
+.gtrack .sl img{height:100%;width:auto;max-width:none;display:block;border-radius:1px;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.gtrack .sl::after{content:"";position:absolute;inset:5px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%) 200% 0/250% 100% no-repeat;animation:slShine 6s ease-in-out infinite}
+.gtrack .sl:nth-child(3n+2)::after{animation-delay:-2s}.gtrack .sl:nth-child(3n)::after{animation-delay:-4s}
+@keyframes slShine{0%,55%{background-position:200% 0}100%{background-position:-120% 0}}
+.masonry{columns:2;column-gap:10px;margin-top:8px}
+.masonry .mi{break-inside:avoid;margin:0 0 10px;position:relative;cursor:zoom-in;padding:4px;background:#fff;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);box-shadow:0 8px 18px rgba(40,10,15,.16);overflow:hidden}
+.masonry .mi img{width:100%;height:auto;display:block;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.masonry .mi:hover img{transform:scale(1.05)}
+.masonry .mi::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 48%,transparent 62%) -150% 0/250% 100% no-repeat}
+.masonry .mi.rv.in::after{animation:flash 1.6s ease .9s both}
+.masonry .mi.rv.in img{animation:kb 14s ease-in-out 1.5s infinite alternate}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.07) translate(1%,-1%)}}
+.t-rose .gtrack .sl{background:linear-gradient(145deg,#fff,var(--tint))}
+
+/* ======== v11: tema bergambar (3-8) ======== */
+.hero.pic{padding:0;background:#000}
+.pstage{position:relative;height:100svh;min-height:560px;overflow:hidden;container-type:size}
+.pcam{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+.pbox{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * 784 / 1168));aspect-ratio:784/1168;transform:translate(-50%,-50%);container-type:inline-size;overflow:hidden}
+.pbox>.pw,.pbox>.pcv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none}
+.pbox>.pcv{z-index:4;transition:opacity 1s ease}
+.hero.pic.shown .pcv{opacity:0!important;visibility:hidden}
+.pfxl{position:absolute;inset:0;z-index:2;pointer-events:none}
+.pfxl>*{position:absolute}
+/* air terjun mengalir */
+.pwf{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent),linear-gradient(transparent,#000 8%,#000 82%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent),linear-gradient(transparent,#000 8%,#000 82%,transparent);mask-composite:intersect;mix-blend-mode:screen}
+.pwf i{position:absolute;left:0;right:0;top:-100%;height:200%;background:url(/assets/t/fx/streaks.webp) 0 0/100% 50% repeat-y;opacity:.7;animation:pwf 1.35s linear infinite;will-change:transform}
+.pwf i+i{background-size:70% 34%;opacity:.45;animation-duration:.95s;left:12%}
+@keyframes pwf{to{transform:translate3d(0,50%,0)}}
+/* riak air berkilau */
+.pwt{overflow:hidden;-webkit-mask-image:radial-gradient(ellipse at 50% 50%,#000 30%,transparent 72%);mask-image:radial-gradient(ellipse at 50% 50%,#000 30%,transparent 72%);mix-blend-mode:screen}
+.pwt i{position:absolute;top:0;bottom:0;left:0;width:200%;background:url(/assets/t/fx/ripple.webp) 0 0/50% 100% repeat-x;opacity:.5;animation:pwt 9s linear infinite,pwtO 3.2s ease-in-out infinite alternate}
+@keyframes pwt{to{transform:translate3d(-50%,0,0)}}
+@keyframes pwtO{from{opacity:.25}to{opacity:.65}}
+/* kabut */
+.pms{opacity:.55;animation:pms 9s ease-in-out infinite alternate;will-change:transform,opacity}
+.pms.slow{opacity:.35;animation-duration:16s}
+@keyframes pms{0%{transform:translate3d(-5%,0,0) scale(1);opacity:.35}100%{transform:translate3d(6%,-4%,0) scale(1.12);opacity:.75}}
+.t-dark .pms{filter:brightness(.85)}
+/* cahaya matahari / bulan / lampu */
+.pglow{aspect-ratio:1;border-radius:50%;animation:pglow 5s ease-in-out infinite;mix-blend-mode:screen}
+.pglow.lamp{animation:flick 2.8s ease-in-out infinite}
+@keyframes pglow{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+.prays{width:0;height:0}
+.prays i{position:absolute;left:0;top:0;width:3cqw;height:70cqw;margin-left:-1.5cqw;transform-origin:50% 0;background:linear-gradient(rgba(255,236,170,.55),rgba(255,226,150,0));border-radius:50%;filter:blur(3px);mix-blend-mode:screen;animation:pray 7s ease-in-out infinite}
+.prays i:nth-child(1){--r:20deg}.prays i:nth-child(2){--r:55deg;animation-delay:-1s}.prays i:nth-child(3){--r:90deg;animation-delay:-2s}.prays i:nth-child(4){--r:125deg;animation-delay:-3s}.prays i:nth-child(5){--r:160deg;animation-delay:-4s}.prays i:nth-child(6){--r:200deg;animation-delay:-5s}.prays i:nth-child(7){--r:240deg;animation-delay:-6s}
+@keyframes pray{0%,100%{transform:rotate(var(--r)) scaleY(.85);opacity:.25}50%{transform:rotate(calc(var(--r) + 6deg)) scaleY(1.1);opacity:.85}}
+/* awan */
+.pcl{left:0;height:auto;opacity:.6;animation:pcl linear infinite;will-change:transform}
+@keyframes pcl{from{transform:translate3d(-40cqw,0,0)}to{transform:translate3d(110cqw,0,0)}}
+.pfxl .sparkles{z-index:auto}
+.pff{position:absolute}
+.pbirds{inset:0;overflow:hidden}
+.pbd{position:absolute;left:0;top:0;display:block}
+.pbd img{width:100%;height:auto;display:block;animation:pglide 1.6s ease-in-out infinite alternate}
+.pbd.svg svg{width:100%;fill:#2b1a0e;opacity:.75;transform-origin:50% 60%;animation:wing .45s ease-in-out infinite alternate}
+@keyframes pglide{from{transform:translateY(0) rotate(-3deg) scaleY(1)}to{transform:translateY(-12%) rotate(3deg) scaleY(.86)}}
+.pcar{left:0;top:0;width:11%;opacity:0;filter:drop-shadow(0 3px 4px rgba(90,30,40,.35))}
+/* teks hero di atas lukisan */
+.ptext{position:absolute;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--tc);opacity:0;transform:translateY(3cqw);filter:blur(6px);transition:opacity 1.6s ease .3s,transform 1.8s var(--lux) .3s,filter 1.6s ease .3s;pointer-events:none}
+.ptext .pk{font-family:var(--fDisplay);font-weight:600;font-size:3.6cqw;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 0 1.4cqw var(--tg),0 0 .4cqw var(--tg)}
+.ptext .pn{font-family:var(--fScript);font-weight:400;font-size:11.5cqw;line-height:1.02;margin-top:1cqw;text-shadow:0 .3cqw 1.6cqw var(--tg),0 0 .5cqw var(--tg);background:linear-gradient(100deg,var(--tc) 30%,#fff7da 48%,var(--tc) 66%) 100% 0/300% 100%;-webkit-background-clip:text;background-clip:text}
+.ptext .pn>*{display:block;font-style:normal}
+.ptext .pn i{font-size:.55em;line-height:1}
+.hero.pic.shown .ptext{opacity:1;transform:none;filter:none}
+.hero.pic.shown .ptext .pn{animation:gleam 7s ease-in-out 2.5s infinite}
+.pplate{position:absolute;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:var(--br);background:linear-gradient(160deg,rgba(255,250,235,.28),rgba(255,240,210,.12));-webkit-backdrop-filter:blur(6px) saturate(1.2);backdrop-filter:blur(6px) saturate(1.2);border:.5cqw solid transparent;border-image:none;box-shadow:inset 0 0 0 .35cqw rgba(232,196,120,.85),inset 0 0 2.4cqw rgba(255,230,170,.35),0 1cqw 3cqw rgba(0,0,0,.25);color:#fff8e6;text-shadow:0 .2cqw .8cqw rgba(40,20,0,.7);opacity:0;transform:scale(.92);transition:opacity 1.4s ease 1s,transform 1.6s var(--lux) 1s}
+.pplate b{font-family:var(--fDisplay);font-size:6cqw;letter-spacing:.1em;font-weight:600}
+.pplate span{font-family:var(--fDisplay);font-size:3.4cqw;font-weight:600;opacity:.9}
+.hero.pic.shown .pplate{opacity:1;transform:none}
+.t-princess .pplate{color:#7a3d1c;text-shadow:0 0 .8cqw rgba(255,255,255,.8);background:linear-gradient(160deg,rgba(255,246,236,.6),rgba(255,228,236,.35))}
+.hero.pic.instant .ptext,.hero.pic.instant .pplate{transition:none}
+/* letterbox sinematik + tombol lewati */
+.pbars i{position:absolute;left:0;right:0;height:7svh;background:#000;z-index:7;transition:transform 1.2s cubic-bezier(.6,0,.3,1)}
+.pbars i:first-child{top:0;transform:translateY(-101%)}
+.pbars i:last-child{bottom:0;transform:translateY(101%)}
+.hero.filming .pbars i{transform:none}
+.pskip{position:absolute;right:14px;bottom:calc(7svh + 12px);z-index:8;font:600 12px/1 var(--fBody);letter-spacing:.08em;color:#fff;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.45);border-radius:20px;padding:8px 14px;cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.pfx{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}
+.hero.pic .scroll-hint{z-index:8}
+/* kupu-kupu aset: sayap 3D */
+.rbf{position:absolute;left:0;top:0;will-change:transform;pointer-events:none}
+.rb-in{position:absolute;inset:0;perspective:220px;transform-style:preserve-3d;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
+.rb-in i{position:absolute;top:0;height:100%;width:50%;background-size:200% 100%;background-repeat:no-repeat;animation:rbL .2s ease-in-out infinite alternate}
+.rb-in i.l{left:0;background-position:0 0;transform-origin:100% 50%}
+.rb-in i.r{right:0;background-position:100% 0;transform-origin:0 50%;animation-name:rbR}
+@keyframes rbL{from{transform:rotateY(8deg)}to{transform:rotateY(72deg)}}
+@keyframes rbR{from{transform:rotateY(-8deg)}to{transform:rotateY(-72deg)}}
+.t-rimba .rb-in,.t-biru .rb-in{filter:drop-shadow(0 0 6px rgba(160,210,255,.8))}
+/* cover tema bergambar */
+.cover.pic{background:transparent;container-type:size}
+.cover.pic .pbox.ui{overflow:visible}
+.pc-names{position:absolute;left:8%;right:8%;transform:translateY(-50%);text-align:center;font-family:var(--fScript);font-size:7cqw;line-height:1.1;color:var(--tc);text-shadow:0 .25cqw 1.4cqw var(--tg),0 0 .5cqw var(--tg);opacity:0;transition:opacity 1.6s ease .4s}
+.pc-guest{position:absolute;left:50%;transform:translate(-50%,-100%);min-width:52%;max-width:80%;text-align:center;padding:1.6cqw 4cqw;border-radius:3cqw;background:rgba(20,10,5,.38);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);color:#fff7e3;box-shadow:inset 0 0 0 1px rgba(240,210,150,.55);opacity:0;transition:opacity 1.4s ease 1s}
+.pc-guest span{display:block;font:600 2.9cqw/1.3 var(--fBody);opacity:.9}
+.pc-guest b{display:block;font-family:var(--fDisplay);font-size:5.2cqw;font-weight:700;line-height:1.2;margin-top:.4cqw}
+.t-princess .pc-guest{background:rgba(255,240,246,.55);color:#7a3d1c;box-shadow:inset 0 0 0 1px rgba(214,170,110,.8)}
+.pc-btn{position:absolute;background:transparent;border:0;cursor:pointer;overflow:hidden;animation:pcpulse 2.4s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.pc-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.65) 48%,transparent 64%) 0 0/250% 100% no-repeat;background-position:160% 0;animation:pcshine 3.2s ease-in-out 1.5s infinite;mix-blend-mode:screen}
+.pc-btn:active{transform:scale(.97)}
+@keyframes pcpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,214,120,0)}50%{box-shadow:0 0 2.6cqw .6cqw rgba(255,214,120,.55)}}
+@keyframes pcshine{0%,40%{background-position:160% 0}100%{background-position:-60% 0}}
+.cover.pic.shown .pc-names,.cover.pic.shown .pc-guest{opacity:1}
+.cover.pic.opening .pc-names,.cover.pic.opening .pc-guest,.cover.pic.opening .pc-btn{opacity:0;transition:opacity .5s ease}
+.cover.pic .flyers{z-index:3}
+/* section memakai lukisan tema sebagai latar */
+.t-pic .closing .stage>.bgl.palace{z-index:0}
+.t-pic .sec.bgi:has(>.bgl.palace)::before{opacity:.55}
+/* hiasan dalam per tema bergambar: ornamen di bawah judul + motif halus di panel */
+.t-pic .sec h2.h-display::after,.t-pic .sec h2.h-head::after,.t-pic .sec h2.script-h::after{content:"";display:block;width:min(200px,56%);height:34px;margin:6px auto 0;background:var(--div) center/contain no-repeat;-webkit-text-fill-color:initial;filter:drop-shadow(0 1px 3px rgba(0,0,0,.25))}
+.t-pic .gpanel,.t-pic .cpanel,.t-pic .cap-in{background-image:linear-gradient(color-mix(in srgb,var(--paper) 90%,transparent),color-mix(in srgb,var(--paper) 90%,transparent)),var(--motif);background-size:auto,96px 96px;background-color:var(--paper)}
+.t-pic .gpanel,.t-pic .cpanel{border-color:var(--gold)}
+.t-pic .cap{background:color-mix(in srgb,var(--primary) 45%,#000)}
+.t-pic .cap-in{box-shadow:inset 0 0 0 1.5px var(--gold)}
+.t-pic .wpanel{background:color-mix(in srgb,var(--shade) 45%,transparent)}
+.t-pic .gallery{padding-top:205px;padding-bottom:230px}
+.t-pic .edge.top{height:auto;aspect-ratio:1000/700}.t-pic .edge.bottom{height:auto;aspect-ratio:1000/640}
+.t-pic .gallery>.h-display{--tc:#fff;text-shadow:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+.t-pic .couple .script{--tc:var(--primary);color:var(--primary)}

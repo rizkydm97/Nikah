@@ -24,7 +24,7 @@ const SCHEMA = [
     { k: 'general.blockRightClick', l: 'Matikan klik kanan', t: 'bool' },
   ] },
   { id: 'theme', title: 'Tema, Warna & Font', hint: 'Pilih tema tampilan. Isi undangan (nama, acara, foto, rekening, RSVP) tetap sama — hanya desain, animasi & dekorasi yang berganti.', fields: [
-    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)']], preset: 1 },
+    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan']], preset: 1 },
     { k: 'theme.palette', l: 'Tema warna — klik salah satu; warna tulisan, tombol, latar & bunga ikut berganti', t: 'palette' },
     { k: 'theme.primary', l: 'Warna utama (judul)', t: 'color' }, { k: 'theme.accent', l: 'Warna tombol', t: 'color' }, { k: 'theme.rose', l: 'Warna merah muda (kartu Wedding Gift)', t: 'color' },
     { k: 'theme.gold', l: 'Warna emas (garis lengkung cover & penutup)', t: 'color' }, { k: 'theme.paper', l: 'Warna latar kertas', t: 'color' },
@@ -47,8 +47,10 @@ const SCHEMA = [
     { k: 'effects.butterflyCount', l: 'Jumlah kupu-kupu (0-12)', t: 'number', min: 0, max: 12 },
     { k: 'effects.petals', l: 'Kelopak bunga berjatuhan', t: 'bool' },
     { k: 'effects.parallax', l: 'Efek parallax saat scroll', t: 'bool' },
-    { k: 'effects.sway', l: 'Bunga bergoyang pelan', t: 'bool' },
+    { k: 'effects.sway', l: 'Bunga & daun bergoyang tertiup angin', t: 'bool' },
     { k: 'effects.glow', l: 'Cahaya lampu rumah berkedip', t: 'bool' },
+    { k: 'effects.javaFx', l: 'Nuansa Jawa hidup (Tema 1): gunungan wayang saat membuka, burung terbang, kunang-kunang, sinar matahari, motif batik kawung berkilau', t: 'bool' },
+    { k: 'effects.zoomFx', l: 'Kupu-kupu beterbangan & daun gugur saat kamera menuju rumah', t: 'bool' },
   ] },
   { id: 'scene', title: 'Dekorasi Tema 1 (Jawa Merah)', hint: 'Semua gambar dekorasi sudah memakai ilustrasi baru (rumah Jawa, rumah pohon, awan, buket & daun). Klik "Default" untuk kembali ke gambar bawaan. Gunakan PNG/WebP transparan bila mengganti.', fields: [
     { k: 'scene.sky', l: 'Latar langit', t: 'image', deco: 1 },
@@ -118,6 +120,10 @@ const SCHEMA = [
   ] },
   { id: 'gallery', title: 'Galeri', fields: [
     { k: 'gallery.title', l: 'Judul', t: 'text' }, { k: 'gallery.bg', l: 'Foto latar (kosongkan untuk pakai tekstur kertas bawaan)', t: 'image', ar: '9/19' }, { k: 'gallery.video', l: 'Video galeri — tempel link YouTube / URL .mp4, atau unggah video (autoplay tanpa suara, opsional)', t: 'video' },
+    { k: 'gallery.slider', l: 'Slider foto berjalan sendiri (foto tampil utuh, landscape/portrait sesuai aslinya)', t: 'bool' },
+    { k: 'gallery.sliderDir', l: 'Arah slider', t: 'select', o: [['right', 'Ke kanan'], ['left', 'Ke kiri']] },
+    { k: 'gallery.sliderSpeed', l: 'Kecepatan slider', t: 'select', o: [['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat']] },
+    { k: 'gallery.layout', l: 'Tampilan foto di bawah slider', t: 'select', o: [['masonry', 'Galeri majalah — ukuran asli foto (disarankan)'], ['grid', 'Kotak 3 kolom (dipotong rapi)'], ['none', 'Tidak ada (slider saja)']] },
     { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '3/4.3' }] },
   ] },
   { id: 'story', title: 'Love Story', fields: [
@@ -148,6 +154,12 @@ const SCHEMA = [
 const THEME_PRESETS = {
   jawa: { primary: '#A00818', accent: '#A00818', rose: '#A82840', gold: '#A98B57', paper: '#F7F1EC', ink: '#1F0C10', body: '#3B2A2E', sideBg: '#EDE6E2', fontDisplay: 'Cormorant Infant', fontHeading: 'Playfair Display', fontBody: 'Cormorant Garamond', fontScript: 'Allura' },
   rose: { primary: '#B4536D', accent: '#C0607A', rose: '#C0607A', gold: '#B8955A', paper: '#FBF1EF', ink: '#4A2530', body: '#5A3A42', sideBg: '#F3E3E1', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Pinyon Script' },
+  bali: { palette: 'auto', primary: '#8A5A1E', accent: '#A0702A', rose: '#A0702A', gold: '#B8913F', paper: '#FBF6EC', ink: '#3A2610', body: '#4D3A26', sideBg: '#EFE6D6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  princess: { palette: 'auto', primary: '#B4536D', accent: '#C0607A', rose: '#C0607A', gold: '#B8955A', paper: '#FDF3F4', ink: '#4A2530', body: '#5A3A42', sideBg: '#F6E4E7', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  emas: { palette: 'auto', primary: '#9A6B1F', accent: '#B07F2C', rose: '#B07F2C', gold: '#C9A250', paper: '#FBF5E8', ink: '#3A2A12', body: '#4F4027', sideBg: '#EEE4CF', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  biru: { palette: 'auto', primary: '#2F4C7A', accent: '#3E5F92', rose: '#3E5F92', gold: '#B9A06A', paper: '#F2F5FA', ink: '#16243B', body: '#36445A', sideBg: '#E2E8F1', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  rimba: { palette: 'auto', primary: '#1F5560', accent: '#2B6A73', rose: '#2B6A73', gold: '#C8A24E', paper: '#F1F5F4', ink: '#0E2328', body: '#2E4247', sideBg: '#DEE8E6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  klasik: { palette: 'auto', primary: '#6B3E16', accent: '#8A5422', rose: '#8A5422', gold: '#B88A3E', paper: '#F8F1E6', ink: '#2C1A0B', body: '#47321F', sideBg: '#EBDFCC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
 };
 
 // tema warna: warna CSS + bunga ikut berganti (dipakai di Tema 1 & Tema 2)

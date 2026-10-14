@@ -234,14 +234,14 @@
       const grid = h('div', { class: 'pals' });
       const paint = () => grid.querySelectorAll('.pal').forEach((b) => b.classList.toggle('on', b.dataset.id === (get() || 'auto')));
       PALETTES.forEach((pl) => {
-        const lay = cfg.theme.preset === 'rose' ? 'rose' : 'jawa';
+        const lay = ['rose', 'princess'].includes(cfg.theme.preset) ? 'rose' : 'jawa';
         const nat = { jawa: 'maroon', rose: 'pink' }[lay];
         const fl = pl.id === 'auto' || pl.id === nat ? (lay === 'rose' ? '/assets/rose/rose-bouquet.webp' : '/assets/scene/bouquet.webp') : `/assets/pal/${pl.id}/${lay}-bouquet.webp`;
         const cols = pl.c ? [pl.c.primary, pl.c.accent, pl.c.gold, pl.c.paper] : [];
         grid.append(h('button', { type: 'button', class: 'pal', 'data-id': pl.id, onclick: () => {
           obj[key] = pl.id;
           if (pl.c) Object.assign(cfg.theme, pl.c);
-          else if (typeof THEME_PRESETS !== 'undefined') Object.assign(cfg.theme, THEME_PRESETS[lay]);
+          else if (typeof THEME_PRESETS !== 'undefined') Object.assign(cfg.theme, THEME_PRESETS[cfg.theme.preset] || THEME_PRESETS[lay]);
           changed(true); show(current);
         } }, h('img', { src: fl, alt: '' }), h('b', {}, pl.name), h('span', { class: 'dots' }, cols.map((c) => h('i', { style: `background:${c}` }))), pl.note ? h('small', {}, pl.note) : null));
       });
