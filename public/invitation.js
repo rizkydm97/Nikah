@@ -384,7 +384,16 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((e) => { vis = e[0].isIntersecting; }); io.observe(stage); observers.push(io); }
       const mv = (e) => { glTgt = [(e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2]; };
       addEventListener('pointermove', mv, { passive: true, signal: AC.signal });
-      addEventListener('deviceorientation', (e) => { if (e.gamma == null) return; glTgt = [Math.max(-1, Math.min(1, e.gamma / 25)), Math.max(-1, Math.min(1, (e.beta - 50) / 25))]; }, { passive: true, signal: AC.signal });
+      // sensor gerak HP: posisi awal dipakai sebagai titik tengah (jadi cara pegang HP bebas), lalu pelan-pelan menyesuaikan
+      let gotOri = false, g0 = 0, b0 = 0, t0 = 0;
+      const clamp1 = (v) => Math.max(-1, Math.min(1, v));
+      const onOri = (e) => {
+        if (e.gamma == null || e.beta == null) return;
+        if (!gotOri) { gotOri = true; g0 = e.gamma; b0 = e.beta; }
+        g0 += (e.gamma - g0) * 0.01; b0 += (e.beta - b0) * 0.01;
+        glTgt = [clamp1((e.gamma - g0) / 10), clamp1((e.beta - b0) / 10)];
+      };
+      addEventListener('deviceorientation', onOri, { passive: true, signal: AC.signal });
       const tick = (t) => {
         glRaf = requestAnimationFrame(tick);
         if (!cv.isConnected) { cancelAnimationFrame(glRaf); return; }
@@ -392,12 +401,16 @@
         const film = hero.classList.contains('filming');
         if (!film && t - last < 33) return;
         last = t;
+        if (!t0) t0 = t;
+        // HP tanpa sensor (browser dalam aplikasi / izin ditolak): gerak otomatis pelan agar tetap terasa 3D
+        if (coarse && !gotOri && t - t0 > 2500) glTgt = [Math.sin(t / 1700) * 0.85, Math.cos(t / 2300) * 0.55];
         glPtr[0] += (glTgt[0] - glPtr[0]) * 0.06; glPtr[1] += (glTgt[1] - glPtr[1]) * 0.06;
         let s = 1, dx = 0, dy = 0;
         const tr = getComputedStyle(cam).transform;
         if (tr && tr !== 'none') { const m = new DOMMatrixReadOnly(tr); s = m.a || 1; dx = -m.e / s; dy = -m.f / s; }
         const sec = t / 1000;
-        const sx = Math.sin(sec * 0.45) * 0.011 + glPtr[0] * 0.016, sy = Math.cos(sec * 0.33) * 0.007 + glPtr[1] * 0.010;
+        const am = coarse ? 1.8 : 1; // di HP efek miring dibuat lebih terasa
+        const sx = Math.sin(sec * 0.45) * 0.011 + glPtr[0] * 0.016 * am, sy = Math.cos(sec * 0.33) * 0.007 + glPtr[1] * 0.010 * am;
         gl.uniform2f(uF, 0.5 + dx / box.offsetWidth, 0.5 + dy / box.offsetHeight);
         gl.uniform1f(uS, s); gl.uniform2f(uSw, sx, sy);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -670,6 +683,7 @@
   // ---------- buka undangan: kamera menembus bunga -> mendekat ke pintu rumah -> mundur perlahan ----------
   function openInvitation(instant) {
     if (opened) return; opened = true;
+    if (!instant && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(() => { /* ditolak */ });
     const cover = $('#cover'), hero = $('#s-hero');
     startMusic();
     const unlock = () => { document.documentElement.classList.remove('locked'); document.body.classList.remove('locked'); window.scrollTo(0, 0); };
