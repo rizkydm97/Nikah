@@ -142,13 +142,13 @@
     inited = true; T = THEMES[key];
     const L = document.createElement('div'); L.className = 'imm-tap'; document.body.appendChild(L);
     const b = document.createElement('button'); b.className = 'imm-snd'; b.type = 'button'; b.setAttribute('aria-label', 'Suara suasana'); b.textContent = '\u266A'; b.onclick = toggleSound; document.body.appendChild(b);
-    if (E('nightMode')) daytime(); if (E('guestInWorld')) guestInWorld(); if (E('sectionVeil')) buildVeil();
+    if (E('nightMode')) daytime(); if (E('guestInWorld')) guestInWorld(); if (E('sectionVeil') && !(window.__CFG.effects.scrollFx === false)) buildVeil();
     const ob = $('#openBtn');
     const go = () => { if (E('ambientSound')) startSound(); };
     if (ob) ob.addEventListener('click', go, { once: true });
     addEventListener('pointerdown', go, { once: true, capture: true });
     if (E('tapFx')) addEventListener('pointerdown', onTap, { passive: true });
-    const wait = setInterval(() => { if (hero.classList.contains('shown')) { clearInterval(wait); if (E('frontLayer')) buildFg(); if (E('guestInWorld')) guestInWorld(); } }, 400);
+    const wait = setInterval(() => { if (hero.classList.contains('shown')) { clearInterval(wait); if (E('frontLayer') && !(window.__CFG.effects.scrollFx === false)) buildFg(); if (E('guestInWorld')) guestInWorld(); } }, 400);
   }
   const boot = setInterval(() => {
     if (inited) return clearInterval(boot);

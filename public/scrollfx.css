@@ -7,7 +7,7 @@
 .t-biru .swx .sw,.t-rimba .swx .sw{transform:translateY(.25em);filter:blur(12px)}
 .t-biru .swx.in .sw,.t-rimba .swx.in .sw{text-shadow:0 0 14px var(--sxc)}
 /* ornamen mekar, cahaya, kunang-kunang */
-.sx-bloom{position:fixed;inset:0;z-index:18;pointer-events:none;overflow:hidden}
+.sx-bloom{opacity:0;transition:opacity 2s ease;position:fixed;inset:0;z-index:18;pointer-events:none;overflow:hidden}
 .sx-bloom .bl{position:absolute;opacity:0;will-change:transform,opacity;transform-origin:50% 60%}
 .sx-bloom .bl img{display:block;width:100%;height:auto;animation:sxsway 7s ease-in-out infinite alternate;filter:drop-shadow(0 3px 5px rgba(0,0,0,.22))}
 @keyframes sxsway{from{transform:rotate(-4deg)}to{transform:rotate(5deg)}}

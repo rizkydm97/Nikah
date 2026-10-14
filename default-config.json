@@ -46,7 +46,7 @@
     "zoomFx": true,
     "ambientSound": true,
     "tapFx": true,
-    "frontLayer": true,
+    "frontLayer": false,
     "sectionVeil": true,
     "guestInWorld": true,
     "nightMode": true,
@@ -59,7 +59,8 @@
     "haptic": true,
     "wishFloat": true,
     "countdownFlip": true,
-    "soundVolume": "normal"
+    "soundVolume": "normal",
+    "scrollFx": true
   },
   "scene": {
     "sky": "/assets/scene/sky-v2.jpg",
