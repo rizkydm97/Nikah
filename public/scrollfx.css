@@ -1,0 +1,35 @@
+/* ===== efek scroll Tema 3-8 ===== */
+/* judul per kata, gaya mengikuti tema */
+.swx .sw{display:inline-block;opacity:0;filter:blur(7px);transform:translateY(.6em) scale(.94);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1.1s cubic-bezier(.2,.7,.2,1),filter 1s ease;transition-delay:calc(var(--w)*.13s)}
+.swx.in .sw{opacity:1;filter:none;transform:none}
+.t-princess .swx .sw{transform:translateY(.7em) scale(.8) rotate(-3deg)}
+.t-bali .swx .sw,.t-emas .swx .sw,.t-klasik .swx .sw{transform:translateX(-.55em);filter:blur(4px)}
+.t-biru .swx .sw,.t-rimba .swx .sw{transform:translateY(.25em);filter:blur(12px)}
+.t-biru .swx.in .sw,.t-rimba .swx.in .sw{text-shadow:0 0 14px var(--sxc)}
+/* ornamen mekar, cahaya, kunang-kunang */
+.sx-bloom{position:fixed;inset:0;z-index:18;pointer-events:none;overflow:hidden}
+.sx-bloom .bl{position:absolute;opacity:0;will-change:transform,opacity;transform-origin:50% 60%}
+.sx-bloom .bl img{display:block;width:100%;height:auto;animation:sxsway 7s ease-in-out infinite alternate;filter:drop-shadow(0 3px 5px rgba(0,0,0,.22))}
+@keyframes sxsway{from{transform:rotate(-4deg)}to{transform:rotate(5deg)}}
+.sx-glow{position:fixed;z-index:16;width:70vmin;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:screen;pointer-events:none;opacity:.2;transition:opacity .6s linear}
+.sx-bloom .ff{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff,var(--c) 45%,transparent 72%);opacity:0;transition:opacity 1.6s ease;animation:sxff 8s ease-in-out infinite alternate;mix-blend-mode:screen}
+.sx-bloom .ff.on{opacity:.9}
+@keyframes sxff{0%{transform:translate3d(0,0,0) scale(.7)}50%{transform:translate3d(14px,-18px,0) scale(1.2)}100%{transform:translate3d(-12px,-34px,0) scale(.8)}}
+/* garis perjalanan */
+.sx-jr{position:fixed;right:7px;top:50%;height:36vh;width:2px;margin-top:-18vh;z-index:22;border-radius:2px;background:rgba(255,255,255,.4);box-shadow:0 0 0 1px rgba(0,0,0,.14);opacity:0;transition:opacity 1s ease;pointer-events:none}
+.sx-jr.on{opacity:.9}
+.sx-jr .jf{position:absolute;left:0;top:0;width:100%;height:0;border-radius:2px;background:var(--c);box-shadow:0 0 6px var(--c)}
+.sx-jr .jm{position:absolute;left:50%;width:22px;height:auto;margin:-11px 0 0 -11px;animation:sxjm 2.4s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(0,0,0,.35))}
+@keyframes sxjm{from{transform:rotate(-12deg) scale(.94)}to{transform:rotate(12deg) scale(1.06)}}
+/* warna suasana sepanjang undangan */
+.sx-sky{position:fixed;inset:0;z-index:17;pointer-events:none;mix-blend-mode:multiply;opacity:0;transition:opacity 2s ease}
+/* hitung mundur membalik */
+.sx-cd .cd{perspective:360px}
+.sx-cd .cd b.tick{animation:sxflip .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes sxflip{0%{transform:rotateX(-95deg) translateY(-18%);opacity:0;filter:blur(3px)}55%{opacity:1;text-shadow:0 0 14px var(--sxc),0 0 4px #fff}100%{transform:none;opacity:1}}
+/* ucapan tamu naik lalu melayang */
+.sx-wish .wl-item{animation:sxwin 1s cubic-bezier(.2,.7,.2,1) both,sxwfl 6.5s ease-in-out 1.2s infinite alternate}
+@keyframes sxwin{from{opacity:0;transform:translateY(34px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes sxwfl{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.gallery .mi img,.gallery .gi img{will-change:transform,filter;transition:filter .3s linear}
+@media (prefers-reduced-motion:reduce){.sx-bloom,.sx-glow,.sx-jr,.sx-sky{display:none}.swx .sw{opacity:1;transform:none;filter:none;transition:none}}

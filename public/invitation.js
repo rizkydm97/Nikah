@@ -240,7 +240,8 @@
     if (t.sparkle) h += sparkles(t.sparkle);
     if (t.flies) { const [x0, y0, x1, y1] = t.flies; h += `<div class="pff" style="${rectStyle([x0, y0, x1 - x0, y1 - y0])}">${fireflies(16)}</div>`; }
     h += '<div class="pbirds"></div>';
-    if (t.carriage) h += `<img class="pcar" src="${sprite('carriage')}" alt="">`;
+    h += '<i class="plsw"></i>';
+    if (t.carriage) h += `<div class="pcar"><i class="pcglow"></i><img class="pcc b1" src="${sprite('cloudp2')}" alt=""><img class="pcc b2" src="${sprite('cloudp3')}" alt=""><div class="pcw"><img class="pcg" src="${sprite('carriage')}" alt=""></div><img class="pcc f1" src="${sprite('cloudp1')}" alt=""><img class="pcc f2" src="${sprite('cloudp3')}" alt=""><img class="pcc f3" src="${sprite('cloudp2')}" alt=""></div>`;
     return h;
   }
   function picHero(c) {
@@ -283,21 +284,22 @@
       box.appendChild(el);
       let x = from ? from[0] - s / 2 : (i % 2 ? W0 + 40 : -s - 40), y = from ? from[1] - s / 2 : H0 * (0.15 + Math.random() * 0.5);
       el.style.transform = `translate(${x}px,${y}px) scale(${from ? 0.2 : 1})`;
-      let first = !!from;
+      let first = !!from, rot = 0;
       const go = () => {
         if (!el.isConnected) return;
         const W = box.clientWidth || 400, H = box.clientHeight || 700;
         let nx, ny;
         if (first) { const a = (i / n) * Math.PI * 2 + Math.random() * 0.5, r = Math.min(W, H) * (0.25 + Math.random() * 0.3); nx = x + Math.cos(a) * r; ny = y + Math.sin(a) * r * 0.8 - 40; }
         else { nx = x < W / 2 ? W * (0.5 + Math.random() * 0.42) - s : W * (0.04 + Math.random() * 0.42); ny = H * (0.08 + Math.random() * 0.62); }
-        const ang = Math.atan2(ny - y, nx - x) * 180 / Math.PI + 90, dist = Math.hypot(nx - x, ny - y);
+        const ang0 = Math.atan2(ny - y, nx - x) * 180 / Math.PI + 90, dist = Math.hypot(nx - x, ny - y);
+        const dA = ((ang0 - rot + 540) % 360) - 180, r0 = rot, r1 = rot + dA * 0.5, r2 = rot + dA; rot = r2;
         const dur = first ? 1800 + Math.random() * 600 : Math.max(2600, dist * (15 + Math.random() * 10));
         const mx = (x + nx) / 2 + (Math.random() - 0.5) * 110, my = (y + ny) / 2 + (Math.random() - 0.5) * 120;
         el.animate([
-          { transform: `translate(${x}px,${y}px) rotate(${ang}deg) scale(${first ? 0.2 : 1})`, opacity: first ? 0 : 1 },
-          { transform: `translate(${mx}px,${my}px) rotate(${ang + (Math.random() - 0.5) * 40}deg) scale(1)`, opacity: 1, offset: 0.5 },
-          { transform: `translate(${nx}px,${ny}px) rotate(${ang}deg) scale(1)`, opacity: 1 },
-        ], { duration: dur, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => setTimeout(go, 200 + Math.random() * 900);
+          { transform: `translate(${x}px,${y}px) rotate(${r0}deg) scale(${first ? 0.2 : 1})`, opacity: first ? 0 : 1 },
+          { transform: `translate(${mx}px,${my}px) rotate(${r1}deg) scale(1)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(${nx}px,${ny}px) rotate(${r2}deg) scale(1)`, opacity: 1 },
+        ], { duration: dur, easing: 'cubic-bezier(.4,.1,.6,.9)', fill: 'forwards' }).onfinish = () => setTimeout(go, 60 + Math.random() * 260);
         x = nx; y = ny; first = false;
       };
       setTimeout(go, from ? i * 90 : 800 + i * 500);
@@ -324,11 +326,45 @@
       a.onfinish = () => el.remove();
     }
   }
+  // kereta kencana dibawa awan: melayang di langit, turun mengikuti jalan emas, lalu masuk gerbang kastil
   function picCarriage(stage) {
     const el = $('.pcar', stage); if (!el || reduce) return;
-    const P = [[440, 905, 1], [418, 800, 0.8], [468, 705, 0.62], [445, 640, 0.5], [482, 592, 0.38]];
-    el.animate(P.map(([x, y, s]) => ({ transform: `translate(${px(x)}cqw,${px(y)}cqw) translate(-50%,-90%) scale(${s})`, opacity: 1 })).concat([{ transform: `translate(${px(485)}cqw,${px(585)}cqw) translate(-50%,-90%) scale(.34)`, opacity: 0 }]),
-      { duration: 9000 * sp, easing: 'ease-in-out', fill: 'both' });
+    const par = el.parentElement, dur = 10800 * sp;
+    // titik kendali [x, y, skala, miring] dalam koordinat gambar dasar; dihaluskan dengan kurva Catmull-Rom
+    const K = [[-120, 392, 1.0, 5], [-120, 392, 1.0, 5], [90, 322, 1.0, 3], [250, 300, .97, 0], [390, 352, .9, -2], [462, 452, .72, -3], [486, 536, .52, 0], [490, 586, .36, 0], [490, 590, .3, 0], [490, 590, .3, 0]];
+    const cr = (a, b, c, d, t) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
+    const pos = (u) => {
+      const n = K.length - 3, f = Math.min(Math.max(u, 0), 0.9999) * n, i = Math.floor(f), t = f - i, o = [];
+      for (let k = 0; k < 4; k++) o.push(0); const r = [0, 0, 0, 0];
+      for (let k = 0; k < 4; k++) r[k] = cr(K[i][k], K[i + 1][k], K[i + 2][k], K[i + 3][k], t);
+      const bob = Math.sin(u * 38) * 3.2 * (1 - u * 0.6);
+      return { x: r[0], y: r[1] + bob, s: r[2], r: r[3] + Math.sin(u * 30 + 1) * 1.2 };
+    };
+    const ez = (u) => u * u * (3 - 2 * u) * 0.35 + u * 0.65; // gerak mengalir, pelan di awal & akhir
+    const N = 150, kf = [];
+    for (let i = 0; i <= N; i++) {
+      const u = i / N, p = pos(ez(u)), a = Math.min(1, u / 0.07) * Math.min(1, (1 - u) / 0.1);
+      kf.push({ transform: `translate3d(${px(p.x)}cqw,${px(p.y)}cqw,0) translate(-50%,-72%) rotate(${p.r.toFixed(2)}deg) scale(${p.s.toFixed(3)})`, opacity: +a.toFixed(3), offset: u });
+    }
+    const t0 = performance.now(); let lastSp = 0;
+    el.animate(kf, { duration: dur, easing: 'linear', fill: 'both' });
+    const trail = () => {
+      const u = (performance.now() - t0) / dur; if (u >= 1 || !el.isConnected) return;
+      if (u > 0.05 && u < 0.93 && performance.now() - lastSp > 85) {
+        lastSp = performance.now();
+        const p = pos(ez(u)), i = document.createElement('i'); i.className = 'pcs' + (Math.random() < 0.4 ? ' g' : '');
+        const sz = 0.9 + Math.random() * 1.6;
+        i.style.cssText = `left:${px(p.x - 58 * p.s + (Math.random() - 0.5) * 50)}%;top:${py(p.y + 10 + (Math.random() - 0.5) * 36)}%;width:${sz}cqw;--dx:${(-6 - Math.random() * 10).toFixed(1)}cqw;--dy:${(2 + Math.random() * 6).toFixed(1)}cqw`;
+        par.appendChild(i); i.addEventListener('animationend', () => i.remove());
+      }
+      requestAnimationFrame(trail);
+    };
+    requestAnimationFrame(trail);
+    setTimeout(() => { // cahaya menyambut di gerbang kastil
+      if (!par.isConnected) return;
+      const g = document.createElement('i'); g.className = 'pcb'; g.style.cssText = `left:${px(490 - 120)}%;top:${py(588 - 120)}%;width:${px(240)}%`;
+      par.appendChild(g); g.animate([{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1)', offset: 0.35 }, { opacity: 0, transform: 'scale(1.5)' }], { duration: 2400, easing: 'ease-out' }).onfinish = () => g.remove();
+    }, dur * 0.9);
   }
   let picAmb = null;
   function picAmbient(stage) { // efek yang terus hidup: burung sesekali lewat
@@ -344,7 +380,7 @@
     uniform float uS,uT,uMix,uNWt,uNWf,uWtI,uWfI,uHz;
     uniform vec4 uWt[4],uWf[3],uTr,uHzR;
     uniform vec3 uTint;
-    const float A=.30,PK=.08;
+    const float A=.035,PK=.012;
     float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hs(i),hs(i+vec2(1.,0.)),f.x),mix(hs(i+vec2(0.,1.)),hs(i+vec2(1.,1.)),f.x),f.y);}
     vec3 S(vec2 u){
@@ -453,37 +489,28 @@
       if (hz) gl.uniform4f(U('uHzR'), hz[0] / BW, hz[1] / BH, hz[2] / BW, hz[3] / BH);
       let vis = true, last = 0, shown = false, fr = 0, dtSum = 0, lastT = 0, lowQ = false; // kualitas turun otomatis bila HP lambat
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((e) => { vis = e[0].isIntersecting; }); io.observe(stage); observers.push(io); }
-      const mv = (e) => { glTgt = [(e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2]; };
+      const mv = (e) => { if (e.pointerType && e.pointerType !== 'mouse') return; glTgt = [(e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2]; };
       addEventListener('pointermove', mv, { passive: true, signal: AC.signal });
-      // sensor gerak HP: posisi awal dipakai sebagai titik tengah (jadi cara pegang HP bebas), lalu pelan-pelan menyesuaikan
-      let gotOri = false, g0 = 0, b0 = 0, t0 = 0;
-      const clamp1 = (v) => Math.max(-1, Math.min(1, v));
-      const onOri = (e) => {
-        if (e.gamma == null || e.beta == null) return;
-        if (!gotOri) { gotOri = true; g0 = e.gamma; b0 = e.beta; }
-        g0 += (e.gamma - g0) * 0.01; b0 += (e.beta - b0) * 0.01;
-        glTgt = [clamp1((e.gamma - g0) / 10), clamp1((e.beta - b0) / 10)];
-      };
-      addEventListener('deviceorientation', onOri, { passive: true, signal: AC.signal });
+      // sensor gerak HP sengaja tidak dipakai: membuat tampilan goyang & karakter terlihat penyok
+      let gotOri = true, t0 = 0;
       const tick = (t) => {
         glRaf = requestAnimationFrame(tick);
         if (!cv.isConnected) { cancelAnimationFrame(glRaf); return; }
         if (!vis || document.hidden) return;
         const film = hero.classList.contains('filming');
-        if (!film && t - last < (coarse ? 33 : 16)) return;
+        if (!film && t - last < 14) return;
         last = t;
         if (!t0) t0 = t;
-        if (coarse && !gotOri && t - t0 > 2500) glTgt = [Math.sin(t / 1700) * 0.85, Math.cos(t / 2300) * 0.55];
-        glPtr[0] += (glTgt[0] - glPtr[0]) * 0.06; glPtr[1] += (glTgt[1] - glPtr[1]) * 0.06;
+        glPtr[0] += (glTgt[0] - glPtr[0]) * 0.045; glPtr[1] += (glTgt[1] - glPtr[1]) * 0.045;
         let s = 1, dx = 0, dy = 0;
         const tr = getComputedStyle(cam).transform;
         if (tr && tr !== 'none') { const m = new DOMMatrixReadOnly(tr); s = m.a || 1; dx = -m.e / s; dy = -m.f / s; }
         const sec = t / 1000;
-        const am = coarse ? 1.8 : 1;
-        const sx = Math.sin(sec * 0.45) * 0.011 + glPtr[0] * 0.016 * am, sy = Math.cos(sec * 0.33) * 0.007 + glPtr[1] * 0.010 * am;
+        const am = coarse ? 0 : 1;
+        const sx = Math.sin(sec * 0.32) * 0.004 + glPtr[0] * 0.006 * am, sy = Math.cos(sec * 0.24) * 0.0025 + glPtr[1] * 0.004 * am;
         gl.uniform2f(uF, 0.5 + dx / box.offsetWidth, 0.5 + dy / box.offsetHeight);
         gl.uniform1f(uS, s); gl.uniform2f(uSw, sx, sy);
-        if (!lowQ && fr++ > 8) { dtSum += t - lastT; if (fr === 70) { if (dtSum / 62 > 42 && cv.width > 640) { cv.width = Math.round(cv.width * 0.7); cv.height = Math.round(cv.width * BH / BW); gl.viewport(0, 0, cv.width, cv.height); } lowQ = true; } }
+        if (!lowQ && fr++ > 8) { dtSum += t - lastT; if (fr === 70) { if (dtSum / 62 > 50 && cv.width > 800) { cv.width = Math.round(cv.width * 0.85); cv.height = Math.round(cv.width * BH / BW); gl.viewport(0, 0, cv.width, cv.height); } lowQ = true; } }
         lastT = t;
         gl.uniform1f(uT, (t - t0) / 1000); gl.uniform1f(uMix, G.mix);
         gl.uniform4f(uTr, G.trm, G.trp, G.trc[0], G.trc[1]);
@@ -895,7 +922,7 @@
   let observers = [], cdsTimer = null;
   function render(raw) {
     const cfg = effective(raw);
-    C = cfg;
+    C = cfg; window.__CFG = cfg;
     if (AC) AC.abort(); AC = new AbortController();
     observers.forEach((o) => o.disconnect()); observers = [];
     clearInterval(cdsTimer);
