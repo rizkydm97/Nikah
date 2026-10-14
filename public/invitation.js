@@ -607,8 +607,8 @@
     const D = sp; // pengali kecepatan
     cover.classList.add('opening');
     // nuansa Jawa: gunungan wayang dikibaskan dulu (seperti dalang membuka pertunjukan), lalu kamera masuk
-    const pre = JFX() ? gunOpen(D) : 0;
-    later(() => flyIn(cover, hero, D, unlock, heroIn, finish), pre);
+    // Tema 1: animasi gunungan dihilangkan, kamera langsung masuk
+    flyIn(cover, hero, D, unlock, heroIn, finish);
   }
   function gunOpen(D) {
     const g = document.createElement('div'); g.className = 'gun-open'; g.innerHTML = `<i class="gl"></i><img src="${GUN}" alt="">`; document.body.appendChild(g);
