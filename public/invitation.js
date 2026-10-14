@@ -159,7 +159,7 @@
     r.setProperty('--fBody', ff(t.fontBody, 'Georgia,serif'));
     r.setProperty('--fScript', ff(t.fontScript, 'cursive'));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
-    sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
+    sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1) * (window.__PIC_SP || 1);
     r.setProperty('--dur', sp + 's');
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
     const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, 'Poppins', 'Lora'])].filter(Boolean).map((n) => {
@@ -234,6 +234,8 @@
     t.clouds.forEach((n, i) => { const y = t.cloudBand[0] + (t.cloudBand[1] - t.cloudBand[0]) * ((i * 0.53) % 1); const d = 70 + i * 23; h += `<img class="pcl" src="${sprite(n)}" alt="" style="top:${py(y)}%;width:${15 + (i % 2) * 6}%;animation-duration:${d}s;animation-delay:${-d * ((i * 0.41 + 0.2) % 1)}s">`; });
     t.wf.forEach(([x, y, w, hh]) => { h += `<div class="pwf" style="${rectStyle([x, y, w, hh])}"><i></i><i></i></div>`; });
     t.water.forEach((r, i) => { h += `<div class="pwt" style="${rectStyle(r)}"><i style="animation-delay:${-i * 3}s"></i></div>`; });
+    t.wf.forEach(([x, y, w, hh], i) => { for (let k = 0; k < 4; k++) h += `<i class="psp" style="left:${px(x + w / 2 + (k - 1.5) * w * 0.35)}%;top:${py(y + hh - 6)}%;width:${px(w * 1.1)}%;animation-delay:${-(k * 0.8 + i * 0.4).toFixed(1)}s"></i>`; });
+    if (t.motes) h += Array.from({ length: t.motes }, (_, i) => { const r = (k) => ((Math.sin((i + 5) * 6151 + k * 3917) + 1) / 2); return `<i class="pmt" style="left:${(r(1) * 96 + 2).toFixed(1)}%;top:${(r(2) * 70 + 22).toFixed(1)}%;animation-duration:${(7 + r(3) * 8).toFixed(1)}s;animation-delay:${(-r(4) * 12).toFixed(1)}s"></i>`; }).join('');
     t.mist.forEach(([x, y, w, hh, slow], i) => { h += `<img class="pms${slow ? ' slow' : ''}" src="/assets/t/fx/mist.webp" alt="" style="${rectStyle([x, y, w, hh])};animation-delay:${-i * 2.3}s">`; });
     if (t.sparkle) h += sparkles(t.sparkle);
     if (t.flies) { const [x0, y0, x1, y1] = t.flies; h += `<div class="pff" style="${rectStyle([x0, y0, x1 - x0, y1 - y0])}">${fireflies(16)}</div>`; }
@@ -334,10 +336,30 @@
     picAmb = setInterval(() => { if (document.hidden || scrollY > innerHeight) return; picBirds(stage); }, 16000);
   }
 
-  // ---------- parallax 3D: lukisan + peta kedalaman -> objek dekat bergerak lebih jauh dari objek jauh ----------
+  // ---------- parallax 3D + air hidup: lukisan + peta kedalaman. Air/air terjun/kabut dianimasikan langsung di shader ----------
   const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
-  const FS = `precision highp float;varying vec2 v;uniform sampler2D uW,uD;uniform vec2 uF,uSw;uniform float uS;
+  const FS = `precision highp float;varying vec2 v;
+    uniform sampler2D uW,uC,uD;
+    uniform vec2 uF,uSw,uAsp;
+    uniform float uS,uT,uMix,uNWt,uNWf,uWtI,uWfI,uHz;
+    uniform vec4 uWt[4],uWf[3],uTr,uHzR;
+    uniform vec3 uTint;
     const float A=.30,PK=.08;
+    float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+    float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hs(i),hs(i+vec2(1.,0.)),f.x),mix(hs(i+vec2(0.,1.)),hs(i+vec2(1.,1.)),f.x),f.y);}
+    vec3 S(vec2 u){
+      vec3 W=texture2D(uW,u).rgb;
+      if(uTr.x<.5){ if(uMix>.999) return W; return mix(texture2D(uC,u).rgb,W,uMix); }
+      vec2 d=(u-uTr.zw)*uAsp; float r=length(d), R=uTr.y*2.1, rip=uTr.x<1.5?1.:0.;
+      float fr=exp(-pow((r-R)/(.06+.03*rip),2.));
+      vec2 uc=u+normalize(d+vec2(1e-4))*sin(r*90.-uTr.y*34.)*fr*(rip*.016+.003);
+      float soft=.05+.06*rip;
+      float k=1.-smoothstep(R-soft,R,r);
+      vec3 o=mix(texture2D(uC,uc).rgb,W,k);
+      float pulse=.35+.65*sin(3.14159*clamp(uTr.y,0.,1.));
+      o+=fr*mix(vec3(.95,.97,1.),vec3(.35,.55,.8),rip)*pulse*(.55+.35*rip);
+      return o;
+    }
     void main(){
       vec2 uv=v;
       for(int i=0;i<2;i++){
@@ -345,17 +367,58 @@
         float sd=1.+(uS-1.)*(1.+A*k);
         uv=uF+(v-uF)*uS/sd+((uF-.5)*PK+uSw)*k;
       }
-      gl_FragColor=vec4(texture2D(uW,uv).rgb,1.);
+      float wm=0.,fm=0.;
+      for(int i=0;i<4;i++){
+        if(float(i)>=uNWt) break;
+        vec4 r=uWt[i]; vec2 c=r.xy+r.zw*.5;
+        float m=1.-smoothstep(.45,1.,length((uv-c)/(r.zw*.5)));
+        float a=sin(uv.y*260.+uT*1.7+vn(uv*50.+vec2(uT*.3,0.))*5.)*.0011;
+        float b=sin(uv.x*190.-uT*1.3+vn(uv*30.-vec2(0.,uT*.22))*4.)*.0008;
+        uv+=m*uWtI*vec2(a,b); wm=max(wm,m);
+      }
+      for(int i=0;i<3;i++){
+        if(float(i)>=uNWf) break;
+        vec4 r=uWf[i]; vec2 q=(uv-r.xy)/r.zw;
+        float m=smoothstep(0.,.28,q.x)*smoothstep(1.,.72,q.x)*smoothstep(0.,.1,q.y)*smoothstep(1.,.8,q.y);
+        fm=max(fm,m);
+      }
+      vec3 col;
+      if(fm>.002){
+        float ph=fract(uT*.42+vn(uv*7.)*.35);
+        vec2 o=vec2(0.,.045);
+        vec3 a=S(uv-o*ph), b=S(uv-o*fract(ph+.5));
+        vec3 fl=mix(a,b,abs(2.*ph-1.));
+        float n=vn(vec2(uv.x*320.,uv.y*20.-uT*3.4))*vn(vec2(uv.x*640.+7.,uv.y*55.-uT*5.6));
+        float n2=vn(vec2(uv.x*150.+3.,uv.y*9.-uT*2.2));
+        fl+=uTint*(n*.55+n2*.12)*uWfI;
+        fl*=1.+(vn(vec2(uv.x*90.,uv.y*6.-uT*1.6))-.5)*.28*uWfI;
+        col=mix(S(uv),fl,fm);
+      } else col=S(uv);
+      if(wm>.002){
+        float g=vn(vec2(uv.x*300.,uv.y*620.)+vec2(uT*.6,-uT*.2));
+        g=smoothstep(.8,1.,g)*wm*.8;
+        float g2=vn(vec2(uv.x*210.-uT*.4,uv.y*500.));
+        col+=uTint*(g*.5+smoothstep(.9,1.,g2)*wm*.25)*uWtI;
+        col*=1.+(vn(vec2(uv.x*40.+uT*.1,uv.y*120.))-.5)*.14*wm*uWtI;
+      }
+      if(uHz>0.){ // kabut/awan tipis bergeser di langit
+        vec4 hr=uHzR; float hy=smoothstep(hr.y,hr.y+.04,uv.y)*smoothstep(hr.y+hr.w,hr.y+hr.w-.12,uv.y);
+        float c=vn(uv*vec2(3.2,5.)+vec2(uT*.012,0.))*.6+vn(uv*vec2(7.,11.)+vec2(uT*.02,3.))*.4;
+        c=smoothstep(.42,.85,c);
+        col=mix(col,mix(col,uTint,.55)+.06,c*hy*uHz);
+      }
+      gl_FragColor=vec4(col,1.);
     }`;
   let glRaf = 0, glPtr = [0, 0], glTgt = [0, 0];
+  const G = { mix: 0, trm: 0, trp: 0, trc: [0.5, 0.5], ok: false }; // keadaan transisi cover -> dunia (dibaca tiap frame)
   function picGL(stage) {
-    cancelAnimationFrame(glRaf);
+    cancelAnimationFrame(glRaf); G.ok = false; G.mix = opened ? 1 : 0; G.trm = 0; G.trp = 0;
     const cv = stage && $('.pgl', stage); if (!cv || reduce || !PT) return;
     const box = cv.parentElement, cam = $('.pcam', stage), hero = stage.closest('.hero');
     let gl = null;
     try { gl = cv.getContext('webgl', { antialias: false, alpha: false }); } catch (e) { /* */ }
     if (!gl) { cv.remove(); return; }
-    const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); return gl.getShaderParameter(o, gl.COMPILE_STATUS) ? o : null; };
+    const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(o)); return null; } return o; };
     const vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS), pr = gl.createProgram();
     if (!vs || !fs) { cv.remove(); return; }
     gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
@@ -372,15 +435,23 @@
     };
     const load = (u) => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = u; });
     const key = PICT, coarse = matchMedia('(pointer:coarse)').matches;
-    Promise.all([load(PT.world), load('/assets/t/' + key + '/depth.png')]).then(([w, d]) => {
+    Promise.all([load(PT.world), load('/assets/t/' + key + '/depth.png'), load(PT.cover)]).then(([w, d, cvr]) => {
       if (!cv.isConnected) return;
-      const cw = Math.min(coarse ? 1176 : 1568, w.naturalWidth || 1568);
+      const cw = Math.min(window.__PIC_GLW || (coarse ? 1176 : 1568), w.naturalWidth || 1568);
       cv.width = cw; cv.height = Math.round(cw * BH / BW); gl.viewport(0, 0, cv.width, cv.height);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      tex(0, w); tex(1, d);
-      gl.uniform1i(U('uW'), 0); gl.uniform1i(U('uD'), 1);
-      const uF = U('uF'), uS = U('uS'), uSw = U('uSw');
-      let vis = true, last = 0, shown = false;
+      tex(0, w); tex(1, d); tex(2, cvr);
+      gl.uniform1i(U('uW'), 0); gl.uniform1i(U('uD'), 1); gl.uniform1i(U('uC'), 2);
+      const uF = U('uF'), uS = U('uS'), uSw = U('uSw'), uT = U('uT'), uMix = U('uMix'), uTr = U('uTr');
+      const rects = (arr, n) => { const o = new Float32Array(n * 4); (arr || []).slice(0, n).forEach((r, i) => { o[i * 4] = r[0] / BW; o[i * 4 + 1] = r[1] / BH; o[i * 4 + 2] = r[2] / BW; o[i * 4 + 3] = r[3] / BH; }); return o; };
+      gl.uniform4fv(U('uWt[0]'), rects(PT.water, 4)); gl.uniform1f(U('uNWt'), Math.min((PT.water || []).length, 4));
+      gl.uniform4fv(U('uWf[0]'), rects(PT.wf, 3)); gl.uniform1f(U('uNWf'), Math.min((PT.wf || []).length, 3));
+      gl.uniform1f(U('uWtI'), 1); gl.uniform1f(U('uWfI'), PT.dark ? 0.9 : 1);
+      gl.uniform3fv(U('uTint'), PT.tint || [1, 1, 1]);
+      gl.uniform2f(U('uAsp'), 1, BH / BW);
+      const hz = PT.haze; gl.uniform1f(U('uHz'), hz ? (PT.dark ? 0.2 : 0.26) : 0);
+      if (hz) gl.uniform4f(U('uHzR'), hz[0] / BW, hz[1] / BH, hz[2] / BW, hz[3] / BH);
+      let vis = true, last = 0, shown = false, fr = 0, dtSum = 0, lastT = 0, lowQ = false; // kualitas turun otomatis bila HP lambat
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((e) => { vis = e[0].isIntersecting; }); io.observe(stage); observers.push(io); }
       const mv = (e) => { glTgt = [(e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2]; };
       addEventListener('pointermove', mv, { passive: true, signal: AC.signal });
@@ -399,26 +470,30 @@
         if (!cv.isConnected) { cancelAnimationFrame(glRaf); return; }
         if (!vis || document.hidden) return;
         const film = hero.classList.contains('filming');
-        if (!film && t - last < 33) return;
+        if (!film && t - last < (coarse ? 33 : 16)) return;
         last = t;
         if (!t0) t0 = t;
-        // HP tanpa sensor (browser dalam aplikasi / izin ditolak): gerak otomatis pelan agar tetap terasa 3D
         if (coarse && !gotOri && t - t0 > 2500) glTgt = [Math.sin(t / 1700) * 0.85, Math.cos(t / 2300) * 0.55];
         glPtr[0] += (glTgt[0] - glPtr[0]) * 0.06; glPtr[1] += (glTgt[1] - glPtr[1]) * 0.06;
         let s = 1, dx = 0, dy = 0;
         const tr = getComputedStyle(cam).transform;
         if (tr && tr !== 'none') { const m = new DOMMatrixReadOnly(tr); s = m.a || 1; dx = -m.e / s; dy = -m.f / s; }
         const sec = t / 1000;
-        const am = coarse ? 1.8 : 1; // di HP efek miring dibuat lebih terasa
+        const am = coarse ? 1.8 : 1;
         const sx = Math.sin(sec * 0.45) * 0.011 + glPtr[0] * 0.016 * am, sy = Math.cos(sec * 0.33) * 0.007 + glPtr[1] * 0.010 * am;
         gl.uniform2f(uF, 0.5 + dx / box.offsetWidth, 0.5 + dy / box.offsetHeight);
         gl.uniform1f(uS, s); gl.uniform2f(uSw, sx, sy);
+        if (!lowQ && fr++ > 8) { dtSum += t - lastT; if (fr === 70) { if (dtSum / 62 > 42 && cv.width > 640) { cv.width = Math.round(cv.width * 0.7); cv.height = Math.round(cv.width * BH / BW); gl.viewport(0, 0, cv.width, cv.height); } lowQ = true; } }
+        lastT = t;
+        gl.uniform1f(uT, (t - t0) / 1000); gl.uniform1f(uMix, G.mix);
+        gl.uniform4f(uTr, G.trm, G.trp, G.trc[0], G.trc[1]);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        if (!shown) { shown = true; cv.classList.add('on'); }
+        if (!shown) { shown = true; G.ok = true; cv.classList.add('on'); box.classList.add('gl-on'); }
       };
       glRaf = requestAnimationFrame(tick);
-    }).catch(() => cv.remove());
+    }).catch((e) => { console.warn(e); cv.remove(); });
   }
+
   // kamera: titik (x,y) gambar ke tengah layar dengan perbesaran s (tidak keluar tepi gambar)
   function camT(stage, x, y, s) {
     const box = $('.pbox', stage), vw = stage.clientWidth, vh = stage.clientHeight, bw = box.offsetWidth, bh = box.offsetHeight;
@@ -428,52 +503,216 @@
     return `translate(${(-s * dx).toFixed(1)}px,${(-s * dy).toFixed(1)}px) scale(${s})`;
   }
   function picShow(hero) { hero.classList.remove('pre'); hero.classList.add('play', 'shown', 'done'); }
+
+  // jalur kamera mulus: titik-titik sorot dihubungkan kurva Hermite (kecepatan menyambung, tanpa berhenti-henti)
+  function camPath(stage, shots, D, delay) {
+    const pts = [{ t: 0, x: BW / 2, y: BH / 2, s: 1 }], marks = []; let t = 0;
+    shots.forEach((sh) => {
+      if (sh[0] === 'end') { t += sh[1] * D; pts.push({ t, x: BW / 2, y: BH / 2, s: 1 }); marks.push([t - sh[1] * D * 0.5, sh[3]]); return; }
+      marks.push([t, sh[5]]); t += sh[3] * D;
+      pts.push({ t, x: sh[0], y: sh[1], s: sh[2] });
+      if (sh[4]) { t += sh[4] * D; pts.push({ t, x: sh[0] + (sh[6] || 0), y: sh[1] + (sh[7] || 0), s: sh[2] * 1.05 }); }
+    });
+    const n = pts.length, ls = (p) => Math.log(p.s);
+    const tan = pts.map((p, i) => {
+      if (i === 0 || i === n - 1) return [0, 0, 0];
+      const a = pts[i - 1], b = pts[i + 1], dt = Math.max(b.t - a.t, 1);
+      return [(b.x - a.x) / dt, (b.y - a.y) / dt, (ls(b) - ls(a)) / dt];
+    });
+    const total = t, N = Math.max(30, Math.round(total / 40)), kf = [];
+    let seg = 0;
+    for (let k = 0; k <= N; k++) {
+      const tt = total * k / N;
+      while (seg < n - 2 && tt > pts[seg + 1].t) seg++;
+      const a = pts[seg], b = pts[seg + 1], dt = Math.max(b.t - a.t, 1), u = Math.min(1, Math.max(0, (tt - a.t) / dt));
+      const u2 = u * u, u3 = u2 * u, h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+      const f = (va, vb, ma, mb) => h00 * va + h10 * dt * ma + h01 * vb + h11 * dt * mb;
+      const x = f(a.x, b.x, tan[seg][0], tan[seg + 1][0]), y = f(a.y, b.y, tan[seg][1], tan[seg + 1][1]);
+      const s = Math.exp(f(ls(a), ls(b), tan[seg][2], tan[seg + 1][2]));
+      kf.push({ transform: k === 0 || k === N ? 'translate(0px,0px) scale(1)' : camT(stage, x, y, Math.max(1, s)), offset: k / N });
+    }
+    return { kf, total, marks: marks.map(([m, e]) => [m + delay, e]) };
+  }
+  const EASE = { io: (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2), out: (u) => 1 - Math.pow(1 - u, 3), in: (u) => u * u * u, lin: (u) => u };
+  const btnCenter = () => [(PT.btn[0] + PT.btn[2]) / 2, (PT.btn[1] + PT.btn[3]) / 2];
+
+  // ---------- pembuka khas tiap tema (kembalian = ms kapan kamera mulai bergerak) ----------
+  const INTROS = {
+    // Princess: amplop terbang masuk, segel pecah, tutup terbuka, kartu naik, lalu kita dibawa masuk ke dalam amplop
+    envelope(c) {
+      const { stage, T, later, tw, mk } = c, h = C.hero, o = C.cover;
+      const ini = (s) => esc(String(s || '').trim().charAt(0).toUpperCase());
+      c.mix(1);
+      const root = mk('pintro pe', `<div class="pe-dim"></div><div class="pe-wrap"><div class="pe-env">
+        <div class="pe-back"><i></i></div><div class="pe-glow"></div>
+        <div class="pe-card"><div class="pe-cb"><small>${esc(o.kicker)}</small><b>${esc(h.groom)}</b><s>&amp;</s><b>${esc(h.bride)}</b><em>${esc(h.dateText)}</em></div></div>
+        <svg class="pe-front" viewBox="0 0 300 204" preserveAspectRatio="none"><defs>
+          <linearGradient id="peg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9cfdd"/><stop offset="1" stop-color="#ee9fbc"/></linearGradient>
+          <linearGradient id="peg2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9cfdd"/><stop offset="1" stop-color="#ea93b3"/></linearGradient>
+          <linearGradient id="peg3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f6b4cb"/><stop offset="1" stop-color="#fde3ec"/></linearGradient></defs>
+          <polygon points="0,0 152,108 0,204" fill="url(#peg1)"/><polygon points="300,0 148,108 300,204" fill="url(#peg2)"/>
+          <polygon points="0,204 150,98 300,204" fill="url(#peg3)"/>
+          <path d="M0 0L152 108L0 204M300 0L148 108L300 204M0 204L150 98L300 204" fill="none" stroke="#d9b36e" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        <div class="pe-flap"><svg class="fa" viewBox="0 0 300 120" preserveAspectRatio="none"><defs><linearGradient id="peg4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a9c4"/><stop offset="1" stop-color="#fbd2e0"/></linearGradient></defs>
+          <polygon points="0,0 300,0 150,118" fill="url(#peg4)" stroke="#d9b36e" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          <svg class="fb" viewBox="0 0 300 120" preserveAspectRatio="none"><polygon points="0,0 300,0 150,118" fill="#fff0f5" stroke="#e6c88c" stroke-width="1.2"/><polygon points="14,4 286,4 150,108" fill="#fbdce8"/></svg>
+          <div class="pe-seal"><b>${ini(h.groom)}<i>&amp;</i>${ini(h.bride)}</b></div></div>
+        </div></div><div class="pe-fl"></div>`, stage);
+      const wrap = $('.pe-wrap', root), env = $('.pe-env', root), flap = $('.pe-flap', root), card = $('.pe-card', root), seal = $('.pe-seal', root), glow = $('.pe-glow', root), fl = $('.pe-fl', root), dim = $('.pe-dim', root);
+      dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(900), fill: 'both' });
+      wrap.animate([{ transform: 'translateY(52cqh) scale(.5) rotate(-10deg)', opacity: 0 }, { transform: 'translateY(0) scale(1) rotate(0deg)', opacity: 1 }], { duration: T(1100), easing: 'cubic-bezier(.18,.85,.25,1)', fill: 'both' });
+      const spark = (n, cx, cy, spread) => { for (let i = 0; i < n; i++) { const e = mk('pe-sp', '', root); const a = Math.random() * 6.283, d = spread * (0.5 + Math.random()); e.style.left = cx + '%'; e.style.top = cy + '%'; e.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}cqw),calc(-50% + ${Math.sin(a) * d - 6}cqw)) scale(${0.6 + Math.random()})`, opacity: 0 }], { duration: T(900 + Math.random() * 700), easing: 'ease-out', fill: 'both' }); later(() => e.remove(), T(1700)); } };
+      later(() => spark(10, 50, 50, 26), T(900));
+      later(() => { seal.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: 0.4 }, { transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }], { duration: T(420), easing: 'ease-out', fill: 'both' }); spark(14, 50, 52, 20); }, T(1500));
+      later(() => { flap.animate([{ transform: 'rotateX(0deg)' }, { transform: 'rotateX(181deg)' }], { duration: T(950), easing: 'cubic-bezier(.5,0,.3,1)', fill: 'both' }); flap.style.zIndex = 5; later(() => { flap.style.zIndex = 0; }, T(470)); glow.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(900), fill: 'both' }); }, T(1750));
+      later(() => { card.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-58%) scale(1.04)' }], { duration: T(1150), easing: 'cubic-bezier(.3,.8,.25,1)', fill: 'both' }); spark(10, 50, 14, 24); }, T(2650));
+      later(() => { // masuk ke dalam amplop: perbesar menuju mulut amplop, kartu terangkat keluar layar
+        env.style.animation = 'none';
+        wrap.style.transformOrigin = '50% 40%';
+        wrap.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.6)', offset: 0.35 }, { transform: 'scale(14)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.75,.45)', fill: 'both' });
+        card.animate([{ transform: 'translateY(-58%) scale(1.04)' }, { transform: 'translateY(-210%) scale(1.1)' }], { duration: T(1300), easing: 'cubic-bezier(.5,0,.8,.5)', fill: 'both' });
+        glow.animate([{ opacity: 1 }, { opacity: 1 }], { duration: T(1500), fill: 'both' });
+      }, T(3750));
+      later(() => fl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(700), easing: 'ease-in', fill: 'both' }), T(4500));
+      later(() => { fl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(1500), easing: 'ease-out', fill: 'both' }); wrap.style.visibility = 'hidden'; dim.style.visibility = 'hidden'; }, T(5250));
+      later(() => root.remove(), T(6900));
+      return T(5000);
+    },
+    // Bali: gerbang candi bentar membelah dua dan terbuka ke dalam, kamera melangkah masuk
+    gate(c) {
+      const { pbox, T, later, mk } = c;
+      c.mix(1);
+      const g = mk('pgate', `<div class="pg-d l"><img src="${PT.cover}" alt=""></div><div class="pg-d r"><img src="${PT.cover}" alt=""></div><i class="pg-lt"></i>`, pbox);
+      const l = $('.pg-d.l', g), r = $('.pg-d.r', g), lt = $('.pg-lt', g);
+      const o = { duration: T(2500), easing: 'cubic-bezier(.55,0,.25,1)', fill: 'both', delay: T(250) };
+      l.animate([{ transform: 'rotateY(0deg)', filter: 'brightness(1)' }, { transform: 'rotateY(84deg)', filter: 'brightness(.55)' }], o);
+      r.animate([{ transform: 'rotateY(0deg)', filter: 'brightness(1)' }, { transform: 'rotateY(-84deg)', filter: 'brightness(.55)' }], o);
+      lt.animate([{ opacity: 0, transform: 'scaleX(.05)' }, { opacity: 1, transform: 'scaleX(.6)', offset: 0.5 }, { opacity: 0, transform: 'scaleX(1.6)' }], { duration: T(3000), delay: T(250), easing: 'ease-in-out', fill: 'both' });
+      later(() => g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(700), fill: 'both' }), T(2000));
+      later(() => g.remove(), T(2900));
+      return T(450);
+    },
+    // Jawa Emas: matahari senja membesar jadi cahaya keemasan, dunia terungkap, kamera turun dari matahari
+    sun(c) {
+      const { pbox, T, later, tw, mk } = c, [sx, sy] = PT.glow[0] ? [PT.glow[0][0], PT.glow[0][1]] : [650, 410];
+      const at = `left:${px(sx)}%;top:${py(sy)}%`;
+      const rays = mk('pf-rays', '', pbox); rays.style.cssText = at;
+      rays.animate([{ opacity: 0, transform: 'translate(-50%,-50%) rotate(0deg) scale(.4)' }, { opacity: 1, transform: 'translate(-50%,-50%) rotate(14deg) scale(1)', offset: 0.35 }, { opacity: 0, transform: 'translate(-50%,-50%) rotate(34deg) scale(1.3)' }], { duration: T(4200), easing: 'ease-in-out', fill: 'both' });
+      const core = mk('pf-sun', '', pbox); core.style.cssText = at;
+      core.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.06)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(.7)', offset: 0.45 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.5)', offset: 0.62 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.9)' }], { duration: T(3300), easing: 'ease-in-out', fill: 'both' });
+      const ghosts = mk('pf-gh', '<i></i><i></i><i></i><i></i><i></i>', pbox);
+      [0.28, 0.5, 0.9, 1.25, 1.6].forEach((k, i) => { const e = ghosts.children[i], x = sx + (BW / 2 - sx) * k, y = sy + (BH / 2 - sy) * k; e.style.cssText = `left:${px(x)}%;top:${py(y)}%;width:${[9, 5, 12, 6, 16][i]}%`; });
+      ghosts.animate([{ opacity: 0 }, { opacity: 1, offset: 0.5 }, { opacity: 0 }], { duration: T(3800), delay: T(600), fill: 'both' });
+      later(() => tw(T(700), (u) => c.setMix(u), EASE.lin), T(1300));
+      later(() => [rays, core, ghosts].forEach((e) => e.remove()), T(4500));
+      return 0;
+    },
+    // Biru: riak air memancar dari tombol, lukisan larut jadi air, kamera menyelam menembus tirai air terjun
+    dive(c) {
+      const { pbox, stage, T, later, tw, mk, G } = c, [bx, by] = btnCenter();
+      G.trm = 1; G.trc = [bx / BW, by / BH]; G.trp = 0;
+      later(() => tw(T(2900), (u) => { G.trp = u; }, EASE.io), T(120));
+      later(() => { G.mix = 1; G.trm = 0; }, T(3100));
+      for (let i = 0; i < 4; i++) { const e = mk('pring', '', pbox); e.style.cssText = `left:${px(bx)}%;top:${py(by)}%`; e.animate([{ transform: 'translate(-50%,-50%) scale(.05)', opacity: 0 }, { opacity: 0.9, offset: 0.15 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 }], { duration: T(2200), delay: T(i * 380), easing: 'ease-out', fill: 'both' }); later(() => e.remove(), T(2200 + i * 380 + 100)); }
+      c.curtain = () => {
+        const k = mk('pcurt', '<i></i><i></i><b></b>', stage);
+        k.animate([{ transform: 'translateY(-105%)' }, { transform: 'translateY(105%)' }], { duration: T(1700), easing: 'cubic-bezier(.5,0,.5,1)', fill: 'both' });
+        later(() => k.remove(), T(1800));
+      };
+      return 0;
+    },
+    // Rimba: bulan purnama memancar, lingkaran portal cahaya membuka lukisan, kunang-kunang beterbangan
+    portal(c) {
+      const { pbox, T, later, tw, mk, G } = c, [mx, my] = PT.moon || [475, 385];
+      G.trm = 2; G.trc = [mx / BW, my / BH]; G.trp = 0;
+      later(() => tw(T(2700), (u) => { G.trp = u; }, EASE.io), T(250));
+      later(() => { G.mix = 1; G.trm = 0; }, T(3100));
+      const m = mk('pmoonf', '', pbox); m.style.cssText = `left:${px(mx)}%;top:${py(my)}%`;
+      m.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.2)', offset: 0.4 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(2.6)' }], { duration: T(3000), easing: 'ease-in-out', fill: 'both' });
+      later(() => m.remove(), T(3100));
+      later(() => { for (let i = 0; i < 18; i++) { const e = mk('pfb', '', pbox); e.style.cssText = `left:${px(mx)}%;top:${py(my)}%`; const a = Math.random() * 6.283, d = 8 + Math.random() * 30; e.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}cqw),calc(-50% + ${Math.sin(a) * d * 1.3 + 4}cqw)) scale(${0.7 + Math.random() * 0.9})`, opacity: 0 }], { duration: T(2200 + Math.random() * 1800), delay: T(Math.random() * 500), easing: 'ease-out', fill: 'both' }); later(() => e.remove(), T(4800)); } }, T(500));
+      return 0;
+    },
+    // Klasik: gunungan wayang naik di kelir bercahaya blencong, lalu terbelah dua membuka panggung
+    wayang(c) {
+      const { stage, T, later, tw, mk, G } = c;
+      const root = mk('pintro pw', `<div class="pw-dark"></div><div class="pw-lamp"></div><div class="pw-gun"><div class="pw-in"><div class="pw-h l"><img src="${GUN}" alt=""></div><div class="pw-h r"><img src="${GUN}" alt=""></div></div></div><i class="pw-lt"></i>`, stage);
+      const dark = $('.pw-dark', root), lamp = $('.pw-lamp', root), gun = $('.pw-gun', root), inn = $('.pw-in', root), hl = $('.pw-h.l', root), hr = $('.pw-h.r', root), lt = $('.pw-lt', root);
+      dark.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(800), fill: 'both' });
+      lamp.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(1400), fill: 'both' });
+      gun.animate([{ transform: 'translateY(70cqh) scale(.7)', opacity: 0 }, { transform: 'translateY(0) scale(1)', opacity: 1 }], { duration: T(1500), delay: T(500), easing: 'cubic-bezier(.2,.85,.25,1)', fill: 'both' });
+      inn.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-4deg)', offset: 0.25 }, { transform: 'rotate(3.5deg)', offset: 0.55 }, { transform: 'rotate(-2deg)', offset: 0.8 }, { transform: 'rotate(0deg)' }], { duration: T(2600), delay: T(1000), easing: 'ease-in-out', fill: 'both' });
+      later(() => {
+        c.mix(1);
+        gun.animate([{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-3cqh) scale(3.4)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.35,1)', fill: 'both' });
+        hl.animate([{ transform: 'translateX(0) rotate(0deg)' }, { transform: 'translateX(-108%) rotate(-9deg)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.35,1)', fill: 'both' });
+        hr.animate([{ transform: 'translateX(0) rotate(0deg)' }, { transform: 'translateX(108%) rotate(9deg)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.35,1)', fill: 'both' });
+        lt.animate([{ opacity: 0, transform: 'translateX(-50%) scaleX(.2)' }, { opacity: 1, transform: 'translateX(-50%) scaleX(1)', offset: 0.45 }, { opacity: 0, transform: 'translateX(-50%) scaleX(3)' }], { duration: T(1700), fill: 'both' });
+        dark.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(1300), delay: T(300), fill: 'both' });
+        lamp.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(1300), delay: T(300), fill: 'both' });
+      }, T(2700));
+      later(() => root.remove(), T(4500));
+      return T(2900);
+    },
+  };
+
   function picOpen(instant, cover, hero, unlock, finish) {
-    const stage = $('.pstage', hero), cam = $('.pcam', stage);
+    const stage = $('.pstage', hero), cam = $('.pcam', stage), pbox = $('.pbox', stage);
     const done = () => {
       picShow(hero); unlock(); finish(); picAmbient(stage);
       picFlyers($('.pfx', stage), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8));
     };
-    if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
-    const D = sp;
-    cover.classList.add('opening', `open-${PICT || 'default'}`); hero.classList.add('filming', `film-${PICT || 'default'}`);
+    if (instant) { G.mix = 1; G.trm = 0; if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
+    const D = sp, T = (ms) => ms * D, glOn = G.ok;
+    cover.classList.add('opening'); hero.classList.add('filming');
     const skip = $('.pskip', stage); skip.hidden = false;
-    // susun keyframe kamera dari daftar shot
-    const kf = [{ transform: 'translate(0px,0px) scale(1)', offset: 0 }], marks = [];
-    let t = 0;
-    const shots = PT.shots.map((sh) => sh[0] === 'end' ? { end: 1, tr: sh[1] * D, hold: 0, ev: sh[3] } : { x: sh[0], y: sh[1], s: sh[2], tr: sh[3] * D, hold: sh[4] * D, ev: sh[5] });
-    shots.forEach((sh) => { marks.push([t, sh.ev]); t += sh.tr + sh.hold; });
-    const total = t; t = 0;
-    shots.forEach((sh) => {
-      t += sh.tr;
-      if (sh.end) { kf.push({ transform: 'translate(0px,0px) scale(1)', offset: 1 }); return; }
-      kf[kf.length - 1].easing = 'cubic-bezier(.45,.05,.3,1)';
-      kf.push({ transform: camT(stage, sh.x, sh.y, sh.s), offset: t / total, easing: 'linear' });
-      t += sh.hold;
-      if (sh.hold) kf.push({ transform: camT(stage, sh.x, sh.y, sh.s * 1.035), offset: t / total });
-    });
-    const anim = cam.animate(kf, { duration: total, fill: 'both' });
-    $('.pcv', stage).animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1300 * D, delay: 250 * D, easing: 'ease-in-out', fill: 'forwards' });
-    later(() => { if (cover.isConnected) cover.remove(); }, (PICT === 'princess' ? 1450 : 1050) * D);
-    if (PT.gunungan && JFX()) gunOpen(D * 0.8);
-    if (PT.carriage) picCarriage(stage);
-    picBirds(stage);
-    const fire = (ev) => {
-      if (ev === 'birds') picBirds(stage);
-      if (ev === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 6, [r.width / 2, r.height * 0.5]); }
+    const ovs = [], cancels = [];
+    const mk = (cls, html, parent) => { const e = document.createElement('div'); e.className = cls; if (html) e.innerHTML = html; parent.appendChild(e); ovs.push(e); return e; };
+    const tw = (ms, fn, ease) => {
+      const t0 = performance.now(); let id = 0, dead = false; const e = ease || EASE.io;
+      const step = (now) => { if (dead) return; const u = Math.min(1, (now - t0) / ms); fn(e(u)); if (u < 1) id = requestAnimationFrame(step); };
+      id = requestAnimationFrame(step); const stop = () => { dead = true; cancelAnimationFrame(id); }; cancels.push(stop); return stop;
     };
-    marks.forEach(([at, ev]) => ev && later(() => fire(ev), at));
+    // tanpa WebGL: cover memudar biasa. Dengan WebGL: cover = tekstur yang melebur ke dunia lewat G.mix / G.trm
+    const pcv = $('.pcv', stage), domOnly = ['envelope', 'gate', 'sun', 'wayang'].includes(PT.intro);
+    const setMix = (u) => { if (glOn) G.mix = u; else if (pcv) pcv.style.opacity = String(1 - u); };
+    const ctx = { stage, pbox, hero, T, later, tw, mk, G, setMix, mix: setMix, cfg: C };
+    let camAt = 0;
+    const useIntro = INTROS[PT.intro] && (glOn || domOnly);
+    if (!glOn && !useIntro) pcv.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1300 * D, delay: 250 * D, easing: 'ease-in-out', fill: 'forwards' });
+    if (useIntro) camAt = INTROS[PT.intro](ctx) || 0;
+    else if (glOn) { later(() => tw(T(1200), (u) => { G.mix = u; }, EASE.io), T(250)); }
+    const cp = camPath(stage, PT.shots, D, camAt);
+    const anim = cam.animate(cp.kf, { duration: cp.total, delay: camAt, fill: 'both', easing: 'linear' });
+    later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
+    if (PT.gunungan && JFX() && PT.intro !== 'wayang') gunOpen(D * 0.8);
+    if (PT.carriage) later(() => picCarriage(stage), camAt);
+    later(() => picBirds(stage), camAt);
+    const fire = (ev) => {
+      if (!ev) return;
+      const [name, off] = String(ev).split('+');
+      const go = () => {
+        if (name === 'birds') picBirds(stage);
+        if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 6, [r.width / 2, r.height * 0.5]); }
+        if (name === 'curtain' && ctx.curtain) ctx.curtain();
+      };
+      if (off) later(go, T(+off)); else go();
+    };
+    cp.marks.forEach(([at, ev]) => ev && later(() => fire(ev), at));
     let ended = false;
-    const end = () => {
+    const end = (natural) => {
       if (ended) return; ended = true; skip.hidden = true; hero.classList.remove('filming');
-      try { anim.commitStyles(); } catch (e) { /* */ } anim.cancel();
-      cam.animate([{ transform: getComputedStyle(cam).transform === 'none' ? 'none' : getComputedStyle(cam).transform }, { transform: 'none' }], { duration: 900 * D, easing: 'ease-out' });
+      cancels.forEach((f) => f()); G.mix = 1; G.trm = 0;
+      if (!natural) { try { anim.commitStyles(); } catch (e) { /* */ } }
+      const cur = getComputedStyle(cam).transform;
+      anim.cancel(); ovs.forEach((e) => e.remove());
+      if (!natural) cam.animate([{ transform: cur === 'none' ? 'none' : cur }, { transform: 'none' }], { duration: 900 * D, easing: 'ease-out' });
       cam.style.transform = '';
-      $('.pcv', stage).style.opacity = '0';
+      if (pcv) pcv.style.opacity = '0';
       done();
     };
-    anim.onfinish = () => { cam.style.transform = ''; anim.cancel(); if (!ended) { ended = true; skip.hidden = true; hero.classList.remove('filming'); done(); } };
-    skip.onclick = end;
+    anim.onfinish = () => end(true);
+    skip.onclick = () => end(false);
   }
 
   // ---------- render section ----------

@@ -78,3 +78,15 @@ Admin → Tema → "Tema undangan": Nusantara (Candi Bali), Princess, Jawa Emas,
 
 ## v12 — Hiasan dalam per tema (Tema 3–8)
 Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga tepi atas/bawah (Galeri, Love Story, Penutup), bingkai kapsul kartu Acara & Gift (`frame-arc`/`frame-side`), buket di foto mempelai, ornamen kartu acara, ornamen di bawah judul, dan motif (batik/pola/songket) halus di panel. File: `public/assets/t/<tema>/{fl-top,fl-bottom,frame-arc,frame-side,bouquet,orn,divider,motif}.webp`. Gambar dekorasi yang diunggah sendiri lewat admin tetap diutamakan.
+
+## v13 — Pembuka khas tiap tema + cover & air hidup (Tema 3–8)
+- **Setiap tema punya pembuka sendiri** (`intro` di `public/themes.js`):
+  - Princess: amplop merah muda terbang masuk → segel pecah → tutup terbuka → kartu naik → kamera dibawa masuk ke dalam amplop lalu menembus cahaya ke taman kastil.
+  - Nusantara (Bali): gerbang candi bentar membelah dua dan terbuka ke dalam, kamera melangkah masuk melewati sawah & sungai.
+  - Jawa Emas: matahari senja membesar jadi ledakan cahaya + sinar + kilau lensa, lalu kamera turun dari matahari ke air terjun & pendopo.
+  - Biru Air Terjun: riak air memancar dari tombol, lukisan larut jadi air, kamera menyelam menembus tirai air terjun.
+  - Rimba Bulan: bulan purnama memancar, portal cahaya melebar membuka lukisan, kunang-kunang beterbangan.
+  - Jawa Klasik: kelir gelap dengan cahaya blencong, gunungan naik bergoyang lalu terbelah membuka panggung.
+- **Kamera mulus**: jalur kamera memakai kurva (bukan berhenti di tiap titik). Atur di `shots` tiap tema.
+- **Cover sekarang hidup** (WebGL): air mengalir & berkilau, air terjun mengalir, kabut tipis bergeser di langit — sudah bergerak sebelum tombol "Buka Undangan" ditekan, lalu berlanjut saat masuk ke dalam lukisan. Percikan di dasar air terjun, serbuk cahaya, awan, burung, kupu-kupu tetap ada.
+- Bila perangkat tidak mendukung WebGL: Princess, Bali, Emas, dan Klasik tetap memakai pembuka masing-masing; Biru dan Rimba memakai peralihan memudar. Bila HP lambat, resolusi kanvas turun otomatis.
