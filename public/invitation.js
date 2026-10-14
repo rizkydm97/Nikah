@@ -436,7 +436,7 @@
     };
     if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
     const D = sp;
-    cover.classList.add('opening'); hero.classList.add('filming');
+    cover.classList.add('opening', `open-${PICT || 'default'}`); hero.classList.add('filming', `film-${PICT || 'default'}`);
     const skip = $('.pskip', stage); skip.hidden = false;
     // susun keyframe kamera dari daftar shot
     const kf = [{ transform: 'translate(0px,0px) scale(1)', offset: 0 }], marks = [];
@@ -454,7 +454,7 @@
     });
     const anim = cam.animate(kf, { duration: total, fill: 'both' });
     $('.pcv', stage).animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1300 * D, delay: 250 * D, easing: 'ease-in-out', fill: 'forwards' });
-    later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
+    later(() => { if (cover.isConnected) cover.remove(); }, (PICT === 'princess' ? 1450 : 1050) * D);
     if (PT.gunungan && JFX()) gunOpen(D * 0.8);
     if (PT.carriage) picCarriage(stage);
     picBirds(stage);

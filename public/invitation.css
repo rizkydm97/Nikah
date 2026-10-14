@@ -791,3 +791,88 @@ a{color:inherit}
 /* Tema 7 (Rimba): kotak judul pendek, kecilkan teks agar tidak menimpa bingkai emas */
 .t-rimba .ptext .pn{font-size:8.8cqw;margin-top:.4cqw}
 .t-rimba .ptext .pk{font-size:3.2cqw}
+
+
+/* ===== v18: pembukaan sinematik khusus tema 3–8 ===== */
+.cover.pic.opening{perspective:1200px;isolation:isolate}
+.cover.pic.opening .pbox.ui{transform-origin:50% 50%;animation:picCoverLift 1.25s cubic-bezier(.2,.75,.18,1) both}
+@keyframes picCoverLift{0%{filter:brightness(1);transform:translate(-50%,-50%) scale(1)}35%{filter:brightness(1.12);transform:translate(-50%,-50%) scale(1.025)}100%{filter:brightness(.8);transform:translate(-50%,-50%) scale(1.08)}}
+/* Princess: dua lipatan seperti amplop membuka sebelum kamera masuk ke dunia kastil */
+.cover.pic.open-princess::before,.cover.pic.open-princess::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;transform-style:preserve-3d;backface-visibility:hidden}
+.cover.pic.open-princess::before{clip-path:polygon(0 0,100% 0,50% 53%);background:linear-gradient(145deg,rgba(255,250,253,.96),rgba(237,190,211,.78) 52%,rgba(255,235,244,.92));filter:drop-shadow(0 8px 12px rgba(104,42,72,.2));transform-origin:50% 0;animation:princessFlap 1.15s cubic-bezier(.42,0,.2,1) .05s both}
+.cover.pic.open-princess::after{clip-path:polygon(0 100%,100% 100%,50% 48%);background:linear-gradient(20deg,rgba(230,177,202,.5),rgba(255,247,251,.94) 52%,rgba(238,197,215,.65));transform-origin:50% 100%;animation:princessBase 1.05s cubic-bezier(.3,.7,.2,1) .12s both}
+@keyframes princessFlap{0%{transform:rotateX(0);opacity:.98}65%{opacity:.92}100%{transform:rotateX(-112deg);opacity:0}}
+@keyframes princessBase{0%{transform:translateY(0) scaleY(1);opacity:.95}100%{transform:translateY(9%) scaleY(.15);opacity:0}}
+.cover.pic.open-princess .pc-btn{animation:none}
+/* Nusantara: pintu masuk terasa seperti melewati gerbang candi */
+.cover.pic.open-bali .pbox.ui{animation:gateOpen 1.1s cubic-bezier(.2,.75,.2,1) both}
+@keyframes gateOpen{0%{transform:translate(-50%,-50%) scale(1);filter:brightness(1)}38%{transform:translate(-50%,-50%) scale(1.06);filter:brightness(1.18) sepia(.08)}100%{transform:translate(-50%,-50%) scale(1.13);filter:brightness(.78)}}
+/* Senja emas: cahaya hangat berkembang ke seluruh layar */
+.cover.pic.open-emas .pbox.ui{animation:sunsetOpen 1.2s ease-in-out both}
+@keyframes sunsetOpen{0%{filter:brightness(1) sepia(0);transform:translate(-50%,-50%) scale(1)}55%{filter:brightness(1.32) sepia(.12);transform:translate(-50%,-50%) scale(1.045)}100%{filter:brightness(.68) sepia(.18);transform:translate(-50%,-50%) scale(1.1)}}
+/* Air terjun malam: kilau dingin dan dorongan kamera masuk ke kabut */
+.cover.pic.open-biru .pbox.ui{animation:waterfallOpen 1.25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes waterfallOpen{0%{filter:brightness(1) saturate(1);transform:translate(-50%,-50%) scale(1)}45%{filter:brightness(1.22) saturate(1.25);transform:translate(-50%,-50%) scale(1.055)}100%{filter:brightness(.62) saturate(1.3);transform:translate(-50%,-50%) scale(1.12)}}
+/* Rimba: kedalaman berlapis seperti melewati pepohonan */
+.cover.pic.open-rimba .pbox.ui{animation:forestOpen 1.2s cubic-bezier(.18,.78,.22,1) both}
+@keyframes forestOpen{0%{filter:brightness(1);transform:translate(-50%,-50%) scale(1)}30%{filter:brightness(1.08) contrast(1.04);transform:translate(-50%,-50%) scale(1.04) translateY(-.5%)}100%{filter:brightness(.58) contrast(1.1);transform:translate(-50%,-50%) scale(1.14) translateY(1%)}}
+/* Jawa klasik: masuk melalui gerbang dengan cahaya lampu yang berdenyut */
+.cover.pic.open-klasik .pbox.ui{animation:classicOpen 1.2s cubic-bezier(.2,.7,.2,1) both}
+@keyframes classicOpen{0%{filter:brightness(1);transform:translate(-50%,-50%) scale(1)}50%{filter:brightness(1.18) sepia(.1);transform:translate(-50%,-50%) scale(1.045)}100%{filter:brightness(.65);transform:translate(-50%,-50%) scale(1.12)}}
+/* Air, kabut dan awan dibuat lebih organik saat dunia tema sudah terbuka */
+.hero.pic .pcl{will-change:transform;filter:drop-shadow(0 2px 5px rgba(255,255,255,.08))}
+.hero.pic .pwf{filter:blur(.25px) drop-shadow(0 0 7px rgba(180,225,255,.22));opacity:.92}
+.hero.pic .pwf i{opacity:.82;background-size:100% 42%;animation-duration:1.05s}
+.hero.pic .pwf i+i{opacity:.56;animation-duration:.78s}
+.hero.pic .pwt i{opacity:.64;animation-duration:7s,pwtO 2.6s ease-in-out infinite alternate}
+.hero.pic .pms{mix-blend-mode:screen;filter:blur(1px) brightness(1.08)}
+.hero.pic .pglow{filter:blur(1.5px)}
+.hero.pic.film-biru .pfxl{animation:waterWorldReveal 2.2s ease-out both}
+@keyframes waterWorldReveal{0%{filter:brightness(1.25) saturate(1.3)}45%{filter:brightness(1.15) saturate(1.15)}100%{filter:brightness(1) saturate(1)}}
+.hero.pic.film-princess .pfxl{animation:castleWorldReveal 2.1s ease-out both}
+@keyframes castleWorldReveal{0%{filter:brightness(1.25) saturate(1.18) blur(1px)}55%{filter:brightness(1.08) saturate(1.1) blur(.25px)}100%{filter:none}}
+.hero.pic.film-rimba .pfxl{animation:forestWorldReveal 2.4s ease-out both}
+@keyframes forestWorldReveal{0%{filter:brightness(1.25) contrast(1.12)}50%{filter:brightness(1.08)}100%{filter:none}}
+@media(prefers-reduced-motion:reduce){.cover.pic.opening .pbox.ui,.cover.pic.open-princess::before,.cover.pic.open-princess::after,.hero.pic.film-biru .pfxl,.hero.pic.film-princess .pfxl,.hero.pic.film-rimba .pfxl{animation:none!important}}
+
+/* ===== v19: depth/3D entrance pass for illustrated themes 3–8 ===== */
+.cover.pic.opening::before,.cover.pic.opening::after{content:"";position:absolute;inset:-1%;z-index:2;pointer-events:none;transform-style:preserve-3d;backface-visibility:hidden}
+/* Bali/Nusantara: two heavy temple doors swing outward */
+.cover.pic.open-bali::before{clip-path:polygon(0 0,50% 0,43% 100%,0 100%);transform-origin:0 50%;background:linear-gradient(90deg,rgba(57,31,12,.94),rgba(176,117,45,.72) 72%,rgba(255,225,155,.72));box-shadow:inset -8px 0 16px rgba(30,15,5,.35);animation:templeLeft 1.25s cubic-bezier(.2,.72,.15,1) both}
+.cover.pic.open-bali::after{clip-path:polygon(50% 0,100% 0,100% 100%,57% 100%);transform-origin:100% 50%;background:linear-gradient(270deg,rgba(57,31,12,.96),rgba(176,117,45,.7) 72%,rgba(255,225,155,.7));box-shadow:inset 8px 0 16px rgba(30,15,5,.35);animation:templeRight 1.25s cubic-bezier(.2,.72,.15,1) both}
+@keyframes templeLeft{0%{transform:perspective(900px) rotateY(0);opacity:1}65%{opacity:1}100%{transform:perspective(900px) rotateY(-78deg);opacity:0}}
+@keyframes templeRight{0%{transform:perspective(900px) rotateY(0);opacity:1}65%{opacity:1}100%{transform:perspective(900px) rotateY(78deg);opacity:0}}
+/* Emas: a lens flare blooms across the frame */
+.cover.pic.open-emas::before{inset:-30%;background:radial-gradient(ellipse at 52% 42%,rgba(255,246,200,.98) 0,rgba(255,201,91,.52) 12%,rgba(255,152,39,.18) 28%,transparent 57%);mix-blend-mode:screen;animation:goldenBloom 1.4s ease-out both}
+.cover.pic.open-emas::after{inset:-40%;background:linear-gradient(110deg,transparent 35%,rgba(255,230,159,.3) 47%,rgba(255,255,232,.85) 50%,rgba(255,196,89,.28) 54%,transparent 66%);transform:translateX(-65%) rotate(-8deg);animation:goldenSweep 1.5s ease-in-out both}
+@keyframes goldenBloom{0%{opacity:0;transform:scale(.35)}42%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes goldenSweep{0%{opacity:0;transform:translateX(-65%) rotate(-8deg)}30%{opacity:1}100%{opacity:0;transform:translateX(65%) rotate(-8deg)}}
+/* Biru: a falling water veil parts down the middle */
+.cover.pic.open-biru::before{background:repeating-linear-gradient(90deg,transparent 0 4%,rgba(210,240,255,.23) 4.3% 4.8%,transparent 5.2% 9%),linear-gradient(180deg,rgba(205,238,255,.1),rgba(72,156,220,.7));clip-path:polygon(0 0,50% 0,50% 100%,0 100%);transform-origin:0 0;animation:waterVeilLeft 1.35s cubic-bezier(.2,.72,.18,1) both}
+.cover.pic.open-biru::after{background:repeating-linear-gradient(90deg,transparent 0 4%,rgba(210,240,255,.22) 4.3% 4.8%,transparent 5.2% 9%),linear-gradient(180deg,rgba(205,238,255,.1),rgba(72,156,220,.7));clip-path:polygon(50% 0,100% 0,100% 100%,50% 100%);transform-origin:100% 0;animation:waterVeilRight 1.35s cubic-bezier(.2,.72,.18,1) both}
+@keyframes waterVeilLeft{0%{transform:perspective(800px) rotateY(0) translateY(0);opacity:.95}55%{opacity:.85}100%{transform:perspective(800px) rotateY(-68deg) translateY(-5%);opacity:0}}
+@keyframes waterVeilRight{0%{transform:perspective(800px) rotateY(0) translateY(0);opacity:.95}55%{opacity:.85}100%{transform:perspective(800px) rotateY(68deg) translateY(-5%);opacity:0}}
+/* Rimba: foreground branches peel away, creating layered forest depth */
+.cover.pic.open-rimba::before{clip-path:polygon(0 0,60% 0,42% 100%,0 100%);background:linear-gradient(110deg,rgba(2,10,28,.98),rgba(7,26,52,.78) 72%,transparent);transform-origin:0 50%;animation:forestPeelL 1.35s cubic-bezier(.16,.76,.2,1) both}
+.cover.pic.open-rimba::after{clip-path:polygon(52% 0,100% 0,100% 100%,62% 100%);background:linear-gradient(250deg,rgba(2,10,28,.98),rgba(7,26,52,.76) 72%,transparent);transform-origin:100% 50%;animation:forestPeelR 1.35s cubic-bezier(.16,.76,.2,1) both}
+@keyframes forestPeelL{0%{transform:perspective(950px) rotateY(0) scale(1);opacity:1}100%{transform:perspective(950px) rotateY(-62deg) translateX(-12%) scale(1.12);opacity:0}}
+@keyframes forestPeelR{0%{transform:perspective(950px) rotateY(0) scale(1);opacity:1}100%{transform:perspective(950px) rotateY(62deg) translateX(12%) scale(1.12);opacity:0}}
+/* Klasik: carved wooden doors slide and rotate open */
+.cover.pic.open-klasik::before{clip-path:polygon(0 0,50% 0,45% 100%,0 100%);transform-origin:0 50%;background:repeating-linear-gradient(90deg,rgba(35,8,13,.96) 0 12%,rgba(119,39,39,.96) 13% 15%,rgba(205,151,72,.55) 16% 17%,rgba(70,17,22,.96) 18% 29%);box-shadow:inset -10px 0 18px rgba(0,0,0,.4);animation:classicDoorL 1.3s cubic-bezier(.2,.7,.2,1) both}
+.cover.pic.open-klasik::after{clip-path:polygon(50% 0,100% 0,100% 100%,55% 100%);transform-origin:100% 50%;background:repeating-linear-gradient(270deg,rgba(35,8,13,.96) 0 12%,rgba(119,39,39,.96) 13% 15%,rgba(205,151,72,.55) 16% 17%,rgba(70,17,22,.96) 18% 29%);box-shadow:inset 10px 0 18px rgba(0,0,0,.4);animation:classicDoorR 1.3s cubic-bezier(.2,.7,.2,1) both}
+@keyframes classicDoorL{0%{transform:perspective(850px) rotateY(0);opacity:1}100%{transform:perspective(850px) rotateY(-76deg);opacity:0}}
+@keyframes classicDoorR{0%{transform:perspective(850px) rotateY(0);opacity:1}100%{transform:perspective(850px) rotateY(76deg);opacity:0}}
+/* Living environment: restrained parallax and layered atmosphere after entry */
+.hero.pic .pbox>.pw{animation:worldBreath 16s ease-in-out infinite alternate;transform-origin:50% 45%}
+.hero.pic .pfxl{transform-style:preserve-3d;will-change:transform;animation:fxDepthDrift 13s ease-in-out infinite alternate}
+.hero.pic .pglow{animation:glowPulse 5.8s ease-in-out infinite alternate}
+.hero.pic .pwf{filter:blur(.2px) drop-shadow(0 0 10px rgba(180,225,255,.35));}
+.hero.pic .pwf i{background-size:100% 35%;animation-duration:.78s}
+.hero.pic .pwt{transform:perspective(700px) rotateX(8deg);transform-origin:50% 0}
+.hero.pic .pms{animation-duration:12s;opacity:.46}
+.hero.pic.film-bali .pfxl,.hero.pic.film-emas .pfxl,.hero.pic.film-klasik .pfxl{animation:worldWarmReveal 2.5s ease-out both}
+@keyframes worldBreath{0%{transform:scale(1) translate3d(0,0,0)}100%{transform:scale(1.045) translate3d(-.6%,.35%,0)}}
+@keyframes fxDepthDrift{0%{transform:translate3d(-.45%,.2%,0) scale(1)}100%{transform:translate3d(.55%,-.35%,0) scale(1.012)}}
+@keyframes glowPulse{0%{opacity:.48;filter:blur(2px)}100%{opacity:.95;filter:blur(5px)}}
+@keyframes worldWarmReveal{0%{filter:brightness(1.5) saturate(1.2) blur(2px)}40%{filter:brightness(1.2) saturate(1.12) blur(.7px)}100%{filter:none}}
+@media(prefers-reduced-motion:reduce){.hero.pic .pbox>.pw,.hero.pic .pfxl,.hero.pic .pglow{animation:none!important}.cover.pic.opening::before,.cover.pic.opening::after{animation:none!important}}
