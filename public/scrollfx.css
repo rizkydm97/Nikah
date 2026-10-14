@@ -60,3 +60,13 @@
 .t-pic .gallery .masonry .mi{contain:layout paint}
 /* gradien dipindah ke tiap kata; h2 induk tidak perlu melukis gradien lagi */
 .swx{background:none!important;animation:none!important}
+
+/* ===== perbaikan v31 =====
+   BUG: judul Tema 3-8 (Wedding Event, Live Streaming, Our Gallery, Love Story, Ucapan Doa) tetap buram.
+   Penyebab: aturan keadaan awal per tema (.t-bali .swx .sw{filter:blur(4px)} dst.) punya spesifisitas SAMA dengan
+   .swx.in .sw{filter:none} tetapi letaknya lebih bawah, jadi menang -> blur & geseran tidak pernah hilang.
+   Perbaikan: keadaan "sudah muncul" diberi spesifisitas lebih tinggi (.t-pic ...) sehingga selalu menang. */
+.t-pic .swx.in .sw{opacity:1;filter:none;transform:none}
+.t-pic.t-biru .swx.in .sw,.t-pic.t-rimba .swx.in .sw{text-shadow:0 0 14px var(--sxc)}
+/* jaring pengaman: kalau JS/IntersectionObserver gagal menambah .in, judul tetap terbaca (bukan hilang/buram) */
+.t-pic .sec:not(.hero) h2.rv.in .sw{opacity:1;filter:none;transform:none}
