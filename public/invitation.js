@@ -137,7 +137,7 @@
     if (c.effects.intro !== false) ld.innerHTML = `<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
     ld.classList.add('ready');
     const s = c.scene;
-    const urls = PT ? [PT.cover, PT.world, ...PT.bf.map((n) => PT.spr + n + '.webp')].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
+    const urls = PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp')].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
@@ -159,7 +159,7 @@
     r.setProperty('--fBody', ff(t.fontBody, 'Georgia,serif'));
     r.setProperty('--fScript', ff(t.fontScript, 'cursive'));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
-    sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1) * (window.__PIC_SP || 1);
+    sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's');
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
     const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, 'Poppins', 'Lora'])].filter(Boolean).map((n) => {
@@ -227,23 +227,34 @@
   const py = (v) => +(v / BH * 100).toFixed(3);
   const rectStyle = (r) => `left:${px(r[0])}%;top:${py(r[1])}%;width:${px(r[2])}%;height:${py(r[3])}%`;
   const sprite = (n) => PT.spr + n + '.webp';
+  // partikel cahaya yang naik pelan (debu emas, bara, gelembung, serbuk sari) — membuat adegan terus hidup
+  function motes(m) {
+    let h = '<div class="pmo">';
+    for (let i = 0; i < m.n; i++) {
+      const r = (k) => ((Math.sin((i + 2) * 8123 + k * 4421) + 1) / 2), sz = (m.ember ? 2 : 2.5) + r(3) * (m.ember ? 3 : 4);
+      h += `<i style="left:${(r(1) * 96 + 2).toFixed(1)}%;--s:${sz.toFixed(1)}px;--x:${((r(6) - 0.5) * 18).toFixed(1)}cqw;animation-duration:${(9 + r(4) * 9).toFixed(1)}s;animation-delay:${(-r(5) * 16).toFixed(1)}s;background:radial-gradient(circle,rgba(${m.c},1) 0,rgba(${m.c},.55) 40%,rgba(${m.c},0) 72%);box-shadow:0 0 ${(sz * 2).toFixed(0)}px ${(sz * 0.6).toFixed(0)}px rgba(${m.c},.45)"></i>`;
+    }
+    return h + '</div>';
+  }
   function picLayers() {
     const t = PT; let h = '';
     t.glow.forEach(([x, y, r, col], i) => { h += `<i class="pglow${t.lamp && i === 0 ? ' lamp' : ''}" style="left:${px(x - r)}%;top:${py(y - r)}%;width:${px(r * 2)}%;background:radial-gradient(circle,${col},transparent 68%);animation-delay:${-i * 1.7}s"></i>`; });
     if (t.rays) h += `<div class="prays" style="left:${px(t.rays[0])}%;top:${py(t.rays[1])}%">${'<i></i>'.repeat(7)}</div>`;
     t.clouds.forEach((n, i) => { const y = t.cloudBand[0] + (t.cloudBand[1] - t.cloudBand[0]) * ((i * 0.53) % 1); const d = 70 + i * 23; h += `<img class="pcl" src="${sprite(n)}" alt="" style="top:${py(y)}%;width:${15 + (i % 2) * 6}%;animation-duration:${d}s;animation-delay:${-d * ((i * 0.41 + 0.2) % 1)}s">`; });
     t.wf.forEach(([x, y, w, hh]) => { h += `<div class="pwf" style="${rectStyle([x, y, w, hh])}"><i></i><i></i></div>`; });
-    t.water.forEach((r, i) => { h += `<div class="pwt" style="${rectStyle(r)}"><i style="animation-delay:${-i * 3}s"></i></div>`; });
     t.wf.forEach(([x, y, w, hh], i) => { for (let k = 0; k < 4; k++) h += `<i class="psp" style="left:${px(x + w / 2 + (k - 1.5) * w * 0.35)}%;top:${py(y + hh - 6)}%;width:${px(w * 1.1)}%;animation-delay:${-(k * 0.8 + i * 0.4).toFixed(1)}s"></i>`; });
-    if (t.motes) h += Array.from({ length: t.motes }, (_, i) => { const r = (k) => ((Math.sin((i + 5) * 6151 + k * 3917) + 1) / 2); return `<i class="pmt" style="left:${(r(1) * 96 + 2).toFixed(1)}%;top:${(r(2) * 70 + 22).toFixed(1)}%;animation-duration:${(7 + r(3) * 8).toFixed(1)}s;animation-delay:${(-r(4) * 12).toFixed(1)}s"></i>`; }).join('');
+    t.water.forEach((r, i) => { h += `<div class="pwt" style="${rectStyle(r)}"><i style="animation-delay:${-i * 3}s"></i></div>`; });
     t.mist.forEach(([x, y, w, hh, slow], i) => { h += `<img class="pms${slow ? ' slow' : ''}" src="/assets/t/fx/mist.webp" alt="" style="${rectStyle([x, y, w, hh])};animation-delay:${-i * 2.3}s">`; });
     if (t.sparkle) h += sparkles(t.sparkle);
     if (t.flies) { const [x0, y0, x1, y1] = t.flies; h += `<div class="pff" style="${rectStyle([x0, y0, x1 - x0, y1 - y0])}">${fireflies(16)}</div>`; }
+    if (t.motes) h += motes(t.motes);
     h += '<div class="pbirds"></div>';
     h += '<i class="plsw"></i>';
     if (t.carriage) h += `<div class="pcar"><i class="pcglow"></i><img class="pcc b1" src="${sprite('cloudp2')}" alt=""><img class="pcc b2" src="${sprite('cloudp3')}" alt=""><div class="pcw"><img class="pcg" src="${sprite('carriage')}" alt=""></div><img class="pcc f1" src="${sprite('cloudp1')}" alt=""><img class="pcc f2" src="${sprite('cloudp3')}" alt=""><img class="pcc f3" src="${sprite('cloudp2')}" alt=""></div>`;
+
     return h;
   }
+  const ctStyle = (r) => `left:${(r[0] / 1568 * 100).toFixed(3)}%;top:${(r[1] / 2336 * 100).toFixed(3)}%;width:${(r[2] / 1568 * 100).toFixed(3)}%`;
   function picHero(c) {
     const h = c.hero, t = PT, [bx, by, bx2, by2, br] = t.btn, [tx, ty, tx2, ty2] = t.title;
     return `<section class="sec hero pic pre" id="s-hero"><div class="pstage">
@@ -251,7 +262,9 @@
         <img class="pw" src="${t.world}" alt="" decoding="async">
         <canvas class="pgl" aria-hidden="true"></canvas>
         <div class="pfxl">${picLayers()}</div>
-        <img class="pcv" src="${t.cover}" alt="" decoding="async">
+        <div class="pent"></div>
+        <img class="pcv pl" src="${t.spr.replace('spr/', t.key + '/ctitle.webp')}" alt="" decoding="async" style="${ctStyle(t.ct)}">
+        <img class="pcv pl" src="${t.spr.replace('spr/', t.key + '/cbtn.webp')}" alt="" decoding="async" style="${ctStyle(t.cb)}">
         <div class="ptext" style="${rectStyle([tx, ty, tx2 - tx, ty2 - ty])};--tc:${t.text};--tg:${t.glowText}">
           <div class="pk">${esc(h.kicker)}</div><h1 class="pn"><span>${esc(h.groom)}</span><i>&amp;</i><span>${esc(h.bride)}</span></h1></div>
         <div class="pplate" style="${rectStyle([bx, by, bx2 - bx, by2 - by])};--br:${px(br)}cqw"><b>${esc(h.dateText)}</b><span>${esc(h.hashtag)}</span></div>
@@ -446,9 +459,9 @@
       gl_FragColor=vec4(col,1.);
     }`;
   let glRaf = 0, glPtr = [0, 0], glTgt = [0, 0];
-  const G = { mix: 0, trm: 0, trp: 0, trc: [0.5, 0.5], ok: false }; // keadaan transisi cover -> dunia (dibaca tiap frame)
+  const G = { mix: 1, trm: 0, trp: 0, trc: [0.5, 0.5], ok: false }; // keadaan transisi cover -> dunia (dibaca tiap frame)
   function picGL(stage) {
-    cancelAnimationFrame(glRaf); G.ok = false; G.mix = opened ? 1 : 0; G.trm = 0; G.trp = 0;
+    cancelAnimationFrame(glRaf); G.ok = false;
     const cv = stage && $('.pgl', stage); if (!cv || reduce || !PT) return;
     const box = cv.parentElement, cam = $('.pcam', stage), hero = stage.closest('.hero');
     let gl = null;
@@ -471,7 +484,8 @@
     };
     const load = (u) => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = u; });
     const key = PICT, coarse = matchMedia('(pointer:coarse)').matches;
-    Promise.all([load(PT.world), load('/assets/t/' + key + '/depth.png'), load(PT.cover)]).then(([w, d, cvr]) => {
+    Promise.all([load(PT.world), load('/assets/t/' + key + '/depth.png')]).then(([w, d]) => {
+      const cvr = w; // cover = dunia hidup; tekstur kedua hanya pengisi (tidak dipakai saat G.mix = 1)
       if (!cv.isConnected) return;
       const cw = Math.min(window.__PIC_GLW || (coarse ? 1176 : 1568), w.naturalWidth || 1568);
       cv.width = cw; cv.height = Math.round(cw * BH / BW); gl.viewport(0, 0, cv.width, cv.height);
@@ -530,193 +544,214 @@
     return `translate(${(-s * dx).toFixed(1)}px,${(-s * dy).toFixed(1)}px) scale(${s})`;
   }
   function picShow(hero) { hero.classList.remove('pre'); hero.classList.add('play', 'shown', 'done'); }
-
-  // jalur kamera mulus: titik-titik sorot dihubungkan kurva Hermite (kecepatan menyambung, tanpa berhenti-henti)
-  function camPath(stage, shots, D, delay) {
-    const pts = [{ t: 0, x: BW / 2, y: BH / 2, s: 1 }], marks = []; let t = 0;
-    shots.forEach((sh) => {
-      if (sh[0] === 'end') { t += sh[1] * D; pts.push({ t, x: BW / 2, y: BH / 2, s: 1 }); marks.push([t - sh[1] * D * 0.5, sh[3]]); return; }
-      marks.push([t, sh[5]]); t += sh[3] * D;
-      pts.push({ t, x: sh[0], y: sh[1], s: sh[2] });
-      if (sh[4]) { t += sh[4] * D; pts.push({ t, x: sh[0] + (sh[6] || 0), y: sh[1] + (sh[7] || 0), s: sh[2] * 1.05 }); }
-    });
-    const n = pts.length, ls = (p) => Math.log(p.s);
-    const tan = pts.map((p, i) => {
-      if (i === 0 || i === n - 1) return [0, 0, 0];
-      const a = pts[i - 1], b = pts[i + 1], dt = Math.max(b.t - a.t, 1);
-      return [(b.x - a.x) / dt, (b.y - a.y) / dt, (ls(b) - ls(a)) / dt];
-    });
-    const total = t, N = Math.max(30, Math.round(total / 40)), kf = [];
-    let seg = 0;
-    for (let k = 0; k <= N; k++) {
-      const tt = total * k / N;
-      while (seg < n - 2 && tt > pts[seg + 1].t) seg++;
-      const a = pts[seg], b = pts[seg + 1], dt = Math.max(b.t - a.t, 1), u = Math.min(1, Math.max(0, (tt - a.t) / dt));
-      const u2 = u * u, u3 = u2 * u, h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
-      const f = (va, vb, ma, mb) => h00 * va + h10 * dt * ma + h01 * vb + h11 * dt * mb;
-      const x = f(a.x, b.x, tan[seg][0], tan[seg + 1][0]), y = f(a.y, b.y, tan[seg][1], tan[seg + 1][1]);
-      const s = Math.exp(f(ls(a), ls(b), tan[seg][2], tan[seg + 1][2]));
-      kf.push({ transform: k === 0 || k === N ? 'translate(0px,0px) scale(1)' : camT(stage, x, y, Math.max(1, s)), offset: k / N });
-    }
-    return { kf, total, marks: marks.map(([m, e]) => [m + delay, e]) };
+  // ================= koreografi masuk: tiap tema punya cara sendiri =================
+  // princess = amplop dibuka & kita masuk ke dalamnya | bali = gerbang candi terbuka | emas = ledakan cahaya matahari
+  // biru = menyelam ke air lalu muncul di kaki air terjun | rimba = kupu-kupu cahaya memandu kamera | klasik = gunungan + lampu blencong
+  function entryCtx(stage, D) {
+    const X = { stage, D, dead: false, els: [], anims: [], raf: 0 };
+    X.later = (fn, ms) => later(() => { if (!X.dead) fn(); }, ms);
+    X.mk = (cls, html, parent) => { const e = document.createElement('div'); e.className = cls; if (html) e.innerHTML = html; (parent || stage).appendChild(e); X.els.push(e); return e; };
+    X.an = (el, kf, o) => { const a = el.animate(kf, Object.assign({ fill: 'both' }, o)); X.anims.push(a); return a; };
+    X.ent = () => $('.pent', stage);
+    X.end = () => { X.dead = true; cancelAnimationFrame(X.raf); X.anims.forEach((a) => { try { a.cancel(); } catch (e) { /* */ } }); X.els.forEach((e) => e.remove()); };
+    // bunga/daun berjatuhan melewati kamera
+    X.fall = (list, n, o = {}) => {
+      const box = $('.pfx', stage); if (!box || reduce || !list.length) return;
+      const W = box.clientWidth || 400, H = box.clientHeight || 700;
+      for (let i = 0; i < n; i++) {
+        const im = document.createElement('img'); im.src = sprite(list[i % list.length]); im.alt = ''; im.className = 'pfall';
+        im.style.width = (o.size || 26) * (0.6 + Math.random() * 0.9) + 'px'; box.appendChild(im);
+        const x = Math.random() * W, dx = (Math.random() - 0.5) * 170, r0 = Math.random() * 360, rd = (Math.random() < 0.5 ? -1 : 1) * (240 + Math.random() * 360);
+        im.animate([
+          { transform: `translate(${x}px,-60px) rotate(${r0}deg) rotateX(0deg)`, opacity: 0 },
+          { opacity: 1, offset: 0.1 },
+          { transform: `translate(${x + dx * 0.5}px,${H * 0.5}px) rotate(${r0 + rd * 0.5}deg) rotateX(150deg)`, offset: 0.5 },
+          { transform: `translate(${x + dx}px,${H + 60}px) rotate(${r0 + rd}deg) rotateX(40deg)`, opacity: 0.9 },
+        ], { duration: (o.dur || 6500) * (0.8 + Math.random() * 0.6), delay: (o.delay || 0) + Math.random() * (o.spread || 1500), easing: 'linear', fill: 'both' }).onfinish = () => im.remove();
+      }
+    };
+    // titik di lukisan (koordinat dasar) -> persen di dalam kotak lukisan
+    X.at = (x, y) => `left:${px(x)}%;top:${py(y)}%`;
+    return X;
   }
-  const EASE = { io: (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2), out: (u) => 1 - Math.pow(1 - u, 3), in: (u) => u * u * u, lin: (u) => u };
-  const btnCenter = () => [(PT.btn[0] + PT.btn[2]) / 2, (PT.btn[1] + PT.btn[3]) / 2];
+  const ENTRY = {};
+  const mono2 = () => { const n = String(C.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean); return n.length >= 2 ? `${esc(n[0][0])}<i>&amp;</i>${esc(n[1][0])}` : esc((n[0] || '♥')[0]); };
 
-  // ---------- pembuka khas tiap tema (kembalian = ms kapan kamera mulai bergerak) ----------
-  const INTROS = {
-    // Princess: amplop terbang masuk, segel pecah, tutup terbuka, kartu naik, lalu kita dibawa masuk ke dalam amplop
-    envelope(c) {
-      const { stage, T, later, tw, mk } = c, h = C.hero, o = C.cover;
-      const ini = (s) => esc(String(s || '').trim().charAt(0).toUpperCase());
-      c.mix(1);
-      const root = mk('pintro pe', `<div class="pe-dim"></div><div class="pe-wrap"><div class="pe-env">
-        <div class="pe-back"><i></i></div><div class="pe-glow"></div>
-        <div class="pe-card"><div class="pe-cb"><small>${esc(o.kicker)}</small><b>${esc(h.groom)}</b><s>&amp;</s><b>${esc(h.bride)}</b><em>${esc(h.dateText)}</em></div></div>
-        <svg class="pe-front" viewBox="0 0 300 204" preserveAspectRatio="none"><defs>
-          <linearGradient id="peg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9cfdd"/><stop offset="1" stop-color="#ee9fbc"/></linearGradient>
-          <linearGradient id="peg2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9cfdd"/><stop offset="1" stop-color="#ea93b3"/></linearGradient>
-          <linearGradient id="peg3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f6b4cb"/><stop offset="1" stop-color="#fde3ec"/></linearGradient></defs>
-          <polygon points="0,0 152,108 0,204" fill="url(#peg1)"/><polygon points="300,0 148,108 300,204" fill="url(#peg2)"/>
-          <polygon points="0,204 150,98 300,204" fill="url(#peg3)"/>
-          <path d="M0 0L152 108L0 204M300 0L148 108L300 204M0 204L150 98L300 204" fill="none" stroke="#d9b36e" stroke-width="1.2" stroke-linejoin="round"/></svg>
-        <div class="pe-flap"><svg class="fa" viewBox="0 0 300 120" preserveAspectRatio="none"><defs><linearGradient id="peg4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4a9c4"/><stop offset="1" stop-color="#fbd2e0"/></linearGradient></defs>
-          <polygon points="0,0 300,0 150,118" fill="url(#peg4)" stroke="#d9b36e" stroke-width="1.2" stroke-linejoin="round"/></svg>
-          <svg class="fb" viewBox="0 0 300 120" preserveAspectRatio="none"><polygon points="0,0 300,0 150,118" fill="#fff0f5" stroke="#e6c88c" stroke-width="1.2"/><polygon points="14,4 286,4 150,108" fill="#fbdce8"/></svg>
-          <div class="pe-seal"><b>${ini(h.groom)}<i>&amp;</i>${ini(h.bride)}</b></div></div>
-        </div></div><div class="pe-fl"></div>`, stage);
-      const wrap = $('.pe-wrap', root), env = $('.pe-env', root), flap = $('.pe-flap', root), card = $('.pe-card', root), seal = $('.pe-seal', root), glow = $('.pe-glow', root), fl = $('.pe-fl', root), dim = $('.pe-dim', root);
-      dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(900), fill: 'both' });
-      wrap.animate([{ transform: 'translateY(52cqh) scale(.5) rotate(-10deg)', opacity: 0 }, { transform: 'translateY(0) scale(1) rotate(0deg)', opacity: 1 }], { duration: T(1100), easing: 'cubic-bezier(.18,.85,.25,1)', fill: 'both' });
-      const spark = (n, cx, cy, spread) => { for (let i = 0; i < n; i++) { const e = mk('pe-sp', '', root); const a = Math.random() * 6.283, d = spread * (0.5 + Math.random()); e.style.left = cx + '%'; e.style.top = cy + '%'; e.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}cqw),calc(-50% + ${Math.sin(a) * d - 6}cqw)) scale(${0.6 + Math.random()})`, opacity: 0 }], { duration: T(900 + Math.random() * 700), easing: 'ease-out', fill: 'both' }); later(() => e.remove(), T(1700)); } };
-      later(() => spark(10, 50, 50, 26), T(900));
-      later(() => { seal.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.35)', opacity: 1, offset: 0.4 }, { transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }], { duration: T(420), easing: 'ease-out', fill: 'both' }); spark(14, 50, 52, 20); }, T(1500));
-      later(() => { flap.animate([{ transform: 'rotateX(0deg)' }, { transform: 'rotateX(181deg)' }], { duration: T(950), easing: 'cubic-bezier(.5,0,.3,1)', fill: 'both' }); flap.style.zIndex = 5; later(() => { flap.style.zIndex = 0; }, T(470)); glow.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(900), fill: 'both' }); }, T(1750));
-      later(() => { card.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-58%) scale(1.04)' }], { duration: T(1150), easing: 'cubic-bezier(.3,.8,.25,1)', fill: 'both' }); spark(10, 50, 14, 24); }, T(2650));
-      later(() => { // masuk ke dalam amplop: perbesar menuju mulut amplop, kartu terangkat keluar layar
-        env.style.animation = 'none';
-        wrap.style.transformOrigin = '50% 40%';
-        wrap.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.6)', offset: 0.35 }, { transform: 'scale(14)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.75,.45)', fill: 'both' });
-        card.animate([{ transform: 'translateY(-58%) scale(1.04)' }, { transform: 'translateY(-210%) scale(1.1)' }], { duration: T(1300), easing: 'cubic-bezier(.5,0,.8,.5)', fill: 'both' });
-        glow.animate([{ opacity: 1 }, { opacity: 1 }], { duration: T(1500), fill: 'both' });
-      }, T(3750));
-      later(() => fl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(700), easing: 'ease-in', fill: 'both' }), T(4500));
-      later(() => { fl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(1500), easing: 'ease-out', fill: 'both' }); wrap.style.visibility = 'hidden'; dim.style.visibility = 'hidden'; }, T(5250));
-      later(() => root.remove(), T(6900));
-      return T(5000);
-    },
-    // Bali: gerbang candi bentar membelah dua dan terbuka ke dalam, kamera melangkah masuk
-    gate(c) {
-      const { pbox, T, later, mk } = c;
-      c.mix(1);
-      const g = mk('pgate', `<div class="pg-d l"><img src="${PT.cover}" alt=""></div><div class="pg-d r"><img src="${PT.cover}" alt=""></div><i class="pg-lt"></i>`, pbox);
-      const l = $('.pg-d.l', g), r = $('.pg-d.r', g), lt = $('.pg-lt', g);
-      const o = { duration: T(2500), easing: 'cubic-bezier(.55,0,.25,1)', fill: 'both', delay: T(250) };
-      l.animate([{ transform: 'rotateY(0deg)', filter: 'brightness(1)' }, { transform: 'rotateY(84deg)', filter: 'brightness(.55)' }], o);
-      r.animate([{ transform: 'rotateY(0deg)', filter: 'brightness(1)' }, { transform: 'rotateY(-84deg)', filter: 'brightness(.55)' }], o);
-      lt.animate([{ opacity: 0, transform: 'scaleX(.05)' }, { opacity: 1, transform: 'scaleX(.6)', offset: 0.5 }, { opacity: 0, transform: 'scaleX(1.6)' }], { duration: T(3000), delay: T(250), easing: 'ease-in-out', fill: 'both' });
-      later(() => g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(700), fill: 'both' }), T(2000));
-      later(() => g.remove(), T(2900));
-      return T(450);
-    },
-    // Jawa Emas: matahari senja membesar jadi cahaya keemasan, dunia terungkap, kamera turun dari matahari
-    sun(c) {
-      const { pbox, T, later, tw, mk } = c, [sx, sy] = PT.glow[0] ? [PT.glow[0][0], PT.glow[0][1]] : [650, 410];
-      const at = `left:${px(sx)}%;top:${py(sy)}%`;
-      const rays = mk('pf-rays', '', pbox); rays.style.cssText = at;
-      rays.animate([{ opacity: 0, transform: 'translate(-50%,-50%) rotate(0deg) scale(.4)' }, { opacity: 1, transform: 'translate(-50%,-50%) rotate(14deg) scale(1)', offset: 0.35 }, { opacity: 0, transform: 'translate(-50%,-50%) rotate(34deg) scale(1.3)' }], { duration: T(4200), easing: 'ease-in-out', fill: 'both' });
-      const core = mk('pf-sun', '', pbox); core.style.cssText = at;
-      core.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.06)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(.7)', offset: 0.45 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.5)', offset: 0.62 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.9)' }], { duration: T(3300), easing: 'ease-in-out', fill: 'both' });
-      const ghosts = mk('pf-gh', '<i></i><i></i><i></i><i></i><i></i>', pbox);
-      [0.28, 0.5, 0.9, 1.25, 1.6].forEach((k, i) => { const e = ghosts.children[i], x = sx + (BW / 2 - sx) * k, y = sy + (BH / 2 - sy) * k; e.style.cssText = `left:${px(x)}%;top:${py(y)}%;width:${[9, 5, 12, 6, 16][i]}%`; });
-      ghosts.animate([{ opacity: 0 }, { opacity: 1, offset: 0.5 }, { opacity: 0 }], { duration: T(3800), delay: T(600), fill: 'both' });
-      later(() => tw(T(700), (u) => c.setMix(u), EASE.lin), T(1300));
-      later(() => [rays, core, ghosts].forEach((e) => e.remove()), T(4500));
-      return 0;
-    },
-    // Biru: riak air memancar dari tombol, lukisan larut jadi air, kamera menyelam menembus tirai air terjun
-    dive(c) {
-      const { pbox, stage, T, later, tw, mk, G } = c, [bx, by] = btnCenter();
-      G.trm = 1; G.trc = [bx / BW, by / BH]; G.trp = 0;
-      later(() => tw(T(2900), (u) => { G.trp = u; }, EASE.io), T(120));
-      later(() => { G.mix = 1; G.trm = 0; }, T(3100));
-      for (let i = 0; i < 4; i++) { const e = mk('pring', '', pbox); e.style.cssText = `left:${px(bx)}%;top:${py(by)}%`; e.animate([{ transform: 'translate(-50%,-50%) scale(.05)', opacity: 0 }, { opacity: 0.9, offset: 0.15 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 }], { duration: T(2200), delay: T(i * 380), easing: 'ease-out', fill: 'both' }); later(() => e.remove(), T(2200 + i * 380 + 100)); }
-      c.curtain = () => {
-        const k = mk('pcurt', '<i></i><i></i><b></b>', stage);
-        k.animate([{ transform: 'translateY(-105%)' }, { transform: 'translateY(105%)' }], { duration: T(1700), easing: 'cubic-bezier(.5,0,.5,1)', fill: 'both' });
-        later(() => k.remove(), T(1800));
-      };
-      return 0;
-    },
-    // Rimba: bulan purnama memancar, lingkaran portal cahaya membuka lukisan, kunang-kunang beterbangan
-    portal(c) {
-      const { pbox, T, later, tw, mk, G } = c, [mx, my] = PT.moon || [475, 385];
-      G.trm = 2; G.trc = [mx / BW, my / BH]; G.trp = 0;
-      later(() => tw(T(2700), (u) => { G.trp = u; }, EASE.io), T(250));
-      later(() => { G.mix = 1; G.trm = 0; }, T(3100));
-      const m = mk('pmoonf', '', pbox); m.style.cssText = `left:${px(mx)}%;top:${py(my)}%`;
-      m.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.2)', offset: 0.4 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(2.6)' }], { duration: T(3000), easing: 'ease-in-out', fill: 'both' });
-      later(() => m.remove(), T(3100));
-      later(() => { for (let i = 0; i < 18; i++) { const e = mk('pfb', '', pbox); e.style.cssText = `left:${px(mx)}%;top:${py(my)}%`; const a = Math.random() * 6.283, d = 8 + Math.random() * 30; e.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}cqw),calc(-50% + ${Math.sin(a) * d * 1.3 + 4}cqw)) scale(${0.7 + Math.random() * 0.9})`, opacity: 0 }], { duration: T(2200 + Math.random() * 1800), delay: T(Math.random() * 500), easing: 'ease-out', fill: 'both' }); later(() => e.remove(), T(4800)); } }, T(500));
-      return 0;
-    },
-    // Klasik: gunungan wayang naik di kelir bercahaya blencong, lalu terbelah dua membuka panggung
-    wayang(c) {
-      const { stage, T, later, tw, mk, G } = c;
-      const root = mk('pintro pw', `<div class="pw-dark"></div><div class="pw-lamp"></div><div class="pw-gun"><div class="pw-in"><div class="pw-h l"><img src="${GUN}" alt=""></div><div class="pw-h r"><img src="${GUN}" alt=""></div></div></div><i class="pw-lt"></i>`, stage);
-      const dark = $('.pw-dark', root), lamp = $('.pw-lamp', root), gun = $('.pw-gun', root), inn = $('.pw-in', root), hl = $('.pw-h.l', root), hr = $('.pw-h.r', root), lt = $('.pw-lt', root);
-      dark.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(800), fill: 'both' });
-      lamp.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T(1400), fill: 'both' });
-      gun.animate([{ transform: 'translateY(70cqh) scale(.7)', opacity: 0 }, { transform: 'translateY(0) scale(1)', opacity: 1 }], { duration: T(1500), delay: T(500), easing: 'cubic-bezier(.2,.85,.25,1)', fill: 'both' });
-      inn.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-4deg)', offset: 0.25 }, { transform: 'rotate(3.5deg)', offset: 0.55 }, { transform: 'rotate(-2deg)', offset: 0.8 }, { transform: 'rotate(0deg)' }], { duration: T(2600), delay: T(1000), easing: 'ease-in-out', fill: 'both' });
-      later(() => {
-        c.mix(1);
-        gun.animate([{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-3cqh) scale(3.4)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.35,1)', fill: 'both' });
-        hl.animate([{ transform: 'translateX(0) rotate(0deg)' }, { transform: 'translateX(-108%) rotate(-9deg)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.35,1)', fill: 'both' });
-        hr.animate([{ transform: 'translateX(0) rotate(0deg)' }, { transform: 'translateX(108%) rotate(9deg)' }], { duration: T(1500), easing: 'cubic-bezier(.55,0,.35,1)', fill: 'both' });
-        lt.animate([{ opacity: 0, transform: 'translateX(-50%) scaleX(.2)' }, { opacity: 1, transform: 'translateX(-50%) scaleX(1)', offset: 0.45 }, { opacity: 0, transform: 'translateX(-50%) scaleX(3)' }], { duration: T(1700), fill: 'both' });
-        dark.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(1300), delay: T(300), fill: 'both' });
-        lamp.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T(1300), delay: T(300), fill: 'both' });
-      }, T(2700));
-      later(() => root.remove(), T(4500));
-      return T(2900);
-    },
+  // ---- PRINCESS: amplop muncul, segel pecah, tutup terbuka, kartu keluar, kita masuk ke dalam kartu ----
+  ENTRY.env = (X) => {
+    const { stage, D } = X, W = stage.clientWidth, H = stage.clientHeight;
+    const ew = Math.round(Math.min(330, W * 0.8, H * 0.43)), eh = ew * 0.69, cw = ew * 0.84, ch = cw * 1168 / 784;
+    const root = X.mk('ent ent-env'); root.style.setProperty('--ew', ew + 'px'); root.style.setProperty('--cw', cw + 'px');
+    const grad = (id, a, b, v) => `<linearGradient id="${id}" ${v || 'x1="0" y1="0" x2="0" y2="1"'}><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+    const GOLD = '#dfae55';
+    root.innerHTML = `<div class="ee-veil"></div>${sparkles(16)}
+      <div class="ee-env"><div class="ee-fl">
+        <div class="ee-back"><svg viewBox="0 0 300 207" preserveAspectRatio="none"><defs>${grad('eeb', '#e27c9b', '#f1a0bd')}</defs><rect width="300" height="207" rx="7" fill="url(#eeb)"/></svg></div>
+        <div class="ee-glow"></div>
+        <div class="ee-clip"><div class="ee-card"><div class="ee-cf" style="background-image:url(${PT.world})"></div></div></div>
+        <div class="ee-front"><svg viewBox="0 0 300 207" preserveAspectRatio="none"><defs>${grad('eel', '#f8bad2', '#ee94b6', 'x1="0" y1="0" x2="1" y2="1"')}${grad('eer', '#f8bad2', '#ee94b6', 'x1="1" y1="0" x2="0" y2="1"')}${grad('eeu', '#fcd3e3', '#f4a6c5', 'x1="0" y1="1" x2="0" y2="0"')}</defs>
+          <polygon points="0,0 152,113 0,207" fill="url(#eel)"/><polygon points="300,0 148,113 300,207" fill="url(#eer)"/><polygon points="0,207 150,96 300,207" fill="url(#eeu)"/>
+          <g fill="none" stroke="${GOLD}" stroke-width="1.1" stroke-linejoin="round" opacity=".9"><polyline points="0,207 150,96 300,207"/><polyline points="0,0 152,113 0,207"/><polyline points="300,0 148,113 300,207"/><rect x=".6" y=".6" width="298.8" height="205.8" rx="6.5"/></g></svg>
+          <div class="ee-to"><span>Kepada Yth.</span><b>${esc(guest || C.cover.defaultGuest)}</b></div>
+          <img class="ee-rose a" src="${sprite('rose1')}" alt=""><img class="ee-rose b" src="${sprite('rose2')}" alt=""></div>
+        <div class="ee-flap"><div class="f o"><svg viewBox="0 0 300 128" preserveAspectRatio="none"><defs>${grad('eef', '#fcd0e1', '#f2a0c0')}</defs><polygon points="0,0 300,0 150,128" fill="url(#eef)" stroke="${GOLD}" stroke-width="1.2" stroke-linejoin="round"/><polyline points="16,0 150,112 284,0" fill="none" stroke="${GOLD}" stroke-width=".8" opacity=".6"/></svg></div>
+          <div class="f i"><svg viewBox="0 0 300 128" preserveAspectRatio="none"><defs>${grad('eeg', '#fdeaf1', '#f6bdd2')}</defs><polygon points="0,0 300,0 150,128" fill="url(#eeg)" stroke="${GOLD}" stroke-width="1.2" stroke-linejoin="round"/></svg></div></div>
+        <div class="ee-seal"><b>${mono2()}</b></div>
+      </div></div><div class="ee-flash"></div>`;
+    const env = $('.ee-env', root), card = $('.ee-card', root), flap = $('.ee-flap', root), seal = $('.ee-seal', root), glow = $('.ee-glow', root), flash = $('.ee-flash', root), veil = $('.ee-veil', root);
+    const sk = $('.sparkles', root); if (sk) sk.style.opacity = '0';
+    X.an(veil, [{ opacity: 0 }, { opacity: 1 }], { duration: 700 * D, easing: 'ease-out' });
+    if (sk) X.an(sk, [{ opacity: 0 }, { opacity: 1 }], { duration: 900 * D, delay: 300 * D });
+    // 1. amplop meluncur naik dari bawah
+    X.an(env, [{ transform: `translateY(${H * 0.55}px) rotate(-9deg) scale(.82)`, opacity: 0 }, { transform: 'translateY(0) rotate(1.5deg) scale(1.02)', opacity: 1, offset: 0.7 }, { transform: 'none', opacity: 1 }], { duration: 1250 * D, delay: 250 * D, easing: 'cubic-bezier(.2,.8,.3,1)' });
+    // 2. segel berdenyut lalu pecah
+    X.an(seal, [{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0 }, { transform: 'translate(-50%,-50%) scale(1.07)', offset: 0.35 }, { transform: 'translate(-50%,-50%) scale(1)', offset: 0.6 }, { transform: 'translate(-50%,-50%) scale(1.4) rotate(14deg)', opacity: 0, offset: 1 }], { duration: 1050 * D, delay: 1550 * D, easing: 'ease-in-out' });
+    // 3. tutup amplop terbuka (flap berputar ke belakang, z-index berpindah di tengah)
+    X.an(flap, [{ transform: 'perspective(900px) rotateX(0deg)' }, { transform: 'perspective(900px) rotateX(-180deg)' }], { duration: 1000 * D, delay: 2450 * D, easing: 'cubic-bezier(.5,0,.25,1)' });
+    X.later(() => { flap.style.zIndex = '1'; }, 2950 * D);
+    X.an(glow, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 900 * D, delay: 2800 * D, easing: 'ease-out' });
+    // 4. kartu (lukisan taman) keluar dari amplop, amplop turun
+    const rise = ch * 0.98 + eh * 0.1, drop = Math.min(H * 0.2, ew * 0.7);
+    X.an(card, [{ transform: 'translateY(0)' }, { transform: `translateY(${-rise}px)` }], { duration: 1500 * D, delay: 3500 * D, easing: 'cubic-bezier(.35,.05,.2,1)' });
+    X.an(env, [{ transform: 'none' }, { transform: `translateY(${drop}px)` }], { duration: 1500 * D, delay: 3500 * D, easing: 'cubic-bezier(.35,.05,.2,1)', fill: 'forwards' });
+    // kupu-kupu & kilau beterbangan dari amplop
+    X.later(() => { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 5, [r.width / 2, r.height * 0.5]); }, 3300 * D);
+    // 5. masuk ke dalam kartu: kartu membesar sampai persis menjadi lukisan hero
+    X.later(() => {
+      const pr = $('.pbox', stage).getBoundingClientRect(), sr = stage.getBoundingClientRect(), cr = $('.ee-cf', root).getBoundingClientRect();
+      const big = X.mk('ee-big', '<i class="ee-edge"></i>', root);
+      big.style.cssText = `left:${pr.left - sr.left}px;top:${pr.top - sr.top}px;width:${pr.width}px;height:${pr.height}px;background-image:url(${PT.world})`;
+      const s0 = cr.width / pr.width, tx = (cr.left + cr.width / 2) - (pr.left + pr.width / 2), ty = (cr.top + cr.height / 2) - (pr.top + pr.height / 2);
+      card.style.visibility = 'hidden';
+      X.an(big, [{ transform: `translate(${tx}px,${ty}px) scale(${s0})` }, { transform: 'none' }], { duration: 1500 * D, easing: 'cubic-bezier(.55,.02,.25,1)' });
+      X.an($('.ee-edge', big), [{ opacity: 1 }, { opacity: 0 }], { duration: 1200 * D });
+      X.an(env, [{ opacity: 1 }, { opacity: 0 }], { duration: 900 * D, easing: 'ease-in', fill: 'forwards' });
+      X.an(flash, [{ opacity: 0 }, { opacity: 0, offset: 0.55 }, { opacity: 0.85, offset: 0.9 }, { opacity: 0 }], { duration: 1500 * D });
+      if (sk) X.an(sk, [{ opacity: 1 }, { opacity: 0 }], { duration: 900 * D });
+    }, 5000 * D);
+    X.later(() => { root.remove(); X.fall(['rose1', 'rose2'], 14, { size: 22, dur: 7000, spread: 3500 }); }, 6520 * D);
+    return { camDelay: 6450 * D, titleFade: 1 };
+  };
+
+  // ---- BALI: gerbang candi (dua daun pintu) terbuka, cahaya pagi masuk, kita berjalan ke dalam ----
+  ENTRY.doors = (X) => {
+    const { stage, D } = X;
+    const pic = `<div class="ed-pic" style="background-image:url(${PT.cover})"></div><i class="ed-sh"></i>`;
+    const root = X.mk('ent ent-doors', `<div class="ed-light"></div><div class="ed-d l">${pic}</div><div class="ed-d r">${pic}</div>`);
+    const [l, r] = $$('.ed-d', root), light = $('.ed-light', root);
+    const o = { duration: 2500 * D, delay: 450 * D, easing: 'cubic-bezier(.62,0,.22,1)' };
+    X.an(l, [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-84deg)' }], o);
+    X.an(r, [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(84deg)' }], o);
+    $$('.ed-sh', root).forEach((e) => X.an(e, [{ opacity: 0 }, { opacity: 0.85 }], o));
+    X.an(light, [{ opacity: 0, transform: 'scaleX(.15)' }, { opacity: 1, transform: 'scaleX(1)', offset: 0.5 }, { opacity: 0.0, transform: 'scaleX(1.8)' }], { duration: 3300 * D, delay: 450 * D, easing: 'ease-in-out' });
+    X.later(() => root.remove(), 3100 * D);
+    X.later(() => X.fall(['frangi1', 'frangi2', 'leafm'], 16, { size: 24, dur: 6500, spread: 2600 }), 1500 * D);
+    return {};
+  };
+
+  // ---- EMAS: kamera menuju matahari senja, cahaya emas meledak, lalu terlihat adegan dari dekat ----
+  ENTRY.sun = (X) => {
+    const { stage, D } = X, ent = X.ent(), [sx, sy] = PT.focus;
+    const flare = X.mk('psun', '<i class="c"></i><i class="h"></i><i class="v"></i>', ent); flare.style.cssText = X.at(sx, sy);
+    X.an(flare, [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.2)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.4)', offset: 0.6 }, { opacity: 0.0, transform: 'translate(-50%,-50%) scale(3.2)' }], { duration: 3000 * D, delay: 150 * D, easing: 'ease-in-out' });
+    const wash = X.mk('ent ent-wash');
+    X.an(wash, [{ opacity: 0 }, { opacity: 0, offset: 0.3 }, { opacity: 1, offset: 0.5 }, { opacity: 0, offset: 1 }], { duration: 2900 * D, delay: 600 * D, easing: 'ease-in-out' });
+    X.later(() => { wash.remove(); flare.remove(); }, 3700 * D);
+    $$('.prays i', stage).forEach((e) => X.an(e, [{ opacity: 0.4 }, { opacity: 1 }, { opacity: 0.5 }], { duration: 3000 * D, delay: 200 * D, composite: 'replace' }));
+    X.later(() => X.fall(['frangi1', 'leafm'], 8, { size: 22, dur: 6500, spread: 2600 }), 2600 * D);
+    return {};
+  };
+
+  // ---- BIRU: riak air menyebar dari tombol, kita menyelam ke bawah permukaan, lalu naik ke kaki air terjun ----
+  ENTRY.dive = (X) => {
+    const { stage, D } = X, ent = X.ent(), [bx, by] = PT.focus;
+    for (let i = 0; i < 4; i++) {
+      const rg = X.mk('prg', '', ent); rg.style.cssText = X.at(bx, by);
+      X.an(rg, [{ opacity: 0.9, transform: 'translate(-50%,-50%) scale(.05)' }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1)' }], { duration: 1900 * D, delay: (80 + i * 260) * D, easing: 'cubic-bezier(.15,.6,.3,1)' });
+    }
+    const root = X.mk('ent ent-dive', `<div class="ev-tint"></div><div class="ev-caus"></div><div class="ev-bub">${Array.from({ length: 22 }, (_, i) => { const r = (k) => ((Math.sin((i + 1) * 5231 + k * 977) + 1) / 2); return `<i style="left:${(r(1) * 96 + 2).toFixed(1)}%;--s:${(4 + r(2) * 14).toFixed(1)}px;--dx:${((r(3) - 0.5) * 60).toFixed(0)}px;animation-duration:${(2.4 + r(4) * 2).toFixed(2)}s;animation-delay:${(0.5 + r(5) * 2.2).toFixed(2)}s"></i>`; }).join('')}</div><div class="ev-surf"></div>`);
+    X.an($('.ev-tint', root), [{ opacity: 0 }, { opacity: 0.92, offset: 0.4 }, { opacity: 0.92, offset: 0.55 }, { opacity: 0 }], { duration: 3600 * D, delay: 500 * D, easing: 'ease-in-out' });
+    X.an($('.ev-caus', root), [{ opacity: 0 }, { opacity: 0.8, offset: 0.4 }, { opacity: 0.8, offset: 0.55 }, { opacity: 0 }], { duration: 3600 * D, delay: 500 * D, easing: 'ease-in-out' });
+    X.an($('.ev-surf', root), [{ opacity: 0, transform: 'translateY(30%)' }, { opacity: 1, transform: 'translateY(0)', offset: 0.35 }, { opacity: 0, transform: 'translateY(-70%)' }], { duration: 1500 * D, delay: 2300 * D, easing: 'ease-in-out' });
+    X.later(() => root.remove(), 4300 * D);
+    X.later(() => { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 4, [r.width * 0.5, r.height * 0.75]); }, 2700 * D);
+    return {};
+  };
+
+  // ---- RIMBA: kupu-kupu cahaya di tangan sang putri terbang memandu kamera menuju istana bulan ----
+  ENTRY.guide = (X) => {
+    const { stage, D } = X, ent = X.ent(), [hx, hy] = PT.focus;
+    const bloom = X.mk('pbloom', '', ent); bloom.style.cssText = X.at(hx, hy);
+    X.an(bloom, [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.2)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.1)', offset: 0.35 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(2.6)' }], { duration: 2200 * D, delay: 100 * D, easing: 'ease-out' });
+    // jalur kupu-kupu = titik-titik tujuan kamera
+    let t = 0; const pts = [[0, hx, hy]];
+    PT.shots.forEach((sh) => { if (sh[0] === 'end') return; t += sh[3] * D; pts.push([t + sh[4] * D * 0.5 + 250 * D, sh[0] + 22, sh[1] - 26]); t += sh[4] * D; });
+    const bf = rbf(PT.bf[0], 64); bf.classList.add('pguide'); ent.appendChild(bf); X.els.push(bf);
+    const cp = (a, b, c, d, u) => 0.5 * ((2 * b) + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (-a + 3 * b - 3 * c + d) * u * u * u);
+    const at = (ms) => { let i = 0; while (i < pts.length - 2 && ms > pts[i + 1][0]) i++; const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[Math.min(i + 1, pts.length - 1)], p3 = pts[Math.min(i + 2, pts.length - 1)]; const u = Math.max(0, Math.min(1, (ms - p1[0]) / Math.max(1, p2[0] - p1[0]))); return [cp(p0[1], p1[1], p2[1], p3[1], u), cp(p0[2], p1[2], p2[2], p3[2], u)]; };
+    const startAt = 350 * D, endAt = pts[pts.length - 1][0] + 900 * D; let last = 0;
+    const t0 = performance.now();
+    const tick = (now) => {
+      if (X.dead) return; const ms = now - t0; X.raf = requestAnimationFrame(tick);
+      if (ms < startAt) { bf.style.opacity = '0'; return; }
+      const [x, y] = at(ms - startAt), k = Math.min(1, (ms - startAt) / 500), fade = Math.max(0, Math.min(1, (endAt - ms) / 700));
+      const w = ent.clientWidth || 400, sz = w * 0.085;
+      bf.style.width = bf.style.height = sz + 'px'; bf.style.opacity = String(fade);
+      bf.style.transform = `translate(${x / BW * w - sz / 2}px,${y / BW * w - sz / 2}px) scale(${0.3 + 0.7 * k}) rotate(${Math.sin(ms / 420) * 16 + 24}deg)`;
+      if (ms - last > 55 && fade > 0.05) { last = ms; const d = document.createElement('i'); d.className = 'ptr'; d.style.cssText = `left:${px(x)}%;top:${(y / BH * 100).toFixed(2)}%;--s:${(3 + Math.random() * 5).toFixed(1)}px`; ent.appendChild(d); X.els.push(d); setTimeout(() => d.remove(), 1700); }
+      if (ms > endAt) { bf.remove(); return; }
+    };
+    X.raf = requestAnimationFrame(tick);
+    X.later(() => bloom.remove(), 2500 * D);
+    return {};
+  };
+
+  // ---- KLASIK: gunungan wayang dikibaskan, lampu blencong menyala terang, kamera masuk ke pendapa joglo ----
+  ENTRY.kelir = (X) => {
+    const { stage, D } = X, ent = X.ent(), [lx, ly] = PT.focus;
+    if (JFX()) gunOpen(D * 0.8);
+    const lamp = X.mk('plamp', '<i></i>', ent); lamp.style.cssText = X.at(lx, ly);
+    X.an(lamp, [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.3)' }, { opacity: 0, offset: 0.25, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.5)', offset: 0.7 }, { opacity: 0.0, transform: 'translate(-50%,-50%) scale(2.6)' }], { duration: 3400 * D, delay: 200 * D, easing: 'ease-in-out' });
+    X.later(() => lamp.remove(), 3800 * D);
+    const root = X.mk('ent ent-kelir');
+    X.an(root, [{ opacity: 0 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }], { duration: 3000 * D, delay: 300 * D });
+    X.later(() => root.remove(), 3500 * D);
+    X.later(() => X.fall(['leafm', 'frangi1'], 8, { size: 22, dur: 7000, spread: 3000 }), 2400 * D);
+    return {};
   };
 
   function picOpen(instant, cover, hero, unlock, finish) {
-    const stage = $('.pstage', hero), cam = $('.pcam', stage), pbox = $('.pbox', stage);
+    const stage = $('.pstage', hero), cam = $('.pcam', stage);
     const done = () => {
       picShow(hero); unlock(); finish(); picAmbient(stage);
       picFlyers($('.pfx', stage), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8));
     };
-    if (instant) { G.mix = 1; G.trm = 0; if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
-    const D = sp, T = (ms) => ms * D, glOn = G.ok;
+    if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
+    const D = sp;
     cover.classList.add('opening'); hero.classList.add('filming');
     const skip = $('.pskip', stage); skip.hidden = false;
-    const ovs = [], cancels = [];
-    const mk = (cls, html, parent) => { const e = document.createElement('div'); e.className = cls; if (html) e.innerHTML = html; parent.appendChild(e); ovs.push(e); return e; };
-    const tw = (ms, fn, ease) => {
-      const t0 = performance.now(); let id = 0, dead = false; const e = ease || EASE.io;
-      const step = (now) => { if (dead) return; const u = Math.min(1, (now - t0) / ms); fn(e(u)); if (u < 1) id = requestAnimationFrame(step); };
-      id = requestAnimationFrame(step); const stop = () => { dead = true; cancelAnimationFrame(id); }; cancels.push(stop); return stop;
-    };
-    // tanpa WebGL: cover memudar biasa. Dengan WebGL: cover = tekstur yang melebur ke dunia lewat G.mix / G.trm
-    const pcv = $('.pcv', stage), domOnly = ['envelope', 'gate', 'sun', 'wayang'].includes(PT.intro);
-    const setMix = (u) => { if (glOn) G.mix = u; else if (pcv) pcv.style.opacity = String(1 - u); };
-    const ctx = { stage, pbox, hero, T, later, tw, mk, G, setMix, mix: setMix, cfg: C };
-    let camAt = 0;
-    const useIntro = INTROS[PT.intro] && (glOn || domOnly);
-    if (!glOn && !useIntro) pcv.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1300 * D, delay: 250 * D, easing: 'ease-in-out', fill: 'forwards' });
-    if (useIntro) camAt = INTROS[PT.intro](ctx) || 0;
-    else if (glOn) { later(() => tw(T(1200), (u) => { G.mix = u; }, EASE.io), T(250)); }
-    const cp = camPath(stage, PT.shots, D, camAt);
-    const anim = cam.animate(cp.kf, { duration: cp.total, delay: camAt, fill: 'both', easing: 'linear' });
+    const X = entryCtx(stage, D), E = (ENTRY[PT.entry] && ENTRY[PT.entry](X)) || {}, cd = E.camDelay || 0;
+    // susun keyframe kamera dari daftar shot
+    const kf = [{ transform: 'translate(0px,0px) scale(1)', offset: 0 }], marks = [];
+    let t = 0;
+    const shots = PT.shots.map((sh) => sh[0] === 'end' ? { end: 1, tr: sh[1] * D, hold: 0, ev: sh[3] } : { x: sh[0], y: sh[1], s: sh[2], tr: sh[3] * D, hold: sh[4] * D, ev: sh[5] });
+    shots.forEach((sh) => { marks.push([t, sh.ev]); t += sh.tr + sh.hold; });
+    const total = t; t = 0;
+    if (PT.cx) marks.push([marks[marks.length - 1][0] + 200 * D, 'cx']); // momen puncak khas tema, tepat sebelum nama muncul
+    shots.forEach((sh) => {
+      t += sh.tr;
+      if (sh.end) { kf.push({ transform: 'translate(0px,0px) scale(1)', offset: 1 }); return; }
+      kf[kf.length - 1].easing = 'cubic-bezier(.45,.05,.3,1)';
+      kf.push({ transform: camT(stage, sh.x, sh.y, sh.s), offset: t / total, easing: 'linear' });
+      t += sh.hold;
+      if (sh.hold) kf.push({ transform: camT(stage, sh.x, sh.y, sh.s * 1.035), offset: t / total });
+    });
+    const anim = cam.animate(kf, { duration: total, delay: cd, fill: 'both' });
+    $$('.pcv', stage).forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: (E.titleFade ? 300 : 1100) * D, delay: (E.titleFade ? 100 : 250) * D, easing: 'ease-in-out', fill: 'forwards' }));
     later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
-    if (PT.gunungan && JFX() && PT.intro !== 'wayang') gunOpen(D * 0.8);
-    if (PT.carriage) later(() => picCarriage(stage), camAt);
-    later(() => picBirds(stage), camAt);
-    // ---------- momen puncak khas tiap tema (dipicu event 'cx' pada shot terakhir, tepat sebelum nama muncul) ----------
-    // Semua hanya memakai transform/opacity (jalur compositor) dan overlay dibersihkan otomatis oleh end().
+    if (PT.carriage) later(() => picCarriage(stage), cd);
+    later(() => { if (!X.dead) picBirds(stage); }, cd);
+    const T = (ms) => ms * D, pbox = $('.pbox', stage), mk = (cls, html, parent) => X.mk(cls, html, parent);
     const rnd = (a, b) => a + Math.random() * (b - a);
     const put = (e, x, y) => { e.style.left = px(x) + '%'; e.style.top = py(y) + '%'; return e; };
     const spawn = (cls, html, x, y) => put(mk(cls, html, pbox), x, y);
@@ -804,31 +839,31 @@
       },
     };
     const fire = (ev) => {
-      if (!ev) return;
+      if (!ev || X.dead) return;
       const [name, off] = String(ev).split('+');
       const go = () => {
+        if (X.dead) return;
         if (name === 'birds') picBirds(stage);
+        if (name === 'petals') X.fall(PT.petals, 10, { size: 24, dur: 6500, spread: 2500 });
         if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 6, [r.width / 2, r.height * 0.5]); }
-        if (name === 'curtain' && ctx.curtain) ctx.curtain();
         if (name === 'cx' && PT.cx && CX[PT.cx]) CX[PT.cx]();
       };
-      if (off) later(go, T(+off)); else go();
+      if (off) X.later(go, T(+off)); else go();
     };
-    cp.marks.forEach(([at, ev]) => ev && later(() => fire(ev), at));
+    marks.forEach(([at, ev]) => ev && later(() => fire(ev), at + cd));
     let ended = false;
-    const end = (natural) => {
+    const end = () => {
       if (ended) return; ended = true; skip.hidden = true; hero.classList.remove('filming');
-      cancels.forEach((f) => f()); G.mix = 1; G.trm = 0;
-      if (!natural) { try { anim.commitStyles(); } catch (e) { /* */ } }
+      X.end();
+      try { anim.commitStyles(); } catch (e) { /* */ } anim.cancel();
       const cur = getComputedStyle(cam).transform;
-      anim.cancel(); ovs.forEach((e) => e.remove());
-      if (!natural) cam.animate([{ transform: cur === 'none' ? 'none' : cur }, { transform: 'none' }], { duration: 900 * D, easing: 'ease-out' });
+      cam.animate([{ transform: cur === 'none' ? 'none' : cur }, { transform: 'none' }], { duration: 900 * D, easing: 'ease-out' });
       cam.style.transform = '';
-      if (pcv) pcv.style.opacity = '0';
+      $$('.pcv', stage).forEach((el) => { el.style.opacity = '0'; });
       done();
     };
-    anim.onfinish = () => end(true);
-    skip.onclick = () => end(false);
+    anim.onfinish = () => { cam.style.transform = ''; anim.cancel(); if (!ended) { ended = true; skip.hidden = true; hero.classList.remove('filming'); done(); } };
+    skip.onclick = end;
   }
 
   // ---------- render section ----------
@@ -939,7 +974,7 @@
     const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
     let rest = '';
     if (lay === 'grid') rest = `<div class="grid">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
-    else if (lay === 'masonry') rest = `<div class="masonry">${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async"></figure>`).join('')}</div>`;
+    else if (lay === 'masonry') rest = `<div class="masonry">${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy"></figure>`).join('')}</div>`;
     return strip + rest;
   }
   let sliderStop = null;
@@ -1182,7 +1217,7 @@
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       const on = e.isIntersecting;
       (groups.get(e.target) || []).forEach((t) => {
-        if (on) t.classList.add('in'); else if (!(PT && t.closest && t.closest('.gallery'))) t.classList.remove('in'); // Tema 3-8: galeri cukup sekali animasi (tidak diulang tiap scroll)
+        t.classList.toggle('in', on);
         if (on && t.id === 'cds' && cdsRun) cdsRun();
         if (t.classList.contains('vid')) vidCtl(t, on);
       });
@@ -1254,7 +1289,6 @@
   }
   let petalsOn = false;
   function petals() {
-    if (PT) return; // Tema 3-8: tanpa kelopak/bunga jatuh di dalam undangan
     if (!C.effects.petals || reduce || petalsOn) return; petalsOn = true;
     const box = $('#petals'), cols = ['var(--primary)', 'var(--accent)', 'var(--tint2)', 'var(--tint3)'];
     box.style.opacity = '0'; setTimeout(() => (box.style.opacity = ''), 2600 * sp);

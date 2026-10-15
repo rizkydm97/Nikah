@@ -17,12 +17,12 @@
 .imm-snd.show{display:flex}
 .imm-snd.off::after{content:"";position:absolute;width:24px;height:2px;background:#fff;transform:rotate(-45deg);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
 /* nama tamu hidup di dalam dunia */
-.imm-guest{position:absolute;left:50%;transform:translateX(-50%);z-index:5;text-align:center;min-width:46%;max-width:80%;padding:1.8cqw 4.5cqw 2cqw;border-radius:3cqw;color:var(--tc);background:linear-gradient(160deg,rgba(255,250,236,.5),rgba(255,236,214,.26));border:1px solid var(--tc);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 3cqw var(--tg);opacity:0;transform-origin:50% -4cqw;transition:opacity 1.8s ease 1.2s;pointer-events:none}
+.imm-guest{position:absolute;left:50%;transform:translateX(-50%);z-index:5;text-align:center;min-width:46%;max-width:80%;padding:1.8cqw 4.5cqw 2cqw;border-radius:3cqw;color:var(--tc);background:linear-gradient(160deg,rgba(255,250,236,.5),rgba(255,236,214,.26));border:1px solid var(--tc);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:0 0 3cqw var(--tg);opacity:0;transform:translate(-50%,-100%);transform-origin:50% calc(100% + 4cqw);transition:opacity 1.8s ease 1.2s;pointer-events:none}
 .imm-guest::before{content:"";position:absolute;left:50%;bottom:100%;width:1px;height:4cqw;background:var(--tc)}
 .imm-guest span{display:block;font:600 2.7cqw/1.3 var(--fBody);opacity:.9}
 .imm-guest b{display:block;font-family:var(--fDisplay);font-size:4.8cqw;line-height:1.2;margin-top:.3cqw;text-shadow:0 0 1.2cqw var(--tg)}
 .hero.pic.shown .imm-guest{opacity:1;animation:immhang 6s ease-in-out 3s infinite alternate}
-@keyframes immhang{from{transform:translateX(-50%) rotate(-1.1deg)}to{transform:translateX(-50%) rotate(1.1deg)}}
+@keyframes immhang{from{transform:translate(-50%,-100%) rotate(-1.1deg)}to{transform:translate(-50%,-100%) rotate(1.1deg)}}
 /* suasana mengikuti jam: malam */
 .hero.pic .pbox::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(10,18,70,.34),rgba(40,20,70,.2));mix-blend-mode:multiply;opacity:0;transition:opacity 3s ease;z-index:2}
 .imm-night.imm-light .hero.pic .pbox::after{opacity:1}

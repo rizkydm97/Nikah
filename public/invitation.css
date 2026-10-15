@@ -717,7 +717,6 @@ a{color:inherit}
 @keyframes pray{0%,100%{transform:rotate(var(--r)) scaleY(.85);opacity:.25}50%{transform:rotate(calc(var(--r) + 6deg)) scaleY(1.1);opacity:.85}}
 /* awan */
 .pcl{left:0;height:auto;opacity:.6;animation:pcl linear infinite;will-change:transform}
-@keyframes pcl{0%{transform:translate3d(-40cqw,0,0);opacity:0}12%{opacity:.6}88%{opacity:.6}100%{transform:translate3d(110cqw,0,0);opacity:0}}
 .pfxl .sparkles{z-index:auto}
 .pff{position:absolute}
 .pbirds{inset:0;overflow:hidden}
@@ -725,23 +724,6 @@ a{color:inherit}
 .pbd img{width:100%;height:auto;display:block;animation:pglide 1.6s ease-in-out infinite alternate}
 .pbd.svg svg{width:100%;fill:#2b1a0e;opacity:.75;transform-origin:50% 60%;animation:wing .45s ease-in-out infinite alternate}
 @keyframes pglide{from{transform:translateY(0) rotate(-3deg) scaleY(1)}to{transform:translateY(-12%) rotate(3deg) scaleY(.86)}}
-.pcar{left:0;top:0;width:19%;aspect-ratio:4/3;opacity:0;will-change:transform,opacity;pointer-events:none}
-.pcar>*{position:absolute}
-.pcw{left:14%;top:-4%;width:68%;animation:pcbob 3.4s ease-in-out infinite alternate}
-.pcg{display:block;width:100%;height:auto;filter:drop-shadow(0 .6cqw .8cqw rgba(110,40,70,.35));-webkit-mask-image:linear-gradient(90deg,#000 86%,transparent);mask-image:linear-gradient(90deg,#000 86%,transparent)}
-.pcc{height:auto;opacity:.96;filter:drop-shadow(0 .5cqw 1cqw rgba(255,190,220,.55));animation:pcpuff 4.2s ease-in-out infinite alternate;will-change:transform}
-.pcc.b1{left:-14%;top:44%;width:74%}.pcc.b2{left:44%;top:46%;width:66%;animation-delay:-1.4s}
-.pcc.f1{left:-4%;top:58%;width:84%;animation-delay:-.7s}.pcc.f2{left:50%;top:66%;width:56%;animation-delay:-2.1s}.pcc.f3{left:18%;top:78%;width:58%;opacity:.8;animation-delay:-3s}
-.pcglow{left:-10%;top:-10%;width:120%;height:120%;border-radius:50%;background:radial-gradient(circle,rgba(255,226,240,.65),rgba(255,226,240,0) 66%);animation:pglow 3.6s ease-in-out infinite}
-@keyframes pcbob{from{transform:translate3d(0,-2%,0) rotate(-.8deg)}to{transform:translate3d(0,2.5%,0) rotate(.8deg)}}
-@keyframes pcpuff{from{transform:translate3d(-2.5%,0,0) scale(.97)}to{transform:translate3d(2.5%,-3%,0) scale(1.04)}}
-.pcs{position:absolute;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,206,232,.85) 40%,transparent 72%);opacity:0;animation:pcs 1.9s ease-out forwards;mix-blend-mode:screen;pointer-events:none}
-.pcs.g{background:radial-gradient(circle,#fff8d8,rgba(255,214,120,.9) 42%,transparent 72%)}
-@keyframes pcs{0%{opacity:0;transform:translate3d(0,0,0) scale(.3)}20%{opacity:1}100%{opacity:0;transform:translate3d(var(--dx),var(--dy),0) scale(1.3)}}
-.pcb{position:absolute;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,250,225,.95),rgba(255,214,236,.5) 40%,transparent 70%);mix-blend-mode:screen;pointer-events:none}
-/* kilau cahaya lembut yang menyapu lukisan */
-.plsw{position:absolute;inset:-10% -60%;background:linear-gradient(105deg,transparent 42%,rgba(255,244,222,.16) 50%,transparent 58%);mix-blend-mode:screen;opacity:0;animation:plsw 12s ease-in-out 3s infinite;pointer-events:none;will-change:transform,opacity}
-@keyframes plsw{0%{transform:translate3d(-30%,0,0);opacity:0}15%{opacity:1}55%,100%{transform:translate3d(30%,0,0);opacity:0}}
 /* teks hero di atas lukisan */
 .ptext{position:absolute;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--tc);opacity:0;transform:translateY(3cqw);filter:blur(6px);transition:opacity 1.6s ease .3s,transform 1.8s var(--lux) .3s,filter 1.6s ease .3s;pointer-events:none}
 .ptext .pk{font-family:var(--fDisplay);font-weight:600;font-size:3.6cqw;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 0 1.4cqw var(--tg),0 0 .4cqw var(--tg)}
@@ -808,77 +790,118 @@ a{color:inherit}
 .t-rimba .ptext .pn{font-size:8.8cqw;margin-top:.4cqw}
 .t-rimba .ptext .pk{font-size:3.2cqw}
 
-/* ====== v13: cover hidup (WebGL), pembuka khas tiap tema, air & kabut ====== */
-.pbox.gl-on>.pcv{opacity:0!important;visibility:hidden;transition:none}
-.pbox.gl-on .pwf,.pbox.gl-on .pwt{display:none}
-.hero.pic .pcl{transition:opacity 2.4s ease}
-.hero.pic.pre:not(.filming) .pcl{opacity:0}
+/* ================= v13 — cover hidup + koreografi masuk per tema ================= */
+.pbox>.pcv.pl{inset:auto;height:auto;object-fit:fill;z-index:4;pointer-events:none}
+.pent{position:absolute;inset:0;z-index:5;pointer-events:none}
+.pent>*{position:absolute}
+.pfall{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
+/* partikel naik pelan (debu emas / bara / gelembung / serbuk) */
+.pmo{position:absolute;inset:0;overflow:hidden}
+.pmo i{position:absolute;bottom:-3%;width:var(--s);height:var(--s);border-radius:50%;opacity:0;animation:pmo 12s linear infinite;will-change:transform,opacity}
+@keyframes pmo{0%{opacity:0;transform:translate3d(0,0,0)}12%{opacity:.95}60%{opacity:.7}100%{opacity:0;transform:translate3d(var(--x),-86cqw,0)}}
+/* lapisan masuk (di dalam panggung, di atas kamera) */
+.ent{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden}
+.pskip{z-index:12}
+
+/* ---- Princess: amplop ---- */
+.ent-env{perspective:1200px}
+.ee-veil{position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#fff0f6 0,#fbd0e1 48%,#eb9dbd 100%)}
+.ent-env .sparkles{z-index:1}
+.ee-env{position:absolute;left:50%;top:50%;width:var(--ew);height:calc(var(--ew)*.69);margin:calc(var(--ew)*-.345) 0 0 calc(var(--ew)*-.5);will-change:transform,opacity;filter:drop-shadow(0 14px 18px rgba(150,40,80,.35))}
+.ee-fl{position:absolute;inset:0;animation:eefl 3.2s ease-in-out infinite}
+@keyframes eefl{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-6px) rotate(.6deg)}}
+.ee-fl>*{position:absolute}
+.ee-back,.ee-front{inset:0;border-radius:7px;overflow:hidden}
+.ee-back{z-index:0}.ee-back svg,.ee-front svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ee-glow{left:8%;right:8%;top:-30%;height:100%;z-index:0;background:radial-gradient(ellipse at 50% 60%,rgba(255,250,235,.98),rgba(255,222,150,.55) 45%,transparent 72%);opacity:0;mix-blend-mode:screen;filter:blur(6px)}
+.ee-clip{left:0;right:0;top:-400%;bottom:0;z-index:2;overflow:hidden}
+.ee-card{position:absolute;left:50%;bottom:0;width:var(--cw);margin-left:calc(var(--cw)*-.5);aspect-ratio:784/1168;margin-bottom:calc(var(--ew)*-.62);will-change:transform}
+.ee-cf{position:absolute;inset:0;background:center/cover no-repeat;border-radius:4px;box-shadow:0 0 0 3px #e3b867,0 0 0 4.5px rgba(255,255,255,.7),0 6px 20px rgba(120,30,60,.35)}
+.ee-front{z-index:3}
+.ee-to{position:absolute;left:0;right:0;bottom:7%;text-align:center;color:#8a3b4f;line-height:1.15;z-index:2}
+.ee-to span{display:block;font:600 calc(var(--ew)*.032)/1.2 var(--fBody);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.ee-to b{display:block;font-family:var(--fScript);font-weight:400;font-size:calc(var(--ew)*.085);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 14%}
+.ee-rose{position:absolute;z-index:3;pointer-events:none;filter:drop-shadow(0 3px 4px rgba(120,30,60,.3))}
+.ee-rose.a{width:20%;left:-5%;bottom:-8%;transform:rotate(-12deg)}
+.ee-rose.b{width:15%;right:-3%;bottom:-6%;transform:rotate(16deg)}
+.ee-flap{left:0;width:100%;height:61.8%;top:0;z-index:5;transform-origin:50% 0;transform-style:preserve-3d;will-change:transform}
+.ee-flap .f{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.ee-flap .f svg{width:100%;height:100%;display:block;overflow:visible}
+.ee-flap .f.i{transform:rotateY(180deg)}
+.ee-seal{z-index:6;left:50%;top:61.8%;width:calc(var(--ew)*.2);aspect-ratio:1;margin:0;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 36% 30%,#fff1b0,#e9bd55 38%,#b9801f 100%);box-shadow:0 2px 6px rgba(80,30,0,.45),inset 0 0 0 calc(var(--ew)*.012) rgba(160,100,20,.55),inset 0 0 0 calc(var(--ew)*.024) rgba(255,240,180,.5)}
+.ee-seal b{font-family:var(--fScript);font-weight:400;font-size:calc(var(--ew)*.075);color:#7a3d1c;text-shadow:0 1px 0 rgba(255,245,200,.7);white-space:nowrap}
+.ee-seal b i{font-style:normal;font-size:.7em}
+.ee-big{position:absolute;background:center/100% 100% no-repeat;transform-origin:50% 50%;z-index:4;will-change:transform}
+.ee-edge{position:absolute;inset:0;border-radius:4px;box-shadow:inset 0 0 0 3px #e3b867,inset 0 0 0 4.5px rgba(255,255,255,.7)}
+.ee-flash{position:absolute;inset:0;z-index:6;background:radial-gradient(circle at 50% 50%,#fff,rgba(255,236,246,.9) 55%,rgba(255,214,232,.8));opacity:0}
+
+/* ---- Bali: gerbang candi ---- */
+.ent-doors{perspective:1300px;perspective-origin:50% 50%}
+.ed-light{position:absolute;left:50%;top:0;bottom:0;width:70%;margin-left:-35%;background:radial-gradient(ellipse at 50% 55%,rgba(255,248,215,1) 0,rgba(255,226,150,.85) 28%,rgba(255,200,110,0) 70%);mix-blend-mode:screen;opacity:0;transform-origin:50% 50%}
+.ed-d{position:absolute;top:0;bottom:0;width:50%;overflow:hidden;backface-visibility:hidden;will-change:transform}
+.ed-d.l{left:0;transform-origin:0 50%}.ed-d.r{right:0;transform-origin:100% 50%}
+.ed-pic{position:absolute;top:50%;width:max(100cqw,calc(100cqh*784/1168));aspect-ratio:784/1168;transform:translateY(-50%);background:center/100% 100% no-repeat}
+.ed-d.l .ed-pic{left:100%;transform:translate(-50%,-50%)}
+.ed-d.r .ed-pic{left:0;transform:translate(-50%,-50%)}
+.ed-sh{position:absolute;inset:0;background:linear-gradient(90deg,rgba(30,15,0,.0),rgba(30,15,0,.8));opacity:0}
+.ed-d.r .ed-sh{background:linear-gradient(270deg,rgba(30,15,0,.0),rgba(30,15,0,.8))}
+
+/* ---- Emas: ledakan cahaya matahari ---- */
+.psun{width:60cqw;aspect-ratio:1;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:0}
+.psun i{position:absolute;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}
+.psun .c{width:46%;height:46%;background:radial-gradient(circle,#fff 0,#fff3c0 35%,rgba(255,214,120,.0) 72%)}
+.psun .h{width:100%;height:100%;background:radial-gradient(circle,rgba(255,226,150,.9),rgba(255,190,90,.35) 40%,transparent 70%)}
+.psun .v{width:260%;height:7%;background:linear-gradient(90deg,transparent,rgba(255,240,190,.85) 50%,transparent);border-radius:50%}
+.ent-wash{background:radial-gradient(circle at 70% 36%,#fffbe8 0,#ffe6a8 45%,#ffc66b 100%);opacity:0;mix-blend-mode:normal}
+
+/* ---- Biru: menyelam ---- */
+.prg{width:96cqw;aspect-ratio:1;border-radius:50%;border:.7cqw solid rgba(215,236,255,.85);box-shadow:0 0 3cqw rgba(170,215,255,.7),inset 0 0 3cqw rgba(170,215,255,.45);opacity:0;transform:translate(-50%,-50%) scale(.05)}
+.ev-tint{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(60,140,210,.8),rgba(8,36,96,.96) 80%);opacity:0}
+.ev-caus{position:absolute;inset:-10%;background:url(/assets/t/fx/ripple.webp) 0 0/70% 40% repeat;mix-blend-mode:screen;opacity:0;animation:evc 6s linear infinite}
+@keyframes evc{to{background-position:70cqw 40cqh}}
+.ev-bub{position:absolute;inset:0;overflow:hidden}
+.ev-bub i{position:absolute;bottom:-6%;width:var(--s);height:var(--s);border-radius:50%;border:1px solid rgba(220,240,255,.9);background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.85),rgba(190,225,255,.15) 60%);opacity:0;animation:evb 3s ease-in infinite;animation-iteration-count:1;animation-fill-mode:both}
+@keyframes evb{0%{opacity:0;transform:translate(0,0)}15%{opacity:.95}100%{opacity:0;transform:translate(var(--dx),-112cqh)}}
+.ev-surf{position:absolute;left:-5%;right:-5%;top:0;height:140%;background:linear-gradient(180deg,rgba(235,248,255,.95) 0,rgba(180,220,255,.6) 14%,rgba(100,170,235,0) 40%);opacity:0}
+
+/* ---- Rimba: kupu-kupu cahaya ---- */
+.pbloom{width:40cqw;aspect-ratio:1;opacity:0;mix-blend-mode:screen;background:radial-gradient(circle,#fff 0,rgba(255,236,170,.95) 14%,rgba(255,206,110,.5) 38%,transparent 70%)}
+.pguide{filter:drop-shadow(0 0 8px rgba(255,236,170,.95)) drop-shadow(0 0 18px rgba(255,200,100,.8));will-change:transform}
+.ptr{width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,#fff8d8,#ffd77a 45%,transparent 72%);box-shadow:0 0 8px 2px rgba(255,214,120,.8);transform:translate(-50%,-50%);animation:ptr 1.6s ease-out forwards}
+@keyframes ptr{to{opacity:0;transform:translate(-50%,-190%) scale(.3)}}
+
+/* ---- Klasik: lampu blencong + kelir ---- */
+.plamp{width:46cqw;aspect-ratio:1;opacity:0;transform:translate(-50%,-50%);mix-blend-mode:screen}
+.plamp i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff6d0 0,rgba(255,200,100,.95) 18%,rgba(255,140,40,.5) 45%,transparent 72%);animation:flick 1.6s ease-in-out infinite}
+.ent-kelir{background:radial-gradient(circle at 50% 56%,rgba(255,196,110,.0) 0,rgba(10,4,0,.0) 40%,rgba(8,3,0,.75) 100%);opacity:0}
+.ent-kelir::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 56%,rgba(255,190,100,.35),transparent 55%);mix-blend-mode:screen;animation:flick 2.2s ease-in-out infinite}
+
+
+/* ===== v34 — animasi dalam dari v33: kereta berawan, percikan air terjun, momen puncak tiap tema ===== */
+@keyframes pcl{0%{transform:translate3d(-40cqw,0,0);opacity:0}12%{opacity:.6}88%{opacity:.6}100%{transform:translate3d(110cqw,0,0);opacity:0}}
+.pcar{left:0;top:0;width:19%;aspect-ratio:4/3;opacity:0;will-change:transform,opacity;pointer-events:none}
+.pcar>*{position:absolute}
+.pcw{left:14%;top:-4%;width:68%;animation:pcbob 3.4s ease-in-out infinite alternate}
+.pcg{display:block;width:100%;height:auto;filter:drop-shadow(0 .6cqw .8cqw rgba(110,40,70,.35));-webkit-mask-image:linear-gradient(90deg,#000 86%,transparent);mask-image:linear-gradient(90deg,#000 86%,transparent)}
+.pcc{height:auto;opacity:.96;filter:drop-shadow(0 .5cqw 1cqw rgba(255,190,220,.55));animation:pcpuff 4.2s ease-in-out infinite alternate;will-change:transform}
+.pcc.b1{left:-14%;top:44%;width:74%}.pcc.b2{left:44%;top:46%;width:66%;animation-delay:-1.4s}
+.pcc.f1{left:-4%;top:58%;width:84%;animation-delay:-.7s}.pcc.f2{left:50%;top:66%;width:56%;animation-delay:-2.1s}.pcc.f3{left:18%;top:78%;width:58%;opacity:.8;animation-delay:-3s}
+.pcglow{left:-10%;top:-10%;width:120%;height:120%;border-radius:50%;background:radial-gradient(circle,rgba(255,226,240,.65),rgba(255,226,240,0) 66%);animation:pglow 3.6s ease-in-out infinite}
+@keyframes pcbob{from{transform:translate3d(0,-2%,0) rotate(-.8deg)}to{transform:translate3d(0,2.5%,0) rotate(.8deg)}}
+@keyframes pcpuff{from{transform:translate3d(-2.5%,0,0) scale(.97)}to{transform:translate3d(2.5%,-3%,0) scale(1.04)}}
+.pcs{position:absolute;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,206,232,.85) 40%,transparent 72%);opacity:0;animation:pcs 1.9s ease-out forwards;mix-blend-mode:screen;pointer-events:none}
+.pcs.g{background:radial-gradient(circle,#fff8d8,rgba(255,214,120,.9) 42%,transparent 72%)}
+@keyframes pcs{0%{opacity:0;transform:translate3d(0,0,0) scale(.3)}20%{opacity:1}100%{opacity:0;transform:translate3d(var(--dx),var(--dy),0) scale(1.3)}}
+.pcb{position:absolute;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,250,225,.95),rgba(255,214,236,.5) 40%,transparent 70%);mix-blend-mode:screen;pointer-events:none}
+/* kilau cahaya lembut yang menyapu lukisan */
+.plsw{position:absolute;inset:-10% -60%;background:linear-gradient(105deg,transparent 42%,rgba(255,244,222,.16) 50%,transparent 58%);mix-blend-mode:screen;opacity:0;animation:plsw 12s ease-in-out 3s infinite;pointer-events:none;will-change:transform,opacity}
+@keyframes plsw{0%{transform:translate3d(-30%,0,0);opacity:0}15%{opacity:1}55%,100%{transform:translate3d(30%,0,0);opacity:0}}
 .psp{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.7),rgba(255,255,255,.28) 42%,transparent 70%);transform:translate(-50%,0);opacity:0;mix-blend-mode:screen;animation:psp 3.4s ease-out infinite}
 .t-dark .psp{background:radial-gradient(circle,rgba(210,230,255,.6),rgba(190,215,255,.22) 42%,transparent 70%)}
 @keyframes psp{0%{transform:translate(-50%,0) scale(.4);opacity:0}25%{opacity:.75}100%{transform:translate(-50%,-80%) scale(1.6);opacity:0}}
-.pmt{width:.9cqw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff6d0,rgba(255,226,140,0) 70%);opacity:0;animation:pmt linear infinite}
-@keyframes pmt{0%{opacity:0;transform:translate(0,0)}15%{opacity:.95}85%{opacity:.7}100%{opacity:0;transform:translate(7cqw,-24cqw)}}
-.pintro{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}
-/* Princess: amplop */
-.pe-dim{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(255,240,246,.28),rgba(255,190,218,.6));-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px)}
-.pe-wrap{--ew:min(84cqw,112cqh);position:absolute;left:50%;top:50%;width:var(--ew);height:calc(var(--ew)*.68);margin:calc(var(--ew)*-.34) 0 0 calc(var(--ew)*-.5);opacity:0}
-.pe-wrap::before{content:"";position:absolute;left:6%;right:6%;bottom:-9%;height:14%;border-radius:50%;background:radial-gradient(ellipse,rgba(150,40,90,.4),transparent 70%);filter:blur(6px)}
-.pe-env{position:absolute;inset:0;perspective:1500px;animation:pebob 2.6s ease-in-out infinite alternate}
-@keyframes pebob{from{transform:translateY(-1.2%) rotate(-.6deg)}to{transform:translateY(1.2%) rotate(.6deg)}}
-.pe-back{position:absolute;inset:0;z-index:1;border-radius:2px;background:linear-gradient(180deg,#e58aac,#f5b9cf);box-shadow:inset 0 0 0 1px #d9b36e}
-.pe-back i{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0,rgba(255,255,255,.55),transparent 62%)}
-.pe-glow{position:absolute;left:4%;right:4%;top:-14%;height:72%;z-index:1;background:radial-gradient(ellipse at 50% 72%,rgba(255,255,255,.98),rgba(255,226,240,.55) 42%,transparent 70%);opacity:0}
-.pe-card{position:absolute;left:8%;right:8%;top:6%;height:88%;z-index:2}
-.pe-cb{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(160deg,#fffdf8,#fff1e6);border:1px solid #d9b36e;box-shadow:inset 0 0 0 calc(var(--ew)*.012) #fffaf2,inset 0 0 0 calc(var(--ew)*.014) #e6c88c,0 2px 10px rgba(120,40,70,.25);color:#8a4a2a}
-.pe-cb small{font:600 calc(var(--ew)*.032)/1.2 var(--fDisplay);letter-spacing:.2em;text-transform:uppercase;color:#b07a3a}
-.pe-cb b{font:400 calc(var(--ew)*.105)/1 var(--fScript);color:#9b4a62;margin-top:.1em}
-.pe-cb s{text-decoration:none;font:400 calc(var(--ew)*.06)/1 var(--fScript);color:#c79a52}
-.pe-cb em{font:600 calc(var(--ew)*.035)/1.2 var(--fDisplay);font-style:normal;letter-spacing:.14em;margin-top:.5em;color:#a8743a}
-.pe-front{position:absolute;inset:0;width:100%;height:100%;z-index:3;overflow:visible}
-.pe-flap{position:absolute;left:0;top:0;width:100%;height:58%;z-index:5;transform-origin:50% 0;transform-style:preserve-3d}
-.pe-flap .fa,.pe-flap .fb{position:absolute;inset:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:visible}
-.pe-flap .fb{transform:rotateX(180deg)}
-.pe-seal{position:absolute;left:50%;top:88%;width:calc(var(--ew)*.17);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff0b8,#e0aa44 52%,#a9741f);box-shadow:0 2px 6px rgba(90,40,10,.5),inset 0 0 0 calc(var(--ew)*.006) rgba(255,240,190,.8);display:flex;align-items:center;justify-content:center;color:#7a4410;transform-style:flat}
-.pe-seal b{font:700 calc(var(--ew)*.05)/1 var(--fDisplay);letter-spacing:.02em;text-shadow:0 1px 0 rgba(255,240,190,.7)}
-.pe-seal i{font-style:normal;font-size:.7em;margin:0 .06em}
 .pe-sp{position:absolute;width:2cqw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff,#ffe9a8 42%,transparent 72%);box-shadow:0 0 8px 2px rgba(255,226,150,.85);opacity:0}
-.pe-fl{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,#fff 0,#fff3f8 55%,#ffdcec);opacity:0}
-/* Bali: gerbang candi bentar */
-.pgate{position:absolute;inset:0;z-index:5;perspective:1300px;pointer-events:none}
-.pg-d{position:absolute;top:0;bottom:0;width:50%;overflow:hidden;backface-visibility:hidden;will-change:transform,filter}
-.pg-d.l{left:0;transform-origin:0 50%}.pg-d.r{right:0;transform-origin:100% 50%}
-.pg-d img{position:absolute;top:0;left:0;width:200%;height:100%;max-width:none;object-fit:cover}
-.pg-d.r img{left:-100%}
-.pg-d::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 62%,rgba(30,12,0,.5))}
-.pg-d.r::after{background:linear-gradient(270deg,transparent 62%,rgba(30,12,0,.5))}
-.pg-lt{position:absolute;left:50%;top:0;bottom:0;width:70%;margin-left:-35%;background:radial-gradient(ellipse at 50% 52%,rgba(255,238,176,.95),rgba(255,214,120,.42) 38%,transparent 70%);mix-blend-mode:screen;opacity:0}
-/* Jawa Emas: matahari */
-.pf-sun{position:absolute;width:200%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fffef4 0,rgba(255,246,206,.98) 9%,rgba(255,214,120,.72) 26%,rgba(255,188,86,.28) 48%,transparent 68%);opacity:0;pointer-events:none}
-.pf-rays{position:absolute;width:220%;aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,236,170,.55) 0 2.5deg,transparent 2.5deg 9deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 62%);mask-image:radial-gradient(circle,#000 0,transparent 62%);mix-blend-mode:screen;opacity:0}
-.pf-gh{position:absolute;inset:0;mix-blend-mode:screen;pointer-events:none;opacity:0}
-.pf-gh i{position:absolute;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,232,160,.5),rgba(255,200,90,.16) 56%,transparent 72%);border:1px solid rgba(255,235,170,.35)}
-/* Biru: selam menembus air terjun */
-.pring{position:absolute;width:80%;aspect-ratio:1;border-radius:50%;border:.5cqw solid rgba(196,228,255,.85);box-shadow:0 0 3cqw rgba(140,200,255,.7),inset 0 0 3cqw rgba(140,200,255,.45);opacity:0;pointer-events:none}
-.pcurt{position:absolute;left:0;right:0;top:-6%;bottom:-6%;z-index:6;pointer-events:none;overflow:hidden;background:linear-gradient(180deg,rgba(190,222,255,0),rgba(205,230,255,.96) 16%,rgba(190,220,252,.98) 82%,rgba(190,222,255,0))}
-.pcurt{-webkit-mask-image:linear-gradient(transparent,#000 18%,#000 80%,transparent);mask-image:linear-gradient(transparent,#000 18%,#000 80%,transparent)}
-.pcurt i{position:absolute;inset:0;background:url(/assets/t/fx/streaks.webp) 0 0/34cqw 60cqh repeat;opacity:.9;animation:pcurtf .55s linear infinite}
-.pcurt i+i{background-size:20cqw 44cqh;animation-duration:.34s;opacity:.65}
-.pcurt b{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.6),transparent 70%)}
-@keyframes pcurtf{to{background-position:0 60cqh}}
-/* Rimba: portal bulan */
 .pmoonf{position:absolute;width:100%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(208,230,255,.55) 20%,rgba(150,190,255,.22) 44%,transparent 66%);mix-blend-mode:screen;opacity:0;pointer-events:none}
 .pfb{position:absolute;width:1.7%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff6c8,#ffd86a 45%,transparent 70%);box-shadow:0 0 1.8cqw .7cqw rgba(255,214,110,.85);opacity:0;pointer-events:none}
-/* Klasik: kelir & gunungan */
-.pw-dark{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(52,22,4,.72),rgba(10,3,0,.95) 82%)}
-.pw-lamp{position:absolute;left:50%;top:52%;width:130cqw;aspect-ratio:1;margin:-65cqw 0 0 -65cqw;border-radius:50%;background:radial-gradient(circle,rgba(255,198,98,.6),rgba(255,160,60,.22) 40%,transparent 66%);animation:flick 2.8s ease-in-out infinite}
-.pw-gun{--gw:min(58cqw,300px);position:absolute;left:50%;top:50%;width:var(--gw);aspect-ratio:400/620;margin:calc(var(--gw)*-.775) 0 0 calc(var(--gw)*-.5);filter:drop-shadow(0 0 3cqw rgba(255,190,90,.65));opacity:0}
-.pw-in{position:absolute;inset:0;transform-origin:50% 100%}
-.pw-h{position:absolute;top:0;bottom:0;width:50%;overflow:hidden}
-.pw-h.l{left:0;transform-origin:0 100%}.pw-h.r{right:0;transform-origin:100% 100%}
-.pw-h img{position:absolute;top:0;left:0;width:200%;height:100%;max-width:none}
-.pw-h.r img{left:-100%}
-.pw-lt{position:absolute;left:50%;top:0;bottom:0;width:34cqw;margin-left:-17cqw;background:linear-gradient(90deg,transparent,rgba(255,228,150,.95),transparent);mix-blend-mode:screen;opacity:0}
-
 /* ===== v33: momen puncak film Tema 3-8 (dipakai oleh CX di invitation.js) ===== */
 .pcx-glow,.pcx-p,.pcx-sweep,.pcx-dusk,.pcx-sun,.pcx-star,.pcx-ring,.pcx-flare,.pcx-ember{z-index:7;pointer-events:none}
 .pcx-glow{position:absolute;width:62%;aspect-ratio:1;border-radius:50%;opacity:0;will-change:transform,opacity;background:radial-gradient(circle,rgba(255,244,250,.95),rgba(255,196,224,.55) 30%,rgba(255,160,205,.2) 55%,transparent 72%)}
@@ -894,3 +917,4 @@ a{color:inherit}
 .pcx-ember{position:absolute;width:1.1%;aspect-ratio:1;border-radius:50%;opacity:0;will-change:transform,opacity;background:radial-gradient(circle,#fff3c0,#ff9a3c 55%,transparent 72%);box-shadow:0 0 1.2cqw rgba(255,150,60,.9)}
 .pcx-ember.gold{background:radial-gradient(circle,#fffbe0,#ffd36a 55%,transparent 72%);box-shadow:0 0 1.2cqw rgba(255,210,110,.9)}
 @media (prefers-reduced-motion:reduce){.pcx-glow,.pcx-p,.pcx-sweep,.pcx-dusk,.pcx-sun,.pcx-star,.pcx-ring,.pcx-flare,.pcx-ember{display:none}}
+.pbox.gl-on .pwf,.pbox.gl-on .pwt{display:none}

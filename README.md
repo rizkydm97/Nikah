@@ -79,14 +79,20 @@ Admin → Tema → "Tema undangan": Nusantara (Candi Bali), Princess, Jawa Emas,
 ## v12 — Hiasan dalam per tema (Tema 3–8)
 Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga tepi atas/bawah (Galeri, Love Story, Penutup), bingkai kapsul kartu Acara & Gift (`frame-arc`/`frame-side`), buket di foto mempelai, ornamen kartu acara, ornamen di bawah judul, dan motif (batik/pola/songket) halus di panel. File: `public/assets/t/<tema>/{fl-top,fl-bottom,frame-arc,frame-side,bouquet,orn,divider,motif}.webp`. Gambar dekorasi yang diunggah sendiri lewat admin tetap diutamakan.
 
-## v13 — Pembuka khas tiap tema + cover & air hidup (Tema 3–8)
-- **Setiap tema punya pembuka sendiri** (`intro` di `public/themes.js`):
-  - Princess: amplop merah muda terbang masuk → segel pecah → tutup terbuka → kartu naik → kamera dibawa masuk ke dalam amplop lalu menembus cahaya ke taman kastil.
-  - Nusantara (Bali): gerbang candi bentar membelah dua dan terbuka ke dalam, kamera melangkah masuk melewati sawah & sungai.
-  - Jawa Emas: matahari senja membesar jadi ledakan cahaya + sinar + kilau lensa, lalu kamera turun dari matahari ke air terjun & pendopo.
-  - Biru Air Terjun: riak air memancar dari tombol, lukisan larut jadi air, kamera menyelam menembus tirai air terjun.
-  - Rimba Bulan: bulan purnama memancar, portal cahaya melebar membuka lukisan, kunang-kunang beterbangan.
-  - Jawa Klasik: kelir gelap dengan cahaya blencong, gunungan naik bergoyang lalu terbelah membuka panggung.
-- **Kamera mulus**: jalur kamera memakai kurva (bukan berhenti di tiap titik). Atur di `shots` tiap tema.
-- **Cover sekarang hidup** (WebGL): air mengalir & berkilau, air terjun mengalir, kabut tipis bergeser di langit — sudah bergerak sebelum tombol "Buka Undangan" ditekan, lalu berlanjut saat masuk ke dalam lukisan. Percikan di dasar air terjun, serbuk cahaya, awan, burung, kupu-kupu tetap ada.
-- Bila perangkat tidak mendukung WebGL: Princess, Bali, Emas, dan Klasik tetap memakai pembuka masing-masing; Biru dan Rimba memakai peralihan memudar. Bila HP lambat, resolusi kanvas turun otomatis.
+## v13 — Cover hidup & cara masuk berbeda tiap tema (Tema 3–8)
+- **Cover kini hidup**: air terjun mengalir, awan/kabut bergerak, cahaya berdenyut, parallax 3D, kupu-kupu & partikel cahaya sudah berjalan di halaman cover. Judul & tombol dipasang sebagai lapisan transparan (`ctitle.webp`, `cbtn.webp`) di atas lukisan hidup.
+- **Cara masuk per tema** (`entry` di `public/themes.js`, kode di `invitation.js` → `ENTRY`):
+  - Princess: amplop merah muda dengan segel monogram → segel pecah → tutup terbuka → kartu keluar → kita masuk ke dalam kartu menuju taman kastil.
+  - Nusantara (Bali): gerbang candi dua daun pintu terbuka, cahaya pagi masuk, bunga kamboja berjatuhan.
+  - Jawa Emas: kamera menuju matahari senja, ledakan cahaya emas, lalu menyusuri air terjun & sawah.
+  - Biru Air Terjun: riak air dari tombol, menyelam (gelembung & cahaya air), muncul di kaki air terjun.
+  - Rimba Bulan: kupu-kupu cahaya di tangan sang putri terbang memandu kamera ke istana melayang & bulan.
+  - Jawa Klasik: gunungan dikibaskan, lampu blencong menyala, kamera masuk ke pendapa joglo.
+- Partikel hidup terus (`motes`): debu emas, bara, gelembung/serbuk cahaya sesuai tema. Tombol "Lewati" menghentikan animasi masuk dengan mulus.
+
+## v34 — Animasi dalam Tema 3–8 (digabung dari v33; pembuka v18 tetap)
+- **Imersif** (`public/immersive.js/.css`): suara suasana per tema (angin/air/lonceng/gamelan/jangkrik/gong, sintesis WebAudio, ada tombol ♪), sentuh layar memunculkan kelopak/daun/cahaya + denting, nama tamu menggantung di dalam lukisan, tirai kabut antar bagian, suasana lebih gelap pada jam 18.00–05.00.
+- **Efek scroll** (`public/scrollfx.js/.css`): judul muncul kata per kata, latar parallax, warna langit bergeser dari pagi ke malam, cahaya & kunang-kunang bertambah ke bawah, hitung mundur membalik, ucapan tamu melayang, getar halus di HP, jeda animasi bagian yang jauh dari layar, perbaikan galeri HP.
+- **Air hidup lewat shader**: air terjun mengalir, kilau air, kabut tipis di langit (parallax 3D dibuat lebih halus, tanpa sensor gerak agar gambar tidak penyok); percikan di dasar air terjun.
+- **Momen puncak tiap tema** sebelum nama muncul: kelopak mawar meledak (Princess), sapuan cahaya (Bali), senja jatuh (Emas), bintang jatuh + riak (Biru), kunang-kunang berkumpul ke bulan (Rimba), api blencong (Klasik). Kereta kencana Princess kini dibawa awan dengan jejak kilau.
+- Semua bisa dimatikan di Admin → *Efek Scroll (Tema 3-8)* dan *Suara & Sentuhan (Tema 3-8)*.
