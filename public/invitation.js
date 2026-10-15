@@ -137,7 +137,7 @@
     if (c.effects.intro !== false) ld.innerHTML = `<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
     ld.classList.add('ready');
     const s = c.scene;
-    const urls = PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp')].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
+    const urls = PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
@@ -273,7 +273,14 @@
       <button class="pskip" type="button" hidden>Lewati &rsaquo;</button>
       <div class="scroll-hint"></div></div></section>`;
   }
+  // data untuk sampul bertema (sampul.js)
+  const spOn = () => !!(window.SAMPUL && PT && C && C.effects.themedCover !== false && window.SAMPUL.keys.includes(PICT));
+  function spH() {
+    const n = String(C.cover.names || '').split('&').map((x) => x.trim()).filter(Boolean);
+    return { key: PICT, PT, C, esc, reduce, D: sp, rbf, picFlyers, guest: guest || C.cover.defaultGuest, mono: mono2(), names: n.length >= 2 ? `${esc(n[0])}<i>&amp;</i>${esc(n[1])}` : esc(C.cover.names) };
+  }
   function picCover(c) {
+    if (spOn()) return window.SAMPUL.cover(spH());
     const o = c.cover, t = PT, [bx, by, bx2, by2, br] = t.btn;
     return `<div class="cover pic" id="cover"><div class="pbox ui">
       <div class="pc-names" style="top:${py(t.namesY)}%;--tc:${t.text};--tg:${t.glowText}">${esc(o.names)}</div>
@@ -511,6 +518,7 @@
         glRaf = requestAnimationFrame(tick);
         if (!cv.isConnected) { cancelAnimationFrame(glRaf); return; }
         if (!vis || document.hidden) return;
+        const sc = document.getElementById('cover'); if (sc && sc.classList.contains('sp') && !sc.classList.contains('sp-gone')) return; // sampul menutupi layar: hemat GPU supaya animasi sampul mulus
         const film = hero.classList.contains('filming');
         if (!film && t - last < 14) return;
         last = t;
@@ -707,9 +715,9 @@
   };
 
   // ---- KLASIK: gunungan wayang dikibaskan, lampu blencong menyala terang, kamera masuk ke pendapa joglo ----
-  ENTRY.kelir = (X) => {
+  ENTRY.kelir = (X, fromCover) => {
     const { stage, D } = X, ent = X.ent(), [lx, ly] = PT.focus;
-    if (JFX()) gunOpen(D * 0.8);
+    if (JFX() && !fromCover) gunOpen(D * 0.8);
     const lamp = X.mk('plamp', '<i></i>', ent); lamp.style.cssText = X.at(lx, ly);
     X.an(lamp, [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.3)' }, { opacity: 0, offset: 0.25, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.5)', offset: 0.7 }, { opacity: 0.0, transform: 'translate(-50%,-50%) scale(2.6)' }], { duration: 3400 * D, delay: 200 * D, easing: 'ease-in-out' });
     X.later(() => lamp.remove(), 3800 * D);
@@ -727,10 +735,17 @@
       picFlyers($('.pfx', stage), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8));
     };
     if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
-    const D = sp;
-    cover.classList.add('opening'); hero.classList.add('filming');
+    const D = sp, SPL = spOn() && cover && cover.classList.contains('sp');
+    if (!SPL) cover.classList.add('opening');
+    hero.classList.add('filming');
     const skip = $('.pskip', stage); skip.hidden = false;
-    const X = entryCtx(stage, D), E = (ENTRY[PT.entry] && ENTRY[PT.entry](X)) || {}, cd = E.camDelay || 0;
+    const X = entryCtx(stage, D);
+    let E;
+    if (SPL) { // sampul bertema membuka dirinya sendiri, lalu (bila ada) lanjut efek masuk di dalam dunia
+      E = window.SAMPUL.open(cover, X, spH()) || {};
+      if (E.after && ENTRY[E.after]) later(() => { if (!X.dead) ENTRY[E.after](X, true); }, E.camDelay || 0);
+    } else E = (ENTRY[PT.entry] && ENTRY[PT.entry](X)) || {};
+    const cd = E.camDelay || 0;
     // susun keyframe kamera dari daftar shot
     const kf = [{ transform: 'translate(0px,0px) scale(1)', offset: 0 }], marks = [];
     let t = 0;
@@ -748,7 +763,7 @@
     });
     const anim = cam.animate(kf, { duration: total, delay: cd, fill: 'both' });
     $$('.pcv', stage).forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: (E.titleFade ? 300 : 1100) * D, delay: (E.titleFade ? 100 : 250) * D, easing: 'ease-in-out', fill: 'forwards' }));
-    later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
+    if (!SPL) later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
     if (PT.carriage) later(() => picCarriage(stage), cd);
     later(() => { if (!X.dead) picBirds(stage); }, cd);
     const T = (ms) => ms * D, pbox = $('.pbox', stage), mk = (cls, html, parent) => X.mk(cls, html, parent);
@@ -1062,6 +1077,12 @@
     if (!opened || q.has('cover')) {
       $('#coverRoot').innerHTML = coverHtml(cfg);
       $('#openBtn').addEventListener('click', () => openInvitation(false), { signal: AC.signal });
+      if (spOn()) {
+        const cv = $('#cover');
+        $$('.sp-go', cv).forEach((b) => b.addEventListener('click', () => openInvitation(false), { signal: AC.signal }));
+        $('#openBtn').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvitation(false); } }, { signal: AC.signal });
+        window.SAMPUL.idle(cv, spH());
+      }
       if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else setupButterflies($('#cover .flyers'));
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
     }

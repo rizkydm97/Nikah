@@ -1,0 +1,68 @@
+/* ===== Dunia Hidup Tema 3-8 (living.js) ===== */
+.lv-cv{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:18;pointer-events:none}
+.lv-light,.lv-cr{position:fixed;top:0;bottom:0;left:50%;width:min(100vw,var(--col));transform:translateX(-50%);pointer-events:none;overflow:hidden}
+.lv-light{z-index:17;opacity:0;transition:opacity .5s linear}
+.lv-cr{z-index:18}
+.lv-light>*,.lv-cr>*{position:absolute}
+.lv-cr>*{left:0;top:0;will-change:transform}
+/* menggantikan lapisan lama yang serupa supaya tidak terlalu ramai */
+.lv-on .imm-fg,.lv-on .sx-bloom .ff{display:none}
+
+/* sinar cahaya (pink/sun/gold) */
+.lv-light .ray{left:-30%;top:-40%;width:70%;height:160%;transform-origin:50% 0;background:linear-gradient(90deg,transparent,rgba(255,240,215,.22) 45%,rgba(255,240,215,.3) 50%,rgba(255,240,215,.22) 55%,transparent);filter:blur(10px);mix-blend-mode:screen;animation:lvray 16s ease-in-out infinite}
+.lv-light .ray.b{left:10%;width:40%;animation-duration:21s;animation-delay:-7s;opacity:.7}
+.lv-light .ray.c{left:40%;width:30%;animation-duration:25s;animation-delay:-12s;opacity:.6}
+@keyframes lvray{0%,100%{transform:rotate(-28deg);opacity:.35}50%{transform:rotate(-16deg);opacity:1}}
+.lv-pink .ray{background:linear-gradient(90deg,transparent,rgba(255,214,234,.2) 45%,rgba(255,246,236,.3) 50%,rgba(255,214,234,.2) 55%,transparent)}
+.lv-pink .bloom{left:-20%;top:-20%;width:90%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,236,246,.35),transparent 65%);mix-blend-mode:screen;animation:pglow 8s ease-in-out infinite}
+.lv-sun .ray{left:auto;right:-30%;animation-name:lvray2}
+.lv-sun .ray.b{right:15%}
+@keyframes lvray2{0%,100%{transform:rotate(26deg);opacity:.35}50%{transform:rotate(15deg);opacity:1}}
+/* bercak cahaya menembus dedaunan (komorebi) */
+.lv-light .dap{inset:-20%;background:radial-gradient(circle at 20% 30%,rgba(255,244,210,.22) 0 4%,transparent 9%),radial-gradient(circle at 70% 20%,rgba(255,244,210,.18) 0 3%,transparent 7%),radial-gradient(circle at 45% 65%,rgba(255,244,210,.2) 0 5%,transparent 10%),radial-gradient(circle at 85% 70%,rgba(255,244,210,.16) 0 3%,transparent 8%),radial-gradient(circle at 15% 85%,rgba(255,244,210,.18) 0 4%,transparent 9%);mix-blend-mode:screen;filter:blur(6px);animation:lvdap 14s ease-in-out infinite alternate}
+.lv-light .dap.b{animation-duration:19s;animation-direction:alternate-reverse;transform:scale(1.3) rotate(40deg)}
+@keyframes lvdap{from{transform:translate3d(-4%,-2%,0) scale(1)}to{transform:translate3d(5%,3%,0) scale(1.08)}}
+.lv-gold .ray{background:linear-gradient(90deg,transparent,rgba(255,214,130,.22) 45%,rgba(255,232,170,.32) 50%,rgba(255,214,130,.22) 55%,transparent)}
+.lv-gold::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,170,80,.1),transparent 40%,rgba(120,50,20,.08));mix-blend-mode:soft-light}
+.lv-light .orb{width:70px;aspect-ratio:1;border-radius:50%;border:1px solid rgba(255,226,160,.25);background:radial-gradient(circle,rgba(255,226,160,.12),rgba(255,226,160,.04) 60%,transparent 70%);mix-blend-mode:screen;animation:lvorb 18s ease-in-out infinite}
+.lv-light .orb{left:60%;top:25%}.lv-light .orb.b{left:20%;top:55%;width:44px;animation-delay:-6s}.lv-light .orb.c{left:72%;top:72%;width:100px;animation-delay:-11s}
+@keyframes lvorb{0%,100%{transform:translate3d(0,0,0);opacity:.3}50%{transform:translate3d(-30px,-40px,0);opacity:1}}
+/* pantulan air bergoyang (Biru) */
+.lv-light .caus{inset:-30%;background:url(/assets/t/fx/ripple.webp) 0 0/60% 22% repeat;mix-blend-mode:screen;opacity:.1;filter:blur(1.2px);animation:lvcaus 26s linear infinite}
+.lv-light .caus.b{opacity:.07;animation-duration:38s;animation-direction:reverse;transform:rotate(12deg) scale(1.3)}
+@keyframes lvcaus{from{background-position:0 0}to{background-position:60cqw 44cqh}}
+.lv-water{container-type:size}
+.lv-light .beam{left:30%;top:-10%;width:40%;height:120%;background:linear-gradient(90deg,transparent,rgba(200,225,255,.12) 50%,transparent);filter:blur(12px);mix-blend-mode:screen;transform:rotate(14deg);animation:lvbeam 12s ease-in-out infinite}
+.lv-light .beam.b{left:55%;width:22%;animation-delay:-5s;opacity:.7}
+@keyframes lvbeam{0%,100%{opacity:.4}50%{opacity:1}}
+/* cahaya bulan & kabut (Rimba) */
+.lv-moon .beam{left:auto;right:-10%;transform:rotate(24deg);background:linear-gradient(90deg,transparent,rgba(220,232,255,.14) 50%,transparent)}
+.lv-moon .beam.b{right:22%}
+.lv-light .mist{left:-30%;width:160%;bottom:-6%;height:auto;opacity:.22;animation:spmist 22s ease-in-out infinite alternate}
+.lv-light .mist.b{bottom:30%;opacity:.12;animation-duration:30s;animation-direction:alternate-reverse}
+/* api blencong berkedip (Klasik) */
+.lv-light .warm{left:-30%;right:-30%;top:-30%;height:90%;border-radius:50%;background:radial-gradient(ellipse at 50% 30%,rgba(255,190,100,.24),rgba(255,150,60,.08) 45%,transparent 70%);mix-blend-mode:screen;animation:lvflick 3.1s linear infinite}
+.lv-light .vig{inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(30,10,0,.32));animation:lvflick 4.3s linear infinite reverse}
+@keyframes lvflick{0%{opacity:.8}7%{opacity:.62}13%{opacity:.9}22%{opacity:.7}31%{opacity:1}38%{opacity:.75}49%{opacity:.88}57%{opacity:.66}66%{opacity:.95}74%{opacity:.72}83%{opacity:.9}91%{opacity:.68}100%{opacity:.8}}
+
+/* makhluk lewat */
+.lv-dove{width:54px;aspect-ratio:237/200}
+.lv-dove img{position:absolute;left:0;top:0;width:100%;height:auto;filter:drop-shadow(0 4px 6px rgba(120,60,90,.25))}
+.lv-dove img:nth-child(1){animation:lvdv1 .56s steps(1) infinite}
+.lv-dove img:nth-child(2){animation:lvdv2 .56s steps(1) infinite}
+@keyframes lvdv1{0%{opacity:1}50%{opacity:0}}
+@keyframes lvdv2{0%{opacity:0}50%{opacity:1}}
+.lv-bird{width:40px}
+.lv-bird img{display:block;width:100%;height:auto;animation:pglide 1.4s ease-in-out infinite alternate;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
+.lv-sil{width:22px}
+.lv-sil svg{display:block;width:100%;fill:rgba(50,20,4,.72);transform-origin:50% 60%;animation:wing .45s ease-in-out infinite alternate}
+.lv-way{height:auto;filter:brightness(0) blur(2px);opacity:0}
+.lv-bf{position:absolute}
+.lv-rimba .lv-bf,.lv-biru .lv-bf{filter:drop-shadow(0 0 6px rgba(170,215,255,.85))}
+/* kupu-kupu hinggap */
+.lv-perch{z-index:15;pointer-events:auto;cursor:pointer}
+.lv-perch.rest .rb-in i{animation-duration:1.5s!important;animation-timing-function:ease-in-out}
+.lv-perch.rest .rb-in i.l{animation-name:lvrestL}.lv-perch.rest .rb-in i.r{animation-name:lvrestR}
+@keyframes lvrestL{0%,70%{transform:rotateY(10deg)}100%{transform:rotateY(62deg)}}
+@keyframes lvrestR{0%,70%{transform:rotateY(-10deg)}100%{transform:rotateY(-62deg)}}
+@media (prefers-reduced-motion:reduce){.lv-cv,.lv-light,.lv-cr,.lv-perch{display:none}}

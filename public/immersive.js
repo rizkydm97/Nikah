@@ -18,7 +18,7 @@
   let key = null, T = null, hero = null, inited = false;
 
   // ---------- suara ----------
-  let ac = null, master = null, snd = null, on = true, timers = [];
+  let ac = null, master = null, snd = null, on = true, timers = [], windBed = null, fxOut = null;
   const rnd = (a, b) => a + Math.random() * (b - a);
   function noiseBuf() { const b = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; }
   function bed(type, f, q, g, lfoHz, lfoDepth) {
@@ -27,9 +27,11 @@
     const gn = ac.createGain(); gn.gain.value = g;
     const lf = ac.createOscillator(), lg = ac.createGain(); lf.frequency.value = lfoHz; lg.gain.value = g * lfoDepth; lf.connect(lg); lg.connect(gn.gain); lf.start();
     s.connect(fl); fl.connect(gn); gn.connect(master); s.start();
+    return { gn, fl, g, f };
   }
   function tone(f, t0, dur, g, type, partials) {
     partials.forEach(([r, a]) => {
+      if (f * r > 15000) return;
       const o = ac.createOscillator(), e = ac.createGain(); o.type = type; o.frequency.value = f * r;
       e.gain.setValueAtTime(0.0001, t0); e.gain.exponentialRampToValueAtTime(g * a, t0 + 0.008); e.gain.exponentialRampToValueAtTime(0.0001, t0 + dur / (r > 2 ? 1.6 : 1));
       o.connect(e); e.connect(master); o.start(t0); o.stop(t0 + dur + 0.1);
@@ -44,7 +46,8 @@
     try { ac = new AC(); } catch (e) { return; }
     snd = T.snd; master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
     master.gain.linearRampToValueAtTime(0.9 * VOLK(), ac.currentTime + 3);
-    if (snd.wind) bed('lowpass', snd.wind, .6, .05, .13, .7);
+    if (snd.wind) windBed = bed('lowpass', snd.wind, .6, .05, .13, .7);
+    else windBed = bed('lowpass', 380, .6, .012, .1, .5);
     if (snd.water) { bed('bandpass', snd.water, .5, .07, .2, .35); bed('highpass', 3500, .4, .012, .31, .6); }
     if (snd.bell) loop(() => note(snd.bell), snd.bell.gap[0], snd.bell.gap[1]);
     if (snd.bird) loop(() => { let t = ac.currentTime; for (let i = 0; i < 3; i++) { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.setValueAtTime(rnd(2600, 3600), t); o.frequency.exponentialRampToValueAtTime(rnd(3600, 4600), t + .09); e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(.025, t + .02); e.gain.exponentialRampToValueAtTime(.0001, t + .11); o.connect(e); e.connect(master); o.start(t); o.stop(t + .13); t += .15; } }, 5, 11);
@@ -59,6 +62,31 @@
     if (!ac) return; master.gain.cancelScheduledValues(ac.currentTime); master.gain.linearRampToValueAtTime(on ? 0.9 * VOLK() : 0, ac.currentTime + .5);
     if (on) ac.resume();
   }
+  // hembusan angin dari living.js: suara angin membesar lalu reda
+  addEventListener('living-gust', () => {
+    if (!ac || !on || !windBed || document.hidden) return; const t = ac.currentTime, g = windBed.gn.gain, f = windBed.fl.frequency;
+    g.cancelScheduledValues(t); g.setValueAtTime(windBed.g, t); g.linearRampToValueAtTime(windBed.g * 3.2, t + 1.3); g.linearRampToValueAtTime(windBed.g * 3, t + 2.8); g.linearRampToValueAtTime(windBed.g, t + 5.2);
+    f.cancelScheduledValues(t); f.setValueAtTime(windBed.f, t); f.linearRampToValueAtTime(windBed.f * 1.8, t + 1.4); f.linearRampToValueAtTime(windBed.f, t + 5.2);
+  });
+  // efek suara saat sampul dibuka (segel pecah, pintu terbuka, menyelam, gong, dll.)
+  function out() { if (!fxOut) { fxOut = ac.createGain(); fxOut.gain.value = 0.9 * VOLK(); fxOut.connect(ac.destination); } return fxOut; }
+  function blip(f0, f1, t, dur, g, type) { const o = ac.createOscillator(), e = ac.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur); e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(g, t + .01); e.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(e); e.connect(out()); o.start(t); o.stop(t + dur + .05); }
+  function whoosh(t, dur, f0, f1, g) { const s = ac.createBufferSource(); s.buffer = noiseBuf(); const fl = ac.createBiquadFilter(); fl.type = 'bandpass'; fl.Q.value = .8; fl.frequency.setValueAtTime(f0, t); fl.frequency.exponentialRampToValueAtTime(f1, t + dur); const e = ac.createGain(); e.gain.setValueAtTime(.0001, t); e.gain.linearRampToValueAtTime(g, t + dur * .35); e.gain.exponentialRampToValueAtTime(.0001, t + dur); s.connect(fl); fl.connect(e); e.connect(out()); s.start(t); s.stop(t + dur + .05); }
+  function bellAt(f, t, g, k) { const parts = k === 'gam' ? GAM : BELL; parts.forEach(([r, a]) => { if (f * r > 15000) return; const o = ac.createOscillator(), e = ac.createGain(); o.type = k === 'gam' ? 'triangle' : 'sine'; o.frequency.value = f * r; e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(g * a, t + .008); e.gain.exponentialRampToValueAtTime(.0001, t + (k === 'gam' ? 1.8 : 2.6) / (r > 2 ? 1.6 : 1)); o.connect(e); e.connect(out()); o.start(t); o.stop(t + 2.8); }); }
+  function gongAt(t, g) { [[1, 1], [1.5, .5], [2.01, .35], [2.8, .2]].forEach(([r, a]) => { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.value = 68 * r; e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(g * a, t + .02); e.gain.exponentialRampToValueAtTime(.0001, t + 6); o.connect(e); e.connect(out()); o.start(t); o.stop(t + 6.1); }); }
+  addEventListener('sampul', (ev) => {
+    if (!E('ambientSound') || !on) return;
+    if (!ac) startSound(); if (!ac) return; if (ac.state === 'suspended') ac.resume();
+    const { phase } = ev.detail || {}, t = ac.currentTime + .02, k = key;
+    const sc = (snd && snd.bell) || { sc: [0, 4, 7, 11], base: 660, k: 'bell' }, nf = (i, o) => sc.base * Math.pow(2, sc.sc[i % sc.sc.length] / 12) * (o || 1);
+    if (phase === 'open') whoosh(t, .6, 600, 2400, .05);
+    if (phase === 'crack') { whoosh(t, .25, 3000, 6000, .06); for (let i = 0; i < 5; i++) bellAt(nf(i, i > 3 ? 4 : 2), t + i * .085, .05, sc.k); }
+    if (phase === 'swing') { blip(140, 90, t, .9, .05, 'sawtooth'); gongAt(t + .1, .12); whoosh(t + .2, 1.6, 300, 1400, .07); }
+    if (phase === 'lid') { whoosh(t, 1.2, 400, 2600, .06); gongAt(t + .15, .1); for (let i = 0; i < 6; i++) bellAt(nf(i, 2), t + .4 + i * .12, .035, sc.k); }
+    if (phase === 'dive') { whoosh(t, 1.4, 1800, 300, .1); for (let i = 0; i < 12; i++) blip(rnd(300, 600), rnd(900, 1600), t + .3 + i * rnd(.07, .14), .08, .04); }
+    if (phase === 'fly') for (let i = 0; i < 8; i++) bellAt(nf(i, i > 4 ? 4 : 2), t + i * .11, .035, 'bell');
+    if (phase === 'gong') { gongAt(t, .22); [0, .18, .3].forEach((d) => whoosh(t + .9 + d, .09, 5000, 7000, .07)); }
+  });
   const chime = () => { if (ac && on) note({ ...(snd.bell || { sc: [0, 4, 7], base: 660, k: 'bell' }), g: .07 }, 2); };
 
   // ---------- sentuhan interaktif ----------

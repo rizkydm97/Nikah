@@ -52,6 +52,12 @@ const SCHEMA = [
     { k: 'effects.javaFx', l: 'Nuansa Jawa hidup (Tema 1): gunungan wayang saat membuka, burung terbang, kunang-kunang, sinar matahari, motif batik kawung berkilau', t: 'bool' },
     { k: 'effects.zoomFx', l: 'Kupu-kupu beterbangan & daun gugur saat kamera menuju rumah', t: 'bool' },
   ] },
+  { id: 'livingfx', title: 'Sampul & Dunia Hidup (Tema 3-8)', fields: [
+    { k: 'effects.themedCover', l: 'Tema 3-8: tampilan awal berupa benda bertema yang diketuk tamu (Princess: amplop bersegel, Bali: pintu kori agung, Jawa Emas: kotak berpita & ronce melati, Biru: kerang mutiara, Rimba: lentera kupu-kupu cahaya, Klasik: kelir wayang & gunungan). Matikan untuk kembali ke cover lukisan + tombol', t: 'bool' },
+    { k: 'effects.livingWorld', l: 'Tema 3-8: dunia hidup di bagian dalam — kelopak/daun/kunang-kunang/bara tertiup angin, ikut bergeser saat scroll & menyingkir saat disentuh, cahaya khas tema, makhluk lewat sesekali, letupan kecil saat judul muncul', t: 'bool' },
+    { k: 'effects.livingDensity', l: 'Tema 3-8: kepadatan partikel dunia hidup', t: 'select', o: [['low', 'Sedikit (HP lama)'], ['normal', 'Sedang'], ['high', 'Banyak']] },
+    { k: 'effects.perchButterfly', l: 'Tema 3-8: kupu-kupu sesekali hinggap di tepi kartu lalu terbang lagi (ketuk untuk menerbangkannya)', t: 'bool' },
+  ] },
   { id: 'scrollfx', title: 'Efek Scroll (Tema 3-8)', fields: [
     { k: 'effects.scrollFx', l: 'SAKLAR UTAMA efek scroll (matikan untuk menonaktifkan semua efek scroll di bawah sekaligus)', t: 'bool' },
     { k: 'effects.scrollReveal', l: 'Tema 3-8: judul muncul kata per kata saat scroll (gaya mengikuti tema)', t: 'bool' },

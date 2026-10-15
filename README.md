@@ -96,3 +96,15 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - **Air hidup lewat shader**: air terjun mengalir, kilau air, kabut tipis di langit (parallax 3D dibuat lebih halus, tanpa sensor gerak agar gambar tidak penyok); percikan di dasar air terjun.
 - **Momen puncak tiap tema** sebelum nama muncul: kelopak mawar meledak (Princess), sapuan cahaya (Bali), senja jatuh (Emas), bintang jatuh + riak (Biru), kunang-kunang berkumpul ke bulan (Rimba), api blencong (Klasik). Kereta kencana Princess kini dibawa awan dengan jejak kilau.
 - Semua bisa dimatikan di Admin → *Efek Scroll (Tema 3-8)* dan *Suara & Sentuhan (Tema 3-8)*.
+
+## v35 — Sampul bertema & Dunia Hidup (Tema 3-8)
+- **Tampilan awal = benda bertema yang diketuk tamu** (`public/sampul.js/.css`), menggantikan cover lukisan + tombol:
+  - Princess: amplop merah muda bersegel lilin emas → segel terbelah, tutup terbuka, kartu naik, kita masuk ke dalam kartu.
+  - Nusantara (Bali): gapura kori agung (bata merah, paras berukir, pintu merah ber-prada, payung tedung, asap dupa) → medali terbelah, pintu terbuka, cahaya pagi, kamera melangkah masuk.
+  - Jawa Emas: kotak undangan bermotif batik emas berpita + ronce melati + label nama tamu → pita lepas, tutup terangkat, cahaya emas, masuk ke kartu.
+  - Biru: kerang mutiara di permukaan air bulan → kerang terbuka, mutiara bersinar, riak air, menyelam lalu muncul di air terjun.
+  - Rimba Bulan: lentera kaca berisi kupu-kupu cahaya & kunang-kunang → tutup lepas, kunang-kunang berhamburan, kupu-kupu terbang dan memandu kamera.
+  - Jawa Klasik: kelir wayang + blencong menyala + gunungan di gedebog → gunungan dicabut & dimainkan seperti dalang, api membesar, masuk ke pendapa.
+  - Tiap benda punya suara pembuka sendiri (segel/lonceng, gong, gelembung, dll). Admin → *Sampul & Dunia Hidup* → matikan "tampilan awal berupa benda bertema" untuk kembali ke cover lama.
+- **Dunia hidup di bagian dalam** (`public/living.js/.css`): kelopak/bunga/daun, kunang-kunang, debu emas, bara, gelembung & kilau per tema dengan kedalaman berlapis; angin berhembus berkala (suara angin ikut membesar); partikel ikut bergeser saat scroll & menyingkir saat disentuh; cahaya khas tema (sinar matahari, bercak cahaya dedaunan, pantulan air, cahaya bulan & kabut, kedip api blencong); makhluk lewat (merpati, burung, kawanan burung senja, kupu-kupu, bayang gunungan, bintang jatuh); kupu-kupu hinggap di tepi kartu; letupan kecil saat judul tiap bagian muncul. Pengaturan: nyala/mati, kepadatan, kupu-kupu hinggap.
+- WebGL lukisan dijeda selama sampul tampil supaya animasi pembuka tetap mulus di HP.

@@ -58,7 +58,11 @@
     "wishFloat": true,
     "countdownFlip": true,
     "soundVolume": "normal",
-    "scrollFx": true
+    "scrollFx": true,
+    "themedCover": true,
+    "livingWorld": true,
+    "livingDensity": "normal",
+    "perchButterfly": true
   },
   "scene": {
     "sky": "/assets/scene/sky-v2.jpg",
