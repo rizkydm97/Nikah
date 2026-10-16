@@ -18,6 +18,7 @@
     rimba: 'Ketuk lentera untuk melepas cahaya',
     klasik: 'Ketuk gunungan untuk memulai',
     dayak: 'Ketuk tameng untuk membuka undangan',
+    airterjun: '', istana: '',
   };
 
   // ---------- partikel CSS untuk suasana sampul ----------
@@ -185,7 +186,23 @@
     dayak: () => { const D = window.DAYAK; return `<i class="sp-sun"></i>${rays(8)}<img class="sp-mist a" src="${T}fx/mist.webp" alt="">${D ? `<div class="sp-bgt l">${D.batangGaring()}</div><div class="sp-bgt r">${D.batangGaring()}</div><div class="sp-hbf a">${D.hornbill()}</div><div class="sp-hbf b">${D.hornbill()}</div><div class="sp-hbf c">${D.hornbill()}</div>` : ''}${fallers(9, ['feather', 'leafj', 'orchid'], 22)}${rise(16, '255,226,150', 3)}`; },
   };
 
+  // ---------- Tema 10 & 11: kartu sampul penuh (seperti video) yang naik ke atas saat dibuka ----------
+  function fullCover(H) {
+    const k = H.key, o = H.C.cover, G = window.PANGGUNG || {};
+    const ph = H.photo ? `<img src="${H.esc(H.photo)}" alt="" style="object-position:50% 30%">` : '';
+    const deco = k === 'airterjun'
+      ? `<img class="spf-sky" src="${T}airterjun/milky.webp" alt="">${G.foliage ? `<div class="spf-c tl">${G.foliage(0)}</div><div class="spf-c tr">${G.foliage(1)}</div>` : ''}${G.flowerBed ? `<div class="spf-c bl">${G.flowerBed(0, 3)}</div><div class="spf-c br">${G.flowerBed(1, 11)}</div>` : ''}`
+      : `<img class="spf-sky" src="${T}istana/sky.webp" alt="">${G.puff ? `<div class="spf-c pl">${G.puff(['#ffe0d4', '#ffb4a8', '#f0848c'], 0)}</div><div class="spf-c pr">${G.puff(['#ffe0d4', '#ffb4a8', '#f0848c'], 1)}</div>` : ''}${G.roseBush ? `<div class="spf-c bl">${G.roseBush(0, 1)}</div><div class="spf-c br">${G.roseBush(1, 3)}</div>` : ''}`;
+    return `<div class="cover pic sp spf spf-${k}" id="cover"><div class="spf-card">${deco}<i class="spf-edge"></i>
+      <div class="spf-in">${ph ? `<div class="spf-arch"><div class="spf-ph">${ph}</div></div>` : ''}
+        <div class="spf-k">${H.esc(o.kicker)}</div><div class="spf-n">${H.names}</div>
+        <div class="spf-to"><span>${H.esc(o.toLabel)}</span><b>${H.esc(H.guest)}</b></div>
+        <button class="spf-btn" id="openBtn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>${H.esc(o.button)}</button></div>
+      </div><div class="flyers"></div><div class="sp-fx"></div></div>`;
+  }
+  const FULL = { airterjun: 1, istana: 1 };
   function cover(H) {
+    if (FULL[H.key]) return fullCover(H);
     const k = H.key, o = H.C.cover;
     const names = H.names;
     const amb = H.reduce ? '' : AMB[k]();
@@ -256,7 +273,7 @@
       later(() => { // segel lilin terbelah dua dan jatuh
         sfx(k, 'crack'); sparks(22, sr.cx, sr.cy, '255,226,150', 110); toss(['rose1', 'rose2'], 6, sr.cx, sr.cy, 22, 160);
         ['l', 'r'].forEach((s, i) => { const h = seal.cloneNode(true); h.classList.add('half', s); $$('.sp-ping', h).forEach((p) => p.remove()); h.style.left = sr.cx + 'px'; h.style.top = sr.cy + 'px'; fx.appendChild(h);
-          an(h, [{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${i ? 46 : -46}px),calc(-50% + 150px)) rotate(${i ? 70 : -70}deg)`, opacity: 0 }], { duration: 1100, easing: 'cubic-bezier(.3,.1,.7,1)' }); });
+          an(h, [{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${i ? 46 : -46}px),calc(-50% + 150px)) rotate(${i ? 70 : -70}deg)`, opacity: 0 }], { duration: 750, easing: 'cubic-bezier(.3,.1,.7,1)' }); });
         seal.style.visibility = 'hidden';
       }, 360);
       fadeUI(600);
@@ -409,6 +426,13 @@
       hand(3650, 450);
       ret = { camDelay: 3600 * D, after: 'kelir' };
     }
+    if (FULL[k]) { // kartu naik ke atas, adegan di bawahnya terlihat (seperti video)
+      const card = $('.spf-card', cv);
+      sfx(k, 'swing');
+      an(card, [{ transform: 'translateY(0)' }, { transform: 'translateY(-104%)' }], { duration: 1500, delay: 150, easing: 'cubic-bezier(.6,0,.25,1)' });
+      hand(1650, 200);
+      return { camDelay: 1000 * D };
+    }
     if (k === 'dayak') {
       const ds = $('.ds', cv), rot = $('.ds-rot', cv), hl = $('.ds-h.l', cv), hr = $('.ds-h.r', cv), plq = $('.ds-plq', cv), aura = $('.ds-aura', cv), seam = $('.ds-seam', cv), light = $('.ds-light', cv);
       sfx(k, 'gong'); cv.classList.add('ds-wake');
@@ -446,5 +470,5 @@
     return ret;
   }
 
-  window.SAMPUL = { cover, idle, open, keys: Object.keys(OBJ) };
+  window.SAMPUL = { cover, idle, open, keys: Object.keys(OBJ).concat(Object.keys(FULL)) };
 })();

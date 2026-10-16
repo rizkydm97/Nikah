@@ -1,0 +1,120 @@
+/* ===== Tema 10 & 11: dunia vektor berlapis (panggung.js) ===== */
+.pg-w{position:absolute;inset:0;overflow:hidden;background:#060c2a;container-type:inline-size}
+.pg-w.is{background:#1a0a22}
+.pg-l{position:absolute;inset:0;pointer-events:none}
+.pg-l>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pg-o{position:absolute}
+.pg-o>svg{display:block;width:100%;height:auto;overflow:visible}
+.pg-st{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#fff;box-shadow:0 0 calc(var(--s)*3) rgba(200,225,255,.9);animation:spstar ease-in-out infinite}
+/* transisi masuk umum */
+.pg-w.bld .pg-l:not(.on):not(.fly):not(.props){opacity:0}
+.pg-w .pg-l{transition:opacity 1.6s ease,transform 2.6s cubic-bezier(.22,.8,.24,1)}
+.pg-w.bld .pg-l.fol:not(.on){transform:translateY(-30%)}
+.pg-w.bld .pg-l.bed:not(.on){transform:translateY(18%)}
+.pg-w.bld .pg-l.bed:not(.on) .pg-fl{transform:scale(0)}
+.pg-fl{transition:transform 1.8s cubic-bezier(.3,1.35,.5,1) var(--d,0s);transform-box:fill-box}
+.pg-l.fol .pg-fol{animation:pgSway 7s ease-in-out infinite;transform-origin:0 0}
+.pg-l.fol .tr .pg-fol{animation-direction:reverse}
+@keyframes pgSway{0%,100%{rotate:-1.2deg}50%{rotate:1.4deg}}
+
+/* ---------- Tema 10: Air Terjun Bulan ---------- */
+.at-milky{position:absolute;left:0;top:0;width:100%;height:auto;opacity:.95;animation:atMilky 60s ease-in-out infinite alternate}
+@keyframes atMilky{to{transform:translate3d(-2%,1%,0) scale(1.04)}}
+.at-moon{position:absolute;aspect-ratio:1;transform:translateY(62%);transition:transform 4.5s cubic-bezier(.25,.75,.25,1)}
+.pg-w.rise .at-moon,.pg-w:not(.bld) .at-moon{transform:none}
+.at-moon .h{position:absolute;left:50%;top:50%;width:240%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(210,228,255,.55),rgba(140,180,255,.18) 30%,transparent 62%);animation:pglow 6s ease-in-out infinite;mix-blend-mode:screen}
+.at-moon .m{position:absolute;inset:0;border-radius:50%;overflow:hidden;box-shadow:0 0 40px 10px rgba(190,215,255,.45)}
+.at-moon .m img{width:100%;height:100%;display:block;filter:brightness(1.55) contrast(1.2) sepia(.3) hue-rotate(190deg) saturate(1.5);animation:cinMoon 360s linear infinite}
+.at-moon .s{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.25),transparent 55%,rgba(0,6,40,.35) 100%);mix-blend-mode:soft-light}
+.at-wf{position:absolute;overflow:visible}
+.at-wf .glow{position:absolute;inset:-6% -110%;background:radial-gradient(ellipse at 50% 55%,rgba(150,225,255,.6),rgba(60,150,255,.28) 40%,transparent 70%);animation:pglow 3s ease-in-out infinite;mix-blend-mode:screen}
+.at-wf .core{position:absolute;inset:0;border-radius:40% 40% 6% 6%/6% 6% 3% 3%;background:linear-gradient(90deg,rgba(80,170,255,.35),#8fe0ff 18%,#e8fbff 45%,#bff0ff 60%,#6fc8ff 84%,rgba(80,170,255,.35));box-shadow:0 0 30px 8px rgba(110,200,255,.7);-webkit-mask-image:linear-gradient(180deg,transparent,#000 4%,#000 88%,transparent);mask-image:linear-gradient(180deg,transparent,#000 4%,#000 88%,transparent)}
+.at-wf .st{position:absolute;inset:0;background:url(/assets/t/fx/streaks.webp) 0 0/100% 40% repeat;mix-blend-mode:screen;opacity:.9;animation:cinWfV .9s linear infinite;-webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+.at-wf .st.b{background-size:70% 26%;opacity:.6;animation-duration:.6s;filter:blur(1px)}
+.at-wf .lip{position:absolute;left:-8%;right:-8%;top:-1%;height:3%;border-radius:50%;background:radial-gradient(ellipse,#fff,rgba(180,235,255,.5) 50%,transparent 72%)}
+.at-mist{position:absolute;border-radius:50%;background:radial-gradient(ellipse,rgba(230,248,255,.9),rgba(150,215,255,.45) 40%,transparent 70%);filter:blur(6px);animation:atMist 3.2s ease-in-out infinite alternate}
+@keyframes atMist{from{transform:scale(.94);opacity:.75}to{transform:scale(1.08);opacity:1}}
+.at-refl{position:absolute;background:linear-gradient(180deg,rgba(170,235,255,.75),rgba(90,180,255,.25) 60%,transparent);filter:blur(5px);-webkit-mask-image:repeating-linear-gradient(180deg,#000 0 5px,rgba(0,0,0,.35) 5px 9px);mask-image:repeating-linear-gradient(180deg,#000 0 5px,rgba(0,0,0,.35) 5px 9px);animation:atRefl 2.4s ease-in-out infinite alternate;mix-blend-mode:screen}
+@keyframes atRefl{from{transform:scaleX(.9) skewX(-2deg)}to{transform:scaleX(1.15) skewX(2deg)}}
+.pg-rip ellipse{transform-box:fill-box;transform-origin:50% 50%;animation:atRip 3.6s ease-out infinite;opacity:0}
+@keyframes atRip{0%{transform:scale(.6);opacity:0}30%{opacity:.6}100%{transform:scale(1.25);opacity:0}}
+/* masuk: menembus gapura batu */
+.pg-w.at .pg-l.portal{transform-origin:50% 46%;transition:transform 2.2s cubic-bezier(.55,0,.35,1),opacity 1.6s ease .5s}
+.pg-w.at.thru .pg-l.portal{transform:scale(3.4);opacity:0}
+.pg-w.at.bld:not(.thru) .pg-l.wf,.pg-w.at.bld:not(.thru) .pg-l.cliffs{transform:scale(.86)}
+.pg-w.at .pg-l.wf,.pg-w.at .pg-l.cliffs,.pg-w.at .pg-l.far,.pg-w.at .pg-l.pool{transform-origin:50% 55%}
+.pg-w.at.bld:not(.thru) .pg-l.far,.pg-w.at.bld:not(.thru) .pg-l.pool{transform:scale(.9)}
+
+/* ---------- Tema 11: Istana Langit ---------- */
+.is-sky{position:absolute;left:-4%;top:-2%;width:108%;height:104%;object-fit:cover;animation:isSky 50s ease-in-out infinite alternate}
+@keyframes isSky{to{transform:translate3d(-2%,1.5%,0) scale(1.05)}}
+.is-moon{position:absolute;aspect-ratio:1}
+.is-moon .h{position:absolute;left:50%;top:50%;width:230%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(220,170,255,.55),rgba(170,100,255,.2) 32%,transparent 64%);animation:pglow 6s ease-in-out infinite;mix-blend-mode:screen}
+.is-moon .m{position:absolute;inset:0;border-radius:50%;overflow:hidden;box-shadow:0 0 34px 8px rgba(200,140,255,.5)}
+.is-moon .m img{width:100%;height:100%;display:block;filter:brightness(1.3) contrast(1.15) sepia(.6) hue-rotate(225deg) saturate(2.4);animation:cinMoon 360s linear infinite}
+.pg-w.is.bld .pg-l.moon:not(.on){transform:translateY(-8%)}
+.pg-w.is.bld .pg-l.dark:not(.on) .dl{transform:translateX(-60%)}.pg-w.is.bld .pg-l.dark:not(.on) .dr{transform:translateX(60%)}
+.pg-l.dark .pg-o{transition:transform 2.6s cubic-bezier(.22,.8,.24,1)}
+.pg-l.dark .is-pf{animation:isPuff 9s ease-in-out infinite alternate}
+.pg-l.pink .is-pf{animation:isPuff 7s ease-in-out infinite alternate;filter:drop-shadow(0 6px 10px rgba(120,20,40,.25))}
+@keyframes isPuff{from{translate:0 0;scale:1}to{translate:2% -2%;scale:1.04}}
+.pg-w.is.bld .pg-l.pink:not(.on){transform:scale(.4);opacity:0}
+.pg-l.pink{transform-origin:50% 64%}
+.pg-w.is.bld .pg-l.gzl:not(.on){transform:translateY(46%) scale(.7);opacity:0}
+.pg-l.gzl{transform-origin:50% 100%;transition:transform 3.4s cubic-bezier(.22,.8,.24,1),opacity 1.6s ease}
+.pg-w.is .pg-l.waves{transition:transform 3s cubic-bezier(.5,0,.4,1),opacity 2.6s ease}
+.pg-w.is.sink .pg-l.waves,.pg-w.is:not(.bld) .pg-l.waves{transform:translateY(30%);opacity:0}
+.pg-w.is.bld .pg-l.pillars:not(.on) .pg-o{transform:translateY(-12%);opacity:0}
+.pg-l.pillars .pg-o{transition:transform 2.6s cubic-bezier(.22,.8,.24,1),opacity 1.8s ease}
+.pg-l.pillars .p3,.pg-l.pillars .p4{transition-delay:.4s;filter:brightness(.85)}
+.is-pl,.is-st{display:block;width:100%;height:100%}
+.pg-l.pillars .pg-o>svg{height:100%}
+.is-gz{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 20px rgba(60,10,60,.35))}
+.pg-o.gz::after{content:"";position:absolute;left:30%;right:30%;top:48%;bottom:12%;background:radial-gradient(ellipse,rgba(255,140,250,.55),transparent 70%);animation:pglow 4s ease-in-out infinite;mix-blend-mode:screen}
+.pg-o.st>svg{height:100%}
+.pg-l.props{z-index:3}
+.is-cur{position:absolute;top:0;bottom:0;width:min(36cqw,26%);transition:transform 2.8s cubic-bezier(.25,.8,.25,1);filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
+.is-cur svg{display:block;width:100%;height:100%}
+.is-cur.l{left:0;transform:translateX(-105%)}.is-cur.r{right:0;transform:translateX(105%) scaleX(-1)}
+.pg-l.props.cur .is-cur.l{transform:none}.pg-l.props.cur .is-cur.r{transform:scaleX(-1)}
+.is-ch{position:absolute;left:50%;top:0;width:min(30cqw,24%);transform:translate(-50%,-110%);transition:transform 3s cubic-bezier(.3,1.25,.5,1)}
+.is-ch svg{display:block;width:100%;height:auto}
+.pg-l.props.ch .is-ch{transform:translate(-50%,0)}
+.pg-l.props.ch .cp-sw{animation:cpSwing 5s ease-in-out 3s infinite;transform-origin:50% 0}
+.pg-l.props.cur .is-cur svg{animation:cpSway 7s ease-in-out 2.8s infinite;transform-origin:0 0}
+.pg-bf{position:absolute;left:0;top:0;width:9cqw;height:9cqw}
+.pg-w.at .pg-bf{filter:drop-shadow(0 0 6px rgba(150,200,255,.8))}
+@media (pointer:coarse){.is-sky,.at-milky{animation:none}.pg-o.gz::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.pg-w *{animation:none!important;transition:none!important}}
+
+/* v42: gambar raster lapisan & susunan ala video */
+.pg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;max-width:none}
+.pg-w.at .pg-l.sky .pg-img{object-fit:cover}
+.is-cl{display:block;width:100%;height:auto;max-width:none}
+.pg-l.waves .pg-o{animation:isWave 10s ease-in-out infinite alternate}.pg-l.waves .wv2{animation-duration:13s}
+@keyframes isWave{from{translate:-2% 0}to{translate:2% -1%}}
+.pg-l.dark .is-cl,.pg-l.pink .is-cl{animation:isPuff 11s ease-in-out infinite alternate}
+.pg-l.pink .is-cl{filter:drop-shadow(0 8px 14px rgba(120,20,40,.3))}
+/* gazebo mulai kecil di bawah lalu naik & membesar seperti kamera mendekat */
+.pg-w.is.bld .pg-l.gzl:not(.on){transform:translateY(70%) scale(.45);opacity:0}
+.pg-l.gzl{transition:transform 3.2s cubic-bezier(.3,.6,.2,1),opacity 1.2s ease}
+.pg-w.is.bld .pg-l.pillars:not(.on) .p1,.pg-w.is.bld .pg-l.pillars:not(.on) .p3{transform:translateX(-140%)}
+.pg-w.is.bld .pg-l.pillars:not(.on) .p2,.pg-w.is.bld .pg-l.pillars:not(.on) .p4{transform:translateX(140%)}
+/* mawar atas & pilar putih di tepi (akhir) */
+.is-top{position:absolute;top:-2%;width:46%;transition:transform 2.4s cubic-bezier(.22,.8,.24,1),opacity 1.6s ease;opacity:0}
+.is-top.l{left:-6%;transform:translateY(-60%) rotate(180deg) scaleX(-1)}.is-top.r{right:-6%;transform:translateY(-60%) rotate(180deg)}
+.pg-l.props.top .is-top{opacity:1}.pg-l.props.top .is-top.l{transform:rotate(180deg) scaleX(-1)}.pg-l.props.top .is-top.r{transform:rotate(180deg)}
+.is-top svg{display:block;width:100%;height:auto}
+.is-edge{position:absolute;top:0;bottom:0;width:3.2%;background:linear-gradient(90deg,#b8a99f,#fff 40%,#ece2d8 70%,#b8a99f);box-shadow:0 0 12px rgba(0,0,0,.4);transition:transform 2s cubic-bezier(.22,.8,.24,1)}
+.is-edge.l{left:0;transform:translateX(-110%)}.is-edge.r{right:0;transform:translateX(110%)}
+.pg-l.props.edge .is-edge{transform:none}
+/* air terjun lebih ramping & menyala seperti video */
+.pg-w.at .at-wf .glow{inset:-4% -160%}
+.pg-w.at .pg-l.portal{transition:transform 1.8s cubic-bezier(.55,0,.35,1),opacity 1.1s ease .6s}
+.pg-w.at.bld:not(.thru) .pg-l.cliffs,.pg-w.at.bld:not(.thru) .pg-l.wf,.pg-w.at.bld:not(.thru) .pg-l.pool{transform:scale(.8)}
+.pg-w.at .pg-l.cliffs,.pg-w.at .pg-l.wf,.pg-w.at .pg-l.pool,.pg-w.at .pg-l.sky{transform-origin:50% 48%;transition:transform 2.4s cubic-bezier(.4,0,.2,1),opacity 1.4s ease}
+.pg-w.at.bld:not(.thru) .pg-l.sky{transform:scale(.9)}
+.at-moon{transition:transform 5s cubic-bezier(.25,.6,.25,1)}
+
+.is-cl.red{filter:brightness(.5) saturate(1.6) hue-rotate(-18deg)!important}
+.pg-l.dark .is-cl.red{animation:none}

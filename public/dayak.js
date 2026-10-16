@@ -375,5 +375,6 @@
     }
   }
 
+  window.LIVEW = Object.assign(window.LIVEW || {}, { dayak: { world: () => world(), start: (st) => start(st) } });
   window.DAYAK = { C, feather, fan, curl, hook, motif, shield, shieldBack, hornbill, birdwing, orchid, leaf, blade, pitcher, tree, cloud, dancerF, dancerM, sapePlayer, lamin, totem, batangGaring, SH, bush, canopy, bunting, world, start, flyNow: (stage, near) => { const w = stage && stage.querySelector('.dk-w'); if (w && w._fly) w._fly(near); } };
 })();

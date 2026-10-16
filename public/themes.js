@@ -88,6 +88,21 @@
       birds: '', bf: ['bf_rajah'], petals: ['orchid', 'leafj', 'orchid'], sparkle: 0, flies: 0,
       shots: [[392,730,1.9,1900,400], [250,850,2.5,1500,500,'petals'], [545,850,2.5,1400,500], [680,560,2.8,1500,500,'birds'], [664,650,2.2,1300,300], ['end', 2300, 0, 'bf']],
     },
+    // Tema 10 & 11: dunia vektor berlapis (panggung.js), masuk bertahap seperti video referensi
+    airterjun: {
+      live: 1, tint:[.78,.9,1], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,600],
+      motes:{n:10,c:'170,215,255',up:1}, name: 'Air Terjun Bulan', base: 'jawa', pal: 'blue', dark: true,
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#eef3ff', glowText: 'rgba(20,40,90,.9)',
+      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [90, 200], birds: '', bf: ['bf_blue1', 'bf_silver'], petals: ['frangi1'], sparkle: 0, flies: 0,
+      preload: ['/assets/t/airterjun/sky.webp', '/assets/t/airterjun/cliffs.webp', '/assets/t/airterjun/pool.webp', '/assets/t/airterjun/milky.webp', '/assets/t/fx/moon.webp', '/assets/t/fx/streaks.webp', 'bf_blue1'], shots: [['end', 1000]],
+    },
+    istana: {
+      live: 1, tint:[1,.82,.9], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,600],
+      motes:{n:10,c:'255,210,230',up:1}, name: 'Istana Langit', base: 'rose', pal: 'pink', dark: true,
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#fff2f6', glowText: 'rgba(60,0,20,.9)',
+      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [140, 360], birds: '', bf: ['bf_pink1', 'bf_pink2'], petals: ['rose1', 'rose2'], sparkle: 0, flies: 0,
+      preload: ['/assets/t/istana/sky.webp', '/assets/t/istana/cl-peach.webp', '/assets/t/istana/cl-peach2.webp', '/assets/t/istana/cl-purple.webp', '/assets/t/istana/cl-red.webp', '/assets/t/istana/cl-wave.webp', '/assets/t/fx/moon.webp', 'bf_pink1'], shots: [['end', 1000]],
+    },
   };
   for (const k in window.PIC_THEMES) {
     const t = window.PIC_THEMES[k];
@@ -96,4 +111,8 @@
     t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
     t.divider = d + 'divider.webp'; t.motif = k === 'biru' ? '' : d + 'motif.webp';
   }
+  // Tema 10 & 11 memakai hiasan dalam dari tema serupa (Biru & Princess); latar bagian dibuat dari dunia vektornya
+  [['airterjun', 'biru'], ['istana', 'princess']].forEach(([k, src]) => { const t = window.PIC_THEMES[k], d = T + src + '/';
+    t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
+    t.divider = d + 'divider.webp'; t.motif = src === 'biru' ? '' : d + 'motif.webp'; });
 })();

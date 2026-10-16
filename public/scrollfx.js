@@ -13,6 +13,8 @@
     biru:     { col: '#9fd0ff', mk: 'bf_silver', bl: ['frangi1', 'frangi2', 'frangi1'], glow: ['84%', '10%', 'rgba(190,220,255,.85)'], ff: 18 },
     rimba:    { col: '#c8e0ff', mk: 'bf_blue1', bl: ['frangi2', 'frangi2', 'frangi1'], glow: ['82%', '9%', 'rgba(210,230,255,.85)'], ff: 24 },
     klasik:   { col: '#ffc46e', mk: 'bf_gold2', bl: ['frangi2', 'frangi1', 'frangi2'], glow: ['50%', '94%', 'rgba(255,190,100,.85)'], ff: 14 },
+    airterjun: { col: '#9fd0ff', mk: 'bf_silver', bl: ['frangi1', 'frangi2', 'frangi1'], glow: ['84%', '10%', 'rgba(190,220,255,.85)'], ff: 14 },
+    istana:   { col: '#ffc2dc', mk: 'bf_pink1', bl: ['rose1', 'rose2', 'rose1'], glow: ['50%', '12%', 'rgba(255,205,230,.8)'], ff: 10 },
     dayak:    { col: '#ffcf6a', mk: 'bf_rajah', bl: ['orchid', 'feather', 'orchid'], glow: ['50%', '92%', 'rgba(255,214,130,.75)'], ff: 12 },
   };
   let key, T, PT, hero, started = false;

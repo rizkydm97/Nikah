@@ -144,3 +144,13 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - **Kedalaman 3D akurat**: peta kedalaman baru dibuat dengan model MiDaS (`tools/gen-depth-ai.py`), sehingga saat kamera bergeser, bagian depan bergerak lebih banyak dari latar (paralaks 3D) tanpa gambar penyok. Efek 3D lebih kuat saat masuk lalu mereda halus.
 - Air terjun: aliran vertikal bercahaya (biru menyala pada tema malam), bulan Biru bercahaya dengan tepi lembut.
 - Tanpa WebGL (HP sangat lama): kabut lembut biasa yang memudar.
+
+## v42 — Tema 10 Air Terjun Bulan & Tema 11 Istana Langit (mengikuti video referensi)
+- **Tema 10 — Air Terjun Bulan**: sampul gapura batu berisi foto → sampul naik → kamera menembus gapura → air terjun menyala di antara tebing batu bertekstur, kolam berkilau → bulan realistis terbit dari balik air terjun → kupu-kupu → bunga putih tumbuh di bawah → dedaunan turun dari atas → panel oval membesar dari tengah → nama muncul.
+- **Tema 11 — Istana Langit**: langit galaksi → ombak awan biru → gazebo kaca naik dari bawah & tangga memanjang → awan pink di kiri-kanan tangga → pilar bermawar → mawar di bawah → bulan ungu → awan gelap → tirai merah dari samping → lampu gantung emas turun → mawar di atas → pilar putih di tepi → nama.
+- Aset dibuat sendiri secara prosedural (`tools/gen-scenes.py`: langit nebula & bima sakti, tebing batu, kolam, awan bervolume). Pilih di Admin → Tema → "Tema 10" / "Tema 11".
+
+## v43 — Urutan animasi bertahap (tidak bersamaan)
+- Urutan hero di semua tema: **1) adegan tersusun & hidup sampai selesai → 2) bunga sudut → 3) pilar → tirai → lampu gantung → 4) baru bingkai nama**, lalu teks muncul satu per satu (judul, nama, tanggal, tamu).
+- Tema 4 Princess: setelah amplop dibuka lukisan langsung tampil utuh (tanpa kabut ulang), tanpa ledakan mawar & kereta yang menumpuk di tengah, segel amplop lebih halus.
+- Jawa Emas tanpa kabut ulang; Tema 9/10/11 mengikuti urutan yang sama (Istana: tirai → lampu gantung → mawar atas → pilar tepi → nama).
