@@ -24,9 +24,9 @@
   const CFG = {
     princess: { cam: [400, 610, 1.26], frame: 'arch', metal: ROSE, fill: ['rgba(255,246,250,.72)', 'rgba(255,226,238,.5)'], ink: '#a33d66', ink2: '#9b5a2a', orn: T + 'princess/orn.webp', ornB: T + 'princess/divider.webp', side: T + 'princess/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(255,244,248,.62),rgba(255,214,232,.32) 62%,rgba(140,50,90,.2))', reveal: 'bloom', pfOrn: T + 'princess/orn.webp' },
     bali: { cam: [420, 640, 1.35], frame: 'gate', metal: GOLD, fill: ['rgba(255,248,232,.74)', 'rgba(250,236,206,.5)'], ink: '#6a3a0e', ink2: '#8a5a1e', orn: T + 'bali/orn.webp', ornB: T + 'bali/divider.webp', side: T + 'bali/orn.webp', veil: 'radial-gradient(ellipse at 50% 46%,rgba(255,250,236,.6),rgba(255,236,200,.3) 60%,rgba(80,50,10,.25))', reveal: 'mist', pfOrn: T + 'bali/orn.webp' },
-    emas: { cam: [430, 620, 1.4], frame: 'ogee', metal: GOLD, fill: ['rgba(46,22,4,.62)', 'rgba(24,10,2,.4)'], ink: '#f8dc96', ink2: '#f1cf86', orn: '/assets/scene/gunungan.webp', ornB: T + 'emas/divider.webp', side: T + 'emas/orn.webp', veil: 'radial-gradient(ellipse at 50% 46%,rgba(40,18,2,.55),rgba(30,12,2,.35) 60%,rgba(10,4,0,.5))', reveal: 'gold', pfOrn: '/assets/scene/gunungan.webp', dark: 1 },
-    biru: { cam: [392, 600, 1.25], frame: 'oval', metal: SILVER, fill: ['rgba(10,22,60,.66)', 'rgba(6,14,44,.42)'], ink: '#ead8a6', ink2: '#dfe8ff', orn: T + 'biru/divider.webp', ornB: T + 'biru/divider.webp', side: T + 'biru/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(6,16,48,.6),rgba(6,14,44,.4) 60%,rgba(2,6,24,.6))', moon: [392, 292, 92, 'blue'], reveal: 'moon', pfOrn: T + 'biru/divider.webp', dark: 1 },
-    rimba: { cam: [430, 650, 1.55], frame: 'capsule', metal: GOLD, fill: ['rgba(6,18,40,.64)', 'rgba(4,12,30,.42)'], ink: '#f5d98c', ink2: '#e8eefc', orn: T + 'rimba/divider.webp', ornB: T + 'rimba/divider.webp', side: T + 'rimba/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(4,12,34,.6),rgba(4,10,30,.38) 60%,rgba(0,4,16,.6))', moon: [475, 385, 76, 'pale'], reveal: 'firefly', pfOrn: T + 'rimba/divider.webp', dark: 1 },
+    emas: { cam: [430, 620, 1.4], frame: 'arch', metal: GOLD, fill: ['rgba(46,22,4,.62)', 'rgba(24,10,2,.4)'], ink: '#f8dc96', ink2: '#f1cf86', orn: '/assets/scene/gunungan.webp', ornB: T + 'emas/divider.webp', side: T + 'emas/orn.webp', veil: 'radial-gradient(ellipse at 50% 46%,rgba(40,18,2,.55),rgba(30,12,2,.35) 60%,rgba(10,4,0,.5))', reveal: 'gold', pfOrn: '/assets/scene/gunungan.webp', dark: 1 },
+    biru: { cam: [392, 600, 1.25], frame: 'oval', metal: SILVER, fill: ['rgba(10,22,60,.66)', 'rgba(6,14,44,.42)'], ink: '#ead8a6', ink2: '#dfe8ff', orn: T + 'biru/divider.webp', ornB: T + 'biru/divider.webp', side: T + 'biru/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(6,16,48,.6),rgba(6,14,44,.4) 60%,rgba(2,6,24,.6))', moon: [392, 418, 82, 'blue'], reveal: 'moon', pfOrn: T + 'biru/divider.webp', dark: 1 },
+    rimba: { cam: [430, 650, 1.55], frame: 'capsule', metal: GOLD, fill: ['rgba(6,18,40,.64)', 'rgba(4,12,30,.42)'], ink: '#f5d98c', ink2: '#e8eefc', orn: T + 'rimba/divider.webp', ornB: T + 'rimba/divider.webp', side: T + 'rimba/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(4,12,34,.6),rgba(4,10,30,.38) 60%,rgba(0,4,16,.6))', reveal: 'firefly', pfOrn: T + 'rimba/divider.webp', dark: 1 },
     klasik: { cam: [400, 640, 1.35], frame: 'gunungan', metal: GOLD, fill: ['rgba(40,18,4,.66)', 'rgba(20,8,2,.44)'], ink: '#f2d391', ink2: '#e8c886', orn: '/assets/scene/gunungan.webp', ornB: T + 'klasik/divider.webp', side: T + 'klasik/orn.webp', veil: 'radial-gradient(ellipse at 50% 44%,rgba(40,16,2,.5),rgba(24,10,2,.36) 60%,rgba(8,3,0,.6))', reveal: 'kelir', pfOrn: '/assets/scene/gunungan.webp', dark: 1 },
     dayak: { cam: [392, 640, 1.0], frame: 'shield', metal: GOLD, fill: ['rgba(26,12,6,.62)', 'rgba(14,6,2,.4)'], ink: '#ffd98a', ink2: '#f6e6c4', orn: T + 'dayak/orn.webp', ornB: T + 'dayak/divider.webp', side: T + 'dayak/orn.webp', veil: 'radial-gradient(ellipse at 50% 46%,rgba(255,240,214,.3),rgba(80,40,10,.25) 60%,rgba(30,12,4,.45))', reveal: 'motif', pfOrn: T + 'dayak/orn.webp', noDeco: 1, dark: 1 },
   };
@@ -35,7 +35,7 @@
     princess: { cur: ['#f6b9cf', '#d97a9f', '#9c3f66'], trim: '#e9c46a', chand: 'crystal', pil: ['#fff7f2', '#e9d6cf', '#c9a9a0'], vine: 'rose' },
     bali: { cur: ['#f3d27a', '#c9952e', '#7a5214'], trim: '#fff0b8', chand: 'lantern', pil: ['#efe0c4', '#c9ac80', '#8a6a40'], vine: 'frangi' },
     emas: { cur: ['#e9b85a', '#a8741a', '#5c3a08'], trim: '#fff0b8', chand: 'robyong', pil: ['#f1d58a', '#b8862c', '#6a4a10'], vine: 'jasmine' },
-    biru: { cur: ['#5f86d8', '#2c4a9a', '#13245a'], trim: '#dfe8ff', chand: 'crystal', pil: ['#f4f7ff', '#b9c6e6', '#7286b8'], vine: 'white' },
+    biru: { cur: ['#5f86d8', '#2c4a9a', '#13245a'], trim: '#dfe8ff', chand: '', pil: ['#f4f7ff', '#b9c6e6', '#7286b8'], vine: 'white' },
     rimba: { cur: ['#2f8a86', '#165a5c', '#0a2e34'], trim: '#e8c46a', chand: 'lantern', pil: ['#e8d29a', '#a8843a', '#5a4214'], vine: 'vine' },
     klasik: { cur: ['#8a1f14', '#5a1008', '#2a0604'], trim: '#e2b552', chand: 'robyong', pil: ['#8a5428', '#5a3416', '#2e1a08'], vine: '' },
   };
@@ -103,12 +103,6 @@
       <rect x="12" y="60" width="56" height="880" fill="url(#${id})"/>${[22, 33, 44, 55].map((x) => `<path d="M${x} 66 V934" stroke="${c}" stroke-width="2" opacity=".45"/>`).join('')}
       <path d="M8 940 H72 L80 966 H0Z" fill="url(#${id})"/><rect x="0" y="966" width="80" height="34" fill="url(#${id})"/>${flowers}</svg>`;
   }
-  // ---------- lapisan potongan lukisan (dibangun sepotong demi sepotong) ----------
-  const LYR = {};
-  function prep(k) {
-    if (LYR[k] || !CFG[k] || k === 'dayak') return;
-    LYR[k] = fetch(T + k + '/lyr/layers.json').then((r) => r.ok ? r.json() : []).then((m) => { [T + k + '/lyr/plate.webp'].concat(m.map((x) => T + k + '/lyr/' + x.n + '.webp')).forEach((u) => { const i = new Image(); i.src = u; }); return m; }).catch(() => []);
-  }
   // ---------- bangun lapisan sinema di panggung hero ----------
   function build(stage, data) {
     if ($('.cin-veil', stage)) return;
@@ -124,30 +118,23 @@
     // air terjun bercahaya (lebih cerah, berpendar)
     const pt = window.PIC_THEMES[key];
     if (pt && pt.wf && pt.wf.length) {
-      const wl = document.createElement('div'); wl.className = 'cin-wfl' + (pt.dark ? ' night' : '');
+      const wl = document.createElement('div'); wl.className = 'cin-wfl' + (key === 'biru' || key === 'rimba' ? ' night' : '');
       wl.innerHTML = pt.wf.map(([x, y, w, h]) => `<div class="cin-wf" style="left:${(x / BW * 100).toFixed(3)}%;top:${(y / BH * 100).toFixed(3)}%;width:${(w / BW * 100).toFixed(3)}%;height:${(h / BH * 100).toFixed(3)}%"><i class="g"></i><i class="s"></i><i class="s b"></i><i class="m"></i></div>`).join('');
       const fx = $('.pfxl', pbox); if (fx) fx.after(wl); else pbox.appendChild(wl);
     }
-    if (LYR[key]) LYR[key].then((m) => {
-      if (!m || !m.length || $('.cin-build', pbox) || stage.dataset.cinFinal) return;
-      const b = document.createElement('div'); b.className = 'cin-build';
-      b.innerHTML = `<img class="cb-plate" src="${T + key}/lyr/plate.webp" alt="">` + m.map((x, i) => `<img class="cb-p a-${x.a}" data-i="${i}" src="${T + key}/lyr/${x.n}.webp" alt="" style="left:${(x.x / BW * 100).toFixed(3)}%;top:${(x.y / BH * 100).toFixed(3)}%;width:${(x.w / BW * 100).toFixed(3)}%;height:${(x.h / BH * 100).toFixed(3)}%">`).join('');
-      const gl = $('.pgl', pbox); if (gl) gl.after(b); else pbox.prepend(b);
-      if (stage._buildGo) stage._buildGo(b);
-    });
     const veil = document.createElement('div'); veil.className = 'cin-veil'; veil.style.background = cfg.veil; cam.after(veil);
     const P = PROPS[key];
     if (P) {
       const pr = document.createElement('div'); pr.className = 'cin-props';
       pr.innerHTML = `<div class="cpz pil l">${pillarSvg(P, 'cpp1' + key)}</div><div class="cpz pil r">${pillarSvg(P, 'cpp2' + key)}</div>
         <div class="cpz cur l">${curtainSvg(P, 'cpc1' + key)}</div><div class="cpz cur r">${curtainSvg(P, 'cpc2' + key)}</div>
-        <div class="cpz ch"><div class="cp-sw">${chandSvg(P, 'cpch' + key)}</div></div>`;
+        ${P.chand ? `<div class="cpz ch"><div class="cp-sw">${chandSvg(P, 'cpch' + key)}</div></div>` : ''}`;
       veil.after(pr);
     }
     if (!cfg.noDeco) {
       const d = document.createElement('div'); d.className = 'cin-deco';
       const t = window.PIC_THEMES[key].deco;
-      d.innerHTML = `<i class="cc tl" style="background-image:url(${t.floralTop})"></i><i class="cc tr" style="background-image:url(${t.floralTop})"></i><i class="cc bl" style="background-image:url(${t.floralBottom})"></i><i class="cc br" style="background-image:url(${t.floralBottom})"></i>`;
+      d.innerHTML = `<i class="cc dtl" style="background-image:url(${t.floralTop})"></i><i class="cc dtr" style="background-image:url(${t.floralTop})"></i><i class="cc dbl" style="background-image:url(${t.floralBottom})"></i><i class="cc dbr" style="background-image:url(${t.floralBottom})"></i>`;
       ($('.cin-props', stage) || veil).after(d);
     }
     const f = document.createElement('div'); f.className = 'cin-frame f-' + cfg.frame + (cfg.dark ? ' dark' : '');
@@ -178,15 +165,24 @@
       const w = $('.dk-w', stage), ls = w ? $$('.dk-l', w).filter((l) => !/fly/.test(l.className)) : [];
       if (w) { w.classList.add('bld'); ls.forEach((l, i) => later(() => l.classList.add('on'), 150 + i * 520)); later(() => w.classList.remove('bld'), 150 + ls.length * 520 + 2600); }
     }
-    // potongan lukisan muncul satu per satu, lalu lapisan potongan memudar memperlihatkan lukisan hidup yang utuh (sama persis)
-    const go = (b) => {
-      stage._buildGo = null;
-      const ps = $$('.cb-p', b);
-      ps.forEach((p, i) => later(() => p.classList.add('in'), 500 + i * 700));
-      later(() => { b.classList.add('done'); const w = $('.cin-wfl', stage); if (w) w.classList.add('in'); }, Math.max(5200, 500 + ps.length * 700 + 1500));
-      later(() => b.remove(), Math.max(5200, 500 + ps.length * 700 + 1500) + 2400);
-    };
-    const b0 = $('.cin-build', stage); if (b0) go(b0); else stage._buildGo = go;
+    // adegan muncul alami: kabut tersingkap dari jauh ke dekat (mengikuti peta kedalaman) sambil kamera bergeser 3D
+    const G = window.__picG, pt = window.PIC_THEMES[key], fogMs = 5600 * D;
+    if (G && !pt.live) {
+      G.fog = 1.2; G.A = 0.17; G.orb = [-0.03, 0.012];
+      const t0 = performance.now() + cd, total = 9000 * D;
+      const ez = (u) => 1 - Math.pow(1 - u, 3);
+      const step = (now) => {
+        const u = Math.max(0, (now - t0) / total), f = Math.min(1, Math.max(0, (now - t0) / fogMs));
+        G.fog = f >= 1 ? -1 : 1.2 - 1.45 * (f * f * (3 - 2 * f));
+        G.A = 0.17 - (0.17 - 0.05) * ez(Math.min(1, u)); const o = 1 - ez(Math.min(1, u));
+        G.orb = [-0.03 * o, 0.012 * o];
+        if (u < 1 && !stage._cinStop) requestAnimationFrame(step); else { G.fog = -1; G.A = 0.05; G.orb = [0, 0]; }
+      };
+      requestAnimationFrame(step);
+      // tanpa WebGL: kabut biasa yang memudar
+      later(() => { if (!G.ok) { const f = document.createElement('div'); f.className = 'cin-fogcss' + (pt.dark ? ' dark' : ''); $('.pbox', stage).appendChild(f); requestAnimationFrame(() => f.classList.add('go')); setTimeout(() => f.remove(), 7000 * D); } }, 0);
+    }
+    later(() => { const w = $('.cin-wfl', stage); if (w) w.classList.add('in'); }, 5200);
     later(() => props && props.classList.add('p1'), 900);
     later(() => props && props.classList.add('p2'), 2300);
     later(() => props && props.classList.add('p3'), 3700);
@@ -201,7 +197,7 @@
     let ended = false;
     const end = (skip) => {
       if (ended) return; ended = true;
-      if (skip) { const dw = $('.dk-w', stage); if (dw) dw.classList.remove('bld'); try { camAnim.finish(); } catch (e) { /* */ } [deco, moon, veil, frame].forEach((e) => e && e.classList.add('in', 'inst')); if (props) props.classList.add('p1', 'p2', 'p3', 'inst'); const b = $('.cin-build', stage); if (b) b.remove(); stage._buildGo = null; const w = $('.cin-wfl', stage); if (w) w.classList.add('in'); }
+      if (skip) { const dw = $('.dk-w', stage); if (dw) dw.classList.remove('bld'); try { camAnim.finish(); } catch (e) { /* */ } [deco, moon, veil, frame].forEach((e) => e && e.classList.add('in', 'inst')); if (props) props.classList.add('p1', 'p2', 'p3', 'inst'); stage._cinStop = 1; const G2 = window.__picG; if (G2) { G2.fog = -1; G2.A = 0.05; G2.orb = [0, 0]; } const w = $('.cin-wfl', stage); if (w) w.classList.add('in'); }
       try { camAnim.commitStyles(); } catch (e) { /* */ } camAnim.cancel(); cam.style.transform = camT(stage, x, y, s);
       keep(stage); o.onEnd();
     };
@@ -214,7 +210,7 @@
     stage.dataset.cinFinal = 1;
     build(stage, o.data);
     $$('.cin-deco,.cin-moon,.cin-veil,.cin-frame', stage).forEach((e) => e.classList.add('in', 'inst'));
-    $$('.cin-props', stage).forEach((e) => e.classList.add('p1', 'p2', 'p3', 'inst')); $$('.cin-wfl', stage).forEach((e) => e.classList.add('in')); $$('.cin-build', stage).forEach((e) => e.remove());
+    $$('.cin-props', stage).forEach((e) => e.classList.add('p1', 'p2', 'p3', 'inst')); $$('.cin-wfl', stage).forEach((e) => e.classList.add('in'));
     $('.pcam', stage).style.transform = camT(stage, cfg.cam[0], cfg.cam[1], cfg.cam[2]);
     keep(stage); return true;
   }
@@ -230,12 +226,14 @@
   function pframe(k, photoHtml, side, flower) {
     if (!set(k)) return '';
     defs();
-    const id = 'pfg' + side + k, sh = cfg.frame === 'shield' ? 'arch' : cfg.frame;
+    // bingkai sederhana seperti contoh: kapsul/lengkung garis emas tipis, ukuran mengikuti foto, bunga kecil di sisi luar
+    const sh = { biru: 'oval', emas: 'capsule', rimba: 'capsule' }[k] || 'arch', id = 'pfg' + side + k;
+    const svg = `<svg class="pf-svg" viewBox="-2 -2 104 164" preserveAspectRatio="none"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${cfg.metal[0]}"/><stop offset=".5" stop-color="${cfg.metal[1]}"/><stop offset="1" stop-color="${cfg.metal[0]}"/></linearGradient></defs>
+      <g fill="none" stroke="url(#${id})" vector-effect="non-scaling-stroke"><path d="${SHAPE[sh]}" stroke-width="2.2" vector-effect="non-scaling-stroke"/><path d="${SHAPE[sh]}" transform="translate(50 80) scale(.94 .965) translate(-50 -80)" stroke-width="1" vector-effect="non-scaling-stroke" opacity=".8"/></g></svg>`;
     return `<div class="pf pf-${sh} pf-${side} pf-${k}${cfg.dark ? ' dark' : ''} rv" data-a="pf" style="--m0:${cfg.metal[0]};--m1:${cfg.metal[1]}">
-      <div class="pf-ph" style="clip-path:url(#cfc-${sh})"><div class="phb">${photoHtml}</div></div>${lineSvg(sh, id)}
+      <div class="pf-ph" style="clip-path:url(#cfc-${sh})"><div class="phb">${photoHtml}</div></div>${svg}
       <img class="pf-orn" src="${cfg.pfOrn}" alt="">
-      <div class="pf-fl a"><img src="${flower}" alt=""></div><div class="pf-fl b"><img src="${flower}" alt=""></div>
-      <img class="pf-side" src="${cfg.side}" alt=""></div>`;
+      <div class="pf-fl a"><img src="${flower}" alt=""></div><div class="pf-fl b"><img src="${flower}" alt=""></div></div>`;
   }
 
   // ---------- scroll halus (desktop, roda mouse) ----------
@@ -261,5 +259,5 @@
     addEventListener('scroll', () => { if (mine) { mine = false; return; } if (!raf) cur = target = scrollY; }, { passive: true });
   })();
 
-  window.CINEMA = { CFG, SHAPE, film, final, pframe, prep, has: (k) => !!CFG[k] };
+  window.CINEMA = { CFG, SHAPE, film, final, pframe, prep: () => {}, has: (k) => !!CFG[k] };
 })();

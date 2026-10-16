@@ -131,3 +131,16 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - **Ayat Arab punya kolom sendiri** di Admin → Ayat & Hitung Mundur ("Ayat dalam tulisan Arab" + ukuran Sedang/Besar/Sangat besar), tampil kanan-ke-kiri dengan huruf Amiri. Bila kolom Arab kosong tapi teks ayat berisi baris Arab, baris itu otomatis dipisahkan & diperbesar.
 - **Penari Dayak di bagian Ayat** dipindah ke atas ayat sehingga tidak menutupi tulisan.
 - **iPhone "halaman dimuat ulang"**: penggunaan memori GPU dikurangi — kanvas WebGL lebih kecil di HP & satu tekstur saja, tanpa parallax per-frame di HP untuk Tema 9, awan bagian tidak lagi di belakang teks berfoto, tanpa backdrop-filter besar di HP, dan semua animasi hero dijeda saat hero tidak terlihat.
+
+## v39 — Lebih ringan & rapi
+- Bingkai foto mempelai sederhana seperti contoh: garis emas tipis (kapsul/lengkung/oval sesuai tema), **ukuran mengikuti bentuk foto** (potret tinggi s/d agak lebar), bunga kecil di sisi luar + satu di sudut seberang (pria kiri, wanita kanan) sehingga wajah tidak tertutup.
+- Kelopak jatuh & "ledakan" bunga saat scroll dihapus; partikel cahaya dikurangi; di HP tanpa awan per bagian, tanpa blur saat muncul, kanvas efek resolusi 1x, kupu-kupu/enggang hero berhenti saat hero tidak terlihat.
+- Bulan: Rimba memakai bulan asli lukisan (tidak ganda); Biru satu bulan realistis terbit di belakang puncak air terjun & memudar ke kabut. Lingkaran cahaya scroll di tema malam dihapus.
+- Jawa Emas: bingkai akhir lengkung simetris. Garis putih tipis di sisi kiri hero (bentrok kelas CSS) diperbaiki.
+- Penutup tanpa bunga kiri-kanan. Tombol "Lewati" dihapus.
+
+## v40 — Masuk adegan alami & 3D (tanpa potongan)
+- Potongan-potongan lukisan dihapus. Adegan sekarang muncul dari **kabut yang tersingkap mengikuti kedalaman**: yang jauh (langit, gunung, istana, candi) terlihat dulu, lalu yang dekat (tokoh, bunga, sungai) — lukisan selalu utuh.
+- **Kedalaman 3D akurat**: peta kedalaman baru dibuat dengan model MiDaS (`tools/gen-depth-ai.py`), sehingga saat kamera bergeser, bagian depan bergerak lebih banyak dari latar (paralaks 3D) tanpa gambar penyok. Efek 3D lebih kuat saat masuk lalu mereda halus.
+- Air terjun: aliran vertikal bercahaya (biru menyala pada tema malam), bulan Biru bercahaya dengan tepi lembut.
+- Tanpa WebGL (HP sangat lama): kabut lembut biasa yang memudar.

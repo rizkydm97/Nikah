@@ -277,7 +277,7 @@
   const spOn = () => !!(window.SAMPUL && PT && C && (C.effects.themedCover !== false || PT.live) && window.SAMPUL.keys.includes(PICT));
   function spH() {
     const n = String(C.cover.names || '').split('&').map((x) => x.trim()).filter(Boolean);
-    return { key: PICT, PT, C, esc, reduce, D: sp, rbf, picFlyers, scene: cinOn() && !PT.live ? '/assets/t/' + PICT + '/lyr/plate.webp' : PT.world, guest: guest || C.cover.defaultGuest, mono: mono2(), names: n.length >= 2 ? `${esc(n[0])}<i>&amp;</i>${esc(n[1])}` : esc(C.cover.names) };
+    return { key: PICT, PT, C, esc, reduce, D: sp, rbf, picFlyers, guest: guest || C.cover.defaultGuest, mono: mono2(), names: n.length >= 2 ? `${esc(n[0])}<i>&amp;</i>${esc(n[1])}` : esc(C.cover.names) };
   }
   function picCover(c) {
     if (spOn()) return window.SAMPUL.cover(spH());
@@ -307,6 +307,7 @@
       let first = !!from, rot = 0;
       const go = () => {
         if (!el.isConnected) return;
+        if (box.closest('.cin-off') || document.hidden) { setTimeout(go, 1500); return; } // hero tidak terlihat: kupu-kupu istirahat (hemat HP)
         const W = box.clientWidth || 400, H = box.clientHeight || 700;
         let nx, ny;
         if (first) { const a = (i / n) * Math.PI * 2 + Math.random() * 0.5, r = Math.min(W, H) * (0.25 + Math.random() * 0.3); nx = x + Math.cos(a) * r; ny = y + Math.sin(a) * r * 0.8 - 40; }
@@ -397,10 +398,11 @@
   const FS = `precision highp float;varying vec2 v;
     uniform sampler2D uW,uC,uD;
     uniform vec2 uF,uSw,uAsp;
-    uniform float uS,uT,uMix,uNWt,uNWf,uWtI,uWfI,uHz;
+    uniform float uS,uT,uMix,uNWt,uNWf,uWtI,uWfI,uHz,uA,uFog;
+    uniform vec3 uFogC;
     uniform vec4 uWt[4],uWf[3],uTr,uHzR;
     uniform vec3 uTint;
-    const float A=.035,PK=.012;
+    const float PK=.012;
     float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hs(i),hs(i+vec2(1.,0.)),f.x),mix(hs(i+vec2(0.,1.)),hs(i+vec2(1.,1.)),f.x),f.y);}
     vec3 S(vec2 u){
@@ -420,7 +422,7 @@
       vec2 uv=v;
       for(int i=0;i<2;i++){
         float k=(texture2D(uD,uv).r-.5)*2.;
-        float sd=1.+(uS-1.)*(1.+A*k);
+        float sd=1.+(uS-1.)*(1.+uA*k);
         uv=uF+(v-uF)*uS/sd+((uF-.5)*PK+uSw)*k;
       }
       float wm=0.,fm=0.;
@@ -463,10 +465,19 @@
         c=smoothstep(.42,.85,c);
         col=mix(col,mix(col,uTint,.55)+.06,c*hy*uHz);
       }
+      if(uFog>-.5){ // kabut tersingkap dari jauh ke dekat mengikuti kedalaman (adegan muncul alami, tanpa potongan)
+        float dist=1.-texture2D(uD,uv).r;
+        float n=vn(uv*vec2(4.,6.)+vec2(uT*.06,uT*.02))*.6+vn(uv*vec2(10.,14.)-vec2(uT*.05,0.))*.4;
+        float r=uFog+(n-.5)*.3;
+        float vis=smoothstep(r-.34,r+.08,dist);
+        vec3 fc=uFogC*(.9+.2*n);
+        col=mix(fc,col,vis);
+        col+=uFogC*.18*(1.-abs(vis*2.-1.)); // tepi kabut berkilau lembut
+      }
       gl_FragColor=vec4(col,1.);
     }`;
   let glRaf = 0, glPtr = [0, 0], glTgt = [0, 0];
-  const G = { mix: 1, trm: 0, trp: 0, trc: [0.5, 0.5], ok: false }; // keadaan transisi cover -> dunia (dibaca tiap frame)
+  const G = { mix: 1, trm: 0, trp: 0, trc: [0.5, 0.5], ok: false, A: 0.035, fog: -1, orb: [0, 0] }; window.__picG = G; // keadaan transisi cover -> dunia (dibaca tiap frame)
   function picGL(stage) {
     cancelAnimationFrame(glRaf); G.ok = false;
     const cv = stage && $('.pgl', stage); if (!cv || reduce || !PT || PT.live) return;
@@ -499,7 +510,8 @@
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       tex(0, w); tex(1, d); // tekstur sampul = tekstur dunia (unit 0): hemat memori GPU di HP
       gl.uniform1i(U('uW'), 0); gl.uniform1i(U('uD'), 1); gl.uniform1i(U('uC'), 0);
-      const uF = U('uF'), uS = U('uS'), uSw = U('uSw'), uT = U('uT'), uMix = U('uMix'), uTr = U('uTr');
+      const uF = U('uF'), uS = U('uS'), uSw = U('uSw'), uT = U('uT'), uMix = U('uMix'), uTr = U('uTr'), uA = U('uA'), uFog = U('uFog');
+      { const t = PT.tint || [1, 1, 1]; gl.uniform3fv(U('uFogC'), PT.dark ? t.map((v) => v * 0.42) : t.map((v) => 0.55 + v * 0.42)); }
       const rects = (arr, n) => { const o = new Float32Array(n * 4); (arr || []).slice(0, n).forEach((r, i) => { o[i * 4] = r[0] / BW; o[i * 4 + 1] = r[1] / BH; o[i * 4 + 2] = r[2] / BW; o[i * 4 + 3] = r[3] / BH; }); return o; };
       gl.uniform4fv(U('uWt[0]'), rects(PT.water, 4)); gl.uniform1f(U('uNWt'), Math.min((PT.water || []).length, 4));
       gl.uniform4fv(U('uWf[0]'), rects(PT.wf, 3)); gl.uniform1f(U('uNWf'), Math.min((PT.wf || []).length, 3));
@@ -520,7 +532,7 @@
         if (!vis || document.hidden) return;
         const sc = document.getElementById('cover'); if (sc && sc.classList.contains('sp') && !sc.classList.contains('sp-gone')) return; // sampul menutupi layar: hemat GPU supaya animasi sampul mulus
         const film = hero.classList.contains('filming');
-        if (!film && t - last < 14) return;
+        if (!film && G.fog < -0.5 && t - last < 14) return;
         last = t;
         if (!t0) t0 = t;
         glPtr[0] += (glTgt[0] - glPtr[0]) * 0.045; glPtr[1] += (glTgt[1] - glPtr[1]) * 0.045;
@@ -531,7 +543,7 @@
         const am = coarse ? 0 : 1;
         const sx = Math.sin(sec * 0.32) * 0.004 + glPtr[0] * 0.006 * am, sy = Math.cos(sec * 0.24) * 0.0025 + glPtr[1] * 0.004 * am;
         gl.uniform2f(uF, 0.5 + dx / box.offsetWidth, 0.5 + dy / box.offsetHeight);
-        gl.uniform1f(uS, s); gl.uniform2f(uSw, sx, sy);
+        gl.uniform1f(uS, s); gl.uniform2f(uSw, sx + G.orb[0], sy + G.orb[1]); gl.uniform1f(uA, G.A); gl.uniform1f(uFog, G.fog);
         if (!lowQ && fr++ > 8) { dtSum += t - lastT; if (fr === 70) { if (dtSum / 62 > 50 && cv.width > 800) { cv.width = Math.round(cv.width * 0.85); cv.height = Math.round(cv.width * BH / BW); gl.viewport(0, 0, cv.width, cv.height); } lowQ = true; } }
         lastT = t;
         gl.uniform1f(uT, (t - t0) / 1000); gl.uniform1f(uMix, G.mix);
@@ -1109,7 +1121,8 @@
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
     if (PT && PT.live && window.DAYAK) window.DAYAK.start($('#s-hero .pstage'));
-    if (PT && window.CINEMA && !opened) window.CINEMA.prep(PICT);
+    // bingkai foto mempelai mengikuti bentuk foto (potret tinggi / agak lebar), tetap dalam batas wajar
+    $$('#app .pf').forEach((f) => { const im = $('.pimg', f); if (!im) return; const fit = () => { const r = im.naturalWidth / im.naturalHeight; if (r) f.style.aspectRatio = String(Math.min(0.86, Math.max(0.6, r))); }; if (im.complete) fit(); else im.addEventListener('load', fit, { once: true }); });
     if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { if (cinOn()) window.CINEMA.final($('.pstage', hero), { key: PICT, data: cinData() }); picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
   }
 
@@ -1332,7 +1345,7 @@
   }
   let petalsOn = false;
   function petals() {
-    if (!C.effects.petals || reduce || petalsOn) return; petalsOn = true;
+    if (!C.effects.petals || reduce || petalsOn || PT) return; petalsOn = true;
     const box = $('#petals'), cols = ['var(--primary)', 'var(--accent)', 'var(--tint2)', 'var(--tint3)'];
     box.style.opacity = '0'; setTimeout(() => (box.style.opacity = ''), 2600 * sp);
     const hide = () => box.classList.toggle('off', scrollY > innerHeight * 0.85); hide();

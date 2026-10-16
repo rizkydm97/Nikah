@@ -351,7 +351,7 @@
     const far = W.querySelector('.flyfar'), near = W.querySelector('.flynear');
     // enggang: kadang jauh (kecil, di antara gunung), kadang dekat (besar, melintas di depan kamera)
     const fly = (isNear) => {
-      if (document.hidden || !W.isConnected) return;
+      if (document.hidden || !W.isConnected || W.closest('.cin-off')) return;
       const box = isNear ? near : far, el = document.createElement('div'); el.className = 'dk-flyer'; el.innerHTML = hornbill(); box.appendChild(el);
       const dir = Math.random() < 0.5 ? 1 : -1, n = isNear ? 1 : 1 + Math.floor(Math.random() * 3);
       for (let i = 1; i < n; i++) { const e2 = el.cloneNode(true); e2.style.marginTop = i * 3 + 'cqw'; e2.style.marginLeft = -dir * i * 6 + 'cqw'; e2.querySelector('.w1').style.animationDelay = e2.querySelector('.w2').style.animationDelay = -i * 0.17 + 's'; box.appendChild(e2); go(e2, i); }
@@ -370,7 +370,7 @@
     for (let i = 0; i < 3; i++) {
       const b = document.createElement('div'); b.className = 'dk-bfly'; b.innerHTML = birdwing(); front.appendChild(b);
       let x = i % 2 ? 80 : 12, y = 82 + Math.random() * 8;
-      const hop = () => { if (!b.isConnected) return; const nx = (i % 2 ? 62 : 4) + Math.random() * 30, ny = 76 + Math.random() * 18, a = Math.atan2(ny - y, nx - x) * 57.3 + 90; b.animate([{ transform: `translate3d(${f1(x)}cqw,${f1(y * 1.49)}cqw,0) rotate(${f1(a)}deg)` }, { transform: `translate3d(${f1((x + nx) / 2 + (Math.random() - 0.5) * 10)}cqw,${f1(((y + ny) / 2 - 4) * 1.49)}cqw,0) rotate(${f1(a + 20)}deg)`, offset: 0.5 }, { transform: `translate3d(${f1(nx)}cqw,${f1(ny * 1.49)}cqw,0) rotate(${f1(a)}deg)` }], { duration: 2400 + Math.random() * 2000, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => setTimeout(hop, 300 + Math.random() * 1500); x = nx; y = ny; };
+      const hop = () => { if (!b.isConnected) return; if (W.closest('.cin-off')) { setTimeout(hop, 1500); return; } const nx = (i % 2 ? 62 : 4) + Math.random() * 30, ny = 76 + Math.random() * 18, a = Math.atan2(ny - y, nx - x) * 57.3 + 90; b.animate([{ transform: `translate3d(${f1(x)}cqw,${f1(y * 1.49)}cqw,0) rotate(${f1(a)}deg)` }, { transform: `translate3d(${f1((x + nx) / 2 + (Math.random() - 0.5) * 10)}cqw,${f1(((y + ny) / 2 - 4) * 1.49)}cqw,0) rotate(${f1(a + 20)}deg)`, offset: 0.5 }, { transform: `translate3d(${f1(nx)}cqw,${f1(ny * 1.49)}cqw,0) rotate(${f1(a)}deg)` }], { duration: 2400 + Math.random() * 2000, easing: 'ease-in-out', fill: 'forwards' }).onfinish = () => setTimeout(hop, 300 + Math.random() * 1500); x = nx; y = ny; };
       setTimeout(hop, i * 700);
     }
   }

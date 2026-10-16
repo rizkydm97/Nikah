@@ -5,15 +5,15 @@
 /* dedaunan & bunga tersusun rapi di sudut, masuk perlahan lalu bergoyang lembut */
 .cin-deco{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
 .cin-deco .cc{position:absolute;background-repeat:no-repeat;opacity:0;transition:transform 3.6s cubic-bezier(.22,.8,.24,1),opacity 2.4s ease;will-change:transform}
-.cin-deco .tl,.cin-deco .tr{top:0;width:min(46cqw,32cqh);aspect-ratio:5/7;background-size:200% 100%}
-.cin-deco .bl,.cin-deco .br{bottom:0;width:min(52cqw,36cqh);aspect-ratio:5/6.4;background-size:200% 100%}
-.cin-deco .tl{left:0;background-position:0 0;transform:translate(-38%,-34%) rotate(-10deg);transform-origin:0 0}
-.cin-deco .tr{right:0;background-position:100% 0;transform:translate(38%,-34%) rotate(10deg);transform-origin:100% 0}
-.cin-deco .bl{left:0;background-position:0 100%;transform:translate(-30%,42%) scale(.85);transform-origin:0 100%;transition-delay:.7s}
-.cin-deco .br{right:0;background-position:100% 100%;transform:translate(30%,42%) scale(.85);transform-origin:100% 100%;transition-delay:.9s}
+.cin-deco .dtl,.cin-deco .dtr{top:0;width:min(46cqw,32cqh);aspect-ratio:5/7;background-size:200% 100%}
+.cin-deco .dbl,.cin-deco .dbr{bottom:0;width:min(52cqw,36cqh);aspect-ratio:5/6.4;background-size:200% 100%}
+.cin-deco .dtl{left:0;background-position:0 0;transform:translate(-38%,-34%) rotate(-10deg);transform-origin:0 0}
+.cin-deco .dtr{right:0;background-position:100% 0;transform:translate(38%,-34%) rotate(10deg);transform-origin:100% 0}
+.cin-deco .dbl{left:0;background-position:0 100%;transform:translate(-30%,42%) scale(.85);transform-origin:0 100%;transition-delay:.7s}
+.cin-deco .dbr{right:0;background-position:100% 100%;transform:translate(30%,42%) scale(.85);transform-origin:100% 100%;transition-delay:.9s}
 .cin-deco.in .cc{opacity:1;transform:none}
-.cin-deco.in .tl{animation:cinSwT 7s ease-in-out 3.6s infinite}.cin-deco.in .tr{animation:cinSwT 8s ease-in-out 4.2s infinite reverse}
-.cin-deco.in .bl{animation:cinSwB 6.5s ease-in-out 4s infinite}.cin-deco.in .br{animation:cinSwB 7.4s ease-in-out 4.6s infinite reverse}
+.cin-deco.in .dtl{animation:cinSwT 7s ease-in-out 3.6s infinite}.cin-deco.in .dtr{animation:cinSwT 8s ease-in-out 4.2s infinite reverse}
+.cin-deco.in .dbl{animation:cinSwB 6.5s ease-in-out 4s infinite}.cin-deco.in .dbr{animation:cinSwB 7.4s ease-in-out 4.6s infinite reverse}
 @keyframes cinSwT{0%,100%{rotate:0deg}50%{rotate:1.6deg}}
 @keyframes cinSwB{0%,100%{rotate:0deg}50%{rotate:-1.4deg}}
 /* bulan realistis: terbit pelan, berputar sangat lambat, berpendar */
@@ -178,3 +178,57 @@
 .dk-w.bld .dk-l.front{translate:0 30%}
 .dk-w.bld .dk-l.lamin{translate:0 10%;scale:.96}
 .dk-w.bld .dk-l.on:not(.flyfar):not(.flynear){opacity:1;translate:0 0;filter:none;scale:1}
+
+/* ===== v39: bingkai foto mempelai sederhana (seperti contoh), ukuran mengikuti foto ===== */
+.t-pic .pf{width:min(60%,250px);aspect-ratio:.7;margin:26px auto 4px}
+.t-pic .pf-ph{inset:1.6% 2.4%}
+.t-pic .pf-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 2px rgba(255,226,170,.6)) drop-shadow(0 4px 10px rgba(0,0,0,.22))}
+.t-pic .pf .pf-svg{opacity:0;transition:opacity 1.6s ease .2s}.t-pic .pf.in .pf-svg{opacity:1}
+.t-pic .pf-orn{top:-5%;width:30%;max-width:84px}
+.t-princess .pf-orn{top:-4%;width:40%}.t-bali .pf-orn,.t-dayak .pf-orn{top:-6%;width:22%}.t-biru .pf-orn,.t-rimba .pf-orn{top:-1.5%;width:46%}.t-emas .pf-orn,.t-klasik .pf-orn{top:-12%;width:18%}
+/* bunga: satu rangkaian di sisi luar + satu kecil di sudut seberang, tidak menutupi wajah */
+.t-pic .pf-fl.a{width:46%;top:auto;bottom:16%}.t-pic .pf-fl.b{width:30%;top:auto;bottom:-5%}
+.t-pic .pf-l .pf-fl.a{left:-30%;right:auto}.t-pic .pf-l .pf-fl.b{right:-13%;left:auto}
+.t-pic .pf-r .pf-fl.a{right:-30%;left:auto}.t-pic .pf-r .pf-fl.b{left:-13%;right:auto}
+.t-pic .pf-l .pf-fl.b img{transform:scaleX(-1)}.t-pic .pf-r .pf-fl.b img{transform:none}
+.t-pic .pf-fl.b img{rotate:0deg!important}.t-pic .pf-r .pf-fl.a img{transform:scaleX(-1)}
+.t-dayak .pf-fl.a{width:52%}.t-dayak .pf-fl.b{width:34%}
+.t-pic .pf .pf-fl{transform:scale(.6);transition:opacity 1.4s ease 1s,transform 2s cubic-bezier(.3,1.2,.5,1) 1s}
+.t-pic .pf-side{display:none}
+
+/* tanpa tombol "Lewati" */
+.pskip{display:none!important}
+/* bulan: menyatu dengan langit (bukan tempelan) & memudar di bawah ke kabut */
+.cin-moon{mix-blend-mode:screen;-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 96%);mask-image:linear-gradient(180deg,#000 55%,transparent 96%)}
+.cin-moon .mh{width:200%}
+.cin-moon.blue .mt img{filter:brightness(1.25) contrast(1.35) sepia(.3) hue-rotate(185deg) saturate(1.4)}
+.cin-moon .mt img{animation-duration:360s}
+/* lingkaran cahaya scroll di tema malam tidak boleh terlihat seperti bulan kedua */
+.t-biru .sx-glow,.t-rimba .sx-glow{display:none!important}
+/* penutup tanpa bunga kiri-kanan */
+.t-pic .closing .ft,.t-pic .closing .fb{display:none}
+/* HP: muncul tanpa blur (blur berat saat scroll) */
+@media (pointer:coarse){
+  .t-pic .sec:not(.hero) .rv,.t-pic .swx .sw{filter:none!important}
+  .t-pic .sec:not(.hero) .rv{transition-property:opacity,transform,-webkit-mask-size,mask-size,-webkit-mask-position,mask-position!important}
+  .lv-cv{opacity:.85}
+}
+.cin-moon{-webkit-mask-image:none;mask-image:none}
+.cin-moon .mt,.cin-moon .ms{-webkit-mask-image:linear-gradient(180deg,#000 50%,transparent 97%);mask-image:linear-gradient(180deg,#000 50%,transparent 97%)}
+.cin-moon .mt{box-shadow:none}
+.cin-moon .mh{width:170%;background:radial-gradient(circle,rgba(220,232,255,.42),rgba(170,200,255,.14) 34%,transparent 66%)}
+/* cadangan tanpa WebGL: kabut lembut memudar */
+.cin-fogcss{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,rgba(255,250,240,.0),rgba(255,248,236,.92) 70%),linear-gradient(rgba(255,248,236,.85),rgba(255,248,236,.85));transition:opacity 5.5s cubic-bezier(.5,0,.3,1)}
+.cin-fogcss.dark{background:radial-gradient(ellipse at 50% 40%,rgba(10,16,40,0),rgba(10,16,40,.9) 70%),linear-gradient(rgba(10,16,40,.8),rgba(10,16,40,.8))}
+.cin-fogcss.go{opacity:0}
+/* v40: air terjun — garis air vertikal mengalir (bukan pita), cahaya lembut */
+.cin-wf .s{background:url(/assets/t/fx/streaks.webp) 0 0/100% 60% repeat;animation:cinWfV 1.1s linear infinite;opacity:.55;filter:blur(.4px)}
+.cin-wf .s.b{background:url(/assets/t/fx/streaks.webp) 30% 0/70% 40% repeat;animation:cinWfV2 .8s linear infinite;opacity:.35;filter:blur(1.2px)}
+@keyframes cinWfV{to{background-position:0 60%}}
+@keyframes cinWfV2{to{background-position:30% 40%}}
+.cin-wfl.night .cin-wf .s,.cin-wfl.night .cin-wf .s.b{background-image:url(/assets/t/fx/streaks.webp);filter:blur(.4px) drop-shadow(0 0 6px rgba(120,210,255,.9));opacity:.7}
+.cin-wf .g{opacity:.75}
+/* bulan lebih bercahaya & tepi lembut (menyatu dengan langit) */
+.cin-moon.blue .mt img{filter:brightness(1.7) contrast(1.2) sepia(.25) hue-rotate(185deg) saturate(1.3)}
+.cin-moon .mt{-webkit-mask-image:radial-gradient(circle,#000 64%,transparent 71%),linear-gradient(180deg,#000 50%,transparent 97%);-webkit-mask-composite:source-in;mask-image:radial-gradient(circle,#000 64%,transparent 71%),linear-gradient(180deg,#000 50%,transparent 97%);mask-composite:intersect}
+.cin-moon .mh{width:240%;background:radial-gradient(circle,rgba(225,236,255,.6),rgba(170,205,255,.22) 26%,transparent 60%)}

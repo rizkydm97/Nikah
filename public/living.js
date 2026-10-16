@@ -56,8 +56,8 @@
   function build() {
     parts = [];
     const d = dens * (W < 420 ? 0.85 : 1);
-    if (T.leaf) for (let i = 0; i < Math.round(T.leaf.n * d); i++) parts.push(spawnLeaf(false));
-    for (let i = 0; i < Math.round(T.glow.n * d); i++) parts.push(spawnGlow(true));
+    // kelopak/daun jatuh saat scroll dihapus (lebih ringan); tersisa titik cahaya halus
+    for (let i = 0; i < Math.round(T.glow.n * d * (matchMedia('(pointer:coarse)').matches ? 0.45 : 0.7)); i++) parts.push(spawnGlow(true));
     if (T.bubble) for (let i = 0; i < T.bubble; i++) parts.push({ k: 'bub', x: rnd(0, W), y: rnd(0, H), z: rnd(0.6, 1.3), s: rnd(3, 8), vy: -rnd(10, 22), ph: rnd(0, 6.28), vx: 0 });
   }
   const sparks = []; // kilau bintang 4 sudut (Princess) & kilau letupan
@@ -66,7 +66,7 @@
 
   function resize() {
     const col = document.querySelector('#app'), cw = col ? col.getBoundingClientRect().width : innerWidth;
-    W = Math.round(Math.min(innerWidth, cw || innerWidth)); H = innerHeight; DPR = Math.min(matchMedia('(pointer:coarse)').matches ? 1.25 : 1.5, devicePixelRatio || 1);
+    W = Math.round(Math.min(innerWidth, cw || innerWidth)); H = innerHeight; DPR = Math.min(matchMedia('(pointer:coarse)').matches ? 1 : 1.5, devicePixelRatio || 1);
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cv.style.width = W + 'px'; cv.style.height = H + 'px';
     if (!parts.length) build();
   }
@@ -156,7 +156,7 @@
       } else { ctx.globalAlpha = visK * clamp(p.life / (p.max || 1.5), 0, 1); ctx.drawImage(glowSpr, p.x - p.s / 2, p.y - p.s / 2, p.s, p.s); }
     }
     // --- kilau bintang (Princess)
-    if (T.spark && sparks.length < T.spark && Math.random() < dt * 3) sparks.push({ x: rnd(10, W - 10), y: rnd(10, H - 10), s: rnd(5, 11), t: 0, d: rnd(1, 1.8) });
+    if (T.spark && sparks.length < 3 && Math.random() < dt * 3) sparks.push({ x: rnd(10, W - 10), y: rnd(10, H - 10), s: rnd(5, 11), t: 0, d: rnd(1, 1.8) });
     for (let i = sparks.length - 1; i >= 0; i--) {
       const s = sparks[i]; s.t += dt; s.y -= sdy * 0.7; if (s.t > s.d) { sparks.splice(i, 1); continue; }
       const u = Math.sin(Math.PI * s.t / s.d), r = s.s * u;
@@ -236,7 +236,7 @@
   const CLOUD = { princess: ['cloudp1', 'cloudp2', 'cloudp3'], bali: ['cloudw1', 'cloudw2', 'cloudw3'], emas: ['cloudw1', 'cloudw3', 'cloudw2'], biru: ['cloudb', 'cloudb', 'cloudb'], rimba: ['cloudb', 'cloudb', 'cloudb'], klasik: ['cloudw2', 'cloudw1', 'cloudw3'], dayak: ['', '', ''] };
   let skies = [];
   function addSkies() {
-    if (!E('sectionClouds')) return;
+    if (!E('sectionClouds') || matchMedia('(pointer:coarse)').matches) return; // HP: tanpa awan per bagian (hemat)
     const set = CLOUD[key] || CLOUD.bali;
     $$('#app .sec:not(.hero)').forEach((sec, si) => {
       if (sec.querySelector(':scope>.lv-sky') || sec.classList.contains('gallery') || sec.classList.contains('bgi')) return; // jangan di belakang teks yang langsung di atas foto
@@ -324,11 +324,11 @@
     if (!chk()) { const mo = new MutationObserver(() => { if (chk()) mo.disconnect(); }); mo.observe(hero, { attributes: true, attributeFilter: ['class'] }); }
     const onScroll = () => { if (light) light.style.opacity = shownK ? clamp((scrollY - hero.offsetHeight * 0.4) / (hero.offsetHeight * 0.6), 0, 1).toFixed(3) : 0; };
     addEventListener('scroll', onScroll, { passive: true }); onScroll(); setInterval(onScroll, 1000);
-    setInterval(crossing, 14000); setTimeout(crossing, 5000);
+    setInterval(crossing, 22000); setTimeout(crossing, 8000);
     addSkies(); dayakStages(); skyScroll(); addEventListener('scroll', () => requestAnimationFrame(skyScroll), { passive: true });
     { const app = $('#app'); if (app && window.MutationObserver) { let tt = 0; new MutationObserver(() => { clearTimeout(tt); tt = setTimeout(() => { addSkies(); dayakStages(); }, 400); }).observe(app, { childList: true }); } }
     setInterval(perch, 7000);
-    heads();
+    // ledakan bunga saat judul muncul dihapus (lebih ringan & tidak berlebihan)
     window.__living = { burst: (x, y) => burst(x, y, true) };
   }
   const boot = setInterval(() => {
