@@ -12,6 +12,7 @@
     biru:     { fg: ['frangi1', 'bf_silver', 'frangi1'], cl: 'cloudb', col: '#9fd0ff', snd: { water: 1100, bell: { sc: [0, 3, 5, 7, 10], base: 523, gap: [3, 6.5], g: .035, k: 'bell' } } },
     rimba:    { fg: ['bf_blue1', 'bf_blue2', 'bf_blue1'], cl: 'cloudb', col: '#c8e0ff', snd: { wind: 300, cricket: 1, bell: { sc: [0, 3, 7, 10], base: 262, gap: [4, 8], g: .035, k: 'bell' } } },
     klasik:   { fg: ['frangi1', 'frangi2', 'frangi1'], cl: '', col: '#ffc46e', snd: { wind: 260, crackle: 1, gong: [8, 14], bell: { sc: [0, 2, 5, 7, 10], base: 220, gap: [2.5, 5], g: .06, k: 'gam' } } },
+    dayak:    { fg: ['feather', 'orchid', 'leafj'], cl: 'cloudw1', col: '#ffcf6a', snd: { wind: 380, bird: 1, cricket: 1, hornbill: 1, gong: [12, 22], bell: { sc: [0, 2, 5, 7, 9], base: 294, gap: [0.9, 2.6], g: .07, k: 'sape' } } },
   };
   const E = (k) => !(window.__CFG && window.__CFG.effects && window.__CFG.effects[k] === false);
   const VOLK = () => ({ low: .5, normal: 1, high: 1.6 }[(window.__CFG && window.__CFG.effects && window.__CFG.effects.soundVolume) || 'normal'] || 1);
@@ -38,7 +39,17 @@
     });
   }
   const BELL = [[1, 1], [2.76, .35], [5.4, .15]], GAM = [[1, 1], [2.4, .4], [3.9, .18]];
-  function note(b, oct) { const f = b.base * Math.pow(2, b.sc[Math.floor(Math.random() * b.sc.length)] / 12) * (oct || 1); tone(f, ac.currentTime, b.k === 'bell' ? 2.6 : 1.7, b.g, b.k === 'bell' ? 'sine' : 'triangle', b.k === 'bell' ? BELL : GAM); }
+  // petikan sape' (kecapi Dayak): dawai dipetik, nada pentatonik, kadang dua nada beruntun
+  function pluck(f, t, g, out) {
+    const o = ac.createOscillator(), o2 = ac.createOscillator(), fl = ac.createBiquadFilter(), e = ac.createGain();
+    o.type = 'sawtooth'; o2.type = 'triangle'; o.frequency.value = f; o2.frequency.value = f * 2.003; fl.type = 'lowpass'; fl.Q.value = 2;
+    fl.frequency.setValueAtTime(f * 7, t); fl.frequency.exponentialRampToValueAtTime(f * 1.3, t + 0.9);
+    e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(g, t + .006); e.gain.exponentialRampToValueAtTime(.0001, t + 1.5);
+    o.connect(fl); o2.connect(fl); fl.connect(e); e.connect(out || master); o.start(t); o2.start(t); o.stop(t + 1.6); o2.stop(t + 1.6);
+  }
+  function note(b, oct) {
+    if (b.k === 'sape') { const pick = () => b.base * Math.pow(2, b.sc[Math.floor(Math.random() * b.sc.length)] / 12) * (oct || 1) * (Math.random() < 0.3 ? 2 : 1); const t = ac.currentTime; pluck(pick(), t, b.g * 0.7); if (Math.random() < 0.55) pluck(pick(), t + 0.18 + Math.random() * 0.12, b.g * 0.55); return; }
+    const f = b.base * Math.pow(2, b.sc[Math.floor(Math.random() * b.sc.length)] / 12) * (oct || 1); tone(f, ac.currentTime, b.k === 'bell' ? 2.6 : 1.7, b.g, b.k === 'bell' ? 'sine' : 'triangle', b.k === 'bell' ? BELL : GAM); }
   const loop = (fn, a, b) => { const go = () => { if (!ac) return; if (on && !document.hidden) fn(); timers.push(setTimeout(go, rnd(a, b) * 1000)); }; timers.push(setTimeout(go, rnd(a, b) * 500)); };
   function startSound() {
     if (ac || !T) return;
@@ -53,6 +64,7 @@
     if (snd.bird) loop(() => { let t = ac.currentTime; for (let i = 0; i < 3; i++) { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.setValueAtTime(rnd(2600, 3600), t); o.frequency.exponentialRampToValueAtTime(rnd(3600, 4600), t + .09); e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(.025, t + .02); e.gain.exponentialRampToValueAtTime(.0001, t + .11); o.connect(e); e.connect(master); o.start(t); o.stop(t + .13); t += .15; } }, 5, 11);
     if (snd.cricket) loop(() => { let t = ac.currentTime; for (let i = 0; i < 4; i++) { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.value = 4400 + Math.random() * 200; e.gain.setValueAtTime(.0001, t); e.gain.linearRampToValueAtTime(.012, t + .012); e.gain.linearRampToValueAtTime(.0001, t + .05); o.connect(e); e.connect(master); o.start(t); o.stop(t + .06); t += .07; } }, .8, 1.6);
     if (snd.crackle) loop(() => { const s = ac.createBufferSource(); s.buffer = noiseBuf(); const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2500; const e = ac.createGain(), t = ac.currentTime; e.gain.setValueAtTime(rnd(.02, .05), t); e.gain.exponentialRampToValueAtTime(.0001, t + rnd(.01, .035)); s.connect(f); f.connect(e); e.connect(master); s.start(t, Math.random()); s.stop(t + .05); }, .3, 1.4);
+    if (snd.hornbill) loop(() => { let t = ac.currentTime; for (let i = 0; i < 3; i++) { const o = ac.createOscillator(), f = ac.createBiquadFilter(), e = ac.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(330, t); o.frequency.exponentialRampToValueAtTime(240, t + .12); f.type = 'bandpass'; f.frequency.value = 700; f.Q.value = 3; e.gain.setValueAtTime(.0001, t); e.gain.exponentialRampToValueAtTime(.035, t + .015); e.gain.exponentialRampToValueAtTime(.0001, t + .16); o.connect(f); f.connect(e); e.connect(master); o.start(t); o.stop(t + .18); t += .26; } }, 14, 26);
     if (snd.gong) loop(() => tone(72, ac.currentTime, 6, .1, 'sine', [[1, 1], [1.5, .5], [2.01, .35], [2.8, .2]]), snd.gong[0], snd.gong[1]);
     document.addEventListener('visibilitychange', () => { if (!ac) return; document.hidden ? ac.suspend() : (on && ac.resume()); });
     const b = $('.imm-snd'); if (b) b.classList.add('show');

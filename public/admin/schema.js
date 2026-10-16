@@ -24,7 +24,7 @@ const SCHEMA = [
     { k: 'general.blockRightClick', l: 'Matikan klik kanan', t: 'bool' },
   ] },
   { id: 'theme', title: 'Tema, Warna & Font', hint: 'Pilih tema tampilan. Isi undangan (nama, acara, foto, rekening, RSVP) tetap sama — hanya desain, animasi & dekorasi yang berganti.', fields: [
-    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan']], preset: 1 },
+    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan'], ['dayak', 'Tema 9 — Dayak: Kerajaan Malinau (tameng 3D, penari, enggang)']], preset: 1 },
     { k: 'theme.palette', l: 'Tema warna — klik salah satu; warna tulisan, tombol, latar & bunga ikut berganti', t: 'palette' },
     { k: 'theme.primary', l: 'Warna utama (judul)', t: 'color' }, { k: 'theme.accent', l: 'Warna tombol', t: 'color' }, { k: 'theme.rose', l: 'Warna merah muda (kartu Wedding Gift)', t: 'color' },
     { k: 'theme.gold', l: 'Warna emas (garis lengkung cover & penutup)', t: 'color' }, { k: 'theme.paper', l: 'Warna latar kertas', t: 'color' },
@@ -52,30 +52,31 @@ const SCHEMA = [
     { k: 'effects.javaFx', l: 'Nuansa Jawa hidup (Tema 1): gunungan wayang saat membuka, burung terbang, kunang-kunang, sinar matahari, motif batik kawung berkilau', t: 'bool' },
     { k: 'effects.zoomFx', l: 'Kupu-kupu beterbangan & daun gugur saat kamera menuju rumah', t: 'bool' },
   ] },
-  { id: 'livingfx', title: 'Sampul & Dunia Hidup (Tema 3-8)', fields: [
-    { k: 'effects.themedCover', l: 'Tema 3-8: tampilan awal berupa benda bertema yang diketuk tamu (Princess: amplop bersegel, Bali: pintu kori agung, Jawa Emas: kotak berpita & ronce melati, Biru: kerang mutiara, Rimba: lentera kupu-kupu cahaya, Klasik: kelir wayang & gunungan). Matikan untuk kembali ke cover lukisan + tombol', t: 'bool' },
-    { k: 'effects.livingWorld', l: 'Tema 3-8: dunia hidup di bagian dalam — kelopak/daun/kunang-kunang/bara tertiup angin, ikut bergeser saat scroll & menyingkir saat disentuh, cahaya khas tema, makhluk lewat sesekali, letupan kecil saat judul muncul', t: 'bool' },
-    { k: 'effects.livingDensity', l: 'Tema 3-8: kepadatan partikel dunia hidup', t: 'select', o: [['low', 'Sedikit (HP lama)'], ['normal', 'Sedang'], ['high', 'Banyak']] },
-    { k: 'effects.perchButterfly', l: 'Tema 3-8: kupu-kupu sesekali hinggap di tepi kartu lalu terbang lagi (ketuk untuk menerbangkannya)', t: 'bool' },
+  { id: 'livingfx', title: 'Sampul & Dunia Hidup (Tema 3-9)', fields: [
+    { k: 'effects.themedCover', l: 'Tema 3-9: tampilan awal berupa benda bertema yang diketuk tamu (Princess: amplop bersegel, Bali: pintu kori agung, Jawa Emas: kotak berpita & ronce melati, Biru: kerang mutiara, Rimba: lentera kupu-kupu cahaya, Klasik: kelir wayang & gunungan, Dayak: tameng talawang 3D). Matikan untuk kembali ke cover lukisan + tombol', t: 'bool' },
+    { k: 'effects.livingWorld', l: 'Tema 3-9: dunia hidup di bagian dalam — kelopak/daun/kunang-kunang/bara tertiup angin, ikut bergeser saat scroll & menyingkir saat disentuh, cahaya khas tema, makhluk lewat sesekali, letupan kecil saat judul muncul', t: 'bool' },
+    { k: 'effects.livingDensity', l: 'Tema 3-9: kepadatan partikel dunia hidup', t: 'select', o: [['low', 'Sedikit (HP lama)'], ['normal', 'Sedang'], ['high', 'Banyak']] },
+    { k: 'effects.sectionClouds', l: 'Tema 3-9: awan 3D (tiga lapis kedalaman) melayang di latar tiap bagian & ikut bergeser saat scroll; burung/enggang/kupu-kupu terbang dari jauh mendekat', t: 'bool' },
+    { k: 'effects.perchButterfly', l: 'Tema 3-9: kupu-kupu sesekali hinggap di tepi kartu lalu terbang lagi (ketuk untuk menerbangkannya)', t: 'bool' },
   ] },
-  { id: 'scrollfx', title: 'Efek Scroll (Tema 3-8)', fields: [
+  { id: 'scrollfx', title: 'Efek Scroll (Tema 3-9)', fields: [
     { k: 'effects.scrollFx', l: 'SAKLAR UTAMA efek scroll (matikan untuk menonaktifkan semua efek scroll di bawah sekaligus)', t: 'bool' },
-    { k: 'effects.scrollReveal', l: 'Tema 3-8: judul muncul kata per kata saat scroll (gaya mengikuti tema)', t: 'bool' },
-    { k: 'effects.bgParallax', l: 'Tema 3-8: gambar latar tiap bagian bergeser lebih pelan dari isi (kedalaman)', t: 'bool' },
-    { k: 'effects.bloomOrnament', l: 'Tema 3-8: cahaya (bulan/lampu) & kunang-kunang bertambah pelan ke bawah (tanpa bunga)', t: 'bool' },
-    { k: 'effects.skyShift', l: 'Tema 3-8: warna suasana berubah halus dari pagi ke senja ke malam sepanjang undangan', t: 'bool' },
-    { k: 'effects.galleryFx', l: 'Tema 3-8: foto galeri membesar & terang saat di tengah layar', t: 'bool' },
-    { k: 'effects.countdownFlip', l: 'Tema 3-8: angka hitung mundur membalik dengan kilau saat berganti', t: 'bool' },
-    { k: 'effects.wishFloat', l: 'Tema 3-8: kartu ucapan tamu naik pelan lalu melayang halus', t: 'bool' },
-    { k: 'effects.sectionVeil', l: 'Tema 3-8: tirai kabut lewat saat pindah bagian', t: 'bool' },
+    { k: 'effects.scrollReveal', l: 'Tema 3-9: judul muncul kata per kata saat scroll (gaya mengikuti tema)', t: 'bool' },
+    { k: 'effects.bgParallax', l: 'Tema 3-9: gambar latar tiap bagian bergeser lebih pelan dari isi (kedalaman)', t: 'bool' },
+    { k: 'effects.bloomOrnament', l: 'Tema 3-9: cahaya (bulan/lampu) & kunang-kunang bertambah pelan ke bawah (tanpa bunga)', t: 'bool' },
+    { k: 'effects.skyShift', l: 'Tema 3-9: warna suasana berubah halus dari pagi ke senja ke malam sepanjang undangan', t: 'bool' },
+    { k: 'effects.galleryFx', l: 'Tema 3-9: foto galeri membesar & terang saat di tengah layar', t: 'bool' },
+    { k: 'effects.countdownFlip', l: 'Tema 3-9: angka hitung mundur membalik dengan kilau saat berganti', t: 'bool' },
+    { k: 'effects.wishFloat', l: 'Tema 3-9: kartu ucapan tamu naik pelan lalu melayang halus', t: 'bool' },
+    { k: 'effects.sectionVeil', l: 'Tema 3-9: tirai kabut lewat saat pindah bagian', t: 'bool' },
   ] },
-  { id: 'soundfx', title: 'Suara & Sentuhan (Tema 3-8)', fields: [
-    { k: 'effects.ambientSound', l: 'Tema 3-8: suara suasana (angin, air, lonceng, gamelan, jangkrik, dll sesuai tema) mulai saat undangan dibuka', t: 'bool' },
-    { k: 'effects.soundVolume', l: 'Tema 3-8: volume suara suasana', t: 'select', o: [['low', 'Pelan'], ['normal', 'Sedang'], ['high', 'Keras']] },
-    { k: 'effects.tapFx', l: 'Tema 3-8: sentuh layar memunculkan kelopak/daun/cahaya + denting nada', t: 'bool' },
-    { k: 'effects.guestInWorld', l: 'Tema 3-8: nama tamu tergantung di dalam gambar tema setelah undangan terbuka', t: 'bool' },
-    { k: 'effects.nightMode', l: 'Tema 3-8: suasana lebih gelap & lampu menyala bila dibuka malam hari (18.00-05.00)', t: 'bool' },
-    { k: 'effects.haptic', l: 'Tema 3-8: getar halus di HP (Android) saat sentuh & di bagian acara', t: 'bool' },
+  { id: 'soundfx', title: 'Suara & Sentuhan (Tema 3-9)', fields: [
+    { k: 'effects.ambientSound', l: 'Tema 3-9: suara suasana (angin, air, lonceng, gamelan, jangkrik, dll sesuai tema) mulai saat undangan dibuka', t: 'bool' },
+    { k: 'effects.soundVolume', l: 'Tema 3-9: volume suara suasana', t: 'select', o: [['low', 'Pelan'], ['normal', 'Sedang'], ['high', 'Keras']] },
+    { k: 'effects.tapFx', l: 'Tema 3-9: sentuh layar memunculkan kelopak/daun/cahaya + denting nada', t: 'bool' },
+    { k: 'effects.guestInWorld', l: 'Tema 3-9: nama tamu tergantung di dalam gambar tema setelah undangan terbuka', t: 'bool' },
+    { k: 'effects.nightMode', l: 'Tema 3-9: suasana lebih gelap & lampu menyala bila dibuka malam hari (18.00-05.00)', t: 'bool' },
+    { k: 'effects.haptic', l: 'Tema 3-9: getar halus di HP (Android) saat sentuh & di bagian acara', t: 'bool' },
   ] },
   { id: 'scene', title: 'Dekorasi Tema 1 (Jawa Merah)', hint: 'Semua gambar dekorasi sudah memakai ilustrasi baru (rumah Jawa, rumah pohon, awan, buket & daun). Klik "Default" untuk kembali ke gambar bawaan. Gunakan PNG/WebP transparan bila mengganti.', fields: [
     { k: 'scene.sky', l: 'Latar langit', t: 'image', deco: 1 },
@@ -185,6 +186,7 @@ const THEME_PRESETS = {
   biru: { palette: 'auto', primary: '#2F4C7A', accent: '#3E5F92', rose: '#3E5F92', gold: '#B9A06A', paper: '#F2F5FA', ink: '#16243B', body: '#36445A', sideBg: '#E2E8F1', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   rimba: { palette: 'auto', primary: '#1F5560', accent: '#2B6A73', rose: '#2B6A73', gold: '#C8A24E', paper: '#F1F5F4', ink: '#0E2328', body: '#2E4247', sideBg: '#DEE8E6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   klasik: { palette: 'auto', primary: '#6B3E16', accent: '#8A5422', rose: '#8A5422', gold: '#B88A3E', paper: '#F8F1E6', ink: '#2C1A0B', body: '#47321F', sideBg: '#EBDFCC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  dayak: { palette: 'auto', primary: '#9A2A1E', accent: '#B8341F', rose: '#B8341F', gold: '#C99A3C', paper: '#FBF4E8', ink: '#1E120C', body: '#3E2A1E', sideBg: '#EFE2CC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
 };
 
 // tema warna: warna CSS + bunga ikut berganti (dipakai di Tema 1 & Tema 2)

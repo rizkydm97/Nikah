@@ -1,0 +1,103 @@
+/* ===== Tema 9 Dayak — animasi komponen (dayak.js) ===== */
+.dk-dancer,.dk-sape,.dk-hb,.dk-bw,.dk-shield,.dk-lamin,.dk-totem,.dk-bg-tree,.dk-cl,.dk-bush{display:block;width:100%!important;height:auto!important;overflow:visible;max-width:none}
+.dk-dancer g,.dk-sape g,.dk-hb g,.dk-bw g{transform-box:view-box}
+/* penari perempuan — gemulai, lengan naik turun seperti sayap enggang */
+.dk-dancer.f .bd{animation:dkFsway 3.6s ease-in-out infinite}
+@keyframes dkFsway{0%,100%{transform:rotate(-2.2deg) translateY(0)}25%{transform:rotate(0) translateY(3px)}50%{transform:rotate(2.2deg) translateY(0)}75%{transform:rotate(0) translateY(3px)}}
+.dk-dancer.f .ar.l{animation:dkFarmL 3.6s ease-in-out infinite}
+.dk-dancer.f .ar.r{animation:dkFarmR 3.6s ease-in-out infinite}
+@keyframes dkFarmL{0%,100%{transform:rotate(18deg)}50%{transform:rotate(-30deg)}}
+@keyframes dkFarmR{0%,100%{transform:rotate(30deg)}50%{transform:rotate(-18deg)}}
+.dk-dancer.f .ar.l .fa{animation:dkFfaL 3.6s ease-in-out infinite}
+.dk-dancer.f .ar.r .fa{animation:dkFfaR 3.6s ease-in-out infinite}
+@keyframes dkFfaL{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(14deg)}}
+@keyframes dkFfaR{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(24deg)}}
+.dk-dancer.f .fn{animation:dkFan .9s ease-in-out infinite alternate}
+.dk-dancer.f .ar.r .fn{animation-delay:-.45s}
+@keyframes dkFan{from{transform:rotate(-10deg)}to{transform:rotate(12deg)}}
+.dk-dancer .hd,.dk-dancer .hf{animation:dkFeat 1.8s ease-in-out infinite alternate}
+@keyframes dkFeat{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.dk-dancer .hed{animation:dkHead 3.6s ease-in-out infinite}
+@keyframes dkHead{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.dk-dancer.f .sk{animation:dkSkirt 1.8s ease-in-out infinite alternate}
+@keyframes dkSkirt{from{transform:skewX(-1.5deg)}to{transform:skewX(1.5deg)}}
+.dk-dancer.f .ft.l{animation:dkStep 3.6s ease-in-out infinite}
+.dk-dancer.f .ft.r{animation:dkStep 3.6s ease-in-out -1.8s infinite}
+@keyframes dkStep{0%,40%,100%{transform:translateY(0)}20%{transform:translateY(-4px)}}
+/* penari laki-laki — tari perang: jongkok-berdiri, mandau diayun, tameng didorong */
+.dk-dancer.m .bd{animation:dkMbob 1.6s ease-in-out infinite}
+@keyframes dkMbob{0%,100%{transform:translateY(0) rotate(-1deg)}30%{transform:translateY(14px) rotate(2deg)}55%{transform:translateY(4px) rotate(-2deg)}75%{transform:translateY(12px) rotate(1deg)}}
+.dk-dancer.m .lg.l{animation:dkLegL 1.6s ease-in-out infinite}
+.dk-dancer.m .lg.r{animation:dkLegR 1.6s ease-in-out infinite}
+@keyframes dkLegL{0%,100%{transform:rotate(0)}30%{transform:rotate(16deg)}75%{transform:rotate(12deg)}}
+@keyframes dkLegR{0%,100%{transform:rotate(0)}30%{transform:rotate(-16deg)}75%{transform:rotate(-12deg)}}
+.dk-dancer.m .lg.l .sh{animation:dkShL 1.6s ease-in-out infinite}
+.dk-dancer.m .lg.r .sh{animation:dkShR 1.6s ease-in-out infinite}
+@keyframes dkShL{0%,100%{transform:rotate(0)}30%{transform:rotate(-26deg)}75%{transform:rotate(-20deg)}}
+@keyframes dkShR{0%,100%{transform:rotate(0)}30%{transform:rotate(26deg)}75%{transform:rotate(20deg)}}
+.dk-dancer.m .arL{animation:dkShield 3.2s ease-in-out infinite}
+@keyframes dkShield{0%,100%{transform:rotate(0)}20%{transform:rotate(-14deg)}45%{transform:rotate(6deg)}70%{transform:rotate(-8deg)}}
+.dk-dancer.m .arR{animation:dkSword 3.2s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes dkSword{0%,100%{transform:rotate(0)}18%{transform:rotate(-34deg)}30%{transform:rotate(26deg)}55%{transform:rotate(-12deg)}70%{transform:rotate(18deg)}}
+.dk-dancer.m .arR .fa{animation:dkSwordF 3.2s ease-in-out infinite}
+@keyframes dkSwordF{0%,100%{transform:rotate(0)}18%{transform:rotate(-20deg)}30%{transform:rotate(30deg)}}
+.dk-dancer.m .hed{animation:dkMhead 3.2s ease-in-out infinite}
+@keyframes dkMhead{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}45%{transform:rotate(6deg)}}
+/* pemain sape' */
+.dk-sape .st{animation:dkStrum .42s ease-in-out infinite alternate}
+@keyframes dkStrum{from{transform:rotate(-5deg)}to{transform:rotate(7deg)}}
+.dk-sape .hed{animation:dkNod 1.7s ease-in-out infinite}
+@keyframes dkNod{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg) translateY(1px)}}
+.dk-sape .bd{animation:dkSit 3.4s ease-in-out infinite}
+@keyframes dkSit{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1.2deg)}}
+/* enggang terbang: sayap mengepak */
+.dk-hb .w1{transform-origin:86px 58px;animation:dkWing .52s ease-in-out infinite alternate}
+.dk-hb .w2{transform-origin:86px 56px;animation:dkWing2 .52s ease-in-out infinite alternate}
+@keyframes dkWing{from{transform:rotate(-4deg) scaleY(1)}to{transform:rotate(46deg) scaleY(-.55)}}
+@keyframes dkWing2{from{transform:rotate(4deg) scaleY(.9)}to{transform:rotate(36deg) scaleY(-.4)}}
+.dk-hb .hb-body{animation:dkHbBob .52s ease-in-out infinite alternate}
+@keyframes dkHbBob{from{transform:translateY(-2px)}to{transform:translateY(3px)}}
+.dk-hb.glide .w1,.dk-hb.glide .w2,.dk-hb.glide .hb-body{animation-duration:1.6s}
+.dk-hb.perch .hb-body{transform-origin:110px 80px;animation:dkPerch 4s ease-in-out infinite}
+@keyframes dkPerch{0%,60%,100%{transform:rotate(0)}66%{transform:rotate(-10deg)}72%{transform:rotate(4deg)}80%{transform:rotate(-6deg)}}
+/* kupu-kupu Rajah Brooke */
+.dk-bw .bw-l{animation:dkBwL .22s ease-in-out infinite alternate}
+.dk-bw .bw-r{animation:dkBwR .22s ease-in-out infinite alternate}
+@keyframes dkBwL{from{transform:scaleX(1)}to{transform:scaleX(.18)}}
+@keyframes dkBwR{from{transform:scaleX(-1)}to{transform:scaleX(-.18)}}
+/* pohon & daun bergoyang */
+.dk-tree{animation:dkTree 6s ease-in-out infinite;transform-box:view-box}
+@keyframes dkTree{0%,100%{rotate:-1.2deg}50%{rotate:1.2deg}}
+.dk-sway{transform-box:view-box;animation:dkSwayL 5s ease-in-out infinite}
+@keyframes dkSwayL{0%,100%{rotate:-3deg}50%{rotate:3deg}}
+.dk-static *,.dk-static{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){.dk-dancer *,.dk-sape *,.dk-hb *,.dk-bw *,.dk-tree,.dk-sway{animation:none!important}}
+/* ===== dunia hero Malinau ===== */
+.dk-w{position:absolute;inset:0;overflow:hidden;background:#f8e2c0}
+.dk-l{position:absolute;inset:0;will-change:transform;transform:scale(1.04)}
+.dk-l>svg{position:absolute;inset:0;width:100%;height:100%}
+.dk-l .dk-o,.dk-l .dk-cloud,.dk-l .dk-wf,.dk-l .dk-spray{position:absolute}
+.dk-o>svg{display:block;width:100%;height:auto}
+.dk-cloud{animation:dkCloud linear infinite;will-change:transform}
+.dk-cloud .dk-cl{filter:drop-shadow(0 4px 6px rgba(160,100,60,.15))}
+@keyframes dkCloud{from{transform:translate3d(-60cqw,0,0)}to{transform:translate3d(80cqw,0,0)}}
+.dk-rays{position:absolute;left:71.4%;top:40.2%;width:160%;aspect-ratio:1;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(255,240,200,.22) 0deg 5deg,rgba(255,240,200,0) 5deg 15deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 55%);mask-image:radial-gradient(circle,#000 8%,transparent 55%);animation:dkRays 80s linear infinite;mix-blend-mode:screen}
+@keyframes dkRays{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.dk-wf{overflow:hidden;border-radius:30% 30% 10% 10%/6% 6% 4% 4%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+.dk-wf i{position:absolute;inset:-100% 0 0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.95) 0 6px,rgba(205,232,240,.75) 6px 14px,rgba(255,255,255,.9) 14px 18px,rgba(170,210,225,.7) 18px 30px);animation:dkWf 1.1s linear infinite}
+.dk-wf i+i{opacity:.6;background-size:100% 46px;animation-duration:.8s;filter:blur(1px)}
+@keyframes dkWf{to{transform:translate3d(0,50%,0)}}
+.dk-spray{aspect-ratio:2.4;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.9),rgba(255,255,255,.3) 45%,transparent 70%);filter:blur(3px);animation:pglow 2.4s ease-in-out infinite}
+.dk-rvl path{stroke-dasharray:18 46;animation:dkRiver 3.6s linear infinite}
+.dk-rvl path+path{stroke-dasharray:10 60;animation-duration:2.6s;opacity:.7}
+@keyframes dkRiver{to{stroke-dashoffset:-128}}
+.dk-l.flyfar,.dk-l.flynear{pointer-events:none}
+.dk-flyer{position:absolute;left:0;top:0;transform-origin:50% 50%;will-change:transform;filter:drop-shadow(0 6px 6px rgba(60,30,10,.25))}
+.dk-l.flyfar .dk-flyer{filter:blur(.4px) saturate(.8) brightness(1.1);opacity:.9}
+.dk-bfly{position:absolute;left:0;top:0;width:7%;will-change:transform}
+.dk-perch{z-index:2}
+.dk-bush{display:block;width:100%;height:auto;overflow:visible}
+.dk-wf.thin i{animation-duration:.9s}
+.dk-wf.thin{opacity:.85}
+.dk-flag{transform-box:fill-box;transform-origin:50% 0;animation:dkFlag 1.3s ease-in-out infinite alternate}
+@keyframes dkFlag{from{transform:skewX(-14deg) scaleY(.92)}to{transform:skewX(12deg) scaleY(1.04)}}

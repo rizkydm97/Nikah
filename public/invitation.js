@@ -137,7 +137,7 @@
     if (c.effects.intro !== false) ld.innerHTML = `<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
     ld.classList.add('ready');
     const s = c.scene;
-    const urls = PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
+    const urls = PT && PT.live ? [PT.bg, ...['bf_rajah', 'feather', 'leafj', 'orchid', 'cloudw1'].map((n) => PT.spr + n + '.webp')] : PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
@@ -259,12 +259,12 @@
     const h = c.hero, t = PT, [bx, by, bx2, by2, br] = t.btn, [tx, ty, tx2, ty2] = t.title;
     return `<section class="sec hero pic pre" id="s-hero"><div class="pstage">
       <div class="pcam"><div class="pbox">
-        <img class="pw" src="${t.world}" alt="" decoding="async">
-        <canvas class="pgl" aria-hidden="true"></canvas>
+        ${t.live && window.DAYAK ? window.DAYAK.world() : `<img class="pw" src="${t.world}" alt="" decoding="async">
+        <canvas class="pgl" aria-hidden="true"></canvas>`}
         <div class="pfxl">${picLayers()}</div>
         <div class="pent"></div>
-        <img class="pcv pl" src="${t.spr.replace('spr/', t.key + '/ctitle.webp')}" alt="" decoding="async" style="${ctStyle(t.ct)}">
-        <img class="pcv pl" src="${t.spr.replace('spr/', t.key + '/cbtn.webp')}" alt="" decoding="async" style="${ctStyle(t.cb)}">
+        ${t.live ? '' : `<img class="pcv pl" src="${t.spr.replace('spr/', t.key + '/ctitle.webp')}" alt="" decoding="async" style="${ctStyle(t.ct)}">
+        <img class="pcv pl" src="${t.spr.replace('spr/', t.key + '/cbtn.webp')}" alt="" decoding="async" style="${ctStyle(t.cb)}">`}
         <div class="ptext" style="${rectStyle([tx, ty, tx2 - tx, ty2 - ty])};--tc:${t.text};--tg:${t.glowText}">
           <div class="pk">${esc(h.kicker)}</div><h1 class="pn"><span>${esc(h.groom)}</span><i>&amp;</i><span>${esc(h.bride)}</span></h1></div>
         <div class="pplate" style="${rectStyle([bx, by, bx2 - bx, by2 - by])};--br:${px(br)}cqw"><b>${esc(h.dateText)}</b><span>${esc(h.hashtag)}</span></div>
@@ -274,7 +274,7 @@
       <div class="scroll-hint"></div></div></section>`;
   }
   // data untuk sampul bertema (sampul.js)
-  const spOn = () => !!(window.SAMPUL && PT && C && C.effects.themedCover !== false && window.SAMPUL.keys.includes(PICT));
+  const spOn = () => !!(window.SAMPUL && PT && C && (C.effects.themedCover !== false || PT.live) && window.SAMPUL.keys.includes(PICT));
   function spH() {
     const n = String(C.cover.names || '').split('&').map((x) => x.trim()).filter(Boolean);
     return { key: PICT, PT, C, esc, reduce, D: sp, rbf, picFlyers, guest: guest || C.cover.defaultGuest, mono: mono2(), names: n.length >= 2 ? `${esc(n[0])}<i>&amp;</i>${esc(n[1])}` : esc(C.cover.names) };
@@ -469,7 +469,7 @@
   const G = { mix: 1, trm: 0, trp: 0, trc: [0.5, 0.5], ok: false }; // keadaan transisi cover -> dunia (dibaca tiap frame)
   function picGL(stage) {
     cancelAnimationFrame(glRaf); G.ok = false;
-    const cv = stage && $('.pgl', stage); if (!cv || reduce || !PT) return;
+    const cv = stage && $('.pgl', stage); if (!cv || reduce || !PT || PT.live) return;
     const box = cv.parentElement, cam = $('.pcam', stage), hero = stage.closest('.hero');
     let gl = null;
     try { gl = cv.getContext('webgl', { antialias: false, alpha: false }); } catch (e) { /* */ }
@@ -841,6 +841,15 @@
           e.animate([{ transform: 'translate(-50%,-50%) scale(.6)', opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: `translate(calc(-50% + ${cqx(mx - x)}cqw),calc(-50% + ${cqx(my - y)}cqw)) scale(1.3)`, opacity: 1, offset: 0.85 }, { transform: `translate(calc(-50% + ${cqx(mx - x)}cqw),calc(-50% + ${cqx(my - y)}cqw)) scale(.4)`, opacity: 0 }], { duration: T(rnd(2200, 3000)), delay: T(rnd(0, 600)), easing: 'cubic-bezier(.4,0,.3,1)', fill: 'both' });
         }
       },
+      // Dayak: kawanan enggang terbang mendekat, bulu-bulu enggang berguguran, kilau emas
+      enggang() {
+        if (window.DAYAK) { window.DAYAK.flyNow(stage, true); X.later(() => window.DAYAK.flyNow(stage, true), T(500)); X.later(() => window.DAYAK.flyNow(stage, false), T(300)); }
+        sparks(18, 392, 300, 34);
+        for (let i = 0; i < 12; i++) {
+          const p = spawn('pcx-p', imgP(i % 3 === 0 ? 'orchid' : 'feather'), rnd(80, 700), rnd(-40, 120)), dx = rnd(-14, 14), dy = rnd(40, 70);
+          p.animate([{ transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 0 }, { opacity: 1, offset: 0.15 }, { transform: `translate(calc(-50% + ${dx.toFixed(1)}cqw),calc(-50% + ${dy.toFixed(1)}cqw)) rotate(${rnd(-260, 260).toFixed(0)}deg)`, opacity: 0 }], { duration: T(rnd(2600, 3600)), delay: T(rnd(0, 700)), easing: 'cubic-bezier(.3,.1,.6,1)', fill: 'both' });
+        }
+      },
       // Klasik: blencong dinyalakan. Api membesar bergoyang, bara beterbangan
       lamp() {
         const [lx, ly] = PT.glow[0] ? [PT.glow[0][0], PT.glow[0][1]] : [410, 625];
@@ -858,9 +867,9 @@
       const [name, off] = String(ev).split('+');
       const go = () => {
         if (X.dead) return;
-        if (name === 'birds') picBirds(stage);
+        if (name === 'birds') { if (PT.live && window.DAYAK) { window.DAYAK.flyNow(stage, true); window.DAYAK.flyNow(stage, false); } else picBirds(stage); }
         if (name === 'petals') X.fall(PT.petals, 10, { size: 24, dur: 6500, spread: 2500 });
-        if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), 6, [r.width / 2, r.height * 0.5]); }
+        if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), PT.live ? 2 : 6, [r.width / 2, r.height * 0.5]); }
         if (name === 'cx' && PT.cx && CX[PT.cx]) CX[PT.cx]();
       };
       if (off) X.later(go, T(+off)); else go();
@@ -1088,6 +1097,7 @@
     }
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
+    if (PT && PT.live && window.DAYAK) window.DAYAK.start($('#s-hero .pstage'));
     if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
   }
 

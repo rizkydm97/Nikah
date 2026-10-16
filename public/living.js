@@ -20,6 +20,7 @@
     biru: { leaf: { imgs: ['frangi1'], n: 4, size: [10, 16] }, glow: { n: 24, col: '185,218,255', mode: 'wander', size: [1.8, 4] }, bubble: 7, star: 1, light: 'water', perch: ['bf_silver'], fly: ['bf:bf_silver', 'bf:bf_silver'], burst: '200,228,255' },
     rimba: { leaf: null, glow: { n: 34, col: '255,222,130', mode: 'wander', blink: 1, size: [2, 4.6] }, star: 1, light: 'moon', perch: ['bf_blue1', 'bf_blue2', 'bf_gold'], fly: ['bf:bf_blue1', 'bf:bf_gold'], burst: '255,226,150' },
     klasik: { leaf: { imgs: ['leafm', 'frangi1'], n: 4, size: [12, 18] }, glow: { n: 30, col: '255,150,60', mode: 'rise', ember: 1, size: [1.5, 3.4] }, light: 'candle', perch: ['bf_gold2'], fly: ['wayang', 'bf:bf_gold'], burst: '255,180,90' },
+    dayak: { leaf: { imgs: ['leafj', 'orchid', 'feather', 'leafj', 'orchid'], n: 10, size: [13, 22] }, glow: { n: 16, col: '255,226,150', mode: 'drift', size: [2, 4.2] }, light: 'sun', perch: ['bf_rajah'], fly: ['hornbill', 'hornbill', 'bf:bf_rajah'], burst: '255,214,120' },
   };
   let key, T, hero, cv, ctx, W = 0, H = 0, DPR = 1, parts = [], fx = [], imgs = {}, glowSpr = null, running = false, started = false, dens = 1;
   const E = (k) => { const e = window.__CFG && window.__CFG.effects; return !(e && e[k] === false); };
@@ -197,28 +198,71 @@
     const d = rnd(0.16, 0.26).toFixed(2); el.innerHTML = `<div class="rb-in"><i class="l" style="background-image:url(${SP(n)});animation-duration:${d}s"></i><i class="r" style="background-image:url(${SP(n)});animation-duration:${d}s"></i></div>`;
     return el;
   }
+  // terbang 3D: dari jauh (kecil, pucat) mendekat ke kamera (besar) atau sebaliknya, sambil berbelok
+  function fly3d(el, o) {
+    crL.appendChild(el);
+    const away = o.away, dir = o.dir, n = 16, kf = [];
+    const p0 = away ? [o.x0 != null ? o.x0 : (dir > 0 ? -0.2 : 1.2) * W, rnd(0.45, 0.75) * H] : [rnd(0.2, 0.8) * W, rnd(0.12, 0.32) * H];
+    const p2 = away ? [rnd(0.3, 0.7) * W, rnd(0.1, 0.25) * H] : [(dir > 0 ? 1.25 : -0.25) * W, rnd(0.35, 0.8) * H];
+    const p1 = [(p0[0] + p2[0]) / 2 + rnd(-0.25, 0.25) * W, Math.min(p0[1], p2[1]) - rnd(0.02, 0.12) * H];
+    const s0 = away ? o.big : o.small, s1 = away ? o.small : o.big;
+    for (let i = 0; i <= n; i++) {
+      const u = i / n, v = away ? u : u * u * 0.6 + u * 0.4, x = (1 - v) * (1 - v) * p0[0] + 2 * (1 - v) * v * p1[0] + v * v * p2[0], y = (1 - v) * (1 - v) * p0[1] + 2 * (1 - v) * v * p1[1] + v * v * p2[1];
+      const sc = s0 * Math.pow(s1 / s0, v), bank = Math.sin(u * Math.PI * 2 + o.ph) * 8;
+      const a = u < 0.08 ? u / 0.08 : u > 0.92 ? (1 - u) / 0.08 : 1, depth = Math.min(1, sc / o.big);
+      kf.push({ transform: `translate3d(${f(x)}px,${f(y)}px,0) translate(-50%,-50%) scale(${sc.toFixed(3)}) rotate(${bank.toFixed(1)}deg) scaleX(${o.face})`, opacity: +(a * (0.45 + 0.55 * depth)).toFixed(3) });
+    }
+    el.animate(kf, { duration: o.dur, delay: o.delay || 0, easing: 'linear', fill: 'both' }).onfinish = () => el.remove();
+  }
+  const f = (v) => v.toFixed(1);
   function crossing() {
     if (!crL || document.hidden || visK < 0.5) return;
-    const kind = T.fly[Math.floor(Math.random() * T.fly.length)], dir = Math.random() < 0.5 ? 1 : -1, y0 = rnd(H * 0.12, H * 0.5);
-    const across = (el, size, dur, wave, flip) => {
-      crL.appendChild(el); const sx = dir > 0 ? -size - 20 : W + 20, ex = dir > 0 ? W + 20 : -size - 20, kf = [];
-      for (let i = 0; i <= 10; i++) { const u = i / 10; kf.push({ transform: `translate3d(${(sx + (ex - sx) * u).toFixed(0)}px,${(y0 + Math.sin(u * Math.PI * 2 + wave) * 30 - u * 40).toFixed(0)}px,0) scaleX(${flip ? -dir : 1})` }); }
-      el.animate(kf, { duration: dur, easing: 'linear' }).onfinish = () => el.remove();
-    };
-    if (kind === 'dove') { // merpati putih, dua pose sayap bergantian
-      const el = document.createElement('div'); el.className = 'lv-dove'; el.innerHTML = `<img src="${SP('dove1')}" alt=""><img src="${SP('dove2')}" alt="">`; across(el, 54, 9000, 0, true);
-    } else if (kind === 'bird_gold') {
-      for (let i = 0; i < 3; i++) { const el = document.createElement('div'); el.className = 'lv-bird'; el.innerHTML = `<img src="${SP('bird_gold')}" alt="">`; el.style.marginTop = i * 16 + 'px'; el.style.marginLeft = (dir > 0 ? -1 : 1) * i * 26 + 'px'; across(el, 40 - i * 6, 10000 + i * 300, i * 0.6, true); }
-    } else if (kind === 'flock') {
-      for (let i = 0; i < 5; i++) { const el = document.createElement('div'); el.className = 'lv-sil'; el.innerHTML = '<svg viewBox="0 0 24 12"><path d="M0 4 Q6 0 12 6 Q18 0 24 4 Q18 2.6 12 8.4 Q6 2.6 0 4Z"/></svg>'; el.style.marginTop = (i % 2) * 12 + i * 5 + 'px'; el.style.marginLeft = (dir > 0 ? -1 : 1) * i * 20 + 'px'; el.firstChild.style.animationDelay = -i * 0.13 + 's'; across(el, 22 - i * 2, 12000, i * 0.3, false); }
-    } else if (kind === 'wayang') { // bayang gunungan disapukan dalang di balik kelir
+    const kind = T.fly[Math.floor(Math.random() * T.fly.length)], dir = Math.random() < 0.5 ? 1 : -1, away = Math.random() < 0.3, ph = rnd(0, 6);
+    const base = (el, w, small, big, dur, face, extra) => { el.style.width = w + 'px'; fly3d(el, Object.assign({ dir, away, small, big, dur, face, ph }, extra || {})); };
+    if (kind === 'dove') { const el = document.createElement('div'); el.className = 'lv-dove'; el.innerHTML = `<img src="${SP('dove1')}" alt=""><img src="${SP('dove2')}" alt="">`; base(el, 54, 0.3, 1.7, 7000, -dir); if (Math.random() < 0.6) { const e2 = el.cloneNode(true); base(e2, 54, 0.25, 1.4, 7600, -dir, { delay: 500 }); } }
+    else if (kind === 'bird_gold') { for (let i = 0; i < 3; i++) { const el = document.createElement('div'); el.className = 'lv-bird'; el.innerHTML = `<img src="${SP('bird_gold')}" alt="">`; base(el, 44, 0.25, 1.6 - i * 0.25, 7600 + i * 500, -dir, { delay: i * 350 }); } }
+    else if (kind === 'flock') { for (let i = 0; i < 6; i++) { const el = document.createElement('div'); el.className = 'lv-sil'; el.innerHTML = '<svg viewBox="0 0 24 12"><path d="M0 4 Q6 0 12 6 Q18 0 24 4 Q18 2.6 12 8.4 Q6 2.6 0 4Z"/></svg>'; el.firstChild.style.animationDelay = -i * 0.13 + 's'; base(el, 26, 0.3, 1.8 - (i % 3) * 0.35, 9000 + i * 300, 1, { delay: i * 220 }); } }
+    else if (kind === 'hornbill' && window.DAYAK) { const n = Math.random() < 0.5 ? 1 : 2; for (let i = 0; i < n; i++) { const el = document.createElement('div'); el.className = 'lv-hb'; el.innerHTML = window.DAYAK.hornbill(); base(el, 120, 0.22, 1.9 - i * 0.3, 8000 + i * 600, dir, { delay: i * 500 }); } }
+    else if (kind === 'wayang') { // bayang gunungan disapukan dalang di balik kelir
       const el = document.createElement('img'); el.className = 'lv-way'; el.src = '/assets/scene/gunungan.webp'; el.alt = ''; crL.appendChild(el);
       const s = Math.min(W * 0.7, 300), sx = dir > 0 ? -s : W, ex = dir > 0 ? W : -s;
       el.style.width = s + 'px';
       el.animate([{ transform: `translate3d(${sx}px,${H * 0.2}px,0) rotate(${-dir * 12}deg)`, opacity: 0 }, { opacity: 0.17, offset: 0.2 }, { transform: `translate3d(${(sx + ex) / 2}px,${H * 0.16}px,0) rotate(${dir * 4}deg)`, offset: 0.5 }, { opacity: 0.17, offset: 0.8 }, { transform: `translate3d(${ex}px,${H * 0.22}px,0) rotate(${dir * 14}deg)`, opacity: 0 }], { duration: 9000, easing: 'ease-in-out' }).onfinish = () => el.remove();
-    } else if (kind.startsWith('bf:')) {
-      for (let i = 0; i < 2; i++) { const el = rbfEl(kind.slice(3), 34 - i * 6); el.style.marginTop = i * 30 + 'px'; across(el, 34, 8500 + i * 900, i * 1.3, false); }
-    }
+      if (Math.random() < 0.5) { for (let i = 0; i < 5; i++) { const b = document.createElement('div'); b.className = 'lv-sil'; b.innerHTML = '<svg viewBox="0 0 24 12"><path d="M0 4 Q6 0 12 6 Q18 0 24 4 Q18 2.6 12 8.4 Q6 2.6 0 4Z"/></svg>'; base(b, 22, 0.3, 1.5, 9000, 1, { delay: 1200 + i * 200 }); } }
+    } else if (kind.startsWith('bf:')) { for (let i = 0; i < 2; i++) { const el = rbfEl(kind.slice(3), 40); fly3d(el, { dir, away, small: 0.35, big: 1.5 - i * 0.3, dur: 7800 + i * 900, face: 1, ph: ph + i, delay: i * 400 }); } }
+  }
+
+  // ---------- awan 3D di tiap bagian (di belakang isi, di atas lukisan latar) ----------
+  const CLOUD = { princess: ['cloudp1', 'cloudp2', 'cloudp3'], bali: ['cloudw1', 'cloudw2', 'cloudw3'], emas: ['cloudw1', 'cloudw3', 'cloudw2'], biru: ['cloudb', 'cloudb', 'cloudb'], rimba: ['cloudb', 'cloudb', 'cloudb'], klasik: ['cloudw2', 'cloudw1', 'cloudw3'], dayak: ['', '', ''] };
+  let skies = [];
+  function addSkies() {
+    if (!E('sectionClouds')) return;
+    const set = CLOUD[key] || CLOUD.bali;
+    $$('#app .sec:not(.hero)').forEach((sec, si) => {
+      if (sec.querySelector(':scope>.lv-sky') || sec.classList.contains('gallery')) return;
+      const sky = document.createElement('div'); sky.className = 'lv-sky'; sky.setAttribute('aria-hidden', 'true');
+      // tiga kedalaman: jauh (kecil, pelan, samar) -> dekat (besar, cepat, jelas)
+      [[0.35, 30, 140, 0.6, 4], [0.65, 44, 95, 0.75, 14], [1, 66, 62, 0.9, 28]].forEach(([z, w, dur, op, top], i) => {
+        const c = document.createElement('div'); c.className = 'lv-cl d' + i;
+        const n = set[(si + i) % set.length];
+        c.innerHTML = n ? `<img src="${SP(n)}" alt="">` : (window.DAYAK ? window.DAYAK.cloud(i % 2) : '');
+        c.style.cssText = `top:${top + ((si * 7 + i * 11) % 12)}%;width:${w}%;--z:${z};opacity:${op};animation-duration:${dur}s;animation-delay:${-dur * (((si * 0.29) + i * 0.41) % 1)}s`;
+        sky.appendChild(c);
+      });
+      const bg = sec.querySelector(':scope>.bgl'); if (bg) bg.after(sky); else sec.prepend(sky);
+      skies.push({ sec, sky });
+    });
+  }
+  function skyScroll() {
+    for (const o of skies) { const r = o.sec.getBoundingClientRect(); if (r.bottom < -50 || r.top > H + 50) continue; o.sky.style.setProperty('--lvp', (((r.top + r.height / 2) - H / 2) / H).toFixed(3)); }
+  }
+
+  // ---------- Tema 9 Dayak: penari & enggang hinggap di dalam bagian ----------
+  function dayakStages() {
+    const D = window.DAYAK; if (!D || key !== 'dayak') return;
+    const q = $('#app .sec.quote'); if (q && !q.querySelector('.lv-dk')) { const st = document.createElement('div'); st.className = 'lv-dk q'; st.innerHTML = `<div class="f">${D.dancerF()}</div><div class="s">${D.sapePlayer()}</div><div class="m">${D.dancerM()}</div>`; q.appendChild(st); }
+    const cl = $('#app .sec.closing .stage'); if (cl && !cl.querySelector('.lv-dk')) { const st = document.createElement('div'); st.className = 'lv-dk c'; st.innerHTML = `<div class="f">${D.dancerF()}</div><div class="m">${D.dancerM()}</div>`; cl.appendChild(st); }
+    const cap = $('#app .sec.events .cap'); if (cap && !cap.querySelector('.lv-hbp')) { const h = document.createElement('div'); h.className = 'lv-hbp'; h.innerHTML = D.hornbill({ perch: 1 }); cap.appendChild(h); }
   }
 
   // ---------- kupu-kupu hinggap di kartu ----------
@@ -280,7 +324,9 @@
     if (!chk()) { const mo = new MutationObserver(() => { if (chk()) mo.disconnect(); }); mo.observe(hero, { attributes: true, attributeFilter: ['class'] }); }
     const onScroll = () => { if (light) light.style.opacity = shownK ? clamp((scrollY - hero.offsetHeight * 0.4) / (hero.offsetHeight * 0.6), 0, 1).toFixed(3) : 0; };
     addEventListener('scroll', onScroll, { passive: true }); onScroll(); setInterval(onScroll, 1000);
-    setInterval(crossing, 17000); setTimeout(crossing, 6000);
+    setInterval(crossing, 14000); setTimeout(crossing, 5000);
+    addSkies(); dayakStages(); skyScroll(); addEventListener('scroll', () => requestAnimationFrame(skyScroll), { passive: true });
+    { const app = $('#app'); if (app && window.MutationObserver) { let tt = 0; new MutationObserver(() => { clearTimeout(tt); tt = setTimeout(() => { addSkies(); dayakStages(); }, 400); }).observe(app, { childList: true }); } }
     setInterval(perch, 7000);
     heads();
     window.__living = { burst: (x, y) => burst(x, y, true) };

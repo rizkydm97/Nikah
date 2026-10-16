@@ -75,6 +75,19 @@
       birds: 'svg', bf: ['bf_bali1', 'bf_gold'], petals: ['leafm', 'frangi1'], sparkle: 8, flies: [250, 560, 560, 760], gunungan: 1,
       shots: [[410,610,2.5,2200,500], [565,640,2.4,1500,400,'birds'], [185,485,2.3,1500,400], ['end', 2300, 0, 'bf']],
     },
+    // Tema 9: dunia hidup digambar vektor (dayak.js) — bukan lukisan; live:1 = tanpa shader, lapisan parallax DOM
+    dayak: {
+      live: 1, tint:[1,.92,.78], cx:'enggang',
+      entry:'shield', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,740],
+      motes:{n:14,c:'255,236,170',up:1},
+      name: 'Dayak — Kerajaan Malinau', base: 'jawa', pal: 'maroon', dark: false,
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566,
+      text: '#5a1a0c', glowText: 'rgba(255,246,226,.95)',
+      wf: [], mist: [[0, 560, 784, 130, 1], [260, 690, 520, 90]], water: [],
+      glow: [[560, 470, 170, 'rgba(255,236,190,.55)']], clouds: [], cloudBand: [150, 330],
+      birds: '', bf: ['bf_rajah'], petals: ['feather', 'leafj', 'orchid'], sparkle: 0, flies: 0,
+      shots: [[392,730,1.9,1900,400], [250,850,2.5,1500,500,'petals'], [545,850,2.5,1400,500], [680,560,2.8,1500,500,'birds'], [664,650,2.2,1300,300], ['end', 2300, 0, 'bf']],
+    },
   };
   for (const k in window.PIC_THEMES) {
     const t = window.PIC_THEMES[k];

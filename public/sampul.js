@@ -17,6 +17,7 @@
     biru: 'Ketuk kerang untuk membuka mutiara',
     rimba: 'Ketuk lentera untuk melepas cahaya',
     klasik: 'Ketuk gunungan untuk memulai',
+    dayak: 'Ketuk tameng untuk membuka undangan',
   };
 
   // ---------- partikel CSS untuk suasana sampul ----------
@@ -161,6 +162,19 @@
     },
   };
 
+  // ---------- Dayak: tameng talawang 3D ----------
+  OBJ.dayak = (H) => {
+    const D = window.DAYAK; if (!D) return '';
+    const edge = Array.from({ length: 6 }, (_, i) => `<div class="ds-ed" style="transform:translateZ(${-(i + 1) * 1.6}px)"><svg viewBox="0 0 200 520"><path d="${D.SH}" fill="${i < 5 ? '#4a2810' : '#2a160a'}"/></svg></div>`).join('');
+    const sh = D.shield({ mono: H.mono.replace(/<i>&amp;<\/i>/, '<tspan font-size="14">&amp;</tspan>') });
+    return `<div class="ds"><i class="ds-aura"></i>
+      <div class="ds-rot">
+        <div class="ds-back">${D.shieldBack()}</div>${edge}
+        <div class="ds-in"><div class="ds-peek" style="background-image:url(${H.PT.bg})"></div><i class="ds-light"></i></div>
+        <div class="ds-h l">${sh}</div><div class="ds-h r">${sh}</div><i class="ds-sheen"></i><i class="ds-seam"></i>
+      </div><i class="sp-ping"></i><i class="sp-ping b"></i></div>
+      <div class="ds-plq"><i class="ds-str"></i><div class="ds-tg"><span>${H.esc(H.C.cover.toLabel)}</span><b>${H.esc(H.guest)}</b></div></div>`;
+  };
   const AMB = {
     princess: () => `<i class="sp-light"></i>${rays(6)}${bokeh(9, '255,220,236')}${fallers(9, ['rose1', 'rose2'], 24)}${rise(16, '255,236,246', 3)}`,
     bali: () => `<i class="sp-sun"></i>${rays(7)}<img class="sp-cl a" src="${SP}cloudw1.webp" alt=""><img class="sp-cl b" src="${SP}cloudw2.webp" alt="">${fallers(8, ['frangi1', 'frangi2', 'leafm'], 22)}${rise(14, '255,232,170', 3)}`,
@@ -168,6 +182,7 @@
     biru: () => `${stars(46, 46)}<i class="sp-moon"></i><div class="sp-sea"><i class="sp-rip a"></i><i class="sp-rip b"></i><i class="sp-mref"></i></div><img class="sp-mist a" src="${T}fx/mist.webp" alt=""><img class="sp-mist b" src="${T}fx/mist.webp" alt="">${flies(12, 30, 70, '190,225,255')}`,
     rimba: () => `${stars(40, 50)}<i class="sp-moon"></i><img class="sp-mist a" src="${T}fx/mist.webp" alt=""><img class="sp-mist b" src="${T}fx/mist.webp" alt="">${flies(22, 12, 92, '255,220,130')}`,
     klasik: () => `<i class="sp-vig"></i>${rise(22, '255,150,60', 2.6)}<i class="sp-smoke a"></i><i class="sp-smoke b"></i>`,
+    dayak: () => { const D = window.DAYAK; return `<i class="sp-sun"></i>${rays(8)}<img class="sp-mist a" src="${T}fx/mist.webp" alt="">${D ? `<div class="sp-bgt l">${D.batangGaring()}</div><div class="sp-bgt r">${D.batangGaring()}</div><div class="sp-hbf a">${D.hornbill()}</div><div class="sp-hbf b">${D.hornbill()}</div><div class="sp-hbf c">${D.hornbill()}</div>` : ''}${fallers(9, ['feather', 'leafj', 'orchid'], 22)}${rise(16, '255,226,150', 3)}`; },
   };
 
   function cover(H) {
@@ -179,6 +194,7 @@
       <div class="sp-bg"><img src="${H.PT.bg}" alt=""></div><i class="sp-grade"></i>
       <div class="sp-amb" aria-hidden="true">${amb}</div>
       ${top}
+      ${k === 'dayak' && window.DAYAK && !H.reduce ? `<div class="sp-dnc l">${window.DAYAK.dancerF()}</div><div class="sp-dnc r">${window.DAYAK.dancerM()}</div>` : ''}
       <div class="sp-mid"><div class="sp-obj" id="openBtn" role="button" tabindex="0" aria-label="${H.esc(o.button)}">${OBJ[k](H)}</div></div>
       <div class="sp-bot"><button class="sp-go" type="button"><i class="sp-hand"></i>${H.esc(o.button)}</button><div class="sp-hint">${HINT[k]}</div></div>
       <div class="flyers"></div><div class="sp-fx"></div>
@@ -392,6 +408,40 @@
       flash('ember', 3000, 1200, 1);
       hand(3650, 450);
       ret = { camDelay: 3600 * D, after: 'kelir' };
+    }
+    if (k === 'dayak') {
+      const ds = $('.ds', cv), rot = $('.ds-rot', cv), hl = $('.ds-h.l', cv), hr = $('.ds-h.r', cv), plq = $('.ds-plq', cv), aura = $('.ds-aura', cv), seam = $('.ds-seam', cv), light = $('.ds-light', cv);
+      sfx(k, 'gong'); cv.classList.add('ds-wake');
+      $$('.sp-ping', ds).forEach((p) => p.remove());
+      const cur = getComputedStyle(rot).transform; rot.style.animation = 'none';
+      an(plq, [{ transform: 'translateX(-50%) rotate(0)', opacity: 1 }, { transform: 'translateX(-50%) rotate(12deg)', offset: 0.3 }, { transform: 'translateX(-50%) translateY(60px) rotate(-20deg)', opacity: 0 }], { duration: 900, easing: 'ease-in' });
+      fadeUI(600);
+      an(aura, [{ opacity: 0.6, transform: 'translate(-50%,-50%) scale(1)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.5)', offset: 0.5 }, { opacity: 0.7, transform: 'translate(-50%,-50%) scale(1.2)' }], { duration: 1600 });
+      // tameng berputar penuh (ketebalan kayu terlihat), lalu menghadap kita lagi
+      an(rot, [{ transform: cur === 'none' ? 'none' : cur }, { transform: 'rotateY(180deg) rotateX(8deg) scale(1.08)', offset: 0.5 }, { transform: 'rotateY(360deg) rotateX(0deg) scale(1.16)' }], { duration: 1500, delay: 250, easing: 'cubic-bezier(.45,0,.3,1)' });
+      later(() => sfx(k, 'crack'), 1500);
+      an(seam, [{ opacity: 0, transform: 'scaleY(.2)' }, { opacity: 1, transform: 'scaleY(1)' }], { duration: 400, delay: 1650, easing: 'ease-out' });
+      // terbelah dua seperti pintu, cahaya pagi Malinau di dalamnya
+      const o = { duration: 1300, delay: 1950, easing: 'cubic-bezier(.6,0,.2,1)' };
+      an(hl, [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-118deg)' }], o);
+      an(hr, [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(118deg)' }], o);
+      an(light, [{ opacity: 0.3 }, { opacity: 1 }], { duration: 900, delay: 1950 });
+      an($('.ds-in', cv), [{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 1900 }); an($('.ds-sheen', cv), [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: 1900 });
+      $$('.ds-back,.ds-ed', cv).forEach((e) => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 1950 }));
+      later(() => {
+        sfx(k, 'swing'); const r = rel(ds); sparks(20, r.cx, r.cy, '255,214,120', 140, 1800); toss(['feather', 'orchid', 'leafj'], 10, r.cx, r.cy, 26, 230);
+        if (window.DAYAK) for (let i = 0; i < 3; i++) { const b = document.createElement('div'); b.className = 'sp-hbo'; b.innerHTML = window.DAYAK.hornbill(); fx.appendChild(b); const dir = i === 1 ? 0 : i ? 1 : -1;
+          an(b, [{ transform: `translate(${r.cx}px,${r.cy}px) translate(-50%,-50%) scale(.15) scaleX(${dir || 1})`, opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(${r.cx + dir * box.width * 0.6}px,${r.cy - box.height * (0.3 + i * 0.08)}px) translate(-50%,-50%) scale(${1.6 + i * 0.3}) scaleX(${dir || 1})`, opacity: 0.95 }], { duration: 1700, delay: i * 160, easing: 'cubic-bezier(.4,0,.7,1)' }); }
+        sfx(k, 'fly');
+      }, 2150);
+      // kamera melangkah masuk melewati tameng
+      an(ds, [{ transform: 'scale(1)' }, { transform: 'scale(1.1)', offset: 0.3 }, { transform: 'scale(4.5)', opacity: 0.2 }], { duration: 1500, delay: 2600, easing: 'cubic-bezier(.55,0,.6,1)' });
+      $$('.sp-dnc', cv).forEach((e, i) => an(e, [{ transform: 'none', opacity: 1 }, { transform: `translateX(${i ? 40 : -40}vw) scale(1.3)`, opacity: 0 }], { duration: 1200, delay: 2500, easing: 'ease-in' }));
+      an($('.sp-amb', cv), [{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 2600 });
+      flash('dawn', 3100, 1200, 1);
+      hand(3700, 500);
+      later(() => X.fall(['feather', 'orchid', 'leafj'], 14, { size: 24, dur: 7000, spread: 3000 }), 3700);
+      ret = { camDelay: 3650 * D };
     }
     return ret;
   }
