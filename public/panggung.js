@@ -38,6 +38,40 @@
   }
   const leafP = (s, rot, col) => `<g transform="scale(${s}) rotate(${rot})"><path d="M0 0 C12 -10 14 -34 0 -54 C-14 -34 -12 -10 0 0Z" fill="${col}"/><path d="M0 -2 L0 -50" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/></g>`;
 
+
+  // ---------- pohon bervolume: kanopi gumpalan berlapis (gelap → sedang → terang) + batang & ranting ----------
+  const TPAL = {
+    blossom: { lit: '#fff0f6', mid: '#ff9fc6', sh: '#9a2f66', tk: ['#8a5a78', '#3a2038'], dot: '#ffffff' },
+    lav:     { lit: '#f3e8ff', mid: '#b698f2', sh: '#44248a', tk: ['#6a4a86', '#2a1448'], dot: '#f7e9ff' },
+    night:   { lit: '#7fd0cc', mid: '#237a90', sh: '#07243f', tk: ['#5a78b0', '#10204a'], dot: '#d8f4ff' },
+    night2:  { lit: '#8cc4f2', mid: '#2c5fae', sh: '#0a1a58', tk: ['#27407a', '#08112e'], dot: '#cfe6ff' },
+  };
+  function leafyTree(kind, seed, flip) {
+    const c = TPAL[kind], id = U('tr');
+    const defs = rg(id + 'b', [[0, c.mid], [1, c.sh]], 'cx=".4" cy=".3" r=".85"') + rg(id + 'm', [[0, c.lit], [0.5, c.mid], [1, c.sh]], 'cx=".36" cy=".28" r=".85"') + rg(id + 'f', [[0, c.lit], [1, c.mid]], 'cx=".34" cy=".26" r=".9"') + lg(id + 't', [[0, c.tk[0]], [1, c.tk[1]]], 'x1="0" y1="0" x2="1" y2="0"');
+    const layer = (n, r0, r1, g, dx, dy, k) => Array.from({ length: n }, (_, i) => {
+      const a = R(i + seed, k) * 6.283, d = Math.sqrt(R(i + seed, k + 1)), r = r0 + R(i + seed, k + 2) * (r1 - r0);
+      const x = 160 + Math.cos(a) * d * 120 + dx, y = 168 + Math.sin(a) * d * 96 * (Math.sin(a) < 0 ? 1.05 : 0.8) + dy;
+      return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="url(#${id}${g})"/>`;
+    }).join('');
+    const br = [[160, 300, 96, 226], [166, 290, 228, 214], [158, 262, 160, 190], [160, 330, 116, 262], [166, 320, 214, 258]].map(([x0, y0, x1, y1]) => `<path d="M${x0} ${y0} Q${f1((x0 + x1) / 2 + (R(x0, 3) - 0.5) * 24)} ${f1((y0 + y1) / 2 - 10)} ${x1} ${y1}" stroke="${c.tk[1]}" stroke-width="${f1(5 + R(x1, 2) * 4)}" fill="none" stroke-linecap="round"/>`).join('');
+    const dots = Array.from({ length: 26 }, (_, i) => `<circle cx="${f1(60 + R(i + seed, 9) * 200)}" cy="${f1(80 + R(i + seed, 8) * 150)}" r="${f1(1.4 + R(i + seed, 7) * 2.2)}" fill="${c.dot}" opacity="${f1(0.55 + R(i, 6) * 0.4)}"/>`).join('');
+    return `<svg class="tr-svg" viewBox="0 0 320 480" style="${flip ? 'transform:scaleX(-1)' : ''}"><defs>${defs}</defs>
+      <ellipse cx="164" cy="476" rx="70" ry="9" fill="#000" opacity=".28"/>
+      <path d="M146 478 C152 420 148 350 152 280 L176 280 C172 350 180 420 186 478Z" fill="url(#${id}t)"/><path d="M150 470 C156 420 152 350 156 285" stroke="${c.lit}" stroke-width="2.4" fill="none" opacity=".5"/>${br}
+      ${layer(24, 26, 44, 'b', 8, 14, 1)}${layer(30, 19, 34, 'm', 0, 0, 11)}${layer(28, 11, 22, 'f', -16, -20, 21)}${dots}</svg>`;
+  }
+  function pineTree(kind, seed) {
+    const c = TPAL[kind], id = U('pn'); let t = '';
+    const defs = lg(id, [[0, c.lit], [0.45, c.mid], [1, c.sh]], 'x1="0" y1="0" x2="1" y2="0.3"');
+    for (let i = 0; i < 7; i++) {
+      const y0 = 40 + i * 58, y1 = y0 + 92, hw = 22 + i * 9 + R(i + seed, 2) * 4;
+      t += `<path d="M80 ${y0} C${80 + hw * 0.5} ${y0 + 30} ${80 + hw * 0.85} ${y1 - 20} ${80 + hw} ${y1} Q${80 + hw * 0.5} ${y1 - 12} 80 ${y1 - 6} Q${80 - hw * 0.5} ${y1 - 12} ${80 - hw} ${y1} C${80 - hw * 0.85} ${y1 - 20} ${80 - hw * 0.5} ${y0 + 30} 80 ${y0}Z" fill="url(#${id})"/>`;
+    }
+    return `<svg class="tr-svg" viewBox="0 0 160 480"><defs>${defs}</defs><rect x="74" y="400" width="12" height="76" fill="${c.tk[1]}"/>${t}</svg>`;
+  }
+  const tr = (cls, st, svg, d) => `<div class="pg-o tr ${cls}" style="${st};--td:${d || 0}s">${svg}</div>`;
+
   // ======================= TEMA 10: AIR TERJUN BULAN =======================
   function rockPath(side) { // tebing batu kiri/kanan yang mengapit air terjun
     if (side === 'l') return 'M0 380 C40 360 80 372 120 352 C160 334 196 344 232 358 C268 372 300 392 336 410 L344 452 C330 520 336 600 320 680 C306 760 300 820 270 870 L0 900Z';
@@ -76,6 +110,8 @@
       ${L('cliffs', img('cliffs'), -0.3)}
       ${L('wf', `<div class="at-wf" style="${P(354, 386, 76, 494)}"><i class="glow"></i><i class="core"></i><i class="st a"></i><i class="st b"></i><i class="lip"></i></div><div class="at-mist" style="${P(252, 830, 280, 100)}"></div>`, -0.2)}
       ${L('pool', img('pool') + `<div class="at-refl" style="${P(340, 878, 104, 220)}"></div>` + rip, 0)}
+      ${L('trees', tr('l back', P(190, 600, 120), pineTree('night2', 3), 0.5) + tr('r back', P(474, 600, 120), pineTree('night2', 5), 0.7) + tr('l', P(-30, 500, 300), leafyTree('night', 4, 0), 0) + tr('r', P(514, 500, 300), leafyTree('night', 12, 1), 0.25), 0.3)}
+      ${L('mistb', `<div class="pg-o mb1" style="${P(-80, 820, 760)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt=""></div><div class="pg-o mb2" style="${P(240, 900, 700)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o mb3" style="${P(-40, 180, 520)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt="" style="opacity:.55"></div>`, 0.25)}
       ${L('bed', `<div class="pg-o bl" style="${P(-40, 930, 360)}">${flowerBed(0, 1)}</div><div class="pg-o br" style="${P(464, 930, 360)}">${flowerBed(1, 9)}</div>`, 0.45)}
       ${L('fol', `<div class="pg-o tl" style="${P(-30, -16, 340)}">${foliage(0)}</div><div class="pg-o tr" style="${P(474, -16, 340)}">${foliage(1)}</div>`, 0.6)}
       <div class="pg-l fly" data-z="0.5"></div>
@@ -139,8 +175,9 @@
     return `<div class="pg-w is">
       ${L('sky', `<img class="is-sky" src="${T}istana/sky.webp" alt="">` + stars(20, 0, 60, 7), -1)}
       <div class="pg-l moon" data-z="-0.85"><div class="is-moon" style="${P(318, 70, 148, 148)}"><i class="h"></i><div class="m"><img src="${T}fx/moon.webp" alt=""></div></div></div>
-      ${L('dark', `<div class="pg-o dl" style="${P(-160, 40, 520)}"><img class="is-cl" src="${T}istana/cl-purple.webp" alt=""></div><div class="pg-o dr" style="${P(360, 10, 560)}"><img class="is-cl red" src="${T}istana/cl-peach2.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o dl2" style="${P(-120, 300, 360)}"><img class="is-cl" src="${T}istana/cl-purple.webp" alt=""></div>`, -0.7)}
+      ${L('dark', `<div class="pg-o dl" style="${P(-160, 40, 520)}"><img class="is-cl" src="${T}istana/cl-purple.webp" alt=""></div><div class="pg-o dr" style="${P(360, 10, 560)}"><img class="is-cl red" src="${T}istana/cl-purple.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o dl2" style="${P(-120, 300, 360)}"><img class="is-cl" src="${T}istana/cl-purple.webp" alt=""></div>`, -0.7)}
       ${L('waves', `<div class="pg-o wv1" style="${P(-120, 860, 1024)}"><img class="is-cl" src="${T}istana/cl-wave.webp" alt=""></div><div class="pg-o wv2" style="${P(-60, 960, 960)}"><img class="is-cl" src="${T}istana/cl-wave.webp" alt="" style="transform:scaleX(-1)"></div>`, -0.5)}
+      ${L('trees', tr('l back', P(110, 400, 200), leafyTree('lav', 6, 0), 0.4) + tr('r back', P(474, 400, 200), leafyTree('lav', 14, 1), 0.6) + tr('l', P(24, 360, 250), leafyTree('blossom', 2, 0), 0) + tr('r', P(510, 360, 250), leafyTree('blossom', 9, 1), 0.2), -0.45)}
       ${L('pillars', `<div class="pg-o p1" style="${P(70, 210, 70, 560)}">${pillarSvg(0)}</div><div class="pg-o p2" style="${P(644, 210, 70, 560)}">${pillarSvg(1)}</div><div class="pg-o p3" style="${P(150, 250, 56, 470)}">${pillarSvg(0)}</div><div class="pg-o p4" style="${P(578, 250, 56, 470)}">${pillarSvg(1)}</div>`, -0.35)}
       ${L('gzl', `<div class="pg-o gz" style="${P(212, 300, 360)}">${gazeboSvg()}</div><div class="pg-o st" style="${P(0, 590, 784, 600)}">${stairsSvg()}</div>`, -0.15)}
       ${L('pink', `<div class="pg-o cl" style="${P(-110, 640, 420)}"><img class="is-cl" src="${T}istana/cl-peach.webp" alt=""></div><div class="pg-o cr" style="${P(470, 620, 420)}"><img class="is-cl" src="${T}istana/cl-peach2.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o cl2" style="${P(40, 760, 300)}"><img class="is-cl" src="${T}istana/cl-peach2.webp" alt=""></div><div class="pg-o cr2" style="${P(450, 770, 300)}"><img class="is-cl" src="${T}istana/cl-peach.webp" alt="" style="transform:scaleX(-1)"></div>`, 0.1)}
@@ -186,7 +223,8 @@
     later(() => W.classList.add('thru'), 500);       // kamera menembus gapura batu (±1,8 dtk)
     on('.moon', 1900); later(() => W.classList.add('rise'), 2000);  // bulan terbit perlahan dari balik air terjun
     later(() => flyers(W, 'bf_blue1', 1), 3600);
-    on('.bed', 3900); on('.fol', 5200);
+    on('.trees', 3000); on('.mistb', 3600);
+    on('.bed', 4300); on('.fol', 5400);
     later(() => flyers(W, 'bf_silver', 1), 6200);
     later(() => W.classList.remove('bld'), 9000);
   }
@@ -197,11 +235,12 @@
     const pr = (c, ms) => later(() => { const p = $('.props', W); if (p) p.classList.add(c); }, ms);
     on('.sky', 0); on('.waves', 150);
     on('.gzl', 400);                                  // gazebo naik dari bawah, tangga memanjang
+    on('.trees', 1500);                               // pohon-pohon tumbuh & masuk dari kedua sisi
     later(() => W.classList.add('sink'), 2200);       // ombak awan biru turun ke bawah
     on('.pink', 1900); on('.pillars', 2600); on('.bed', 3600); on('.fog', 3600);
     on('.moon', 5000); on('.dark', 5400);
     later(() => flyers(W, 'bf_pink1', 2), 4400);
-    pr('cur', 6800); pr('ch', 8000); pr('top', 9000); pr('edge', 9800);
+    pr('k-cur', 6800); pr('k-ch', 8000); pr('k-top', 9000); pr('k-edge', 9800);
     later(() => W.classList.remove('bld'), 11000);
   }
   function props(stage, C) { // tirai & lampu gantung digambar oleh cinema.js (dipakai bersama)
@@ -210,7 +249,7 @@
     p.innerHTML = `<div class="is-cur l">${C.curtainSvg(PR, 'iscl')}</div><div class="is-cur r">${C.curtainSvg(PR, 'iscr')}</div><div class="is-ch"><div class="cp-sw">${C.chandSvg(PR, 'isch')}</div></div>
       <div class="is-top l">${roseBush(0, 5)}</div><div class="is-top r">${roseBush(1, 7)}</div><div class="is-edge l"></div><div class="is-edge r"></div>`;
   }
-  function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('cur', 'ch', 'top', 'edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
+  function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
 
   window.LIVEW = Object.assign(window.LIVEW || {}, {
     airterjun: { world: airterjunWorld, start, film: filmAt, finish },

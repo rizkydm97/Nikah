@@ -154,3 +154,10 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - Urutan hero di semua tema: **1) adegan tersusun & hidup sampai selesai → 2) bunga sudut → 3) pilar → tirai → lampu gantung → 4) baru bingkai nama**, lalu teks muncul satu per satu (judul, nama, tanggal, tamu).
 - Tema 4 Princess: setelah amplop dibuka lukisan langsung tampil utuh (tanpa kabut ulang), tanpa ledakan mawar & kereta yang menumpuk di tengah, segel amplop lebih halus.
 - Jawa Emas tanpa kabut ulang; Tema 9/10/11 mengikuti urutan yang sama (Istana: tirai → lampu gantung → mawar atas → pilar tepi → nama).
+
+## v44 — Perbaikan Princess, penutup, Tema 10 & 11
+- Princess: kabut & kereta kencana di atas awan dikembalikan seperti v40 (v43 mematikannya lewat `noFog`/`noCx`/`!CIN`).
+- Bunga atas/bawah di bagian Terima Kasih Tema 3–11 muncul lagi (aturan CSS `display:none` dari v39 dihapus).
+- Bug tirai Tema 11: bentrok nama kelas `.edge.top` dengan hiasan bunga membuat layer props terpotong; kelas diganti `k-cur/k-ch/k-top/k-edge`.
+- Awan 3D bervolume baru (`tools/gen-clouds.py`) untuk Tema 10 & 11; kabut melayang di Tema 10.
+- Pohon bervolume yang tumbuh & masuk dari sisi (Tema 10: pohon malam + pinus; Tema 11: pohon sakura + lavender).

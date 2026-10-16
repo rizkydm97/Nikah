@@ -273,7 +273,7 @@
       later(() => { // segel lilin terbelah dua dan jatuh
         sfx(k, 'crack'); sparks(22, sr.cx, sr.cy, '255,226,150', 110); toss(['rose1', 'rose2'], 6, sr.cx, sr.cy, 22, 160);
         ['l', 'r'].forEach((s, i) => { const h = seal.cloneNode(true); h.classList.add('half', s); $$('.sp-ping', h).forEach((p) => p.remove()); h.style.left = sr.cx + 'px'; h.style.top = sr.cy + 'px'; fx.appendChild(h);
-          an(h, [{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${i ? 46 : -46}px),calc(-50% + 150px)) rotate(${i ? 70 : -70}deg)`, opacity: 0 }], { duration: 750, easing: 'cubic-bezier(.3,.1,.7,1)' }); });
+          an(h, [{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${i ? 46 : -46}px),calc(-50% + 150px)) rotate(${i ? 70 : -70}deg)`, opacity: 0 }], { duration: 1100, easing: 'cubic-bezier(.3,.1,.7,1)' }); });
         seal.style.visibility = 'hidden';
       }, 360);
       fadeUI(600);

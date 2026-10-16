@@ -779,7 +779,7 @@
     const anim = CIN ? null : cam.animate(kf, { duration: total, delay: cd, fill: 'both' });
     $$('.pcv', stage).forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: (E.titleFade ? 300 : 1100) * D, delay: (E.titleFade ? 100 : 250) * D, easing: 'ease-in-out', fill: 'forwards' }));
     if (!SPL) later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
-    if (PT.carriage && !CIN) later(() => picCarriage(stage), cd); // sinema baru: tanpa kereta melayang (terlihat janggal)
+    if (PT.carriage) later(() => picCarriage(stage), cd); // kereta kencana di atas awan + kabut (dikembalikan dari v40)
     if (!CIN) later(() => { if (!X.dead) picBirds(stage); }, cd);
     const T = (ms) => ms * D, pbox = $('.pbox', stage), mk = (cls, html, parent) => X.mk(cls, html, parent);
     const rnd = (a, b) => a + Math.random() * (b - a);

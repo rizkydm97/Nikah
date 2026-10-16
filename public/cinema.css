@@ -205,8 +205,6 @@
 .cin-moon .mt img{animation-duration:360s}
 /* lingkaran cahaya scroll di tema malam tidak boleh terlihat seperti bulan kedua */
 .t-biru .sx-glow,.t-rimba .sx-glow{display:none!important}
-/* penutup tanpa bunga kiri-kanan */
-.t-pic .closing .ft,.t-pic .closing .fb{display:none}
 /* HP: muncul tanpa blur (blur berat saat scroll) */
 @media (pointer:coarse){
   .t-pic .sec:not(.hero) .rv,.t-pic .swx .sw{filter:none!important}
