@@ -123,3 +123,11 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - **Bingkai foto mempelai** berbentuk khas tema dengan ornamen di atas; bunga mempelai pria di kiri, mempelai wanita di kanan (dicerminkan), bergoyang pelan; garis bingkai tergambar saat muncul.
 - **Peralihan tiap bagian khas tema** (tidak seragam): Princess mekar lembut, Bali naik dari kabut, Jawa Emas disapu kilau emas, Biru muncul dari gelap malam, Rimba fokus berpendar, Klasik kelir terbuka dari tengah (dan tirai kelir antar bagian), Dayak membelah dari tengah. Judul tiap tema juga muncul dengan gaya berbeda.
 - **Scroll halus** dengan roda mouse di desktop; di HP memakai scroll asli.
+
+## v38 — Adegan dibangun sepotong demi sepotong, tirai/lampu gantung/pilar, air terjun bercahaya, ayat Arab
+- **Lukisan Tema 3-8 dipisah menjadi lapisan** (`tools/gen-layers.py` → `public/assets/t/<tema>/lyr/`): plat latar berkabut + potongan objek (istana, taman, gazebo, candi, gunung, sawah, air terjun, sungai, tokoh, macan, pulau melayang, joglo, wayang, gamelan…). Saat dibuka, objek muncul satu per satu seperti video referensi, lalu menyatu kembali menjadi lukisan hidup yang utuh. Tema 9 Dayak dibangun lapis demi lapis (langit → awan → gunung → bukit → sungai → pohon → lamin → penari → semak).
+- **Properti panggung khas tema** (ala video kedua): pilar naik dari bawah, tirai masuk dari samping lalu terikat, lampu gantung turun dan berayun — warna & bentuk berbeda per tema (kristal pink, lentera prada, robyong emas, kristal biru, lentera hijau, robyong merah marun).
+- **Air terjun bercahaya**: lebih cerah, aliran berkilau, kabut di dasarnya; versi malam (Biru, Rimba) menyala biru.
+- **Ayat Arab punya kolom sendiri** di Admin → Ayat & Hitung Mundur ("Ayat dalam tulisan Arab" + ukuran Sedang/Besar/Sangat besar), tampil kanan-ke-kiri dengan huruf Amiri. Bila kolom Arab kosong tapi teks ayat berisi baris Arab, baris itu otomatis dipisahkan & diperbesar.
+- **Penari Dayak di bagian Ayat** dipindah ke atas ayat sehingga tidak menutupi tulisan.
+- **iPhone "halaman dimuat ulang"**: penggunaan memori GPU dikurangi — kanvas WebGL lebih kecil di HP & satu tekstur saja, tanpa parallax per-frame di HP untuk Tema 9, awan bagian tidak lagi di belakang teks berfoto, tanpa backdrop-filter besar di HP, dan semua animasi hero dijeda saat hero tidak terlihat.

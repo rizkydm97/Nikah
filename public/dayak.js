@@ -345,7 +345,8 @@
       const ix = Math.sin(t * 0.21) * 0.6 + px, iy = Math.cos(t * 0.17) * 0.4 + py, sc = Math.min(scrollY / innerHeight, 1);
       for (const l of layers) l.el.style.transform = `translate3d(${(-ix * l.z * 1.1).toFixed(2)}cqw,${(-iy * l.z * 0.8 + sc * l.z * 6).toFixed(2)}cqw,0) scale(${(1.04 + Math.max(0, l.z) * 0.02).toFixed(3)})`;
     };
-    if (!reduce) raf = requestAnimationFrame(tick);
+    // HP/tablet: tanpa parallax per-frame (tiap lapisan selebar layar akan jadi lapisan GPU -> memori iPhone habis)
+    if (!reduce && matchMedia('(pointer:fine)').matches) raf = requestAnimationFrame(tick);
     if (reduce) return;
     const far = W.querySelector('.flyfar'), near = W.querySelector('.flynear');
     // enggang: kadang jauh (kecil, di antara gunung), kadang dekat (besar, melintas di depan kamera)

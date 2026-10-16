@@ -359,3 +359,5 @@
 .ds-tg b{display:block;font:700 18px/1.25 var(--fDisplay);color:#ffd77a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sp-dayak .sp-obj{display:flex;flex-direction:column;align-items:center}
 .sp-hbo{position:absolute;left:0;top:0;width:110px;will-change:transform;filter:drop-shadow(0 8px 8px rgba(40,16,4,.35))}
+
+@media (pointer:coarse){.sp-bg img{animation:none;transform:scale(1.08)}.cover.sp .sp-go{-webkit-backdrop-filter:none;backdrop-filter:none}.kr-to{-webkit-backdrop-filter:none;backdrop-filter:none}}

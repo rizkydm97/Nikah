@@ -918,3 +918,6 @@ a{color:inherit}
 .pcx-ember.gold{background:radial-gradient(circle,#fffbe0,#ffd36a 55%,transparent 72%);box-shadow:0 0 1.2cqw rgba(255,210,110,.9)}
 @media (prefers-reduced-motion:reduce){.pcx-glow,.pcx-p,.pcx-sweep,.pcx-dusk,.pcx-sun,.pcx-star,.pcx-ring,.pcx-flare,.pcx-ember{display:none}}
 .pbox.gl-on .pwf,.pbox.gl-on .pwt{display:none}
+
+/* ayat Arab: kolom sendiri, lebih besar, kanan-ke-kiri */
+.quote .qar{font-family:'Amiri','Scheherazade New','Traditional Arabic',serif;font-weight:400;font-size:calc(clamp(22px,6.2vw,28px) * var(--ars,1.25));line-height:2.05;direction:rtl;unicode-bidi:plaintext;margin:0 0 14px;text-shadow:0 1px 10px rgba(0,0,0,.45);word-spacing:.08em}

@@ -121,7 +121,7 @@ const SCHEMA = [
     { k: 'hero.dateText', l: 'Tanggal (teks)', t: 'text' }, { k: 'hero.hashtag', l: 'Hashtag', t: 'text' },
   ] },
   { id: 'quote', title: 'Ayat & Hitung Mundur', fields: [
-    { k: 'quote.bg', l: 'Foto latar', t: 'image', ar: '1/1.42', bg: 1 }, { k: 'quote.text', l: 'Teks ayat / kutipan', t: 'area' }, { k: 'quote.source', l: 'Sumber', t: 'text' },
+    { k: 'quote.bg', l: 'Foto latar', t: 'image', ar: '1/1.42', bg: 1 }, { k: 'quote.arabic', l: 'Ayat dalam tulisan Arab (tampil lebih besar, kanan-ke-kiri). Kosongkan bila tidak ada', t: 'area' }, { k: 'quote.arabicSize', l: 'Ukuran tulisan Arab', t: 'select', o: [['normal', 'Sedang'], ['large', 'Besar'], ['xl', 'Sangat besar']] }, { k: 'quote.text', l: 'Teks ayat / terjemahan / kutipan', t: 'area' }, { k: 'quote.source', l: 'Sumber', t: 'text' },
     { k: 'quote.labels.days', l: 'Label hari', t: 'text' }, { k: 'quote.labels.hours', l: 'Label jam', t: 'text' },
     { k: 'quote.labels.minutes', l: 'Label menit', t: 'text' }, { k: 'quote.labels.seconds', l: 'Label detik', t: 'text' },
     { k: 'quote.saveButton', l: 'Teks tombol Save The Date', t: 'text' },

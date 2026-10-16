@@ -11,7 +11,7 @@
   const SPEED = { slow: 1.5, normal: 1, fast: 0.65 };
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // font -> [bobot, punya-italic]. Hanya yang punya italic asli diminta italic (hindari italic palsu).
-  const FONTS = { 'Cormorant Infant': ['400;500;600;700', 1], 'Cormorant Garamond': ['400;500;600;700', 1], 'Playfair Display': ['400;500;600;700', 1], 'Lora': ['400;500;600;700', 1], 'Poppins': ['400;500;600;700', 0], 'Libre Baskerville': ['400;700', 1], 'EB Garamond': ['400;500;600;700', 1], 'Marcellus': ['', 0], 'Cinzel': ['400;500;600;700', 0], 'Great Vibes': ['', 0], 'Allura': ['', 0], 'Parisienne': ['', 0], 'Pinyon Script': ['', 0], 'Dancing Script': ['400;500;600;700', 0], 'Alice': ['', 0], 'Abhaya Libre': ['400;500;600;700', 0], 'Montserrat': ['400;500;600;700', 1], 'Josefin Sans': ['400;500;600;700', 1] };
+  const FONTS = { 'Cormorant Infant': ['400;500;600;700', 1], 'Cormorant Garamond': ['400;500;600;700', 1], 'Playfair Display': ['400;500;600;700', 1], 'Lora': ['400;500;600;700', 1], 'Poppins': ['400;500;600;700', 0], 'Libre Baskerville': ['400;700', 1], 'EB Garamond': ['400;500;600;700', 1], 'Marcellus': ['', 0], 'Cinzel': ['400;500;600;700', 0], 'Great Vibes': ['', 0], 'Allura': ['', 0], 'Parisienne': ['', 0], 'Pinyon Script': ['', 0], 'Dancing Script': ['400;500;600;700', 0], 'Alice': ['', 0], 'Abhaya Libre': ['400;500;600;700', 0], 'Montserrat': ['400;500;600;700', 1], 'Amiri': ['400;700', 0], 'Josefin Sans': ['400;500;600;700', 1] };
   const CLOUD_SETS = { jawa: [1, 2, 3, 4].map((i) => `/assets/scene/cloud${i}.webp`), rose: [1, 2, 3, 4].map((i) => `/assets/rose/rose-cloud${i}.webp`) };
   let CLOUDS = CLOUD_SETS.jawa, THEME = 'jawa';
   // tema aktif: gambar dekorasi tema 2 disimpan terpisah (scene2) supaya pindah tema tidak menimpa gambar tema 1
@@ -162,7 +162,7 @@
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's');
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
-    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, 'Poppins', 'Lora'])].filter(Boolean).map((n) => {
+    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, 'Poppins', 'Lora', 'Amiri'])].filter(Boolean).map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
       if (!w) return 'family=' + nm;
       const ws = w.split(';');
@@ -277,7 +277,7 @@
   const spOn = () => !!(window.SAMPUL && PT && C && (C.effects.themedCover !== false || PT.live) && window.SAMPUL.keys.includes(PICT));
   function spH() {
     const n = String(C.cover.names || '').split('&').map((x) => x.trim()).filter(Boolean);
-    return { key: PICT, PT, C, esc, reduce, D: sp, rbf, picFlyers, guest: guest || C.cover.defaultGuest, mono: mono2(), names: n.length >= 2 ? `${esc(n[0])}<i>&amp;</i>${esc(n[1])}` : esc(C.cover.names) };
+    return { key: PICT, PT, C, esc, reduce, D: sp, rbf, picFlyers, scene: cinOn() && !PT.live ? '/assets/t/' + PICT + '/lyr/plate.webp' : PT.world, guest: guest || C.cover.defaultGuest, mono: mono2(), names: n.length >= 2 ? `${esc(n[0])}<i>&amp;</i>${esc(n[1])}` : esc(C.cover.names) };
   }
   function picCover(c) {
     if (spOn()) return window.SAMPUL.cover(spH());
@@ -494,11 +494,11 @@
     Promise.all([load(PT.world), load('/assets/t/' + key + '/depth.png')]).then(([w, d]) => {
       const cvr = w; // cover = dunia hidup; tekstur kedua hanya pengisi (tidak dipakai saat G.mix = 1)
       if (!cv.isConnected) return;
-      const cw = Math.min(window.__PIC_GLW || (coarse ? 1176 : 1568), w.naturalWidth || 1568);
+      const cw = Math.min(window.__PIC_GLW || (coarse ? Math.min(1024, Math.round(innerWidth * Math.min(devicePixelRatio || 1, 2.5))) : 1568), w.naturalWidth || 1568);
       cv.width = cw; cv.height = Math.round(cw * BH / BW); gl.viewport(0, 0, cv.width, cv.height);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      tex(0, w); tex(1, d); tex(2, cvr);
-      gl.uniform1i(U('uW'), 0); gl.uniform1i(U('uD'), 1); gl.uniform1i(U('uC'), 2);
+      tex(0, w); tex(1, d); // tekstur sampul = tekstur dunia (unit 0): hemat memori GPU di HP
+      gl.uniform1i(U('uW'), 0); gl.uniform1i(U('uD'), 1); gl.uniform1i(U('uC'), 0);
       const uF = U('uF'), uS = U('uS'), uSw = U('uSw'), uT = U('uT'), uMix = U('uMix'), uTr = U('uTr');
       const rects = (arr, n) => { const o = new Float32Array(n * 4); (arr || []).slice(0, n).forEach((r, i) => { o[i * 4] = r[0] / BW; o[i * 4 + 1] = r[1] / BH; o[i * 4 + 2] = r[2] / BW; o[i * 4 + 3] = r[3] / BH; }); return o; };
       gl.uniform4fv(U('uWt[0]'), rects(PT.water, 4)); gl.uniform1f(U('uNWt'), Math.min((PT.water || []).length, 4));
@@ -916,8 +916,12 @@
     },
     quote(c) {
       const o = c.quote, l = o.labels;
+      // ayat Arab: kolom sendiri di admin; bila kosong, baris berhuruf Arab di teks ayat dipisahkan otomatis
+      const isAr = (s) => { const a = (s.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g) || []).length, t = (s.match(/[A-Za-z\u0600-\u06FF\uFB50-\uFEFF]/g) || []).length; return a > 0 && a >= t * 0.5; };
+      const lines = String(o.text || '').split('\n'), arabic = String(o.arabic || '').trim() || lines.filter(isAr).join('\n'), text = String(o.arabic || '').trim() ? o.text : lines.filter((s) => !isAr(s)).join('\n').trim();
+      const ars = { normal: 1, large: 1.25, xl: 1.5 }[o.arabicSize] || 1.25;
       return `<section class="sec bgi quote" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.cover.photo))}<div class="q-in">
-        <p class="rv qt">${br(o.text)}</p><div class="rv src">${esc(o.source)}</div>
+        ${arabic ? `<p class="rv qar" dir="rtl" lang="ar" style="--ars:${ars}">${br(arabic)}</p>` : ''}<p class="rv qt">${br(text)}</p><div class="rv src">${esc(o.source)}</div>
         <div class="rv cds" id="cds"><div class="cd"><b data-k="d">00</b><span>${esc(l.days)}</span></div><div class="sep">:</div><div class="cd"><b data-k="h">00</b><span>${esc(l.hours)}</span></div><div class="sep">:</div><div class="cd"><b data-k="m">00</b><span>${esc(l.minutes)}</span></div><div class="sep">:</div><div class="cd"><b data-k="s">00</b><span>${esc(l.seconds)}</span></div></div>
         <a class="rv btn sq up" id="saveDate" target="_blank" rel="noopener">${ICON.cal}${esc(o.saveButton)}</a></div></section>`;
     },
@@ -1105,6 +1109,7 @@
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
     if (PT && PT.live && window.DAYAK) window.DAYAK.start($('#s-hero .pstage'));
+    if (PT && window.CINEMA && !opened) window.CINEMA.prep(PICT);
     if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { if (cinOn()) window.CINEMA.final($('.pstage', hero), { key: PICT, data: cinData() }); picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
   }
 

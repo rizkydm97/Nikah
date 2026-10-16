@@ -37,7 +37,7 @@
       return `<div class="ee-env"><div class="ee-fl">
         <div class="ee-back"><svg viewBox="0 0 300 207" preserveAspectRatio="none"><defs>${grad('eeb', '#e27c9b', '#f1a0bd')}</defs><rect width="300" height="207" rx="7" fill="url(#eeb)"/></svg></div>
         <div class="ee-glow"></div>
-        <div class="ee-clip"><div class="ee-card"><div class="ee-cf" style="background-image:url(${H.PT.world})"></div></div></div>
+        <div class="ee-clip"><div class="ee-card"><div class="ee-cf" style="background-image:url(${(H.scene || H.PT.world)})"></div></div></div>
         <div class="ee-front"><svg viewBox="0 0 300 207" preserveAspectRatio="none"><defs>${grad('eel', '#f8bad2', '#ee94b6', 'x1="0" y1="0" x2="1" y2="1"')}${grad('eer', '#f8bad2', '#ee94b6', 'x1="1" y1="0" x2="0" y2="1"')}${grad('eeu', '#fcd3e3', '#f4a6c5', 'x1="0" y1="1" x2="0" y2="0"')}</defs>
           <polygon points="0,0 152,113 0,207" fill="url(#eel)"/><polygon points="300,0 148,113 300,207" fill="url(#eer)"/><polygon points="0,207 150,96 300,207" fill="url(#eeu)"/>
           <g fill="none" stroke="${GOLD}" stroke-width="1.1" stroke-linejoin="round" opacity=".9"><polyline points="0,207 150,96 300,207"/><polyline points="0,0 152,113 0,207"/><polyline points="300,0 148,113 300,207"/><rect x=".6" y=".6" width="298.8" height="205.8" rx="6.5"/></g></svg>
@@ -73,7 +73,7 @@
             <image href="${T}bali/orn.webp" x="122" y="94" width="56" height="52"/>
             <path d="M52 415h196v8h-196z M40 423h220v8h-220z M28 431h244v9h-244z" fill="url(#kbp)" stroke="#b8a074" stroke-width=".8"/>
           </svg>
-          <div class="kb-open"><div class="kb-glimpse" style="background-image:url(${H.PT.world})"></div><i class="kb-shine"></i></div>
+          <div class="kb-open"><div class="kb-glimpse" style="background-image:url(${(H.scene || H.PT.world)})"></div><i class="kb-shine"></i></div>
           ${door('l')}${door('r')}
           <i class="kb-seam"></i>
           <div class="kb-med"><i class="sp-ping"></i><i class="sp-ping b"></i><div class="kb-medin"><b>${H.mono}</b></div></div>
@@ -91,7 +91,7 @@
       strand += [[4, 70], [9, 76], [2, 79]].map(([x, y], i) => fl(x, y, 0.85, i * 60)).join('') + '<path d="M6 66 q-3 10 -2 20 M6 66 q2 10 5 18" stroke="#6a8a3a" stroke-width="1.2" fill="none"/>';
       const melati = `<svg viewBox="0 0 100 100" preserveAspectRatio="none">${strand}</svg>`;
       return `<div class="kx"><div class="kx-fl">
-        <div class="kx-base"><div class="kx-tray"><div class="kx-card" style="background-image:url(${H.PT.world})"></div><i class="kx-in"></i></div></div>
+        <div class="kx-base"><div class="kx-tray"><div class="kx-card" style="background-image:url(${(H.scene || H.PT.world)})"></div><i class="kx-in"></i></div></div>
         <div class="kx-lid"><div class="kx-top"><i class="kx-bd"></i><img class="kx-c tl" src="${T}emas/orn.webp" alt=""><img class="kx-c tr" src="${T}emas/orn.webp" alt=""><img class="kx-c bl" src="${T}emas/orn.webp" alt=""><img class="kx-c br" src="${T}emas/orn.webp" alt="">
           <div class="kx-plate"><span>${H.esc(H.C.cover.kicker)}</span><b>${H.mono}</b></div><i class="kx-sheen"></i></div>
           <i class="kx-rib h a"></i><i class="kx-rib h b"></i>
@@ -236,7 +236,7 @@
       const pb = $('#s-hero .pbox'); if (!pb) return;
       const pr = rel(pb), cr = rel(card);
       const big = document.createElement('div'); big.className = 'sp-big'; big.innerHTML = '<i></i>'; fx.appendChild(big);
-      big.style.cssText = `left:${pr.x}px;top:${pr.y}px;width:${pr.w}px;height:${pr.h}px;background-image:url(${H.PT.world})`;
+      big.style.cssText = `left:${pr.x}px;top:${pr.y}px;width:${pr.w}px;height:${pr.h}px;background-image:url(${(H.scene || H.PT.world)})`;
       const s0 = cr.w / pr.w, tx = cr.cx - (pr.x + pr.w / 2), ty = cr.cy - (pr.y + pr.h / 2);
       card.style.visibility = 'hidden';
       an(big, [{ transform: `translate(${tx}px,${ty}px) scale(${s0})` }, { transform: 'none' }], { duration: ms, easing: 'cubic-bezier(.55,.02,.25,1)' });

@@ -71,9 +71,9 @@
 .lv-cr>.rbf{position:absolute}
 /* awan 3D di tiap bagian: tiga kedalaman, melayang & bergeser saat scroll */
 .lv-sky{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.lv-cl{position:absolute;left:0;animation:lvCloud linear infinite;translate:0 calc(var(--lvp,0) * var(--z) * -120px);will-change:transform}
+.lv-cl{position:absolute;left:0;animation:lvCloud linear infinite;translate:0 calc(var(--lvp,0) * var(--z) * -120px)}
 .lv-cl img,.lv-cl svg{display:block;width:100%;height:auto}
-.lv-cl.d0{filter:blur(.8px)}.lv-cl.d2{filter:drop-shadow(0 6px 10px rgba(0,0,0,.12))}
+.lv-cl.d0{opacity:.5}.lv-cl.d2{filter:drop-shadow(0 6px 10px rgba(0,0,0,.12))}
 @keyframes lvCloud{from{transform:translate3d(-110%,0,0) scale(calc(.9 + var(--z) * .1))}to{transform:translate3d(calc(100cqw + 10%),0,0) scale(calc(1 + var(--z) * .12))}}
 .lv-sky{container-type:inline-size}
 .t-klasik .lv-cl img{filter:brightness(.6) sepia(.5)}
@@ -89,3 +89,6 @@
 .lv-hbp{position:absolute;right:6%;top:-4.2%;width:30%;z-index:3;pointer-events:none;filter:drop-shadow(0 4px 4px rgba(0,0,0,.3))}
 .sec>.lv-sky,.sec>.lv-dk,.stage>.lv-dk{position:absolute!important}
 .sec>.lv-sky{inset:0;z-index:-1}
+
+.q-in>.lv-dk.q{position:relative!important;left:auto;right:auto;top:auto;width:100%;max-width:400px;margin:0 auto 18px;padding:0 2%}
+.q-in>.lv-dk.q .f{width:26%}.q-in>.lv-dk.q .s{width:21%}.q-in>.lv-dk.q .m{width:27%}

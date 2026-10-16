@@ -66,7 +66,7 @@
 
   function resize() {
     const col = document.querySelector('#app'), cw = col ? col.getBoundingClientRect().width : innerWidth;
-    W = Math.round(Math.min(innerWidth, cw || innerWidth)); H = innerHeight; DPR = Math.min(1.5, devicePixelRatio || 1);
+    W = Math.round(Math.min(innerWidth, cw || innerWidth)); H = innerHeight; DPR = Math.min(matchMedia('(pointer:coarse)').matches ? 1.25 : 1.5, devicePixelRatio || 1);
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cv.style.width = W + 'px'; cv.style.height = H + 'px';
     if (!parts.length) build();
   }
@@ -239,10 +239,10 @@
     if (!E('sectionClouds')) return;
     const set = CLOUD[key] || CLOUD.bali;
     $$('#app .sec:not(.hero)').forEach((sec, si) => {
-      if (sec.querySelector(':scope>.lv-sky') || sec.classList.contains('gallery')) return;
+      if (sec.querySelector(':scope>.lv-sky') || sec.classList.contains('gallery') || sec.classList.contains('bgi')) return; // jangan di belakang teks yang langsung di atas foto
       const sky = document.createElement('div'); sky.className = 'lv-sky'; sky.setAttribute('aria-hidden', 'true');
       // tiga kedalaman: jauh (kecil, pelan, samar) -> dekat (besar, cepat, jelas)
-      [[0.35, 30, 140, 0.6, 4], [0.65, 44, 95, 0.75, 14], [1, 66, 62, 0.9, 28]].forEach(([z, w, dur, op, top], i) => {
+      [[0.35, 30, 140, 0.55, 4], [1, 56, 70, 0.8, 22]].forEach(([z, w, dur, op, top], i) => {
         const c = document.createElement('div'); c.className = 'lv-cl d' + i;
         const n = set[(si + i) % set.length];
         c.innerHTML = n ? `<img src="${SP(n)}" alt="">` : (window.DAYAK ? window.DAYAK.cloud(i % 2) : '');
@@ -260,7 +260,7 @@
   // ---------- Tema 9 Dayak: penari & enggang hinggap di dalam bagian ----------
   function dayakStages() {
     const D = window.DAYAK; if (!D || key !== 'dayak') return;
-    const q = $('#app .sec.quote'); if (q && !q.querySelector('.lv-dk')) { const st = document.createElement('div'); st.className = 'lv-dk q'; st.innerHTML = `<div class="f">${D.dancerF()}</div><div class="s">${D.sapePlayer()}</div><div class="m">${D.dancerM()}</div>`; q.appendChild(st); }
+    const q = $('#app .sec.quote .q-in'); if (q && !q.querySelector('.lv-dk')) { const st = document.createElement('div'); st.className = 'lv-dk q'; st.innerHTML = `<div class="f">${D.dancerF()}</div><div class="s">${D.sapePlayer()}</div><div class="m">${D.dancerM()}</div>`; q.prepend(st); } // di atas ayat, tidak menutupi teks
     const cl = $('#app .sec.closing .stage'); if (cl && !cl.querySelector('.lv-dk')) { const st = document.createElement('div'); st.className = 'lv-dk c'; st.innerHTML = `<div class="f">${D.dancerF()}</div><div class="m">${D.dancerM()}</div>`; cl.appendChild(st); }
     const cap = $('#app .sec.events .cap'); if (cap && !cap.querySelector('.lv-hbp')) { const h = document.createElement('div'); h.className = 'lv-hbp'; h.innerHTML = D.hornbill({ perch: 1 }); cap.appendChild(h); }
   }

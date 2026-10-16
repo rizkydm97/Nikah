@@ -116,3 +116,65 @@
 .t-dayak .sec:not(.hero) .rv:not(.in):not([data-a^=bloom]):not([data-a=pf]){transform:scale(.97);filter:none}
 .t-dayak .sec:not(.hero) .rv.in:not([data-a^=bloom]):not([data-a=pf]){-webkit-mask-size:320% 320%;mask-size:320% 320%}
 @media (prefers-reduced-motion:reduce){.cin-deco .cc,.cin-moon,.cin-frame *{transition:none!important;animation:none!important}}
+
+@media (pointer:coarse){.cf-glass{-webkit-backdrop-filter:none;backdrop-filter:none}.cin-deco .cc{will-change:auto}}
+
+/* ===== adegan dibangun sepotong demi sepotong (potongan lukisan) ===== */
+.cin-build{position:absolute;inset:0;z-index:1;pointer-events:none;transition:opacity 2.2s ease}
+.cin-build.done{opacity:0}
+.cb-plate{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:fill}
+.cb-p{position:absolute;max-width:none;object-fit:fill;opacity:0;transition:opacity 1.8s ease,transform 2.4s cubic-bezier(.22,.8,.24,1),filter 2s ease;will-change:transform,opacity}
+.cb-p.a-rise{transform:translateY(14%) scale(.96);filter:blur(4px) brightness(1.2)}
+.cb-p.a-drop{transform:translateY(-12%);filter:blur(3px) brightness(1.4)}
+.cb-p.a-grow{transform:scale(.82);transform-origin:50% 100%;filter:blur(4px)}
+.cb-p.a-haze{transform:scale(1.06);filter:blur(10px) brightness(1.3)}
+.cb-p.a-flow{transform:translateY(6%);filter:blur(6px) brightness(1.3)}
+.cb-p.a-fade{transform:translateX(-3%);filter:blur(8px)}
+.cb-p.a-slide-l{transform:translateX(-40%)}
+.cb-p.a-slide-r{transform:translateX(40%)}
+.cb-p.in{opacity:1;transform:none;filter:none}
+/* ===== properti panggung: pilar naik, tirai dari samping, lampu gantung turun ===== */
+.cin-props{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.cin-props .cpz{position:absolute;transition:transform 2.6s cubic-bezier(.25,.8,.25,1),opacity 1.6s ease}
+.cpz svg{display:block;width:100%;height:100%;overflow:visible}
+.cpz.pil{bottom:0;top:6%;width:min(11cqw,7cqh);opacity:0;transform:translateY(100%)}
+.cpz.pil.l{left:1.5%}.cpz.pil.r{right:1.5%}
+.cpz.cur{top:0;bottom:0;width:min(34cqw,24cqh);filter:drop-shadow(0 6px 14px rgba(0,0,0,.4))}
+.cpz.cur.l{left:0;transform:translateX(-105%)}.cpz.cur.r{right:0;transform:translateX(105%) scaleX(-1)}
+.cpz.ch{left:50%;top:0;width:min(30cqw,20cqh);transform:translate(-50%,-110%);transition-duration:3s;transition-timing-function:cubic-bezier(.3,1.25,.5,1)}
+.cp-sw{transform-origin:50% 0}
+.cin-props.p1 .pil{opacity:1;transform:none}
+.cin-props.p2 .cur.l{transform:none}.cin-props.p2 .cur.r{transform:scaleX(-1)}
+.cin-props.p3 .ch{transform:translate(-50%,0)}
+.cin-props.p2 .cur svg{animation:cpSway 7s ease-in-out 2.6s infinite;transform-origin:0 0}
+.cin-props.p3 .cp-sw{animation:cpSwing 5s ease-in-out 3s infinite}
+@keyframes cpSway{0%,100%{transform:skewX(0)}50%{transform:skewX(1.2deg)}}
+@keyframes cpSwing{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+.cp-ch ellipse{animation:flick 1.8s ease-in-out infinite}
+.cin-props.inst .cpz{transition:none}
+/* ===== air terjun bercahaya ===== */
+.cin-wfl{position:absolute;inset:0;z-index:3;pointer-events:none}
+.cin-wf{position:absolute;mix-blend-mode:screen}
+.cin-wf .g{position:absolute;inset:-25% -45%;background:radial-gradient(ellipse at 50% 55%,rgba(220,240,255,.55),rgba(150,205,255,.2) 45%,transparent 70%);animation:pglow 3.2s ease-in-out infinite}
+.cin-wf .s{position:absolute;inset:0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent);mask-image:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent);background:repeating-linear-gradient(180deg,rgba(255,255,255,0) 0 10px,rgba(255,255,255,.75) 10px 13px,rgba(220,240,255,.15) 13px 26px) 0 0/100% 52px;animation:cinWf .7s linear infinite;opacity:.8}
+.cin-wf .s.b{background-size:100% 34px;animation-duration:.5s;opacity:.5;filter:blur(1px)}
+@keyframes cinWf{to{background-position:0 52px}}
+.cin-wf .s.b{animation-name:cinWf2}@keyframes cinWf2{to{background-position:0 34px}}
+.cin-wf .m{position:absolute;left:-60%;right:-60%;bottom:-18%;height:34%;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.75),rgba(220,240,255,.3) 45%,transparent 70%);filter:blur(4px);animation:pglow 2.2s ease-in-out infinite}
+.cin-wfl.night .cin-wf .g{background:radial-gradient(ellipse at 50% 55%,rgba(140,220,255,.75),rgba(60,150,255,.32) 45%,transparent 70%)}
+.cin-wfl.night .cin-wf .s{background:repeating-linear-gradient(180deg,rgba(120,210,255,0) 0 10px,rgba(190,240,255,.95) 10px 13px,rgba(90,190,255,.25) 13px 26px) 0 0/100% 52px}
+.cin-wfl.night .cin-wf .s.b{background-size:100% 34px}
+.cin-wfl.night .cin-wf .m{background:radial-gradient(ellipse,rgba(200,240,255,.85),rgba(90,180,255,.35) 45%,transparent 70%)}
+@media (pointer:coarse){.cb-p{will-change:auto}}
+
+.cin-wfl{opacity:0;transition:opacity 2.4s ease}.cin-wfl.in{opacity:1}
+.cin-wf .s{-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent),linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent),linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);mask-composite:intersect;filter:blur(.6px)}
+
+.hero.cin-off *,.hero.cin-off *::before,.hero.cin-off *::after{animation-play-state:paused!important}
+/* Dayak: dunia vektor dibangun lapis demi lapis */
+.dk-w.bld .dk-l:not(.flyfar):not(.flynear){opacity:0;translate:0 6%;filter:blur(6px);transition:opacity 1.8s ease,translate 2.4s cubic-bezier(.22,.8,.24,1),filter 1.8s ease}
+.dk-w.bld .dk-l.sky{translate:0 0;filter:brightness(1.4)}
+.dk-w.bld .dk-l.clouds{translate:-20% 0}
+.dk-w.bld .dk-l.front{translate:0 30%}
+.dk-w.bld .dk-l.lamin{translate:0 10%;scale:.96}
+.dk-w.bld .dk-l.on:not(.flyfar):not(.flynear){opacity:1;translate:0 0;filter:none;scale:1}

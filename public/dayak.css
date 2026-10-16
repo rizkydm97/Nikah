@@ -74,11 +74,11 @@
 @media (prefers-reduced-motion:reduce){.dk-dancer *,.dk-sape *,.dk-hb *,.dk-bw *,.dk-tree,.dk-sway{animation:none!important}}
 /* ===== dunia hero Malinau ===== */
 .dk-w{position:absolute;inset:0;overflow:hidden;background:#f8e2c0}
-.dk-l{position:absolute;inset:0;will-change:transform;transform:scale(1.04)}
+.dk-l{position:absolute;inset:0;transform:scale(1.04)}
 .dk-l>svg{position:absolute;inset:0;width:100%;height:100%}
 .dk-l .dk-o,.dk-l .dk-cloud,.dk-l .dk-wf,.dk-l .dk-spray{position:absolute}
 .dk-o>svg{display:block;width:100%;height:auto}
-.dk-cloud{animation:dkCloud linear infinite;will-change:transform}
+.dk-cloud{animation:dkCloud linear infinite}
 .dk-cloud .dk-cl{filter:drop-shadow(0 4px 6px rgba(160,100,60,.15))}
 @keyframes dkCloud{from{transform:translate3d(-60cqw,0,0)}to{transform:translate3d(80cqw,0,0)}}
 .dk-rays{position:absolute;left:71.4%;top:40.2%;width:160%;aspect-ratio:1;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(255,240,200,.22) 0deg 5deg,rgba(255,240,200,0) 5deg 15deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 55%);mask-image:radial-gradient(circle,#000 8%,transparent 55%);animation:dkRays 80s linear infinite;mix-blend-mode:screen}
@@ -101,3 +101,6 @@
 .dk-wf.thin{opacity:.85}
 .dk-flag{transform-box:fill-box;transform-origin:50% 0;animation:dkFlag 1.3s ease-in-out infinite alternate}
 @keyframes dkFlag{from{transform:skewX(-14deg) scaleY(.92)}to{transform:skewX(12deg) scaleY(1.04)}}
+
+/* HP: kurangi animasi SVG yang dicat ulang tiap frame */
+@media (pointer:coarse){.dk-tree,.dk-flag,.dk-rvl path{animation:none!important}.dk-rays{animation-duration:160s}}
