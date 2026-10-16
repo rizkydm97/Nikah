@@ -29,3 +29,17 @@
 .imm-night .pglow{filter:brightness(1.5) saturate(1.2)}
 .imm-night .pmt,.imm-night .pcs{filter:brightness(1.4)}
 @media (prefers-reduced-motion:reduce){.imm-fg,.imm-tap,.imm-veil{display:none}}
+/* tirai antar bagian khas tiap tema */
+.imm-veil .vk{position:absolute;top:0;bottom:0;width:52%;display:none}
+.imm-veil.v-klasik .vk{display:block;background:linear-gradient(90deg,#1a0b04,#3a1a08 70%,#c99a3c 99%,#2a1206);box-shadow:0 0 30px rgba(0,0,0,.6)}
+.imm-veil.v-klasik .vk.l{left:0}.imm-veil.v-klasik .vk.r{right:0;transform:scaleX(-1)}
+.imm-veil.v-klasik .vk.r{background:linear-gradient(270deg,#1a0b04,#3a1a08 70%,#c99a3c 99%,#2a1206)}
+.imm-veil.v-klasik img{display:none}
+.imm-veil.v-princess img{filter:sepia(.4) saturate(2.4) hue-rotate(290deg) brightness(1.15)}
+.imm-veil.v-princess{background:radial-gradient(ellipse at 50% 50%,rgba(255,236,246,.2),rgba(255,214,234,.55))!important}
+.imm-veil.v-emas img{filter:sepia(1) saturate(2.2) brightness(1.1)}
+.imm-veil.v-emas{background:linear-gradient(105deg,transparent 20%,rgba(255,214,130,.45) 50%,transparent 80%)!important}
+.imm-veil.v-biru img,.imm-veil.v-rimba img{filter:brightness(.7) sepia(.3) hue-rotate(180deg) saturate(1.6)}
+.imm-veil.v-biru,.imm-veil.v-rimba{background:radial-gradient(ellipse at 50% 50%,rgba(6,16,50,.15),rgba(4,10,36,.6))!important}
+.imm-veil.v-dayak img{filter:sepia(.6) saturate(1.4)}
+.imm-veil.v-dayak{background:radial-gradient(ellipse at 50% 50%,rgba(255,236,200,.1),rgba(140,70,20,.35))!important}

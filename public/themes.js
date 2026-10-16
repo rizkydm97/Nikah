@@ -85,7 +85,7 @@
       text: '#5a1a0c', glowText: 'rgba(255,246,226,.95)',
       wf: [], mist: [[0, 560, 784, 130, 1], [260, 690, 520, 90]], water: [],
       glow: [[560, 470, 170, 'rgba(255,236,190,.55)']], clouds: [], cloudBand: [150, 330],
-      birds: '', bf: ['bf_rajah'], petals: ['feather', 'leafj', 'orchid'], sparkle: 0, flies: 0,
+      birds: '', bf: ['bf_rajah'], petals: ['orchid', 'leafj', 'orchid'], sparkle: 0, flies: 0,
       shots: [[392,730,1.9,1900,400], [250,850,2.5,1500,500,'petals'], [545,850,2.5,1400,500], [680,560,2.8,1500,500,'birds'], [664,650,2.2,1300,300], ['end', 2300, 0, 'bf']],
     },
   };

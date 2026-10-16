@@ -429,7 +429,7 @@
       an($('.ds-in', cv), [{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 1900 }); an($('.ds-sheen', cv), [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: 1900 });
       $$('.ds-back,.ds-ed', cv).forEach((e) => an(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 1950 }));
       later(() => {
-        sfx(k, 'swing'); const r = rel(ds); sparks(20, r.cx, r.cy, '255,214,120', 140, 1800); toss(['feather', 'orchid', 'leafj'], 10, r.cx, r.cy, 26, 230);
+        sfx(k, 'swing'); const r = rel(ds); sparks(20, r.cx, r.cy, '255,214,120', 140, 1800); toss(['orchid', 'leafj', 'feather', 'orchid'], 9, r.cx, r.cy, 24, 230);
         if (window.DAYAK) for (let i = 0; i < 3; i++) { const b = document.createElement('div'); b.className = 'sp-hbo'; b.innerHTML = window.DAYAK.hornbill(); fx.appendChild(b); const dir = i === 1 ? 0 : i ? 1 : -1;
           an(b, [{ transform: `translate(${r.cx}px,${r.cy}px) translate(-50%,-50%) scale(.15) scaleX(${dir || 1})`, opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(${r.cx + dir * box.width * 0.6}px,${r.cy - box.height * (0.3 + i * 0.08)}px) translate(-50%,-50%) scale(${1.6 + i * 0.3}) scaleX(${dir || 1})`, opacity: 0.95 }], { duration: 1700, delay: i * 160, easing: 'cubic-bezier(.4,0,.7,1)' }); }
         sfx(k, 'fly');
@@ -440,7 +440,7 @@
       an($('.sp-amb', cv), [{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 2600 });
       flash('dawn', 3100, 1200, 1);
       hand(3700, 500);
-      later(() => X.fall(['feather', 'orchid', 'leafj'], 14, { size: 24, dur: 7000, spread: 3000 }), 3700);
+      later(() => X.fall(['orchid', 'leafj', 'orchid'], 10, { size: 22, dur: 7500, spread: 3000 }), 3700);
       ret = { camDelay: 3650 * D };
     }
     return ret;

@@ -153,16 +153,18 @@
   // ---------- tirai kabut antar bagian ----------
   function buildVeil() {
     if (reduce || !('IntersectionObserver' in window)) return;
-    const V = document.createElement('div'); V.className = 'imm-veil';
+    const V = document.createElement('div'); V.className = 'imm-veil v-' + key;
     const t = (window.PIC_THEMES[key].tint || [1, 1, 1]).map((v) => Math.round(v * 255)).join(',');
     V.style.background = `radial-gradient(ellipse at 50% 50%,rgba(${t},.0),rgba(${t},.42))`;
-    V.innerHTML = '<img src="/assets/t/fx/mist.webp" alt=""><img src="/assets/t/fx/mist.webp" alt="">'; document.body.appendChild(V);
+    V.innerHTML = '<img src="/assets/t/fx/mist.webp" alt=""><img src="/assets/t/fx/mist.webp" alt=""><i class="vk l"></i><i class="vk r"></i>'; document.body.appendChild(V);
+    const kl = V.querySelectorAll('.vk');
     const im = V.querySelectorAll('img'); let last = 0, seen = new Set();
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (!e.isIntersecting || seen.has(e.target)) return; seen.add(e.target);
       const n = performance.now(); if (n - last < 2600 || !hero.classList.contains('shown')) return; last = n;
-      V.animate([{ opacity: 0 }, { opacity: 1, offset: .35 }, { opacity: 0 }], { duration: 1700, easing: 'ease-in-out' });
-      im[0].animate([{ transform: 'translate3d(-14%,0,0)' }, { transform: 'translate3d(14%,0,0)' }], { duration: 1700, easing: 'ease-in-out' });
+      V.animate([{ opacity: 0 }, { opacity: 1, offset: .35 }, { opacity: 0 }], { duration: key === 'klasik' ? 2200 : 1900, easing: 'ease-in-out' });
+      if (key === 'klasik') { kl[0].animate([{ transform: 'translateX(-101%)' }, { transform: 'translateX(-8%)', offset: .45 }, { transform: 'translateX(-101%)' }], { duration: 2200, easing: 'cubic-bezier(.6,0,.3,1)' }); kl[1].animate([{ transform: 'translateX(101%)' }, { transform: 'translateX(8%)', offset: .45 }, { transform: 'translateX(101%)' }], { duration: 2200, easing: 'cubic-bezier(.6,0,.3,1)' }); }
+      im[0].animate([{ transform: 'translate3d(-14%,0,0)' }, { transform: 'translate3d(14%,0,0)' }], { duration: 1900, easing: 'ease-in-out' });
       im[1].animate([{ transform: 'translate3d(14%,0,0)' }, { transform: 'translate3d(-14%,0,0)' }], { duration: 1700, easing: 'ease-in-out' });
     }), { threshold: .3 });
     document.querySelectorAll('.sec:not(.hero)').forEach((s) => io.observe(s));

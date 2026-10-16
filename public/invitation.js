@@ -728,13 +728,15 @@
     return {};
   };
 
+  const cinOn = () => !!(window.CINEMA && PT && window.CINEMA.has(PICT));
+  const cinData = () => ({ kicker: C.hero.kicker, groom: C.hero.groom, bride: C.hero.bride, date: C.hero.dateText, hashtag: C.hero.hashtag, guest, toLabel: C.cover.toLabel });
   function picOpen(instant, cover, hero, unlock, finish) {
-    const stage = $('.pstage', hero), cam = $('.pcam', stage);
+    const stage = $('.pstage', hero), cam = $('.pcam', stage), CIN = cinOn();
     const done = () => {
       picShow(hero); unlock(); finish(); picAmbient(stage);
-      picFlyers($('.pfx', stage), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8));
+      picFlyers($('.pfx', stage), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), cinOn() ? 2 : 8));
     };
-    if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); done(); return; }
+    if (instant) { if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 700); } hero.classList.add('instant'); if (CIN) window.CINEMA.final(stage, { key: PICT, data: cinData() }); done(); return; }
     const D = sp, SPL = spOn() && cover && cover.classList.contains('sp');
     if (!SPL) cover.classList.add('opening');
     hero.classList.add('filming');
@@ -761,11 +763,11 @@
       t += sh.hold;
       if (sh.hold) kf.push({ transform: camT(stage, sh.x, sh.y, sh.s * 1.035), offset: t / total });
     });
-    const anim = cam.animate(kf, { duration: total, delay: cd, fill: 'both' });
+    const anim = CIN ? null : cam.animate(kf, { duration: total, delay: cd, fill: 'both' });
     $$('.pcv', stage).forEach((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: (E.titleFade ? 300 : 1100) * D, delay: (E.titleFade ? 100 : 250) * D, easing: 'ease-in-out', fill: 'forwards' }));
     if (!SPL) later(() => { if (cover.isConnected) cover.remove(); }, 900 * D);
     if (PT.carriage) later(() => picCarriage(stage), cd);
-    later(() => { if (!X.dead) picBirds(stage); }, cd);
+    if (!CIN) later(() => { if (!X.dead) picBirds(stage); }, cd);
     const T = (ms) => ms * D, pbox = $('.pbox', stage), mk = (cls, html, parent) => X.mk(cls, html, parent);
     const rnd = (a, b) => a + Math.random() * (b - a);
     const put = (e, x, y) => { e.style.left = px(x) + '%'; e.style.top = py(y) + '%'; return e; };
@@ -846,7 +848,7 @@
         if (window.DAYAK) { window.DAYAK.flyNow(stage, true); X.later(() => window.DAYAK.flyNow(stage, true), T(500)); X.later(() => window.DAYAK.flyNow(stage, false), T(300)); }
         sparks(18, 392, 300, 34);
         for (let i = 0; i < 12; i++) {
-          const p = spawn('pcx-p', imgP(i % 3 === 0 ? 'orchid' : 'feather'), rnd(80, 700), rnd(-40, 120)), dx = rnd(-14, 14), dy = rnd(40, 70);
+          const p = spawn('pcx-p', imgP(i % 4 === 0 ? 'feather' : i % 2 ? 'orchid' : 'leafj'), rnd(80, 700), rnd(-40, 120)), dx = rnd(-14, 14), dy = rnd(40, 70);
           p.animate([{ transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 0 }, { opacity: 1, offset: 0.15 }, { transform: `translate(calc(-50% + ${dx.toFixed(1)}cqw),calc(-50% + ${dy.toFixed(1)}cqw)) rotate(${rnd(-260, 260).toFixed(0)}deg)`, opacity: 0 }], { duration: T(rnd(2600, 3600)), delay: T(rnd(0, 700)), easing: 'cubic-bezier(.3,.1,.6,1)', fill: 'both' });
         }
       },
@@ -869,11 +871,16 @@
         if (X.dead) return;
         if (name === 'birds') { if (PT.live && window.DAYAK) { window.DAYAK.flyNow(stage, true); window.DAYAK.flyNow(stage, false); } else picBirds(stage); }
         if (name === 'petals') X.fall(PT.petals, 10, { size: 24, dur: 6500, spread: 2500 });
-        if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), PT.live ? 2 : 6, [r.width / 2, r.height * 0.5]); }
+        if (name === 'bf') { const r = stage.getBoundingClientRect(); picFlyers($('.pfx', stage), PT.live || cinOn() ? 2 : 6, [r.width / 2, r.height * 0.5]); }
         if (name === 'cx' && PT.cx && CX[PT.cx]) CX[PT.cx]();
       };
       if (off) X.later(go, T(+off)); else go();
     };
+    if (CIN) { // sinema baru: kamera tenang, adegan tersusun, bingkai akhir berisi nama
+      const film = window.CINEMA.film(stage, { key: PICT, D, cd, data: cinData(), later: X.later, fire, onEnd: () => { skip.hidden = true; hero.classList.remove('filming'); done(); } });
+      skip.onclick = () => { X.end(); film.end(true); };
+      return;
+    }
     marks.forEach(([at, ev]) => ev && later(() => fire(ev), at + cd));
     let ended = false;
     const end = () => {
@@ -921,9 +928,9 @@
     },
     couple(c) {
       const o = Object.assign({}, c.couple, THEME === 'rose' && safeUrl(c.scene.flowers) ? { flower: c.scene.flowers } : {});
-      const p = (x) => `<div class="person"><div class="pho-w"><div class="rv pho" data-a="zoom-in" style="--i:2"><div class="phb">${photo(x, 'photo', x.fullName)}</div></div>${safeUrl(o.flower) ? `<img class="rv fl-acc" data-a="bloom" style="--i:4" src="${link(o.flower)}" alt="">` : ''}</div>
-        <div class="rv script" data-a="soft" style="--i:6">${esc(x.script)}</div><div class="rv fn" data-a="soft" style="--i:7">${esc(x.fullName)}</div><div class="rv par" data-a="soft" style="--i:8">${esc(x.parents)}</div>${safeUrl(x.instagram) ? `<a class="rv btn pill" data-a="soft" style="--i:9" href="${link(x.instagram)}" target="_blank" rel="noopener">${ICON.ig}${esc(o.instagramLabel)}</a>` : ''}</div>`;
-      return `<section class="sec paperbg couple">${bgl(o, 'bg')}<div class="rv cpanel" data-a="soft" style="--i:0">${p(o.groom)}<div class="rv amp" data-a="zoom-in" style="--i:2">${esc(o.connector)}</div>${p(o.bride)}</div></section>`;
+      const p = (x, side) => `<div class="person">${PT && window.CINEMA && window.CINEMA.has(PICT) ? window.CINEMA.pframe(PICT, photo(x, 'photo', x.fullName), side, safeUrl(o.flower) || PT.deco.flowers) : `<div class="pho-w"><div class="rv pho" data-a="zoom-in" style="--i:2"><div class="phb">${photo(x, 'photo', x.fullName)}</div></div>${safeUrl(o.flower) ? `<img class="rv fl-acc" data-a="bloom" style="--i:4" src="${link(o.flower)}" alt="">` : ''}</div>
+        `}<div class="rv script" data-a="soft" style="--i:6">${esc(x.script)}</div><div class="rv fn" data-a="soft" style="--i:7">${esc(x.fullName)}</div><div class="rv par" data-a="soft" style="--i:8">${esc(x.parents)}</div>${safeUrl(x.instagram) ? `<a class="rv btn pill" data-a="soft" style="--i:9" href="${link(x.instagram)}" target="_blank" rel="noopener">${ICON.ig}${esc(o.instagramLabel)}</a>` : ''}</div>`;
+      return `<section class="sec paperbg couple">${bgl(o, 'bg')}<div class="rv cpanel" data-a="soft" style="--i:0">${p(o.groom, 'l')}<div class="rv amp" data-a="zoom-in" style="--i:2">${esc(o.connector)}</div>${p(o.bride, 'r')}</div></section>`;
     },
     events(c) {
       const o = c.events, orn = safeUrl(c.scene.ornament);
@@ -1098,7 +1105,7 @@
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
     if (PT && PT.live && window.DAYAK) window.DAYAK.start($('#s-hero .pstage'));
-    if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
+    if (opened) { startObserver(); const hero = $('#s-hero'); if (hero) { hero.classList.remove('pre'); hero.classList.add('play', 'done', 'instant', 'shown'); if (PT) { if (cinOn()) window.CINEMA.final($('.pstage', hero), { key: PICT, data: cinData() }); picFlyers($('.pfx', hero), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 8)); picAmbient($('.pstage', hero)); } else setupButterflies($('.flyers', hero), { sweep: true }); } }
   }
 
   // ---------- buka undangan: kamera menembus bunga -> mendekat ke pintu rumah -> mundur perlahan ----------

@@ -116,3 +116,10 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
   - **Bagian dalam:** penari & pemain sape' di bagian Ayat dan Penutup, enggang hinggap di kartu acara, bulu/daun/anggrek tertiup angin, suara petikan sape', gong, kicau burung, jangkrik & suara enggang.
   - Aset gambar tema (latar bagian, hiasan, sprite) dibuat dari kode vektor yang sama: `node tools/gen-dayak.js <url-server-lokal>`.
 - **Semua Tema 3-9:** awan 3D tiga lapis kedalaman di latar tiap bagian (ikut bergeser saat scroll), dan burung/merpati/enggang/kawanan burung/kupu-kupu terbang 3D dari jauh mendekat ke kamera (atau menjauh). Admin → *Sampul & Dunia Hidup* → "awan 3D".
+
+## v37 — Sinema hero ala video referensi + bingkai mempelai khas tema (Tema 3-9)
+- **Hero tenang & bertahap** (`public/cinema.js/.css`): kamera hanya mundur pelan satu kali (±8 dtk) dan tetap di dalam adegan, jadi **bingkai lukisan tidak terlihat selama animasi**. Adegan tersusun: dedaunan/bunga tema turun dari sudut atas & naik dari bawah, **bulan realistis terbit lalu berputar perlahan** (Biru, Rimba; tekstur dari `tools/gen-moon.py`), burung & kupu-kupu terbang, momen khas tema, lalu adegan meredup dan **bingkai akhir digambar garis demi garis** berisi nama, tanggal & nama tamu — adegan di belakang tetap hidup (air terjun, bulan, awan, burung).
+- Bingkai akhir berbeda tiap tema: Princess lengkung + mahkota, Bali gapura candi bertingkat, Jawa Emas lengkung Jawa + gunungan, Biru oval perak, Rimba kapsul emas, Klasik bentuk gunungan, Dayak tameng.
+- **Bingkai foto mempelai** berbentuk khas tema dengan ornamen di atas; bunga mempelai pria di kiri, mempelai wanita di kanan (dicerminkan), bergoyang pelan; garis bingkai tergambar saat muncul.
+- **Peralihan tiap bagian khas tema** (tidak seragam): Princess mekar lembut, Bali naik dari kabut, Jawa Emas disapu kilau emas, Biru muncul dari gelap malam, Rimba fokus berpendar, Klasik kelir terbuka dari tengah (dan tirai kelir antar bagian), Dayak membelah dari tengah. Judul tiap tema juga muncul dengan gaya berbeda.
+- **Scroll halus** dengan roda mouse di desktop; di HP memakai scroll asli.

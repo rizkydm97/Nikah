@@ -3,8 +3,12 @@
 .swx .sw{display:inline-block;opacity:0;filter:blur(7px);transform:translateY(.6em) scale(.94);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1.1s cubic-bezier(.2,.7,.2,1),filter 1s ease;transition-delay:calc(var(--w)*.13s)}
 .swx.in .sw{opacity:1;filter:none;transform:none}
 .t-princess .swx .sw{transform:translateY(.7em) scale(.8) rotate(-3deg)}
-.t-bali .swx .sw,.t-emas .swx .sw,.t-klasik .swx .sw{transform:translateX(-.55em);filter:blur(4px)}
-.t-biru .swx .sw,.t-rimba .swx .sw{transform:translateY(.25em);filter:blur(12px)}
+.t-bali .swx .sw{transform:translateY(.55em);filter:blur(6px)}
+.t-emas .swx .sw{transform:scale(1.5);filter:blur(6px) brightness(1.8)}
+.t-klasik .swx .sw{transform:perspective(400px) rotateY(88deg);filter:blur(2px)}
+.t-dayak .swx .sw{transform:translateY(-.7em) rotate(7deg);filter:blur(3px);transition-timing-function:cubic-bezier(.34,1.5,.64,1)}
+.t-biru .swx .sw{transform:translateY(.25em);filter:blur(12px)}
+.t-rimba .swx .sw{transform:scale(.55);filter:blur(10px) brightness(1.6)}
 .t-biru .swx.in .sw,.t-rimba .swx.in .sw{text-shadow:0 0 14px var(--sxc)}
 /* ornamen mekar, cahaya, kunang-kunang */
 .sx-bloom{opacity:0;transition:opacity 2s ease;position:fixed;inset:0;z-index:18;pointer-events:none;overflow:hidden}
