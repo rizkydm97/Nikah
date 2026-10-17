@@ -240,7 +240,14 @@
 .cf-orn.fili{width:44%!important;height:auto;filter:drop-shadow(0 0 3px rgba(255,255,255,.6))}
 .cf-orn.fili.t{top:7%!important}.cf-orn.fili.b{bottom:5%!important}
 .cin-frame.grow .cf-orn{transition-delay:1.6s}
-.cine-airterjun .cf-n{font-size:17cqi;color:#e8c27a}
+.cine-airterjun .cf-n{font-size:15cqi;color:#b4503e}
+.cine-airterjun .cf-glass{inset:0;border-radius:999px 999px 6px 6px/46% 46% 2% 2%}
+.cine-airterjun .cf-in{inset:13% 10% 9%;text-shadow:none!important}
+.cine-airterjun .cf-k{font:italic 400 3.5cqi/1.5 var(--fBody);letter-spacing:.02em;text-transform:none;color:#2b2230}
+.cine-airterjun .cf-d{font:700 5cqi/1.2 var(--fBody);letter-spacing:.06em;color:#2b2230}
+.cine-airterjun .cf-h{color:#6a4a7a}
+.cine-airterjun .cf-g b{color:#b4503e}.cine-airterjun .cf-g span{color:#2b2230}
+.cine-airterjun .cf-orn{width:46%!important}
 /* Tema 11: tanpa bingkai, teks langsung di atas adegan yang meredup */
 .cin-frame.f-none .cf-in{inset:18% 4% 16%}
 .cin-frame.f-none .cf-n{font-size:20cqi;text-shadow:0 2px 14px rgba(60,0,20,.8)}

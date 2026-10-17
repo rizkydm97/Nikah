@@ -190,8 +190,9 @@
   function fullCover(H) {
     const k = H.key, o = H.C.cover, G = window.PANGGUNG || {};
     const ph = H.photo ? `<img src="${H.esc(H.photo)}" alt="" style="object-position:50% 30%">` : '';
+    const ug = (n, c) => `<img class="spf-ug ${c}" src="${T}ungu/${n}.webp" alt="">`, PJ = window.UNGU ? (f, sd) => `<div class="spf-ugpj ${f ? 'r' : 'l'}">${window.UNGU.penjor(f, sd)}</div>` : () => '';
     const deco = k === 'airterjun'
-      ? `<img class="spf-sky" src="${T}airterjun/milky.webp" alt="">${G.foliage ? `<div class="spf-c tl">${G.foliage(0)}</div><div class="spf-c tr">${G.foliage(1)}</div>` : ''}${G.flowerBed ? `<div class="spf-c bl">${G.flowerBed(0, 3)}</div><div class="spf-c br">${G.flowerBed(1, 11)}</div>` : ''}`
+      ? `<i class="spf-jwsky"></i>${ug('falls', 'fl')}${ug('field', 'fd')}${ug('mist', 'mist a')}${ug('mist', 'mist b')}${ug('treeA', 'trA')}${ug('treeB', 'trB')}${ug('house', 'hs')}${PJ(0, 1)}${PJ(1, 7)}${ug('palm1', 'pm1')}${ug('palm2', 'pm2')}${ug('gunA', 'gl')}${ug('gunB', 'gr')}${ug('flL', 'fwa')}${ug('flR', 'fwb')}${ug('jasL', 'jl')}${ug('jasR', 'jr')}${ug('potB', 'pa')}${ug('potP', 'pb')}${ug('potB', 'pc')}${ug('potP2', 'pd')}`
       : k === 'istana' ? `<i class="spf-jwsky"></i><img class="spf-jw cl l" src="${T}jawa/cloudL.webp" alt=""><img class="spf-jw cl r" src="${T}jawa/cloudR.webp" alt=""><img class="spf-jw hl" src="${T}jawa/hill.webp" alt=""><img class="spf-jw hs" src="${T}jawa/house.webp" alt=""><img class="spf-jw tr l" src="${T}jawa/tree.webp" alt=""><img class="spf-jw tr r" src="${T}jawa/tree.webp" alt=""><img class="spf-jw gl" src="${T}jawa/gongL.webp" alt=""><img class="spf-jw gr" src="${T}jawa/gongR.webp" alt=""><img class="spf-jw gu" src="${T}jawa/gunungan.webp" alt="">`
       : '';
     return `<div class="cover pic sp spf spf-${k}" id="cover"><div class="spf-card">${deco}<i class="spf-edge"></i>

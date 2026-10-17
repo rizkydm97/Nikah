@@ -171,5 +171,8 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - Latar section, hiasan sudut atas/bawah, lengkung & sisi bingkai, pemisah, pola, dan palet warna kini semua Jawa (`public/assets/t/jawa/`); aset & kode Istana Langit lama dihapus.
 - Ornamen di samping foto mempelai: gunungan, posisinya masuk ke dalam (setengah tersembunyi di balik foto), muncul zoom-in pelan satu per satu; mahkota di atas bingkai juga gunungan.
 
-## v47 — Animasi masuk Tema 11 mengikuti video referensi
-- Joglo & bukit naik dari bawah layar dalam ukuran besar lalu mengecil dan menetap (bukan lagi "tumbuh"); disusul mega mendung dari samping → pohon → gunungan & semak naik dari bawah → matahari terbit → gong masuk dari samping dan dipukul → debu emas & kupu-kupu.
+## v47 — Tema 10 diganti: Ungu Adat Jawa
+- Tema 10 (kunci `airterjun`) kini memakai gambar ungu: padang lilac, air terjun berkabut, pohon, joglo, palem, gunungan, melati, bunga ungu, vas bunga, penjor pink (aset di `public/assets/t/ungu/`, kode di `public/ungu.js` + `public/ungu.css`).
+- Animasi masuk bertahap seperti Tema 11: langit → padang → air terjun → kabut → pohon tumbuh → joglo dibangun → palem → gunungan → bunga & melati → vas → penjor berayun → kupu-kupu/burung → panel lengkung putih berisi nama.
+- Hiasan section lain (bunga atas/bawah, bingkai, pemisah, motif, latar) dibuat dari gambar yang sama: `python3 tools/gen-ungu.py`.
+- Setelah deploy: Admin → Tema → pilih ulang "Tema 10" lalu terima tawaran warna & font bawaan agar palet ungu terpakai.

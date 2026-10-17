@@ -88,13 +88,13 @@
       birds: '', bf: ['bf_rajah'], petals: ['orchid', 'leafj', 'orchid'], sparkle: 0, flies: 0,
       shots: [[392,730,1.9,1900,400], [250,850,2.5,1500,500,'petals'], [545,850,2.5,1400,500], [680,560,2.8,1500,500,'birds'], [664,650,2.2,1300,300], ['end', 2300, 0, 'bf']],
     },
-    // Tema 10 & 11: dunia vektor berlapis (panggung.js), masuk bertahap seperti video referensi
-    airterjun: {
-      live: 1, tint:[.78,.9,1], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,600],
-      motes:{n:10,c:'170,215,255',up:1}, name: 'Air Terjun Bulan', base: 'jawa', pal: 'blue', dark: true,
-      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#eef3ff', glowText: 'rgba(20,40,90,.9)',
-      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [90, 200], birds: '', bf: ['bf_blue1', 'bf_silver'], petals: ['frangi1'], sparkle: 0, flies: 0,
-      preload: ['/assets/t/airterjun/sky.webp', '/assets/t/airterjun/cliffs.webp', '/assets/t/airterjun/pool.webp', '/assets/t/airterjun/milky.webp', '/assets/t/fx/moon.webp', '/assets/t/fx/streaks.webp', 'bf_blue1'], shots: [['end', 1000]],
+    // Tema 10 (ungu.js) & 11 (panggung.js): dunia berlapis, masuk bertahap seperti video referensi
+    airterjun: { // Tema 10 — Ungu Adat Jawa (ungu.js). Kunci 'airterjun' dipertahankan agar pilihan tema lama tetap jalan
+      live: 1, tint:[.95,.88,1], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,640],
+      motes:{n:12,c:'236,214,255',up:1}, name: 'Ungu Adat Jawa — Joglo, Air Terjun & Gunungan', base: 'jawa', pal: 'lilac', dark: false,
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#4d2c55', glowText: 'rgba(255,255,255,.95)',
+      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [140, 360], birds: '', bf: ['bf_pink1', 'bf_blue2'], petals: ['orchid', 'frangi1'], sparkle: 0, flies: 0,
+      preload: ['/assets/t/ungu/field.webp', '/assets/t/ungu/falls.webp', '/assets/t/ungu/house.webp', '/assets/t/ungu/treeA.webp', '/assets/t/ungu/treeB.webp', '/assets/t/ungu/palm2.webp', '/assets/t/ungu/gunA.webp', '/assets/t/ungu/gunB.webp', '/assets/t/ungu/jasL.webp', '/assets/t/ungu/potB.webp', '/assets/t/ungu/mist.webp', 'bf_pink1'], shots: [['end', 1000]],
     },
     istana: { // Tema 11 — Adat Jawa (kunci 'istana' dipertahankan agar pilihan tema lama tetap jalan)
       live: 1, tint:[1,.92,.78], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,700],
@@ -111,10 +111,11 @@
     t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
     t.divider = d + 'divider.webp'; t.motif = k === 'biru' ? '' : d + 'motif.webp';
   }
-  // Tema 10 & 11 memakai hiasan dalam dari tema serupa (Biru & Princess); latar bagian dibuat dari dunia vektornya
-  [['airterjun', 'biru']].forEach(([k, src]) => { const t = window.PIC_THEMES[k], d = T + src + '/';
-    t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
-    t.divider = d + 'divider.webp'; t.motif = src === 'biru' ? '' : d + 'motif.webp'; });
+  // Tema 10 (Ungu Adat Jawa): semua hiasan, latar, bingkai, pemisah & pola dibuat dari gambar ungu (tools/gen-ungu.py)
+  { const k = 'airterjun', x = window.PIC_THEMES[k], d = T + 'ungu/';
+    x.bg = x.world = x.cover = d + 'bg.webp';
+    x.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
+    x.divider = d + 'divider.webp'; x.motif = d + 'motif.webp'; }
   // Tema 11 (Adat Jawa): semua hiasan, latar, bingkai, pemisah & pola memakai aset Jawa sendiri
   { const k = 'istana', x = window.PIC_THEMES[k], d = T + 'jawa/';
     x.bg = x.world = x.cover = d + 'bg.webp';

@@ -13,7 +13,7 @@
     biru:     { col: '#9fd0ff', mk: 'bf_silver', bl: ['frangi1', 'frangi2', 'frangi1'], glow: ['84%', '10%', 'rgba(190,220,255,.85)'], ff: 18 },
     rimba:    { col: '#c8e0ff', mk: 'bf_blue1', bl: ['frangi2', 'frangi2', 'frangi1'], glow: ['82%', '9%', 'rgba(210,230,255,.85)'], ff: 24 },
     klasik:   { col: '#ffc46e', mk: 'bf_gold2', bl: ['frangi2', 'frangi1', 'frangi2'], glow: ['50%', '94%', 'rgba(255,190,100,.85)'], ff: 14 },
-    airterjun: { col: '#9fd0ff', mk: 'bf_silver', bl: ['frangi1', 'frangi2', 'frangi1'], glow: ['84%', '10%', 'rgba(190,220,255,.85)'], ff: 14 },
+    airterjun: { col: '#d9b8f5', mk: 'bf_pink1', bl: ['orchid', 'frangi1', 'orchid'], glow: ['50%', '12%', 'rgba(236,214,255,.85)'], ff: 10 },
     istana:   { col: '#ffcf6a', mk: 'bf_gold', bl: ['leafj', 'orchid', 'leafj'], glow: ['50%', '12%', 'rgba(255,226,150,.8)'], ff: 10 },
     dayak:    { col: '#ffcf6a', mk: 'bf_rajah', bl: ['orchid', 'feather', 'orchid'], glow: ['50%', '92%', 'rgba(255,214,130,.75)'], ff: 12 },
   };

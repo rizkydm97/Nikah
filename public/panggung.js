@@ -1,5 +1,5 @@
-/* Tema 10 (Air Terjun Bulan) & Tema 11 (Adat Jawa): dunia hidup digambar vektor, berlapis, dan masuk bertahap
-   mengikuti video referensi.
+/* Tema 11 (Adat Jawa): dunia hidup berlapis yang masuk bertahap. (Tema 10 kini ada di ungu.js.)
+   Catatan lama:
    Tema 10: sampul naik → menembus gapura batu → air terjun bercahaya → bulan terbit di belakang air terjun → bunga tumbuh,
             dedaunan turun, kupu-kupu → panel oval membesar dari tengah berisi nama.
    Tema 11: langit galaksi → gazebo & tangga naik dari bawah → awan pink → pilar mawar → bunga → bulan ungu →
@@ -38,86 +38,6 @@
   }
   const leafP = (s, rot, col) => `<g transform="scale(${s}) rotate(${rot})"><path d="M0 0 C12 -10 14 -34 0 -54 C-14 -34 -12 -10 0 0Z" fill="${col}"/><path d="M0 -2 L0 -50" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/></g>`;
 
-
-  // ---------- pohon bervolume: kanopi gumpalan berlapis (gelap → sedang → terang) + batang & ranting ----------
-  const TPAL = {
-    blossom: { lit: '#fff0f6', mid: '#ff9fc6', sh: '#9a2f66', tk: ['#8a5a78', '#3a2038'], dot: '#ffffff' },
-    lav:     { lit: '#f3e8ff', mid: '#b698f2', sh: '#44248a', tk: ['#6a4a86', '#2a1448'], dot: '#f7e9ff' },
-    night:   { lit: '#7fd0cc', mid: '#237a90', sh: '#07243f', tk: ['#5a78b0', '#10204a'], dot: '#d8f4ff' },
-    night2:  { lit: '#8cc4f2', mid: '#2c5fae', sh: '#0a1a58', tk: ['#27407a', '#08112e'], dot: '#cfe6ff' },
-  };
-  function leafyTree(kind, seed, flip) {
-    const c = TPAL[kind], id = U('tr');
-    const defs = rg(id + 'b', [[0, c.mid], [1, c.sh]], 'cx=".4" cy=".3" r=".85"') + rg(id + 'm', [[0, c.lit], [0.5, c.mid], [1, c.sh]], 'cx=".36" cy=".28" r=".85"') + rg(id + 'f', [[0, c.lit], [1, c.mid]], 'cx=".34" cy=".26" r=".9"') + lg(id + 't', [[0, c.tk[0]], [1, c.tk[1]]], 'x1="0" y1="0" x2="1" y2="0"');
-    const layer = (n, r0, r1, g, dx, dy, k) => Array.from({ length: n }, (_, i) => {
-      const a = R(i + seed, k) * 6.283, d = Math.sqrt(R(i + seed, k + 1)), r = r0 + R(i + seed, k + 2) * (r1 - r0);
-      const x = 160 + Math.cos(a) * d * 120 + dx, y = 168 + Math.sin(a) * d * 96 * (Math.sin(a) < 0 ? 1.05 : 0.8) + dy;
-      return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="url(#${id}${g})"/>`;
-    }).join('');
-    const br = [[160, 300, 96, 226], [166, 290, 228, 214], [158, 262, 160, 190], [160, 330, 116, 262], [166, 320, 214, 258]].map(([x0, y0, x1, y1]) => `<path d="M${x0} ${y0} Q${f1((x0 + x1) / 2 + (R(x0, 3) - 0.5) * 24)} ${f1((y0 + y1) / 2 - 10)} ${x1} ${y1}" stroke="${c.tk[1]}" stroke-width="${f1(5 + R(x1, 2) * 4)}" fill="none" stroke-linecap="round"/>`).join('');
-    const dots = Array.from({ length: 26 }, (_, i) => `<circle cx="${f1(60 + R(i + seed, 9) * 200)}" cy="${f1(80 + R(i + seed, 8) * 150)}" r="${f1(1.4 + R(i + seed, 7) * 2.2)}" fill="${c.dot}" opacity="${f1(0.55 + R(i, 6) * 0.4)}"/>`).join('');
-    return `<svg class="tr-svg" viewBox="0 0 320 480" style="${flip ? 'transform:scaleX(-1)' : ''}"><defs>${defs}</defs>
-      <ellipse cx="164" cy="476" rx="70" ry="9" fill="#000" opacity=".28"/>
-      <path d="M146 478 C152 420 148 350 152 280 L176 280 C172 350 180 420 186 478Z" fill="url(#${id}t)"/><path d="M150 470 C156 420 152 350 156 285" stroke="${c.lit}" stroke-width="2.4" fill="none" opacity=".5"/>${br}
-      ${layer(24, 26, 44, 'b', 8, 14, 1)}${layer(30, 19, 34, 'm', 0, 0, 11)}${layer(28, 11, 22, 'f', -16, -20, 21)}${dots}</svg>`;
-  }
-  function pineTree(kind, seed) {
-    const c = TPAL[kind], id = U('pn'); let t = '';
-    const defs = lg(id, [[0, c.lit], [0.45, c.mid], [1, c.sh]], 'x1="0" y1="0" x2="1" y2="0.3"');
-    for (let i = 0; i < 7; i++) {
-      const y0 = 40 + i * 58, y1 = y0 + 92, hw = 22 + i * 9 + R(i + seed, 2) * 4;
-      t += `<path d="M80 ${y0} C${80 + hw * 0.5} ${y0 + 30} ${80 + hw * 0.85} ${y1 - 20} ${80 + hw} ${y1} Q${80 + hw * 0.5} ${y1 - 12} 80 ${y1 - 6} Q${80 - hw * 0.5} ${y1 - 12} ${80 - hw} ${y1} C${80 - hw * 0.85} ${y1 - 20} ${80 - hw * 0.5} ${y0 + 30} 80 ${y0}Z" fill="url(#${id})"/>`;
-    }
-    return `<svg class="tr-svg" viewBox="0 0 160 480"><defs>${defs}</defs><rect x="74" y="400" width="12" height="76" fill="${c.tk[1]}"/>${t}</svg>`;
-  }
-  const tr = (cls, st, svg, d) => `<div class="pg-o tr ${cls}" style="${st};--td:${d || 0}s">${svg}</div>`;
-
-  // ======================= TEMA 10: AIR TERJUN BULAN =======================
-  function rockPath(side) { // tebing batu kiri/kanan yang mengapit air terjun
-    if (side === 'l') return 'M0 380 C40 360 80 372 120 352 C160 334 196 344 232 358 C268 372 300 392 336 410 L344 452 C330 520 336 600 320 680 C306 760 300 820 270 870 L0 900Z';
-    return 'M784 360 C744 346 700 364 664 350 C628 336 590 350 556 366 C520 382 486 396 450 412 L442 452 C456 520 450 600 466 680 C480 760 486 820 514 870 L784 900Z';
-  }
-  function pine(x, y, h, col) { const w = h * 0.42; return `<path d="M${x} ${y - h} L${x + w * .3} ${y - h * .62} L${x + w * .18} ${y - h * .62} L${x + w * .44} ${y - h * .3} L${x + w * .26} ${y - h * .3} L${x + w * .5} ${y} L${x - w * .5} ${y} L${x - w * .26} ${y - h * .3} L${x - w * .44} ${y - h * .3} L${x - w * .18} ${y - h * .62} L${x - w * .3} ${y - h * .62}Z" fill="${col}"/>`; }
-  function flowerBed(flip, seed) {
-    let h = '';
-    for (let i = 0; i < 9; i++) h += `<g transform="translate(${f1(20 + R(i + seed, 1) * 300)} ${f1(250 - R(i + seed, 2) * 40)})">${leafP(0.9 + R(i + seed, 3) * 0.8, -60 + R(i + seed, 4) * 120, i % 2 ? '#1d4a5a' : '#173a52')}</g>`;
-    const pts = [[60, 210, 1.15], [150, 236, 1.3], [250, 214, 1.05], [110, 160, 0.8], [210, 168, 0.75], [300, 240, 0.9], [30, 250, 0.9]];
-    pts.forEach(([x, y, s], i) => { h += `<g class="pg-fl" style="--d:${(i * 0.12).toFixed(2)}s;transform-origin:${x}px ${y}px"><g transform="translate(${x} ${y})">${i % 3 === 2 ? bloom5(s * 0.9, i * 20) : lily(s, i * 17)}</g></g>`; });
-    return `<svg class="pg-bed" viewBox="0 0 340 270" style="${flip ? 'transform:scaleX(-1)' : ''}">${h}</svg>`;
-  }
-  function foliage(flip) {
-    let h = '';
-    for (let i = 0; i < 34; i++) { const t = R(i, 1), x = t * 250, y = (1 - t) * 170 * R(i, 2) + R(i, 5) * 30; h += `<g transform="translate(${f1(x)} ${f1(y)})">${leafP(0.7 + R(i, 3) * 0.8, 100 + R(i, 4) * 160, ['#3b5590', '#5a74b0', '#8ea4d6', '#2a3f72', '#b8c8ec'][i % 5])}</g>`; }
-    h += `<path d="M0 0 C60 30 120 40 200 30" stroke="#0e2238" stroke-width="5" fill="none"/>`;
-    return `<svg class="pg-fol" viewBox="0 0 260 220" style="${flip ? 'transform:scaleX(-1)' : ''}">${h}</svg>`;
-  }
-  function archSvg() { // gapura batu di depan (untuk menembus saat masuk)
-    const id = U('ar'), blocks = [];
-    for (let i = 0; i < 16; i++) { const a = Math.PI * (i / 15); blocks.push(`<path d="M${f1(392 - Math.cos(a) * 300)} ${f1(560 - Math.sin(a) * 380)} L${f1(392 - Math.cos(a) * 360)} ${f1(560 - Math.sin(a) * 440)}" stroke="#2c4a92" stroke-width="2.4"/>`); }
-    for (let y = 600; y < 1168; y += 58) blocks.push(`<path d="M32 ${y} H92 M692 ${y} H752" stroke="#2c4a92" stroke-width="2.4"/>`);
-    return SV(`<path fill-rule="evenodd" d="M0 0 H784 V1168 H0Z M92 1168 V560 C92 330 230 180 392 180 C554 180 692 330 692 560 V1168Z" fill="url(#${id})"/>
-      <path d="M92 1168 V560 C92 330 230 180 392 180 C554 180 692 330 692 560 V1168" fill="none" stroke="#6f8fd8" stroke-width="5" opacity=".7"/>${blocks.join('')}
-      <path d="M32 1168 V560 C32 290 196 120 392 120 C588 120 752 290 752 560 V1168" fill="none" stroke="#3a5aa8" stroke-width="3" opacity=".6"/>`,
-    lg(id, [[0, '#1a2b66'], [0.6, '#16255a'], [1, '#0d1840']]));
-  }
-  function airterjunWorld() {
-    uid = 0;
-    const img = (n, cls) => `<img class="${cls || 'pg-img'}" src="${T}airterjun/${n}.webp" alt="" decoding="async">`;
-    const rip = SV(`<g class="pg-rip" fill="none" stroke="#bfe6ff" stroke-width="1.4">${[0, 1, 2, 3].map((i) => `<ellipse cx="392" cy="${892 + i * 24}" rx="${70 + i * 50}" ry="${6 + i * 4}" style="animation-delay:${-i * 0.9}s"/>`).join('')}</g>`);
-    return `<div class="pg-w at">
-      ${L('sky', img('sky') + stars(26, 0, 40, 3), -1)}
-      <div class="pg-l moon" data-z="-0.8"><div class="at-moon" style="${P(242, 128, 300, 300)}"><i class="h"></i><div class="m"><img src="${T}fx/moon.webp" alt=""></div><i class="s"></i></div></div>
-      ${L('cliffs', img('cliffs'), -0.3)}
-      ${L('wf', `<div class="at-wf" style="${P(354, 386, 76, 494)}"><i class="glow"></i><i class="core"></i><i class="st a"></i><i class="st b"></i><i class="lip"></i></div><div class="at-mist" style="${P(252, 830, 280, 100)}"></div>`, -0.2)}
-      ${L('pool', img('pool') + `<div class="at-refl" style="${P(340, 878, 104, 220)}"></div>` + rip, 0)}
-      ${L('trees', tr('l back', P(190, 600, 120), pineTree('night2', 3), 0.5) + tr('r back', P(474, 600, 120), pineTree('night2', 5), 0.7) + tr('l', P(-30, 500, 300), leafyTree('night', 4, 0), 0) + tr('r', P(514, 500, 300), leafyTree('night', 12, 1), 0.25), 0.3)}
-      ${L('mistb', `<div class="pg-o mb1" style="${P(-80, 820, 760)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt=""></div><div class="pg-o mb2" style="${P(240, 900, 700)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o mb3" style="${P(-40, 180, 520)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt="" style="opacity:.55"></div>`, 0.25)}
-      ${L('bed', `<div class="pg-o bl" style="${P(-40, 930, 360)}">${flowerBed(0, 1)}</div><div class="pg-o br" style="${P(464, 930, 360)}">${flowerBed(1, 9)}</div>`, 0.45)}
-      ${L('fol', `<div class="pg-o tl" style="${P(-30, -16, 340)}">${foliage(0)}</div><div class="pg-o tr" style="${P(474, -16, 340)}">${foliage(1)}</div>`, 0.6)}
-      <div class="pg-l fly" data-z="0.5"></div>
-      ${L('portal', archSvg(), 0.9)}
-    </div>`;
-  }
 
   // ======================= TEMA 11: ISTANA LANGIT =======================
   function gazeboSvg() {
@@ -214,39 +134,24 @@
   }
 
   // ---------- film masuk (dipanggil cinema.js) — waktu dalam ms (sudah dikali kecepatan oleh later) ----------
-  function filmAt(stage, later) { // video Air Terjun: menembus gapura → air terjun → bulan terbit → kupu-kupu → bunga → dedaunan
+  function filmJw(stage, later) { // adat Jawa: fajar & matahari terbit → bukit → mega mendung → joglo dibangun dari bawah → pohon tumbuh → gong dipukul → gunungan naik → semak → debu emas & kupu-kupu
     const W = $('.pg-w', stage); if (!W) return;
     W.classList.add('bld');
     const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.sky,.cliffs,.wf,.pool,.portal', 0);
-    later(() => W.classList.add('thru'), 500);       // kamera menembus gapura batu (±1,8 dtk)
-    on('.moon', 1900); later(() => W.classList.add('rise'), 2000);  // bulan terbit perlahan dari balik air terjun
-    later(() => flyers(W, 'bf_blue1', 1), 3600);
-    on('.trees', 3000); on('.mistb', 3600);
-    on('.bed', 4300); on('.fol', 5400);
-    later(() => flyers(W, 'bf_silver', 1), 6200);
-    later(() => W.classList.remove('bld'), 9000);
-  }
-  function filmJw(stage, later) { // mengikuti video referensi: langit → rumah naik dari bawah (besar lalu menetap) → awan dari samping → pohon → bunga/gunungan naik dari bawah → matahari terbit → gong masuk dari samping → debu emas & kupu-kupu
-    const W = $('.pg-w', stage); if (!W) return;
-    W.classList.add('bld');
-    const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.sky', 0);
-    on('.hill', 400); on('.house', 600);          // bukit & joglo naik dari bawah layar, besar lalu mengecil dan menetap
-    on('.cloud', 3000);                            // mega mendung meluncur dari kiri-kanan
-    on('.trees', 3600);                            // pohon tumbuh di kedua sisi
-    on('.gun', 4600); on('.bush', 5000);           // gunungan & semak naik dari bawah
-    later(() => W.classList.add('rise'), 6000);    // matahari terbit
-    on('.gongs', 7600); later(() => W.classList.add('ring'), 9000); // gong masuk dari samping, lalu dipukul
-    on('.dust', 9400);
+    on('.sky', 0); later(() => W.classList.add('rise'), 500);
+    on('.hill', 1700); on('.cloud', 2800);
+    on('.house', 3800);
+    on('.trees', 5800);
+    on('.gongs', 6900); later(() => W.classList.add('ring'), 8300);
+    on('.gun', 8000);
+    on('.bush', 9000); on('.dust', 9400);
     later(() => flyers(W, 'bf_gold', 2), 9800);
     later(() => W.classList.remove('bld'), 11000);
   }
   function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise', 'ring'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
 
   window.LIVEW = Object.assign(window.LIVEW || {}, {
-    airterjun: { world: airterjunWorld, start, film: filmAt, finish },
     istana: { world: jawaWorld, start, film: filmJw, finish }, // Tema 11 kini Adat Jawa (kunci 'istana' dipertahankan agar pilihan lama tetap jalan)
   });
-  window.PANGGUNG = { lily, bloom5, rose, puff, roseBush, flowerBed, foliage };
+  window.PANGGUNG = { lily, bloom5, rose, puff, roseBush, start, flyers, finish, R, P, f1, L };
 })();
