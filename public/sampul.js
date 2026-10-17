@@ -191,17 +191,7 @@
     const k = H.key, o = H.C.cover, G = window.PANGGUNG || {};
     const ph = H.photo ? `<img src="${H.esc(H.photo)}" alt="" style="object-position:50% 30%">` : '';
     const deco = k === 'airterjun'
-      ? `<div class="spf-refart" aria-hidden="true"><i class="spf-ref-wash"></i>
-          <img class="spf-ref-layer rf-water" src="${T}airterjun/ref/waterfall-watercolor.webp" alt="">
-          <img class="spf-ref-layer rf-tree rf-tree-l" src="${T}airterjun/ref/tree-left.webp" alt=""><img class="spf-ref-layer rf-tree rf-tree-r" src="${T}airterjun/ref/tree-right.webp" alt="">
-          <img class="spf-ref-layer rf-meadow" src="${T}airterjun/ref/lavender-meadow.webp" alt="">
-          <img class="spf-ref-layer rf-palm rf-palm-l" src="${T}airterjun/ref/palm-wide.webp" alt=""><img class="spf-ref-layer rf-palm rf-palm-r" src="${T}airterjun/ref/palm-pair.webp" alt="">
-          <img class="spf-ref-layer rf-branch rf-branch-l" src="${T}airterjun/ref/orchid-branch-left.webp" alt=""><img class="spf-ref-layer rf-branch rf-branch-r" src="${T}airterjun/ref/orchid-branch-right.webp" alt="">
-          <img class="spf-ref-layer rf-joglo" src="${T}airterjun/ref/joglo.webp" alt="">
-          <img class="spf-ref-layer rf-gun rf-gun-l" src="${T}airterjun/ref/gunungan-left.webp" alt=""><img class="spf-ref-layer rf-gun rf-gun-r" src="${T}airterjun/ref/gunungan-right.webp" alt="">
-          <img class="spf-ref-layer rf-white rf-white-l" src="${T}airterjun/ref/white-flowers-left.webp" alt=""><img class="spf-ref-layer rf-white rf-white-r" src="${T}airterjun/ref/white-flowers-right.webp" alt="">
-          <img class="spf-ref-layer rf-vase rf-vase-l" src="${T}airterjun/ref/flower-vase-blue.webp" alt=""><img class="spf-ref-layer rf-vase rf-vase-r" src="${T}airterjun/ref/flower-vase-lilac.webp" alt="">
-        </div>`
+      ? `<img class="spf-sky" src="${T}airterjun/milky.webp" alt="">${G.foliage ? `<div class="spf-c tl">${G.foliage(0)}</div><div class="spf-c tr">${G.foliage(1)}</div>` : ''}${G.flowerBed ? `<div class="spf-c bl">${G.flowerBed(0, 3)}</div><div class="spf-c br">${G.flowerBed(1, 11)}</div>` : ''}`
       : k === 'istana' ? `<i class="spf-jwsky"></i><img class="spf-jw cl l" src="${T}jawa/cloudL.webp" alt=""><img class="spf-jw cl r" src="${T}jawa/cloudR.webp" alt=""><img class="spf-jw hl" src="${T}jawa/hill.webp" alt=""><img class="spf-jw hs" src="${T}jawa/house.webp" alt=""><img class="spf-jw tr l" src="${T}jawa/tree.webp" alt=""><img class="spf-jw tr r" src="${T}jawa/tree.webp" alt=""><img class="spf-jw gl" src="${T}jawa/gongL.webp" alt=""><img class="spf-jw gr" src="${T}jawa/gongR.webp" alt=""><img class="spf-jw gu" src="${T}jawa/gunungan.webp" alt="">`
       : '';
     return `<div class="cover pic sp spf spf-${k}" id="cover"><div class="spf-card">${deco}<i class="spf-edge"></i>

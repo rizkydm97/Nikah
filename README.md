@@ -171,8 +171,5 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - Latar section, hiasan sudut atas/bawah, lengkung & sisi bingkai, pemisah, pola, dan palet warna kini semua Jawa (`public/assets/t/jawa/`); aset & kode Istana Langit lama dihapus.
 - Ornamen di samping foto mempelai: gunungan, posisinya masuk ke dalam (setengah tersembunyi di balik foto), muncul zoom-in pelan satu per satu; mahkota di atas bingkai juga gunungan.
 
-
-## v47 — Revisi Tema 10 sesuai ilustrasi referensi
-- Sampul dan dunia dalam Tema 10 memakai ilustrasi kiriman: air terjun watercolor, pohon, padang lavender, rumah Joglo, gunungan, cabang bunga, buket, dan vas bunga.
-- Animasi pembukaan disusun bertahap dengan dorongan kamera lembut agar berasa seperti video; nama tamu dan data undangan tetap dinamis.
-- Kunci internal `airterjun`, Tema 11 (`istana`), serta alur data undangan tidak diubah.
+## v47 — Animasi masuk Tema 11 mengikuti video referensi
+- Joglo & bukit naik dari bawah layar dalam ukuran besar lalu mengecil dan menetap (bukan lagi "tumbuh"); disusul mega mendung dari samping → pohon → gunungan & semak naik dari bawah → matahari terbit → gong masuk dari samping dan dipukul → debu emas & kupu-kupu.

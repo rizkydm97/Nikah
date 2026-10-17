@@ -20,7 +20,7 @@
     biru: { leaf: { imgs: ['frangi1'], n: 4, size: [10, 16] }, glow: { n: 24, col: '185,218,255', mode: 'wander', size: [1.8, 4] }, bubble: 7, star: 1, light: 'water', perch: ['bf_silver'], fly: ['bf:bf_silver', 'bf:bf_silver'], burst: '200,228,255' },
     rimba: { leaf: null, glow: { n: 34, col: '255,222,130', mode: 'wander', blink: 1, size: [2, 4.6] }, star: 1, light: 'moon', perch: ['bf_blue1', 'bf_blue2', 'bf_gold'], fly: ['bf:bf_blue1', 'bf:bf_gold'], burst: '255,226,150' },
     klasik: { leaf: { imgs: ['leafm', 'frangi1'], n: 4, size: [12, 18] }, glow: { n: 30, col: '255,150,60', mode: 'rise', ember: 1, size: [1.5, 3.4] }, light: 'candle', perch: ['bf_gold2'], fly: ['wayang', 'bf:bf_gold'], burst: '255,180,90' },
-    airterjun: { leaf: null, glow: { n: 18, col: '205,145,202', mode: 'wander', size: [1.8, 4] }, star: 0, light: 'water', perch: ['bf_pink1', 'bf_pink2'], fly: ['bf:bf_pink1', 'bf:bf_pink2'], burst: '231,174,217' },
+    airterjun: { leaf: null, glow: { n: 22, col: '185,218,255', mode: 'wander', size: [1.8, 4] }, star: 1, light: 'water', perch: ['bf_blue1', 'bf_silver'], fly: ['bf:bf_blue1', 'bf:bf_silver'], burst: '200,228,255' },
     istana: { leaf: { imgs: ['leafj', 'orchid', 'leafj'], n: 8, size: [12, 20] }, glow: { n: 18, col: '255,222,140', mode: 'drift', size: [2, 4.2] }, spark: 6, light: 'sun', perch: ['bf_gold', 'bf_gold2'], fly: ['bf:bf_gold', 'bf:bf_gold2'], burst: '255,226,150' },
     dayak: { leaf: { imgs: ['leafj', 'orchid', 'leafj', 'orchid', 'feather'], n: 9, size: [12, 20] }, glow: { n: 16, col: '255,226,150', mode: 'drift', size: [2, 4.2] }, light: 'sun', perch: ['bf_rajah'], fly: ['hornbill', 'hornbill', 'bf:bf_rajah'], burst: '255,214,120' },
   };
@@ -235,7 +235,7 @@
   }
 
   // ---------- awan 3D di tiap bagian (di belakang isi, di atas lukisan latar) ----------
-  const CLOUD = { airterjun: ['cloudw1', 'cloudw2', 'cloudw3'], istana: ['cloudw1', 'cloudw2', 'cloudw3'], princess: ['cloudp1', 'cloudp2', 'cloudp3'], bali: ['cloudw1', 'cloudw2', 'cloudw3'], emas: ['cloudw1', 'cloudw3', 'cloudw2'], biru: ['cloudb', 'cloudb', 'cloudb'], rimba: ['cloudb', 'cloudb', 'cloudb'], klasik: ['cloudw2', 'cloudw1', 'cloudw3'], dayak: ['', '', ''] };
+  const CLOUD = { airterjun: ['cloudb', 'cloudb', 'cloudb'], istana: ['cloudw1', 'cloudw2', 'cloudw3'], princess: ['cloudp1', 'cloudp2', 'cloudp3'], bali: ['cloudw1', 'cloudw2', 'cloudw3'], emas: ['cloudw1', 'cloudw3', 'cloudw2'], biru: ['cloudb', 'cloudb', 'cloudb'], rimba: ['cloudb', 'cloudb', 'cloudb'], klasik: ['cloudw2', 'cloudw1', 'cloudw3'], dayak: ['', '', ''] };
   let skies = [];
   function addSkies() {
     if (!E('sectionClouds') || matchMedia('(pointer:coarse)').matches) return; // HP: tanpa awan per bagian (hemat)

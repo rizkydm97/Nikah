@@ -90,11 +90,11 @@
     },
     // Tema 10 & 11: dunia vektor berlapis (panggung.js), masuk bertahap seperti video referensi
     airterjun: {
-      live: 1, tint:[1,.94,.98], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,600],
-      motes:{n:12,c:'219,155,205',up:1}, name: 'Ilustrasi Vintage — Air Terjun & Joglo', base: 'jawa', pal: 'pink', dark: false,
-      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#bd7177', glowText: 'rgba(255,248,250,.95)',
-      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [90, 200], birds: '', bf: ['bf_pink1', 'bf_pink2'], petals: ['leafj', 'orchid'], sparkle: 0, flies: 0,
-      preload: ['/assets/t/airterjun/ref/waterfall-watercolor.webp', '/assets/t/airterjun/ref/joglo.webp', '/assets/t/airterjun/ref/tree-left.webp', '/assets/t/airterjun/ref/tree-right.webp', '/assets/t/airterjun/ref/lavender-meadow.webp', 'bf_pink1', 'bf_pink2'], shots: [['end', 1000]],
+      live: 1, tint:[.78,.9,1], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,600],
+      motes:{n:10,c:'170,215,255',up:1}, name: 'Air Terjun Bulan', base: 'jawa', pal: 'blue', dark: true,
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#eef3ff', glowText: 'rgba(20,40,90,.9)',
+      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [90, 200], birds: '', bf: ['bf_blue1', 'bf_silver'], petals: ['frangi1'], sparkle: 0, flies: 0,
+      preload: ['/assets/t/airterjun/sky.webp', '/assets/t/airterjun/cliffs.webp', '/assets/t/airterjun/pool.webp', '/assets/t/airterjun/milky.webp', '/assets/t/fx/moon.webp', '/assets/t/fx/streaks.webp', 'bf_blue1'], shots: [['end', 1000]],
     },
     istana: { // Tema 11 — Adat Jawa (kunci 'istana' dipertahankan agar pilihan tema lama tetap jalan)
       live: 1, tint:[1,.92,.78], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,700],
@@ -111,12 +111,10 @@
     t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
     t.divider = d + 'divider.webp'; t.motif = k === 'biru' ? '' : d + 'motif.webp';
   }
-  // Tema 10 memakai seluruh ilustrasi referensi kiriman untuk sampul, latar bagian, bunga, bingkai dan pemisah.
-  { const t = window.PIC_THEMES.airterjun, d = T + 'airterjun/ref/';
-    t.cover = t.world = t.bg = d + 'vintage-scene.webp';
-    t.deco = { floralTop: d + 'floral-top.webp', floralBottom: d + 'floral-bottom.webp', column: d + 'orchid-branch-left.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'white-flowers-left.webp', ornament: d + 'gunungan-left.webp' };
-    t.divider = d + 'divider-vintage.webp'; t.motif = '';
-  }
+  // Tema 10 & 11 memakai hiasan dalam dari tema serupa (Biru & Princess); latar bagian dibuat dari dunia vektornya
+  [['airterjun', 'biru']].forEach(([k, src]) => { const t = window.PIC_THEMES[k], d = T + src + '/';
+    t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
+    t.divider = d + 'divider.webp'; t.motif = src === 'biru' ? '' : d + 'motif.webp'; });
   // Tema 11 (Adat Jawa): semua hiasan, latar, bingkai, pemisah & pola memakai aset Jawa sendiri
   { const k = 'istana', x = window.PIC_THEMES[k], d = T + 'jawa/';
     x.bg = x.world = x.cover = d + 'bg.webp';

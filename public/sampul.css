@@ -396,56 +396,6 @@
 .cover.spf.play .spf-in>*{opacity:1;transform:none}
 .cover.spf.play .spf-in>*:nth-child(2){transition-delay:.25s}.cover.spf.play .spf-in>*:nth-child(3){transition-delay:.45s}.cover.spf.play .spf-in>*:nth-child(4){transition-delay:.7s}.cover.spf.play .spf-in>*:nth-child(5){transition-delay:.9s}
 
-/* Tema 10: sampul ilustratif berdasarkan gambar referensi kiriman */
-.spf-airterjun .spf-card{background:#eee1eb;}
-.spf-airterjun .spf-edge{display:none;}
-.spf-refart{position:absolute;inset:0;overflow:hidden;isolation:isolate;background:linear-gradient(180deg,#f2e5ef 0%,#e9e0ea 38%,#e6d9e6 64%,#d5d4dc 100%);}
-.spf-ref-wash{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 28%,rgba(255,250,255,.32),transparent 59%),linear-gradient(180deg,rgba(250,239,248,.1),rgba(123,91,126,.07));}
-.spf-ref-layer{position:absolute;display:block;height:auto;max-width:none;pointer-events:none;filter:drop-shadow(0 6px 9px rgba(69,48,73,.12));}
-.spf-ref-layer.rf-water{left:-5%;top:-1.5%;width:110%;opacity:.96;filter:saturate(.88);animation:spfWaterDrift 36s ease-in-out infinite alternate;}
-.spf-ref-layer.rf-tree{filter:drop-shadow(0 7px 10px rgba(37,27,43,.12));transform-origin:50% 88%;}
-.spf-ref-layer.rf-tree-l{left:-17%;top:-2.5%;width:76%;animation:spfTreeL 10s ease-in-out infinite;}
-.spf-ref-layer.rf-tree-r{right:-17%;top:-3%;width:75%;animation:spfTreeR 12s ease-in-out infinite;}
-.spf-ref-layer.rf-meadow{left:-16%;top:57.5%;width:145%;opacity:.88;mix-blend-mode:multiply;filter:saturate(.72);}
-.spf-ref-layer.rf-palm{opacity:.8;filter:drop-shadow(0 5px 7px rgba(25,25,35,.15));transform-origin:50% 90%;}
-.spf-ref-layer.rf-palm-l{left:-5%;top:47.5%;width:45%;animation:spfPalm 8s ease-in-out infinite;}
-.spf-ref-layer.rf-palm-r{right:-6%;top:42%;width:42%;animation:spfPalm 9s ease-in-out -2s infinite;}
-.spf-ref-layer.rf-branch{filter:drop-shadow(0 4px 6px rgba(80,55,93,.15));transform-origin:50% 90%;}
-.spf-ref-layer.rf-branch-l{left:-4%;top:31%;width:30%;animation:spfBranchL 7s ease-in-out infinite;}
-.spf-ref-layer.rf-branch-r{right:-4%;top:30%;width:29%;animation:spfBranchR 8s ease-in-out -1.5s infinite;}
-.spf-ref-layer.rf-joglo{left:-1%;top:44%;width:102%;filter:drop-shadow(0 10px 12px rgba(55,30,44,.2));transform-origin:50% 88%;animation:spfJoglo 9s ease-in-out infinite;}
-.spf-ref-layer.rf-gun{filter:drop-shadow(0 7px 11px rgba(103,54,120,.2));transform-origin:50% 86%;animation:spfGun 7s ease-in-out infinite;}
-.spf-ref-layer.rf-gun-l{left:2%;top:59%;width:23%;}
-.spf-ref-layer.rf-gun-r{right:2%;top:58.5%;width:22.5%;}
-.spf-ref-layer.rf-white{filter:drop-shadow(0 6px 10px rgba(70,54,84,.16));transform-origin:50% 100%;animation:spfBloom 6.5s ease-in-out infinite;}
-.spf-ref-layer.rf-white-l{left:-7%;bottom:-5%;width:39%;}
-.spf-ref-layer.rf-white-r{right:-6%;bottom:-6%;width:39%;}
-.spf-ref-layer.rf-vase{filter:drop-shadow(0 7px 11px rgba(70,54,84,.2));transform-origin:50% 100%;animation:spfBloom 6.5s ease-in-out -1s infinite;}
-.spf-ref-layer.rf-vase-l{left:16%;bottom:-9%;width:36%;}
-.spf-ref-layer.rf-vase-r{right:14%;bottom:-9%;width:36%;animation-delay:-2.5s;}
-.spf-airterjun .spf-in{inset:2% 6% 47%;gap:min(1.15cqh,10px);color:#b65e69;background:radial-gradient(ellipse at 50% 43%,rgba(255,248,250,.58),rgba(255,248,250,.14) 54%,transparent 76%);text-shadow:0 1px 5px rgba(255,255,255,.75);}
-.spf-airterjun .spf-k{font-size:min(8.5cqw,5.1cqh);margin-top:0;color:#c1787d;}
-.spf-airterjun .spf-n{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;font-family:var(--fScript);font-size:min(12cqw,7cqh);font-weight:400;letter-spacing:0;text-transform:none;line-height:.95;color:#c6757a;text-shadow:0 1px 6px rgba(255,255,255,.85);}
-.spf-airterjun .spf-n i{font-size:.44em;line-height:1.15;color:#9f777d;}
-.spf-airterjun .spf-to{margin-top:min(1.2cqh,8px);color:#795567;}
-.spf-airterjun .spf-to span{font-size:min(3.5cqw,2cqh);}
-.spf-airterjun .spf-to b{font-size:min(5.5cqw,3.2cqh);}
-.spf-airterjun .spf-btn{color:#fffaf8;background:linear-gradient(180deg,#c98591,#a85472);border:1px solid rgba(255,255,255,.72);box-shadow:0 5px 18px rgba(126,63,94,.28);}
-.spf-airterjun .spf-btn::after{background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.46) 48%,transparent 64%) 160% 0/250% 100% no-repeat;}
-.cover.spf-airterjun.play .spf-ref-layer{animation-play-state:running;}
-.cover.spf-airterjun.opening .spf-ref-layer{animation-play-state:paused;}
-@keyframes spfWaterDrift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-1.2%,.8%,0) scale(1.035)}}
-@keyframes spfTreeL{0%,100%{transform:rotate(-.4deg) translateY(0)}50%{transform:rotate(.55deg) translateY(-.35%)}}
-@keyframes spfTreeR{0%,100%{transform:rotate(.45deg) translateY(0)}50%{transform:rotate(-.5deg) translateY(-.3%)}}
-@keyframes spfPalm{0%,100%{transform:rotate(-.8deg)}50%{transform:rotate(.9deg) translateY(-.35%)}}
-@keyframes spfBranchL{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.4deg) translateY(-.4%)}}
-@keyframes spfBranchR{0%,100%{transform:rotate(1deg)}50%{transform:rotate(-1.3deg) translateY(-.3%)}}
-@keyframes spfJoglo{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-.35%) scale(1.004)}}
-@keyframes spfGun{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg) translateY(-.25%)}}
-@keyframes spfBloom{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-.5%) scale(1.012)}}
-@media (max-width:420px){.spf-airterjun .spf-in{inset:2% 4% 48%;gap:8px}.spf-airterjun .spf-k{font-size:min(9cqw,5.1cqh)}.spf-airterjun .spf-n{font-size:min(12.5cqw,7cqh)}.spf-airterjun .spf-to b{font-size:min(5.6cqw,3.3cqh)}.spf-airterjun .spf-btn{padding:9px 16px;font-size:12px;}}
-@media (prefers-reduced-motion:reduce){.spf-airterjun .spf-ref-layer{animation:none!important;}}
-
 /* Tema 11 Adat Jawa: sampul */
 .spf-istana .spf-card{background:linear-gradient(180deg,#f2c670,#fbe2ae 30%,#fff3da 55%,#cfe38c)}
 .spf-jwsky{position:absolute;inset:0}

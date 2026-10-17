@@ -102,20 +102,20 @@
   }
   function airterjunWorld() {
     uid = 0;
-    const ref = (n, cls, box, extra) => `<img class="pg-ref-img ${cls || ''}" src="${T}airterjun/ref/${n}.webp" alt="" decoding="async" style="${P(...box)}${extra ? ';' + extra : ''}">`;
-    const petals = Array.from({ length: 18 }, (_, i) => `<i class="pg-ref-petal" style="left:${(4 + R(i, 1) * 92).toFixed(2)}%;top:${(-12 + R(i, 2) * 50).toFixed(2)}%;--pr:${(-80 + R(i, 3) * 160).toFixed(0)}deg;--pdx:${(-10 + R(i, 4) * 20).toFixed(1)}vw;--pd:${(9 + R(i, 5) * 9).toFixed(1)}s;--pdelay:${(-R(i, 6) * 16).toFixed(1)}s;--ps:${(5 + R(i, 7) * 8).toFixed(1)}px"></i>`).join('');
-    return `<div class="pg-w at at-ref">
-      <div class="pg-ref-sky"></div>
-      ${L('waterfall', ref('waterfall-watercolor', 'ref-waterfall', [-40, -14, 864]), -1)}
-      ${L('trees', ref('tree-left', 'ref-tree ref-tree-left', [-126, -28, 610]) + ref('tree-right', 'ref-tree ref-tree-right', [330, -34, 590]) + ref('tree-soft', 'ref-tree ref-tree-soft', [135, 18, 514], 'opacity:.3'), -0.55)}
-      ${L('meadow', ref('lavender-meadow', 'ref-meadow', [-242, 665, 1270]), -0.35)}
-      ${L('palms', ref('palm-wide', 'ref-palm ref-palm-left', [-48, 555, 365]) + ref('palm-pair', 'ref-palm ref-palm-right', [515, 490, 310]), -0.15)}
-      ${L('branches', ref('orchid-branch-left', 'ref-branch ref-branch-left', [-23, 365, 205]) + ref('orchid-branch-right', 'ref-branch ref-branch-right', [602, 355, 194]), 0.15)}
-      ${L('joglo', ref('joglo', 'ref-joglo', [-7, 515, 798]), 0.35)}
-      ${L('gunungan', ref('gunungan-left', 'ref-gunungan ref-gunungan-left', [10, 690, 167]) + ref('gunungan-right', 'ref-gunungan ref-gunungan-right', [607, 684, 164]), 0.48)}
-      ${L('bouquets', ref('white-flowers-left', 'ref-bouquet ref-white-left', [-43, 884, 270]) + ref('white-flowers-right', 'ref-bouquet ref-white-right', [562, 878, 270]) + ref('flower-vase-blue', 'ref-vase ref-vase-left', [135, 930, 265]) + ref('flower-vase-lilac', 'ref-vase ref-vase-right', [386, 920, 265]), 0.72)}
-      ${L('petals', petals, 0.8)}
-      <div class="pg-l fly" data-z="0.6"></div>
+    const img = (n, cls) => `<img class="${cls || 'pg-img'}" src="${T}airterjun/${n}.webp" alt="" decoding="async">`;
+    const rip = SV(`<g class="pg-rip" fill="none" stroke="#bfe6ff" stroke-width="1.4">${[0, 1, 2, 3].map((i) => `<ellipse cx="392" cy="${892 + i * 24}" rx="${70 + i * 50}" ry="${6 + i * 4}" style="animation-delay:${-i * 0.9}s"/>`).join('')}</g>`);
+    return `<div class="pg-w at">
+      ${L('sky', img('sky') + stars(26, 0, 40, 3), -1)}
+      <div class="pg-l moon" data-z="-0.8"><div class="at-moon" style="${P(242, 128, 300, 300)}"><i class="h"></i><div class="m"><img src="${T}fx/moon.webp" alt=""></div><i class="s"></i></div></div>
+      ${L('cliffs', img('cliffs'), -0.3)}
+      ${L('wf', `<div class="at-wf" style="${P(354, 386, 76, 494)}"><i class="glow"></i><i class="core"></i><i class="st a"></i><i class="st b"></i><i class="lip"></i></div><div class="at-mist" style="${P(252, 830, 280, 100)}"></div>`, -0.2)}
+      ${L('pool', img('pool') + `<div class="at-refl" style="${P(340, 878, 104, 220)}"></div>` + rip, 0)}
+      ${L('trees', tr('l back', P(190, 600, 120), pineTree('night2', 3), 0.5) + tr('r back', P(474, 600, 120), pineTree('night2', 5), 0.7) + tr('l', P(-30, 500, 300), leafyTree('night', 4, 0), 0) + tr('r', P(514, 500, 300), leafyTree('night', 12, 1), 0.25), 0.3)}
+      ${L('mistb', `<div class="pg-o mb1" style="${P(-80, 820, 760)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt=""></div><div class="pg-o mb2" style="${P(240, 900, 700)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o mb3" style="${P(-40, 180, 520)}"><img class="is-cl" src="${T}airterjun/mist.webp" alt="" style="opacity:.55"></div>`, 0.25)}
+      ${L('bed', `<div class="pg-o bl" style="${P(-40, 930, 360)}">${flowerBed(0, 1)}</div><div class="pg-o br" style="${P(464, 930, 360)}">${flowerBed(1, 9)}</div>`, 0.45)}
+      ${L('fol', `<div class="pg-o tl" style="${P(-30, -16, 340)}">${foliage(0)}</div><div class="pg-o tr" style="${P(474, -16, 340)}">${foliage(1)}</div>`, 0.6)}
+      <div class="pg-l fly" data-z="0.5"></div>
+      ${L('portal', archSvg(), 0.9)}
     </div>`;
   }
 
@@ -214,39 +214,35 @@
   }
 
   // ---------- film masuk (dipanggil cinema.js) — waktu dalam ms (sudah dikali kecepatan oleh later) ----------
-  function filmAt(stage, later) { // Tema 10: kolase video ilustratif tersusun bertahap dengan dorongan kamera lembut
+  function filmAt(stage, later) { // video Air Terjun: menembus gapura → air terjun → bulan terbit → kupu-kupu → bunga → dedaunan
     const W = $('.pg-w', stage); if (!W) return;
     W.classList.add('bld');
     const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.waterfall', 0);                        // kabut air terjun terbuka lebih dulu
-    later(() => W.classList.add('push'), 450);  // kamera maju seperti masuk ke adegan
-    on('.trees', 720);                          // kanopi pohon muncul dari tepi
-    on('.meadow', 1350);                        // lapisan padang lavender menyapu dari bawah
-    on('.palms', 2050);                         // siluet pohon pinggir
-    on('.branches', 2850);                      // bunga anggrek masuk ke komposisi
-    on('.joglo', 3650);                          // rumah Joglo tumbuh dari bawah
-    on('.gunungan', 4650);                      // ornamen gunungan muncul satu per satu
-    on('.bouquets', 5600);                      // rangkaian bunga depan bermekaran
-    on('.petals', 6400);                        // kelopak melayang
-    later(() => flyers(W, 'bf_pink1', 1), 4750);
-    later(() => flyers(W, 'bf_pink2', 1), 6850);
-    later(() => W.classList.remove('bld'), 9100);
+    on('.sky,.cliffs,.wf,.pool,.portal', 0);
+    later(() => W.classList.add('thru'), 500);       // kamera menembus gapura batu (±1,8 dtk)
+    on('.moon', 1900); later(() => W.classList.add('rise'), 2000);  // bulan terbit perlahan dari balik air terjun
+    later(() => flyers(W, 'bf_blue1', 1), 3600);
+    on('.trees', 3000); on('.mistb', 3600);
+    on('.bed', 4300); on('.fol', 5400);
+    later(() => flyers(W, 'bf_silver', 1), 6200);
+    later(() => W.classList.remove('bld'), 9000);
   }
-  function filmJw(stage, later) { // adat Jawa: fajar & matahari terbit → bukit → mega mendung → joglo dibangun dari bawah → pohon tumbuh → gong dipukul → gunungan naik → semak → debu emas & kupu-kupu
+  function filmJw(stage, later) { // mengikuti video referensi: langit → rumah naik dari bawah (besar lalu menetap) → awan dari samping → pohon → bunga/gunungan naik dari bawah → matahari terbit → gong masuk dari samping → debu emas & kupu-kupu
     const W = $('.pg-w', stage); if (!W) return;
     W.classList.add('bld');
     const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.sky', 0); later(() => W.classList.add('rise'), 500);
-    on('.hill', 1700); on('.cloud', 2800);
-    on('.house', 3800);
-    on('.trees', 5800);
-    on('.gongs', 6900); later(() => W.classList.add('ring'), 8300);
-    on('.gun', 8000);
-    on('.bush', 9000); on('.dust', 9400);
+    on('.sky', 0);
+    on('.hill', 400); on('.house', 600);          // bukit & joglo naik dari bawah layar, besar lalu mengecil dan menetap
+    on('.cloud', 3000);                            // mega mendung meluncur dari kiri-kanan
+    on('.trees', 3600);                            // pohon tumbuh di kedua sisi
+    on('.gun', 4600); on('.bush', 5000);           // gunungan & semak naik dari bawah
+    later(() => W.classList.add('rise'), 6000);    // matahari terbit
+    on('.gongs', 7600); later(() => W.classList.add('ring'), 9000); // gong masuk dari samping, lalu dipukul
+    on('.dust', 9400);
     later(() => flyers(W, 'bf_gold', 2), 9800);
     later(() => W.classList.remove('bld'), 11000);
   }
-  function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise', 'ring'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at-ref') ? 'bf_pink1' : W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
+  function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise', 'ring'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
 
   window.LIVEW = Object.assign(window.LIVEW || {}, {
     airterjun: { world: airterjunWorld, start, film: filmAt, finish },
