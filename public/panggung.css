@@ -45,6 +45,61 @@
 .pg-w.at .pg-l.wf,.pg-w.at .pg-l.cliffs,.pg-w.at .pg-l.far,.pg-w.at .pg-l.pool{transform-origin:50% 55%}
 .pg-w.at.bld:not(.thru) .pg-l.far,.pg-w.at.bld:not(.thru) .pg-l.pool{transform:scale(.9)}
 
+/* ---------- Tema 10 baru: ilustrasi vintage air terjun, sakura, Joglo & gunungan ---------- */
+.pg-w.at-ref{background:#f1e2ed;color:#49384a;isolation:isolate;transform-origin:50% 54%;}
+.pg-w.at-ref .pg-ref-sky{position:absolute;inset:0;background:linear-gradient(180deg,#f2e5ef 0%,#e9e0ea 38%,#e6d9e6 64%,#d5d4dc 100%);}
+.pg-w.at-ref .pg-l{will-change:opacity,transform;}
+.pg-w.at-ref .pg-ref-img{position:absolute;display:block;height:auto;max-width:none;pointer-events:none;filter:drop-shadow(0 7px 10px rgba(83,55,77,.12));}
+.pg-w.at-ref .ref-waterfall{opacity:.97;filter:saturate(.88) drop-shadow(0 6px 16px rgba(100,74,107,.08));}
+.pg-w.at-ref .ref-meadow{opacity:.88;mix-blend-mode:multiply;filter:saturate(.72);}
+.pg-w.at-ref .ref-tree{filter:drop-shadow(0 6px 9px rgba(37,27,43,.13));transform-origin:50% 88%;}
+.pg-w.at-ref .ref-tree-soft{filter:blur(.35px);opacity:.3;}
+.pg-w.at-ref .ref-palm{filter:drop-shadow(0 5px 7px rgba(25,25,35,.15));opacity:.8;transform-origin:50% 90%;}
+.pg-w.at-ref .ref-branch{filter:drop-shadow(0 4px 6px rgba(80,55,93,.15));transform-origin:50% 90%;}
+.pg-w.at-ref .ref-joglo{filter:drop-shadow(0 10px 12px rgba(55,30,44,.2));transform-origin:50% 88%;}
+.pg-w.at-ref .ref-gunungan{filter:drop-shadow(0 7px 11px rgba(103,54,120,.2));transform-origin:50% 86%;}
+.pg-w.at-ref .ref-bouquet{filter:drop-shadow(0 6px 10px rgba(70,54,84,.16));transform-origin:50% 100%;}
+.pg-w.at-ref .ref-vase{filter:drop-shadow(0 7px 11px rgba(70,54,84,.2));transform-origin:50% 100%;}
+.pg-w.at-ref.bld .pg-l.waterfall:not(.on){transform:scale(1.1);filter:blur(3px);}
+.pg-w.at-ref.bld .pg-l.trees:not(.on){transform:translateY(-7%) scale(.88);}
+.pg-w.at-ref.bld .pg-l.meadow:not(.on){transform:translateY(15%) scale(1.04);}
+.pg-w.at-ref.bld .pg-l.palms:not(.on){transform:translateY(12%) scale(.9);}
+.pg-w.at-ref.bld .pg-l.branches:not(.on){transform:translateY(-10%) scale(.8);}
+.pg-w.at-ref.bld .pg-l.joglo:not(.on){transform:translateY(24%) scale(.78);}
+.pg-w.at-ref.bld .pg-l.gunungan:not(.on){transform:translateY(19%) scale(.72);}
+.pg-w.at-ref.bld .pg-l.bouquets:not(.on){transform:translateY(24%) scale(.72);}
+.pg-w.at-ref.bld .pg-l.petals:not(.on){opacity:0;}
+.pg-w.at-ref.push{transform:scale(1.025);}
+.pg-w.at-ref .pg-l.waterfall{transition:opacity 2s ease,transform 4.6s cubic-bezier(.2,.7,.2,1),filter 2.5s ease;}
+.pg-w.at-ref .pg-l.joglo{transition-duration:2.8s;}
+.pg-w.at-ref .pg-l.gunungan,.pg-w.at-ref .pg-l.bouquets{transition-duration:2.5s;}
+.pg-w.at-ref:not(.bld) .ref-waterfall{animation:refWaterDrift 38s ease-in-out infinite alternate;}
+.pg-w.at-ref:not(.bld) .ref-tree-left{animation:refTreeLeft 10s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-tree-right{animation:refTreeRight 12s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-palm-left{animation:refPalm 8s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-palm-right{animation:refPalm 9s ease-in-out -2s infinite;}
+.pg-w.at-ref:not(.bld) .ref-branch-left{animation:refBranchLeft 7s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-branch-right{animation:refBranchRight 8s ease-in-out -1.5s infinite;}
+.pg-w.at-ref:not(.bld) .ref-joglo{animation:refJoglo 9s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-gunungan{animation:refGunungan 7s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-bouquet,.pg-w.at-ref:not(.bld) .ref-vase{animation:refBloom 6.5s ease-in-out infinite;}
+.pg-w.at-ref:not(.bld) .ref-vase-right{animation-delay:-2s;}
+@keyframes refWaterDrift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-1.2%,.8%,0) scale(1.035)}}
+@keyframes refTreeLeft{0%,100%{transform:rotate(-.4deg) translateY(0)}50%{transform:rotate(.55deg) translateY(-.35%)}}
+@keyframes refTreeRight{0%,100%{transform:rotate(.45deg) translateY(0)}50%{transform:rotate(-.5deg) translateY(-.3%)}}
+@keyframes refPalm{0%,100%{transform:rotate(-.8deg)}50%{transform:rotate(.9deg) translateY(-.35%)}}
+@keyframes refBranchLeft{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.4deg) translateY(-.4%)}}
+@keyframes refBranchRight{0%,100%{transform:rotate(1deg)}50%{transform:rotate(-1.3deg) translateY(-.3%)}}
+@keyframes refJoglo{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-.35%) scale(1.004)}}
+@keyframes refGunungan{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg) translateY(-.25%)}}
+@keyframes refBloom{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-.5%) scale(1.012)}}
+.pg-w.at-ref .pg-ref-petal{position:absolute;width:var(--ps);height:calc(var(--ps)*.58);border-radius:80% 12% 80% 12%;background:linear-gradient(135deg,#fff5fb 0%,#d4a3d5 55%,#aa79b6 100%);box-shadow:0 1px 5px rgba(96,48,112,.2);opacity:0;transform:rotate(var(--pr));animation:refPetalFall var(--pd) linear var(--pdelay) infinite;}
+.pg-w.at-ref:not(.bld) .pg-ref-petal{opacity:.78;}
+@keyframes refPetalFall{0%{opacity:0;transform:translate3d(0,-3vh,0) rotate(var(--pr)) scale(.75)}12%{opacity:.78}50%{transform:translate3d(var(--pdx),52vh,0) rotate(calc(var(--pr) + 190deg)) scale(1)}88%{opacity:.65}100%{transform:translate3d(calc(var(--pdx)*-1),108vh,0) rotate(calc(var(--pr) + 380deg)) scale(.82);opacity:0}}
+.pg-w.at-ref .pg-bf{filter:drop-shadow(0 0 7px rgba(190,114,190,.45));}
+@media (pointer:coarse){.pg-w.at-ref .ref-waterfall,.pg-w.at-ref .ref-tree,.pg-w.at-ref .ref-palm,.pg-w.at-ref .ref-branch,.pg-w.at-ref .ref-joglo,.pg-w.at-ref .ref-gunungan,.pg-w.at-ref .ref-bouquet,.pg-w.at-ref .ref-vase{animation-duration:14s;}}
+@media (prefers-reduced-motion:reduce){.pg-w.at-ref,.pg-w.at-ref *{animation:none!important;transition:none!important;}}
+
 /* ---------- Tema 11: Istana Langit ---------- */
 .is-sky{position:absolute;left:-4%;top:-2%;width:108%;height:104%;object-fit:cover;animation:isSky 50s ease-in-out infinite alternate}
 @keyframes isSky{to{transform:translate3d(-2%,1.5%,0) scale(1.05)}}
@@ -141,8 +196,8 @@
 /* ===== Tema 11: Adat Jawa ===== */
 .pg-w.jw{background:linear-gradient(180deg,#f2c670 0%,#fbe2ae 24%,#fff3da 50%,#cfe38c 100%)}
 .pg-w.jw .pg-o>img{display:block;width:100%;height:auto}
-.jw-sun{transition:transform 5.2s cubic-bezier(.22,.8,.24,1),opacity 2.4s ease}
-.pg-w.jw.bld:not(.rise) .jw-sun{transform:translateY(80%) scale(.7);opacity:0}
+.jw-sun{transition:transform 5.2s cubic-bezier(.22,.8,.24,1)}
+.pg-w.jw.bld:not(.rise) .jw-sun{transform:translateY(80%) scale(.7)}
 .jw-sun .disc{position:absolute;inset:24%;border-radius:50%;background:radial-gradient(circle,#fffbe0,#ffd56a 60%,#f5a83a);box-shadow:0 0 70px 26px rgba(255,200,90,.6)}
 .jw-sun .rays{position:absolute;inset:-70%;border-radius:50%;background:repeating-conic-gradient(rgba(255,214,120,.3) 0 6deg,transparent 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 16%,transparent 62%);mask:radial-gradient(circle,#000 16%,transparent 62%);animation:jwSpin 70s linear infinite}
 @keyframes jwSpin{to{rotate:360deg}}
@@ -150,12 +205,13 @@
 .pg-w.jw.bld .pg-l.cloud:not(.on) .cl.l{transform:translateX(-80%)}.pg-w.jw.bld .pg-l.cloud:not(.on) .cl.r{transform:translateX(80%)}
 .pg-l.cloud.on .cl>img{animation:jwFloat 15s ease-in-out infinite alternate}.pg-l.cloud.on .cl.r>img{animation-duration:19s}
 @keyframes jwFloat{to{translate:16px 7px}}
-.pg-l.hill{transform-origin:50% 100%;transition:transform 4.4s cubic-bezier(.22,.8,.24,1),opacity 1.2s ease}
-.pg-w.jw.bld .pg-l.hill:not(.on){transform:translateY(38%) scale(1.3)}
-.pg-l.house{transform-origin:50% 100%;transition:transform 4.6s cubic-bezier(.2,.75,.25,1),opacity 1.3s ease}
-.pg-w.jw.bld .pg-l.house:not(.on){transform:translateY(58%) scale(1.5)}
+.pg-l.hill{transition:transform 3.6s cubic-bezier(.22,.8,.24,1),opacity 2s ease}
+.pg-w.jw.bld .pg-l.hill:not(.on){transform:translateY(24%)}
+.pg-l.house .hs{clip-path:inset(0);transition:clip-path 3.8s cubic-bezier(.45,0,.2,1),transform 3.8s cubic-bezier(.22,.8,.24,1)}
+.pg-w.jw.bld .pg-l.house:not(.on){opacity:1}
+.pg-w.jw.bld .pg-l.house:not(.on) .hs{clip-path:inset(100% 0 0 0);transform:translateY(7%)}
 .pg-l.trees .tr{transform-origin:50% 100%;transition:transform 3.2s cubic-bezier(.3,1.3,.5,1),opacity 1.6s ease}
-.pg-l.trees .tr.r{transition-delay:.5s}
+.pg-l.trees .tr.r{transition-delay:.7s}
 .pg-w.jw.bld .pg-l.trees:not(.on) .tr{transform:scaleY(.15);opacity:0}
 .tr.mir>img,.bs.mir>img{transform:scaleX(-1)}
 .pg-l.trees.on .tr>img{animation:pgSway 9s ease-in-out infinite;transform-origin:50% 100%}.pg-l.trees.on .tr.r>img{animation-direction:reverse}
@@ -170,8 +226,8 @@
 .pg-w.jw.bld .pg-l.gun:not(.on) .gu{transform:translateY(45%) scale(.78);opacity:0}
 .pg-l.gun.on .gu>img{animation:jwGlow 4.5s ease-in-out infinite alternate}
 @keyframes jwGlow{from{filter:drop-shadow(0 0 2px rgba(255,190,70,.2))}to{filter:drop-shadow(0 0 16px rgba(255,200,90,.85))}}
-.pg-l.bush .bs{transform-origin:50% 100%;transition:transform 3s cubic-bezier(.22,.8,.24,1),opacity 1.6s ease}
-.pg-w.jw.bld .pg-l.bush:not(.on) .bs{transform:translateY(70%) scale(1.15);opacity:0}
+.pg-l.bush .bs{transform-origin:50% 100%;transition:transform 2.6s cubic-bezier(.3,1.4,.5,1),opacity 1.4s ease}
+.pg-w.jw.bld .pg-l.bush:not(.on) .bs{transform:scale(.3) translateY(40%);opacity:0}
 .jw-d{position:absolute;bottom:12%;width:var(--s);height:var(--s);border-radius:50%;background:#ffd56a;box-shadow:0 0 8px 2px rgba(255,205,100,.8);opacity:0}
 .pg-w.ring .jw-d{animation:jwUp var(--t) linear var(--d) infinite}
 @keyframes jwUp{0%{transform:translate(0,0);opacity:0}15%{opacity:.9}100%{transform:translate(var(--x),-60cqw);opacity:0}}

@@ -117,6 +117,12 @@
 .t-dayak .sec:not(.hero) .rv.in:not([data-a^=bloom]):not([data-a=pf]){-webkit-mask-size:320% 320%;mask-size:320% 320%}
 @media (prefers-reduced-motion:reduce){.cin-deco .cc,.cin-moon,.cin-frame *{transition:none!important;animation:none!important}}
 
+/* Tema 10: bingkai sinematik menyesuaikan ilustrasi lavender & bunga kiriman */
+.cine-airterjun .cf-n{font-size:17cqi;color:#bd717f;text-shadow:0 1px 7px rgba(255,248,252,.96),0 2px 12px rgba(89,57,91,.18)}
+.cine-airterjun .cf-in{color:#78536f;text-shadow:0 1px 6px rgba(255,249,252,.96)}
+.cine-airterjun .cf-glass{background:linear-gradient(180deg,rgba(255,249,252,.68),rgba(240,222,241,.48));border:1px solid rgba(183,124,169,.36);box-shadow:0 10px 30px rgba(107,73,112,.12),inset 0 0 0 1px rgba(255,255,255,.6)}
+.cine-airterjun .cf-svg{filter:drop-shadow(0 2px 5px rgba(92,60,95,.15))}
+.cine-airterjun .cf-orn{filter:drop-shadow(0 2px 4px rgba(92,60,95,.16))}
 @media (pointer:coarse){.cf-glass{-webkit-backdrop-filter:none;backdrop-filter:none}.cin-deco .cc{will-change:auto}}
 
 /* ===== adegan dibangun sepotong demi sepotong (potongan lukisan) ===== */
