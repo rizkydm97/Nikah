@@ -227,17 +227,18 @@
     later(() => flyers(W, 'bf_silver', 1), 6200);
     later(() => W.classList.remove('bld'), 9000);
   }
-  function filmJw(stage, later) { // adat Jawa: fajar & matahari terbit → bukit → mega mendung → joglo dibangun dari bawah → pohon tumbuh → gong dipukul → gunungan naik → semak → debu emas & kupu-kupu
+  function filmJw(stage, later) { // mengikuti video referensi: langit → rumah naik dari bawah (besar lalu menetap) → awan dari samping → pohon → bunga/gunungan naik dari bawah → matahari terbit → gong masuk dari samping → debu emas & kupu-kupu
     const W = $('.pg-w', stage); if (!W) return;
     W.classList.add('bld');
     const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.sky', 0); later(() => W.classList.add('rise'), 500);
-    on('.hill', 1700); on('.cloud', 2800);
-    on('.house', 3800);
-    on('.trees', 5800);
-    on('.gongs', 6900); later(() => W.classList.add('ring'), 8300);
-    on('.gun', 8000);
-    on('.bush', 9000); on('.dust', 9400);
+    on('.sky', 0);
+    on('.hill', 400); on('.house', 600);          // bukit & joglo naik dari bawah layar, besar lalu mengecil dan menetap
+    on('.cloud', 3000);                            // mega mendung meluncur dari kiri-kanan
+    on('.trees', 3600);                            // pohon tumbuh di kedua sisi
+    on('.gun', 4600); on('.bush', 5000);           // gunungan & semak naik dari bawah
+    later(() => W.classList.add('rise'), 6000);    // matahari terbit
+    on('.gongs', 7600); later(() => W.classList.add('ring'), 9000); // gong masuk dari samping, lalu dipukul
+    on('.dust', 9400);
     later(() => flyers(W, 'bf_gold', 2), 9800);
     later(() => W.classList.remove('bld'), 11000);
   }

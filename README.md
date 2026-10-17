@@ -170,3 +170,6 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 ## v46 — Tema 11 Adat Jawa dibersihkan total dari tema lama
 - Latar section, hiasan sudut atas/bawah, lengkung & sisi bingkai, pemisah, pola, dan palet warna kini semua Jawa (`public/assets/t/jawa/`); aset & kode Istana Langit lama dihapus.
 - Ornamen di samping foto mempelai: gunungan, posisinya masuk ke dalam (setengah tersembunyi di balik foto), muncul zoom-in pelan satu per satu; mahkota di atas bingkai juga gunungan.
+
+## v47 — Animasi masuk Tema 11 mengikuti video referensi
+- Joglo & bukit naik dari bawah layar dalam ukuran besar lalu mengecil dan menetap (bukan lagi "tumbuh"); disusul mega mendung dari samping → pohon → gunungan & semak naik dari bawah → matahari terbit → gong masuk dari samping dan dipukul → debu emas & kupu-kupu.

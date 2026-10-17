@@ -141,8 +141,8 @@
 /* ===== Tema 11: Adat Jawa ===== */
 .pg-w.jw{background:linear-gradient(180deg,#f2c670 0%,#fbe2ae 24%,#fff3da 50%,#cfe38c 100%)}
 .pg-w.jw .pg-o>img{display:block;width:100%;height:auto}
-.jw-sun{transition:transform 5.2s cubic-bezier(.22,.8,.24,1)}
-.pg-w.jw.bld:not(.rise) .jw-sun{transform:translateY(80%) scale(.7)}
+.jw-sun{transition:transform 5.2s cubic-bezier(.22,.8,.24,1),opacity 2.4s ease}
+.pg-w.jw.bld:not(.rise) .jw-sun{transform:translateY(80%) scale(.7);opacity:0}
 .jw-sun .disc{position:absolute;inset:24%;border-radius:50%;background:radial-gradient(circle,#fffbe0,#ffd56a 60%,#f5a83a);box-shadow:0 0 70px 26px rgba(255,200,90,.6)}
 .jw-sun .rays{position:absolute;inset:-70%;border-radius:50%;background:repeating-conic-gradient(rgba(255,214,120,.3) 0 6deg,transparent 6deg 18deg);-webkit-mask:radial-gradient(circle,#000 16%,transparent 62%);mask:radial-gradient(circle,#000 16%,transparent 62%);animation:jwSpin 70s linear infinite}
 @keyframes jwSpin{to{rotate:360deg}}
@@ -150,13 +150,12 @@
 .pg-w.jw.bld .pg-l.cloud:not(.on) .cl.l{transform:translateX(-80%)}.pg-w.jw.bld .pg-l.cloud:not(.on) .cl.r{transform:translateX(80%)}
 .pg-l.cloud.on .cl>img{animation:jwFloat 15s ease-in-out infinite alternate}.pg-l.cloud.on .cl.r>img{animation-duration:19s}
 @keyframes jwFloat{to{translate:16px 7px}}
-.pg-l.hill{transition:transform 3.6s cubic-bezier(.22,.8,.24,1),opacity 2s ease}
-.pg-w.jw.bld .pg-l.hill:not(.on){transform:translateY(24%)}
-.pg-l.house .hs{clip-path:inset(0);transition:clip-path 3.8s cubic-bezier(.45,0,.2,1),transform 3.8s cubic-bezier(.22,.8,.24,1)}
-.pg-w.jw.bld .pg-l.house:not(.on){opacity:1}
-.pg-w.jw.bld .pg-l.house:not(.on) .hs{clip-path:inset(100% 0 0 0);transform:translateY(7%)}
+.pg-l.hill{transform-origin:50% 100%;transition:transform 4.4s cubic-bezier(.22,.8,.24,1),opacity 1.2s ease}
+.pg-w.jw.bld .pg-l.hill:not(.on){transform:translateY(38%) scale(1.3)}
+.pg-l.house{transform-origin:50% 100%;transition:transform 4.6s cubic-bezier(.2,.75,.25,1),opacity 1.3s ease}
+.pg-w.jw.bld .pg-l.house:not(.on){transform:translateY(58%) scale(1.5)}
 .pg-l.trees .tr{transform-origin:50% 100%;transition:transform 3.2s cubic-bezier(.3,1.3,.5,1),opacity 1.6s ease}
-.pg-l.trees .tr.r{transition-delay:.7s}
+.pg-l.trees .tr.r{transition-delay:.5s}
 .pg-w.jw.bld .pg-l.trees:not(.on) .tr{transform:scaleY(.15);opacity:0}
 .tr.mir>img,.bs.mir>img{transform:scaleX(-1)}
 .pg-l.trees.on .tr>img{animation:pgSway 9s ease-in-out infinite;transform-origin:50% 100%}.pg-l.trees.on .tr.r>img{animation-direction:reverse}
@@ -171,8 +170,8 @@
 .pg-w.jw.bld .pg-l.gun:not(.on) .gu{transform:translateY(45%) scale(.78);opacity:0}
 .pg-l.gun.on .gu>img{animation:jwGlow 4.5s ease-in-out infinite alternate}
 @keyframes jwGlow{from{filter:drop-shadow(0 0 2px rgba(255,190,70,.2))}to{filter:drop-shadow(0 0 16px rgba(255,200,90,.85))}}
-.pg-l.bush .bs{transform-origin:50% 100%;transition:transform 2.6s cubic-bezier(.3,1.4,.5,1),opacity 1.4s ease}
-.pg-w.jw.bld .pg-l.bush:not(.on) .bs{transform:scale(.3) translateY(40%);opacity:0}
+.pg-l.bush .bs{transform-origin:50% 100%;transition:transform 3s cubic-bezier(.22,.8,.24,1),opacity 1.6s ease}
+.pg-w.jw.bld .pg-l.bush:not(.on) .bs{transform:translateY(70%) scale(1.15);opacity:0}
 .jw-d{position:absolute;bottom:12%;width:var(--s);height:var(--s);border-radius:50%;background:#ffd56a;box-shadow:0 0 8px 2px rgba(255,205,100,.8);opacity:0}
 .pg-w.ring .jw-d{animation:jwUp var(--t) linear var(--d) infinite}
 @keyframes jwUp{0%{transform:translate(0,0);opacity:0}15%{opacity:.9}100%{transform:translate(var(--x),-60cqw);opacity:0}}
