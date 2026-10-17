@@ -176,3 +176,7 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - Animasi masuk bertahap seperti Tema 11: langit → padang → air terjun → kabut → pohon tumbuh → joglo dibangun → palem → gunungan → bunga & melati → vas → penjor berayun → kupu-kupu/burung → panel lengkung putih berisi nama.
 - Hiasan section lain (bunga atas/bawah, bingkai, pemisah, motif, latar) dibuat dari gambar yang sama: `python3 tools/gen-ungu.py`.
 - Setelah deploy: Admin → Tema → pilih ulang "Tema 10" lalu terima tawaran warna & font bawaan agar palet ungu terpakai.
+
+## v48 — Tema 10 lebih natural
+- Sampul dan home memakai adegan dunia yang sama persis (tidak ada lagi rumah yang hilang lalu tumbuh ulang); kartu sampul memudar, lalu kupu-kupu & burung masuk dan panel nama muncul halus.
+- Bunga hiasan di section dalam muncul utuh (naik & memudar), tidak lagi terbelah dua dan menyapu dari kiri-kanan.

@@ -11,7 +11,7 @@
   const f1 = (n) => +(+n).toFixed(1);
   const R = (i, k) => (Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2;
   const P = (x, y, w) => `left:${(x / BW * 100).toFixed(3)}%;top:${(y / BH * 100).toFixed(3)}%;width:${(w / BW * 100).toFixed(3)}%`;
-  const L = (cls, inner, z) => `<div class="pg-l ${cls}" data-z="${z || 0}">${inner}</div>`;
+  const L = (cls, inner, z) => `<div class="pg-l ${cls} on" data-z="${z || 0}">${inner}</div>`;
   const im = (n, cls, x, y, w, st) => `<div class="pg-o ${cls}" style="${P(x, y, w)}${st || ''}"><img src="${UG}${n}.webp" alt="" decoding="async"></div>`;
 
   // ---------- penjor pink: lengkung bambu + untaian manik menjuntai berujung lampion ----------
@@ -40,7 +40,7 @@
     const mist = (cls, x, y, w, flip, o) => `<div class="pg-o ${cls}" style="${P(x, y, w)}"><img class="is-cl" src="${UG}mist.webp" alt="" style="${flip ? 'transform:scaleX(-1);' : ''}${o ? `opacity:${o}` : ''}"></div>`;
     const dust = Array.from({ length: 22 }, (_, i) => `<i class="jw-d" style="left:${(6 + R(i, 1) * 88).toFixed(1)}%;--d:${(R(i, 2) * 9).toFixed(1)}s;--t:${(7 + R(i, 3) * 6).toFixed(1)}s;--x:${f1((R(i, 4) - 0.5) * 60)}px;--s:${f1(2 + R(i, 5) * 3)}px"></i>`).join('');
     const streams = [[0.30, 0.2], [0.405, 0.15], [0.62, 0.17], [0.77, 0.14]].map(([x, w], i) => `<i class="ug-st" style="left:${(x * 100).toFixed(1)}%;width:${(w * 14).toFixed(1)}%;animation-delay:${(-i * 0.37).toFixed(2)}s"></i>`).join('');
-    return `<div class="pg-w ug">
+    return `<div class="pg-w ug ring">
       ${L('sky', '<i class="ug-sky"></i>' + Array.from({ length: 5 }, (_, i) => `<i class="ug-cl c${i}"></i>`).join(''), -1)}
       ${L('falls', `<div class="pg-o fl" style="${P(-150, 150, 780)}"><img src="${UG}falls.webp" alt="" decoding="async"><div class="ug-strs">${streams}</div></div>`, -0.6)}
       ${L('field', im('field', 'fd', -130, 850, 1044), -0.5)}
@@ -53,9 +53,9 @@
       ${L('flw', im('flL', 'fw a', 420, 770, 150) + im('flR', 'fw b', 130, 820, 128) + im('flL', 'fw c', -10, 840, 96), 0.3)}
       ${L('jas', im('jasL', 'js l', -56, 850, 330) + im('jasR', 'js r', 530, 830, 320), 0.4)}
       ${L('pots', im('potB', 'pt a', -120, 985, 420) + im('potP', 'pt b', 180, 1000, 400) + im('potB', 'pt c', 440, 985, 400) + im('potP2', 'pt d', 610, 1005, 360), 0.5)}
-      <div class="pg-l dust" data-z="0.3">${dust}</div>
-      <div class="pg-l birds" data-z="-0.3"></div>
-      <div class="pg-l fly" data-z="0.5"></div>
+      <div class="pg-l dust on" data-z="0.3">${dust}</div>
+      <div class="pg-l birds on" data-z="-0.3"></div>
+      <div class="pg-l fly on" data-z="0.5"></div>
     </div>`;
   }
 
@@ -76,27 +76,18 @@
   function start(stage) {
     const W = stage && stage.querySelector('.pg-w'); if (!W) return;
     if (PG.start) PG.start(stage);
+    if (!matchMedia('(prefers-reduced-motion:reduce)').matches) birds(W);
   }
 
-  // ---------- film masuk (dipanggil cinema.js; waktu dalam ms, sudah dikali kecepatan oleh later) ----------
+  // ---------- film masuk (dipanggil cinema.js) ----------
+  // Adegan SUDAH utuh & sama persis dengan sampul (tidak ada yang hilang lalu tumbuh lagi, seperti video referensi).
+  // Yang ditambahkan hanya kehidupan halus: kupu-kupu terbang masuk, burung, lalu panel nama muncul (cinema.js).
   function film(stage, later) {
     const W = $('.pg-w', stage); if (!W) return;
-    W.classList.add('bld');
-    const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.sky', 0); on('.field', 500);                            // langit lilac & padang naik
-    on('.falls', 1400);                                            // air terjun muncul dari balik kabut
-    on('.mistb', 2300);                                            // kabut bergeser masuk dari sisi
-    on('.trees', 3400);                                            // pohon tumbuh dari pangkal (kanan lalu kiri)
-    on('.house', 4900);                                            // joglo dibangun dari bawah
-    on('.palms', 6500);                                            // palem hitam menyapu masuk
-    on('.gun', 7300);                                              // gunungan naik bercahaya
-    on('.flw', 8100); on('.jas', 8700);                            // bunga ungu & melati tumbuh
-    on('.pots', 9400);                                             // vas bunga naik dari bawah
-    on('.penjor', 10200); on('.dust,.birds', 10800);                                          // penjor pink turun & berayun
-    later(() => W.classList.add('ring'), 10800);                   // debu cahaya mulai naik
-    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 2), 11000);
-    later(() => birds(W), 11200);
-    later(() => W.classList.remove('bld'), 12600);
+    W.classList.add('ring');
+    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 1), 900);
+    later(() => birds(W), 1200);
+    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 1), 3800);
   }
   function finish(stage) {
     const W = $('.pg-w', stage); if (!W) return;

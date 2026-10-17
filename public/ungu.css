@@ -73,19 +73,9 @@
 
 /* ===== sampul Tema 10 (kartu penuh) ===== */
 .spf-airterjun .spf-card{background:linear-gradient(180deg,#f1e8f6 0%,#e0cfea 34%,#cdb5d9 56%,#b79dc2 70%,#a98eb5)}
-.spf-ug{position:absolute;display:block;height:auto;pointer-events:none;max-width:none}
-.spf-ug.fd{left:-14%;bottom:-3%;width:128%;-webkit-mask-image:linear-gradient(180deg,transparent,#000 22%);mask-image:linear-gradient(180deg,transparent,#000 22%)}
-.spf-ug.fl{left:-34%;top:6%;width:124%;opacity:.95}
-.spf-ug.mist{left:-20%;width:150%;opacity:.8;animation:ugDrift 30s ease-in-out infinite alternate}
-.spf-ug.mist.a{top:16%}.spf-ug.mist.b{top:27%;opacity:.65;animation-duration:42s;animation-direction:alternate-reverse}
-.spf-ug.trA{right:-24%;top:3%;width:104%}.spf-ug.trB{left:-38%;top:22%;width:66%}
-.spf-ug.hs{left:5%;bottom:20%;width:92%}
-.spf-ug.pm1{left:-12%;bottom:20%;width:44%}.spf-ug.pm2{right:-10%;bottom:19%;width:50%}
-.spf-ug.gl{left:-3%;bottom:8%;width:27%}.spf-ug.gr{right:5%;bottom:8%;width:30%}
-.spf-ug.fwa{right:20%;bottom:20%;width:17%}.spf-ug.fwb{left:20%;bottom:21%;width:15%}
-.spf-ug.jl{left:-6%;bottom:-1%;width:38%}.spf-ug.jr{right:-5%;bottom:-1%;width:36%}
-.spf-ug.pa{left:-12%;bottom:-8%;width:46%}.spf-ug.pb{left:22%;bottom:-9%;width:44%}.spf-ug.pc{left:46%;bottom:-8%;width:46%;transform:scaleX(-1)}.spf-ug.pd{right:-8%;bottom:-8%;width:42%}
-.spf-ugpj{position:absolute;pointer-events:none;width:34%;bottom:22%}.spf-ugpj.l{left:2%}.spf-ugpj.r{right:2%;bottom:23%}
+/* sampul memakai adegan dunia yang sama, ditempatkan persis seperti .pbox hero */
+.spf-box{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * 784 / 1168));aspect-ratio:784/1168;transform:translate(-50%,-50%);container-type:inline-size;overflow:hidden}
+.spf-box .pg-w{position:absolute;inset:0}
 .spf-airterjun .spf-edge{border:2px solid rgba(255,255,255,.7);box-shadow:0 0 0 5px rgba(150,110,185,.22),inset 0 0 40px rgba(255,255,255,.28)}
 .spf-airterjun .spf-in{inset:6% 8% 44%;color:#4d2c55}
 .spf-airterjun .spf-n{color:#b4503e;text-shadow:0 1px 10px rgba(255,255,255,.9);font-family:var(--fScript);font-weight:400;text-transform:none;letter-spacing:.01em;font-size:min(13cqw,7cqh)}
@@ -97,3 +87,8 @@
 /* bagian lain undangan (Tema 10): judul galeri berwarna ungu karena latar terang */
 .t-airterjun .gallery>.h-display{--tc:var(--primary);filter:none;text-shadow:none}
 .t-airterjun .gallery>.h-display::after{filter:none}
+
+/* section dalam (bukan home): bunga hiasan muncul utuh & halus — tidak terbelah dua dan tidak menyapu dari kiri-kanan */
+.t-airterjun .rv[data-a^=bloom]:not(.in){transform:translateY(26px) scale(.98);transform-origin:50% 100%;transition-duration:calc(var(--dur)*1.9)}
+.t-airterjun .edge .half,.t-airterjun .fl .half,.t-airterjun .ft .half,.t-airterjun .fb .half{transition-delay:0s!important}
+.t-airterjun .rv[data-a^=bloom].in{transition-timing-function:cubic-bezier(.22,.8,.24,1)}
