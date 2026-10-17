@@ -112,7 +112,12 @@
     t.divider = d + 'divider.webp'; t.motif = k === 'biru' ? '' : d + 'motif.webp';
   }
   // Tema 10 & 11 memakai hiasan dalam dari tema serupa (Biru & Princess); latar bagian dibuat dari dunia vektornya
-  [['airterjun', 'biru'], ['istana', 'princess']].forEach(([k, src]) => { const t = window.PIC_THEMES[k], d = T + src + '/';
+  [['airterjun', 'biru']].forEach(([k, src]) => { const t = window.PIC_THEMES[k], d = T + src + '/';
     t.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
     t.divider = d + 'divider.webp'; t.motif = src === 'biru' ? '' : d + 'motif.webp'; });
+  // Tema 11 (Adat Jawa): semua hiasan, latar, bingkai, pemisah & pola memakai aset Jawa sendiri
+  { const k = 'istana', x = window.PIC_THEMES[k], d = T + 'jawa/';
+    x.bg = x.world = x.cover = d + 'bg.webp';
+    x.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
+    x.divider = d + 'divider.webp'; x.motif = d + 'motif.webp'; }
 })();

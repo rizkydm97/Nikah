@@ -188,7 +188,7 @@ const THEME_PRESETS = {
   klasik: { palette: 'auto', primary: '#6B3E16', accent: '#8A5422', rose: '#8A5422', gold: '#B88A3E', paper: '#F8F1E6', ink: '#2C1A0B', body: '#47321F', sideBg: '#EBDFCC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   dayak: { palette: 'auto', primary: '#9A2A1E', accent: '#B8341F', rose: '#B8341F', gold: '#C99A3C', paper: '#FBF4E8', ink: '#1E120C', body: '#3E2A1E', sideBg: '#EFE2CC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   airterjun: { palette: 'auto', primary: '#2F4C7A', accent: '#3E5F92', rose: '#3E5F92', gold: '#C9B27A', paper: '#F2F5FA', ink: '#16243B', body: '#36445A', sideBg: '#E2E8F1', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
-  istana: { palette: 'auto', primary: '#8A1C3A', accent: '#A8304E', rose: '#A8304E', gold: '#D2AE62', paper: '#FBF1F3', ink: '#3A0E1C', body: '#5A2A38', sideBg: '#F3E1E6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  istana: { palette: 'auto', primary: '#8A3A12', accent: '#B8561E', rose: '#B8561E', gold: '#C99A3C', paper: '#FFF6E4', ink: '#3A1D0C', body: '#5A3A22', sideBg: '#F1DDB4', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
 };
 
 // tema warna: warna CSS + bunga ikut berganti (dipakai di Tema 1 & Tema 2)

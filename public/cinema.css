@@ -246,3 +246,16 @@
 .cin-frame.f-none .cf-n{font-size:20cqi;text-shadow:0 2px 14px rgba(60,0,20,.8)}
 .cin-frame.f-none .cf-in{text-shadow:0 2px 12px rgba(60,0,20,.85)}
 .cine-istana .cin-veil,.cine-airterjun .cin-veil{z-index:3}
+
+/* Tema 11 Adat Jawa: gunungan di samping foto — masuk ke dalam (setengah tersembunyi di balik foto), zoom masuk perlahan satu per satu */
+.t-istana .pf{isolation:isolate}
+.t-istana .pf-fl{z-index:-1}
+.t-istana .pf-fl img{transform:none!important;rotate:0deg!important;filter:drop-shadow(0 4px 8px rgba(120,70,10,.3))}
+.t-istana .pf-fl.a{width:46%;top:auto;bottom:12%}.t-istana .pf-fl.b{width:30%;bottom:auto;top:10%}
+.t-istana .pf-l .pf-fl.a{left:-23%;right:auto}.t-istana .pf-l .pf-fl.b{left:-15%;right:auto}
+.t-istana .pf-r .pf-fl.a{right:-23%;left:auto}.t-istana .pf-r .pf-fl.b{right:-15%;left:auto}
+.t-istana .pf .pf-fl,.t-istana .pf-r .pf-fl{transform:scale(0);transform-origin:50% 60%;opacity:0;transition:opacity 2.4s ease,transform 3.4s cubic-bezier(.22,.8,.24,1)}
+.t-istana .pf .pf-fl.a{transition-delay:1.2s}.t-istana .pf .pf-fl.b{transition-delay:4.2s}
+.t-istana .pf.in .pf-fl{opacity:1;transform:none;animation:none}
+.t-istana .pf.in .pf-fl img{animation:jwGlow 5s ease-in-out 5s infinite alternate}
+.t-istana .pf-orn{top:-9%;width:24%;max-width:76px;filter:drop-shadow(0 3px 6px rgba(120,70,10,.35))}

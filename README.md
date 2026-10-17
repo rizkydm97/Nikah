@@ -166,3 +166,7 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - Kunci tema tetap `istana` (pilihan tema lama tidak rusak), tampilan & namanya kini **Adat Jawa — Joglo & Gunungan**.
 - Urutan masuk: fajar & matahari terbit (sinar berputar) → bukit naik → mega mendung emas meluncur dari kiri-kanan → joglo "dibangun" dari bawah ke atas → pohon tumbuh & bergoyang → gong masuk, bergoyang, lalu dipukul (riak cincin emas) → gunungan naik bercahaya → semak → debu emas & kupu-kupu emas → nama.
 - Aset: `public/assets/t/jawa/*.webp` (latar putih sudah dihapus). Kode: `jawaWorld`/`filmJw` di `panggung.js`, gaya di akhir `panggung.css`, sampul di `sampul.js/css`.
+
+## v46 — Tema 11 Adat Jawa dibersihkan total dari tema lama
+- Latar section, hiasan sudut atas/bawah, lengkung & sisi bingkai, pemisah, pola, dan palet warna kini semua Jawa (`public/assets/t/jawa/`); aset & kode Istana Langit lama dihapus.
+- Ornamen di samping foto mempelai: gunungan, posisinya masuk ke dalam (setengah tersembunyi di balik foto), muncul zoom-in pelan satu per satu; mahkota di atas bingkai juga gunungan.

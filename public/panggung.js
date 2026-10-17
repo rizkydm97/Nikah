@@ -167,27 +167,6 @@
     pts.forEach(([x, y, s], i) => { h += `<g class="pg-fl" style="--d:${(i * 0.1).toFixed(2)}s;transform-origin:${x}px ${y}px"><g transform="translate(${x} ${y})">${rose(s, i * 40, cs[(i + seed) % 4])}</g></g>`; });
     return `<svg class="pg-bed" viewBox="0 0 340 280" style="${flip ? 'transform:scaleX(-1)' : ''}">${h}</svg>`;
   }
-  function istanaWorld() {
-    uid = 0;
-    const waves0 = SV(`${[0, 1, 2, 3].map((i) => `<path d="M0 ${930 + i * 50} ${Array.from({ length: 9 }, (_, k) => `Q${k * 98 + 49} ${900 + i * 50 + (k % 2 ? 40 : -10)} ${k * 98 + 98} ${930 + i * 50}`).join(' ')} V1168 H0Z" fill="${['#2a3c8a', '#22307a', '#1a2462', '#121a4a'][i]}" opacity=".95"/>`).join('')}
-      ${[0, 1, 2].map((i) => `<path d="M0 ${934 + i * 50} ${Array.from({ length: 9 }, (_, k) => `Q${k * 98 + 49} ${904 + i * 50 + (k % 2 ? 40 : -10)} ${k * 98 + 98} ${934 + i * 50}`).join(' ')}" stroke="#8fb0ff" stroke-width="2" fill="none" opacity=".5"/>`).join('')}`);
-    const fog = SV(`<rect y="980" width="784" height="188" fill="url(#isF)"/>`, lg('isF', [[0, '#7a1a3a', 0], [0.5, '#5a0f2c', 0.7], [1, '#3a0618', 0.95]]));
-    return `<div class="pg-w is">
-      ${L('sky', `<img class="is-sky" src="${T}istana/sky.webp" alt="">` + stars(20, 0, 60, 7), -1)}
-      <div class="pg-l moon" data-z="-0.85"><div class="is-moon" style="${P(318, 70, 148, 148)}"><i class="h"></i><div class="m"><img src="${T}fx/moon.webp" alt=""></div></div></div>
-      ${L('dark', `<div class="pg-o dl" style="${P(-160, 40, 520)}"><img class="is-cl" src="${T}istana/cl-purple.webp" alt=""></div><div class="pg-o dr" style="${P(360, 10, 560)}"><img class="is-cl red" src="${T}istana/cl-purple.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o dl2" style="${P(-120, 300, 360)}"><img class="is-cl" src="${T}istana/cl-purple.webp" alt=""></div>`, -0.7)}
-      ${L('waves', `<div class="pg-o wv1" style="${P(-120, 860, 1024)}"><img class="is-cl" src="${T}istana/cl-wave.webp" alt=""></div><div class="pg-o wv2" style="${P(-60, 960, 960)}"><img class="is-cl" src="${T}istana/cl-wave.webp" alt="" style="transform:scaleX(-1)"></div>`, -0.5)}
-      ${L('trees', tr('l back', P(110, 400, 200), leafyTree('lav', 6, 0), 0.4) + tr('r back', P(474, 400, 200), leafyTree('lav', 14, 1), 0.6) + tr('l', P(24, 360, 250), leafyTree('blossom', 2, 0), 0) + tr('r', P(510, 360, 250), leafyTree('blossom', 9, 1), 0.2), -0.45)}
-      ${L('pillars', `<div class="pg-o p1" style="${P(70, 210, 70, 560)}">${pillarSvg(0)}</div><div class="pg-o p2" style="${P(644, 210, 70, 560)}">${pillarSvg(1)}</div><div class="pg-o p3" style="${P(150, 250, 56, 470)}">${pillarSvg(0)}</div><div class="pg-o p4" style="${P(578, 250, 56, 470)}">${pillarSvg(1)}</div>`, -0.35)}
-      ${L('gzl', `<div class="pg-o gz" style="${P(212, 300, 360)}">${gazeboSvg()}</div><div class="pg-o st" style="${P(0, 590, 784, 600)}">${stairsSvg()}</div>`, -0.15)}
-      ${L('pink', `<div class="pg-o cl" style="${P(-110, 640, 420)}"><img class="is-cl" src="${T}istana/cl-peach.webp" alt=""></div><div class="pg-o cr" style="${P(470, 620, 420)}"><img class="is-cl" src="${T}istana/cl-peach2.webp" alt="" style="transform:scaleX(-1)"></div><div class="pg-o cl2" style="${P(40, 760, 300)}"><img class="is-cl" src="${T}istana/cl-peach2.webp" alt=""></div><div class="pg-o cr2" style="${P(450, 770, 300)}"><img class="is-cl" src="${T}istana/cl-peach.webp" alt="" style="transform:scaleX(-1)"></div>`, 0.1)}
-      ${L('fog', fog, 0.2)}
-      ${L('bed', `<div class="pg-o bl" style="${P(-40, 910, 360)}">${roseBush(0, 1)}</div><div class="pg-o br" style="${P(464, 910, 360)}">${roseBush(1, 3)}</div>`, 0.45)}
-      <div class="pg-l fly" data-z="0.5"></div>
-      <div class="pg-l props" data-z="0.7"></div>
-    </div>`;
-  }
-
   // ---------- Tema 11: Adat Jawa (joglo, gunungan, gong, mega mendung) — lapisan dari ilustrasi, masuk bertahap ----------
   const JP = {"hill": [0.0, 647.4, 784.0, 520.6], "house": [12.2, 485.5, 759.6, 411.0], "tree": [-86.3, 561.6, 284.2, 385.3], "bush": [-50.7, 1114.7, 238.5, 95.1], "gunungan": [253.7, 932.0, 286.7, 285.9], "gongL": [58.4, 861.0, 190.3, 288.7], "gongR": [530.3, 896.5, 220.7, 252.2], "cloudL": [59.9, 443.4, 230.9, 115.7], "cloudR": [540.9, 443.4, 210.6, 108.6], "treeR": [581.0, 561.6, 284.2, 385.3], "bushR": [608.9, 1107.1, 238.5, 95.1]};
   const jo = (n, cls) => `<div class="pg-o ${cls}" style="${P(...JP[n])}"><img src="${T}jawa/${n === 'treeR' ? 'tree' : n === 'bushR' ? 'bush' : n}.webp" alt=""></div>`;
@@ -248,21 +227,6 @@
     later(() => flyers(W, 'bf_silver', 1), 6200);
     later(() => W.classList.remove('bld'), 9000);
   }
-  function filmIs(stage, later) { // video Istana: ombak awan → gazebo & tangga naik → awan pink → pilar → mawar → bulan → awan gelap → tirai → lampu gantung → mawar atas → pilar tepi
-    const W = $('.pg-w', stage); if (!W) return;
-    W.classList.add('bld');
-    const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    const pr = (c, ms) => later(() => { const p = $('.props', W); if (p) p.classList.add(c); }, ms);
-    on('.sky', 0); on('.waves', 150);
-    on('.gzl', 400);                                  // gazebo naik dari bawah, tangga memanjang
-    on('.trees', 1500);                               // pohon-pohon tumbuh & masuk dari kedua sisi
-    later(() => W.classList.add('sink'), 2200);       // ombak awan biru turun ke bawah
-    on('.pink', 1900); on('.pillars', 2600); on('.bed', 3600); on('.fog', 3600);
-    on('.moon', 5000); on('.dark', 5400);
-    later(() => flyers(W, 'bf_pink1', 2), 4400);
-    pr('k-cur', 6800); pr('k-ch', 8000); pr('k-top', 9000); pr('k-edge', 9800);
-    later(() => W.classList.remove('bld'), 11000);
-  }
   function filmJw(stage, later) { // adat Jawa: fajar & matahari terbit → bukit → mega mendung → joglo dibangun dari bawah → pohon tumbuh → gong dipukul → gunungan naik → semak → debu emas & kupu-kupu
     const W = $('.pg-w', stage); if (!W) return;
     W.classList.add('bld');
@@ -276,12 +240,6 @@
     on('.bush', 9000); on('.dust', 9400);
     later(() => flyers(W, 'bf_gold', 2), 9800);
     later(() => W.classList.remove('bld'), 11000);
-  }
-  function props(stage, C) { // tirai & lampu gantung digambar oleh cinema.js (dipakai bersama)
-    const p = stage.querySelector('.pg-w.is .props'); if (!p || p.childElementCount || !C) return;
-    const PR = { cur: ['#8a1424', '#5a0a16', '#2e0309'], trim: '#e2b552', chand: 'robyong', pil: ['#fff', '#eee', '#ccc'] };
-    p.innerHTML = `<div class="is-cur l">${C.curtainSvg(PR, 'iscl')}</div><div class="is-cur r">${C.curtainSvg(PR, 'iscr')}</div><div class="is-ch"><div class="cp-sw">${C.chandSvg(PR, 'isch')}</div></div>
-      <div class="is-top l">${roseBush(0, 5)}</div><div class="is-top r">${roseBush(1, 7)}</div><div class="is-edge l"></div><div class="is-edge r"></div>`;
   }
   function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise', 'ring'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
 
