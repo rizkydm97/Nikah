@@ -96,12 +96,12 @@
       wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [90, 200], birds: '', bf: ['bf_blue1', 'bf_silver'], petals: ['frangi1'], sparkle: 0, flies: 0,
       preload: ['/assets/t/airterjun/sky.webp', '/assets/t/airterjun/cliffs.webp', '/assets/t/airterjun/pool.webp', '/assets/t/airterjun/milky.webp', '/assets/t/fx/moon.webp', '/assets/t/fx/streaks.webp', 'bf_blue1'], shots: [['end', 1000]],
     },
-    istana: {
-      live: 1, tint:[1,.82,.9], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,600],
-      motes:{n:10,c:'255,210,230',up:1}, name: 'Istana Langit', base: 'rose', pal: 'pink', dark: true,
-      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#fff2f6', glowText: 'rgba(60,0,20,.9)',
-      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [140, 360], birds: '', bf: ['bf_pink1', 'bf_pink2'], petals: ['rose1', 'rose2'], sparkle: 0, flies: 0,
-      preload: ['/assets/t/istana/sky.webp', '/assets/t/istana/cl-peach.webp', '/assets/t/istana/cl-peach2.webp', '/assets/t/istana/cl-purple.webp', '/assets/t/istana/cl-red.webp', '/assets/t/istana/cl-wave.webp', '/assets/t/fx/moon.webp', 'bf_pink1'], shots: [['end', 1000]],
+    istana: { // Tema 11 — Adat Jawa (kunci 'istana' dipertahankan agar pilihan tema lama tetap jalan)
+      live: 1, tint:[1,.92,.78], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,700],
+      motes:{n:12,c:'255,226,150',up:1}, name: 'Adat Jawa — Joglo & Gunungan', base: 'jawa', pal: 'maroon', dark: false,
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#5a1a0c', glowText: 'rgba(255,246,226,.95)',
+      wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [140, 360], birds: '', bf: ['bf_gold', 'bf_gold2'], petals: ['leafj', 'orchid'], sparkle: 0, flies: 0,
+      preload: ['/assets/t/jawa/hill.webp', '/assets/t/jawa/house.webp', '/assets/t/jawa/tree.webp', '/assets/t/jawa/gunungan.webp', '/assets/t/jawa/gongL.webp', '/assets/t/jawa/gongR.webp', '/assets/t/jawa/cloudL.webp', '/assets/t/jawa/bush.webp', 'bf_gold'], shots: [['end', 1000]],
     },
   };
   for (const k in window.PIC_THEMES) {

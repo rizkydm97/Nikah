@@ -1,4 +1,4 @@
-/* Tema 10 (Air Terjun Bulan) & Tema 11 (Istana Langit): dunia hidup digambar vektor, berlapis, dan masuk bertahap
+/* Tema 10 (Air Terjun Bulan) & Tema 11 (Adat Jawa): dunia hidup digambar vektor, berlapis, dan masuk bertahap
    mengikuti video referensi.
    Tema 10: sampul naik → menembus gapura batu → air terjun bercahaya → bulan terbit di belakang air terjun → bunga tumbuh,
             dedaunan turun, kupu-kupu → panel oval membesar dari tengah berisi nama.
@@ -188,6 +188,26 @@
     </div>`;
   }
 
+  // ---------- Tema 11: Adat Jawa (joglo, gunungan, gong, mega mendung) — lapisan dari ilustrasi, masuk bertahap ----------
+  const JP = {"hill": [0.0, 647.4, 784.0, 520.6], "house": [12.2, 485.5, 759.6, 411.0], "tree": [-86.3, 561.6, 284.2, 385.3], "bush": [-50.7, 1114.7, 238.5, 95.1], "gunungan": [253.7, 932.0, 286.7, 285.9], "gongL": [58.4, 861.0, 190.3, 288.7], "gongR": [530.3, 896.5, 220.7, 252.2], "cloudL": [59.9, 443.4, 230.9, 115.7], "cloudR": [540.9, 443.4, 210.6, 108.6], "treeR": [581.0, 561.6, 284.2, 385.3], "bushR": [608.9, 1107.1, 238.5, 95.1]};
+  const jo = (n, cls) => `<div class="pg-o ${cls}" style="${P(...JP[n])}"><img src="${T}jawa/${n === 'treeR' ? 'tree' : n === 'bushR' ? 'bush' : n}.webp" alt=""></div>`;
+  function jawaWorld() {
+    const dust = Array.from({ length: 22 }, (_, i) => `<i class="jw-d" style="left:${(6 + R(i, 1) * 88).toFixed(1)}%;--d:${(R(i, 2) * 9).toFixed(1)}s;--t:${(7 + R(i, 3) * 6).toFixed(1)}s;--x:${f1((R(i, 4) - 0.5) * 60)}px;--s:${f1(2 + R(i, 5) * 3)}px"></i>`).join('');
+    const rg = (x, y, c) => `<i class="pg-o jw-rg ${c}" style="${P(x - 46, y - 46, 92, 92)}"></i>`;
+    return `<div class="pg-w jw">
+      ${L('sky', `<div class="pg-o jw-sun" style="${P(282, 230, 220, 220)}"><i class="rays"></i><i class="disc"></i></div>` + stars(14, 2, 34, 11), -1)}
+      ${L('cloud', jo('cloudL', 'cl l') + jo('cloudR', 'cl r'), -0.8)}
+      ${L('hill', jo('hill', 'hl'), -0.5)}
+      ${L('house', jo('house', 'hs'), -0.35)}
+      ${L('trees', jo('tree', 'tr l') + jo('treeR', 'tr r mir'), -0.2)}
+      ${L('gongs', jo('gongL', 'gg l') + jo('gongR', 'gg r') + rg(155, 1023, 'a') + rg(155, 1023, 'b') + rg(627, 1010, 'c') + rg(627, 1010, 'd'), 0)}
+      ${L('gun', jo('gunungan', 'gu'), 0.1)}
+      ${L('bush', jo('bush', 'bs l') + jo('bushR', 'bs r mir'), 0.4)}
+      <div class="pg-l dust" data-z="0.3">${dust}</div>
+      <div class="pg-l fly" data-z="0.5"></div>
+    </div>`;
+  }
+
   // ---------- gerak hidup: parallax lembut (desktop), kupu-kupu ----------
   function start(stage) {
     const W = stage && stage.querySelector('.pg-w'); if (!W || W.dataset.on) return; W.dataset.on = 1;
@@ -243,17 +263,31 @@
     pr('k-cur', 6800); pr('k-ch', 8000); pr('k-top', 9000); pr('k-edge', 9800);
     later(() => W.classList.remove('bld'), 11000);
   }
+  function filmJw(stage, later) { // adat Jawa: fajar & matahari terbit → bukit → mega mendung → joglo dibangun dari bawah → pohon tumbuh → gong dipukul → gunungan naik → semak → debu emas & kupu-kupu
+    const W = $('.pg-w', stage); if (!W) return;
+    W.classList.add('bld');
+    const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
+    on('.sky', 0); later(() => W.classList.add('rise'), 500);
+    on('.hill', 1700); on('.cloud', 2800);
+    on('.house', 3800);
+    on('.trees', 5800);
+    on('.gongs', 6900); later(() => W.classList.add('ring'), 8300);
+    on('.gun', 8000);
+    on('.bush', 9000); on('.dust', 9400);
+    later(() => flyers(W, 'bf_gold', 2), 9800);
+    later(() => W.classList.remove('bld'), 11000);
+  }
   function props(stage, C) { // tirai & lampu gantung digambar oleh cinema.js (dipakai bersama)
     const p = stage.querySelector('.pg-w.is .props'); if (!p || p.childElementCount || !C) return;
     const PR = { cur: ['#8a1424', '#5a0a16', '#2e0309'], trim: '#e2b552', chand: 'robyong', pil: ['#fff', '#eee', '#ccc'] };
     p.innerHTML = `<div class="is-cur l">${C.curtainSvg(PR, 'iscl')}</div><div class="is-cur r">${C.curtainSvg(PR, 'iscr')}</div><div class="is-ch"><div class="cp-sw">${C.chandSvg(PR, 'isch')}</div></div>
       <div class="is-top l">${roseBush(0, 5)}</div><div class="is-top r">${roseBush(1, 7)}</div><div class="is-edge l"></div><div class="is-edge r"></div>`;
   }
-  function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
+  function finish(stage) { const W = $('.pg-w', stage); if (!W) return; W.classList.remove('bld'); W.classList.add('thru', 'rise', 'ring'); $$('.pg-l', W).forEach((l) => l.classList.add('on')); const p = $('.props', W); if (p) p.classList.add('k-cur', 'k-ch', 'k-top', 'k-edge'); if (!$('.pg-bf', W)) flyers(W, W.classList.contains('at') ? 'bf_blue1' : 'bf_pink1', 2); }
 
   window.LIVEW = Object.assign(window.LIVEW || {}, {
     airterjun: { world: airterjunWorld, start, film: filmAt, finish },
-    istana: { world: istanaWorld, start: (st) => { start(st); props(st, window.CINEMA && window.CINEMA.svg); }, film: filmIs, finish },
+    istana: { world: jawaWorld, start, film: filmJw, finish }, // Tema 11 kini Adat Jawa (kunci 'istana' dipertahankan agar pilihan lama tetap jalan)
   });
   window.PANGGUNG = { lily, bloom5, rose, puff, roseBush, flowerBed, foliage };
 })();

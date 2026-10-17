@@ -13,7 +13,7 @@
     rimba:    { fg: ['bf_blue1', 'bf_blue2', 'bf_blue1'], cl: 'cloudb', col: '#c8e0ff', snd: { wind: 300, cricket: 1, bell: { sc: [0, 3, 7, 10], base: 262, gap: [4, 8], g: .035, k: 'bell' } } },
     klasik:   { fg: ['frangi1', 'frangi2', 'frangi1'], cl: '', col: '#ffc46e', snd: { wind: 260, crackle: 1, gong: [8, 14], bell: { sc: [0, 2, 5, 7, 10], base: 220, gap: [2.5, 5], g: .06, k: 'gam' } } },
     airterjun: { fg: ['frangi1', 'bf_silver', 'frangi1'], cl: 'cloudb', col: '#9fd0ff', snd: { water: 1100, bell: { sc: [0, 3, 5, 7, 10], base: 523, gap: [3, 6.5], g: .035, k: 'bell' } } },
-    istana:   { fg: ['rose1', 'rose2', 'rose1'], cl: 'cloudp3', col: '#ffc2dc', snd: { wind: 420, bell: { sc: [0, 2, 4, 7, 9], base: 880, gap: [1.6, 4], g: .05, k: 'bell' } } },
+    istana:   { fg: ['leafj', 'orchid', 'leafj'], cl: 'cloudw1', col: '#ffcf6a', snd: { wind: 380, bird: 1, cricket: 1, gong: [12, 22], bell: { sc: [0, 2, 5, 7, 9], base: 330, gap: [1.4, 3.4], g: .045, k: 'bell' } } },
     dayak:    { fg: ['feather', 'orchid', 'leafj'], cl: 'cloudw1', col: '#ffcf6a', snd: { wind: 380, bird: 1, cricket: 1, hornbill: 1, gong: [12, 22], bell: { sc: [0, 2, 5, 7, 9], base: 294, gap: [0.9, 2.6], g: .07, k: 'sape' } } },
   };
   const E = (k) => !(window.__CFG && window.__CFG.effects && window.__CFG.effects[k] === false);

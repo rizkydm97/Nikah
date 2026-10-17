@@ -161,3 +161,8 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 - Bug tirai Tema 11: bentrok nama kelas `.edge.top` dengan hiasan bunga membuat layer props terpotong; kelas diganti `k-cur/k-ch/k-top/k-edge`.
 - Awan 3D bervolume baru (`tools/gen-clouds.py`) untuk Tema 10 & 11; kabut melayang di Tema 10.
 - Pohon bervolume yang tumbuh & masuk dari sisi (Tema 10: pohon malam + pinus; Tema 11: pohon sakura + lavender).
+
+## v44 — Tema 11 diganti: Adat Jawa (joglo, gunungan, gong, mega mendung)
+- Kunci tema tetap `istana` (pilihan tema lama tidak rusak), tampilan & namanya kini **Adat Jawa — Joglo & Gunungan**.
+- Urutan masuk: fajar & matahari terbit (sinar berputar) → bukit naik → mega mendung emas meluncur dari kiri-kanan → joglo "dibangun" dari bawah ke atas → pohon tumbuh & bergoyang → gong masuk, bergoyang, lalu dipukul (riak cincin emas) → gunungan naik bercahaya → semak → debu emas & kupu-kupu emas → nama.
+- Aset: `public/assets/t/jawa/*.webp` (latar putih sudah dihapus). Kode: `jawaWorld`/`filmJw` di `panggung.js`, gaya di akhir `panggung.css`, sampul di `sampul.js/css`.

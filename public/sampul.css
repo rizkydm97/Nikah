@@ -395,3 +395,16 @@
 .spf .spf-in>*{opacity:0;transform:translateY(12px);transition:opacity 1.4s ease,transform 1.6s var(--lux)}
 .cover.spf.play .spf-in>*{opacity:1;transform:none}
 .cover.spf.play .spf-in>*:nth-child(2){transition-delay:.25s}.cover.spf.play .spf-in>*:nth-child(3){transition-delay:.45s}.cover.spf.play .spf-in>*:nth-child(4){transition-delay:.7s}.cover.spf.play .spf-in>*:nth-child(5){transition-delay:.9s}
+
+/* Tema 11 Adat Jawa: sampul */
+.spf-istana .spf-card{background:linear-gradient(180deg,#f2c670,#fbe2ae 30%,#fff3da 55%,#cfe38c)}
+.spf-jwsky{position:absolute;inset:0}
+.spf-jw{position:absolute;display:block;height:auto;pointer-events:none}
+.spf-jw.cl.l{left:4%;top:40%;width:30%}.spf-jw.cl.r{right:4%;top:40%;width:28%}
+.spf-jw.hl{left:0;bottom:0;width:100%}.spf-jw.hs{left:2%;bottom:16%;width:96%}
+.spf-jw.tr{bottom:14%;width:36%}.spf-jw.tr.l{left:-10%}.spf-jw.tr.r{right:-10%;transform:scaleX(-1)}
+.spf-jw.gl{left:7%;bottom:3%;width:25%}.spf-jw.gr{right:6%;bottom:6%;width:28%}.spf-jw.gu{left:32%;bottom:-6%;width:37%}
+.spf-istana .spf-edge{border:2px solid #b8812c;box-shadow:0 0 0 5px rgba(120,60,10,.28),inset 0 0 0 6px rgba(184,129,44,.25)}
+.spf-istana .spf-in{inset:5% 10% 40%;color:#5a1a0c}
+.spf-istana .spf-n{text-shadow:0 1px 8px rgba(255,244,214,.9)}
+.spf-istana .spf-arch{background:linear-gradient(160deg,#fff1c0,#b8812c)}

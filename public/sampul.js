@@ -192,6 +192,7 @@
     const ph = H.photo ? `<img src="${H.esc(H.photo)}" alt="" style="object-position:50% 30%">` : '';
     const deco = k === 'airterjun'
       ? `<img class="spf-sky" src="${T}airterjun/milky.webp" alt="">${G.foliage ? `<div class="spf-c tl">${G.foliage(0)}</div><div class="spf-c tr">${G.foliage(1)}</div>` : ''}${G.flowerBed ? `<div class="spf-c bl">${G.flowerBed(0, 3)}</div><div class="spf-c br">${G.flowerBed(1, 11)}</div>` : ''}`
+      : k === 'istana' ? `<i class="spf-jwsky"></i><img class="spf-jw cl l" src="${T}jawa/cloudL.webp" alt=""><img class="spf-jw cl r" src="${T}jawa/cloudR.webp" alt=""><img class="spf-jw hl" src="${T}jawa/hill.webp" alt=""><img class="spf-jw hs" src="${T}jawa/house.webp" alt=""><img class="spf-jw tr l" src="${T}jawa/tree.webp" alt=""><img class="spf-jw tr r" src="${T}jawa/tree.webp" alt=""><img class="spf-jw gl" src="${T}jawa/gongL.webp" alt=""><img class="spf-jw gr" src="${T}jawa/gongR.webp" alt=""><img class="spf-jw gu" src="${T}jawa/gunungan.webp" alt="">`
       : `<img class="spf-sky" src="${T}istana/sky.webp" alt="">${G.puff ? `<div class="spf-c pl">${G.puff(['#ffe0d4', '#ffb4a8', '#f0848c'], 0)}</div><div class="spf-c pr">${G.puff(['#ffe0d4', '#ffb4a8', '#f0848c'], 1)}</div>` : ''}${G.roseBush ? `<div class="spf-c bl">${G.roseBush(0, 1)}</div><div class="spf-c br">${G.roseBush(1, 3)}</div>` : ''}`;
     return `<div class="cover pic sp spf spf-${k}" id="cover"><div class="spf-card">${deco}<i class="spf-edge"></i>
       <div class="spf-in">${ph ? `<div class="spf-arch"><div class="spf-ph">${ph}</div></div>` : ''}
