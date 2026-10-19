@@ -1,0 +1,169 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Generator pohon Tema 10 (Ungu Adat Jawa)</title>
+<body style="margin:0;background:#888">
+<script>
+/* Pohon bunga lilac (mirip jacaranda/tabebuya) — digambar prosedural:
+   batang berkulit + akar, cabang bertingkat yang melengkung mencari cahaya, tajuk dari ribuan daun & bunga dengan pencahayaan.
+   window.makeTree(opts) -> { trunk: canvas, crowns: [canvas,canvas,canvas], w, h, base:{x,y}, crownPivot:{x,y} }
+   Dijalankan oleh tools/gen-ungu-trees.py (Chromium headless) lalu disimpan sebagai webp. */
+function rng32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hex(c) { return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
+function mix(a, b, t) { const A = hex(a), B = hex(b); return 'rgb(' + A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',') + ')'; }
+
+window.makeTree = function (o) {
+  const W = o.w, H = o.h, rnd = rng32(o.seed), R = (a, b) => a + (b - a) * rnd();
+  const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
+  const trunkC = mk(), crowns = [mk(), mk(), mk()], tx = trunkC.getContext('2d'), cx = crowns.map((c) => c.getContext('2d'));
+  const baseX = W * (o.baseX || 0.5), baseY = H - 6;
+  const LIGHT = o.light || [-0.62, -0.78]; // arah datangnya cahaya (kiri-atas)
+  const segs = [], tips = [], mids = [];
+
+  // ---------- kerangka ----------
+  function grow(x, y, ang, len, w, depth, lean) {
+    const steps = Math.max(8, Math.round(len / 10)), pts = [];
+    let a = ang;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      pts.push({ x, y, w: w * (1 - (depth === 0 ? 0.46 : 0.62) * t) * (depth === 0 ? 1 + 0.85 * Math.exp(-t * 11) : 1), a });
+      a += (rnd() - 0.5) * (depth === 0 ? 0.09 : 0.2) + (lean || 0) / steps;
+      a += (-Math.PI / 2 - a) * (depth === 0 ? 0.01 : 0.03 + depth * 0.006); // mencari cahaya
+      x += Math.cos(a) * len / steps; y += Math.sin(a) * len / steps;
+    }
+    segs.push({ pts, depth });
+    if (depth >= o.depth) { tips.push({ x, y, a, depth }); return; }
+    if (depth >= 2) for (let i = 2; i < pts.length - 1; i += 2) mids.push({ x: pts[i].x, y: pts[i].y, a: pts[i].a });
+    const kids = depth === 0 ? o.limbs : (depth === 1 ? 3 : 2 + (rnd() < 0.45 ? 1 : 0));
+    for (let k = 0; k < kids; k++) {
+      const t = depth === 0 ? R(0.58, 0.97) : R(0.3, 0.95), idx = Math.min(pts.length - 1, Math.floor(t * pts.length)), p = pts[idx];
+      const side = (k % 2 ? 1 : -1) * (depth === 0 ? 1 : (rnd() < 0.5 ? 1 : -1));
+      const spread = depth === 0 ? R(0.5, 1.05) : R(0.35, 0.85);
+      const na = p.a + side * spread + (depth === 0 ? R(-0.2, 0.2) : 0);
+      grow(p.x, p.y, na, len * R(depth === 0 ? 0.55 : 0.52, depth === 0 ? 0.8 : 0.74), p.w * R(0.64, 0.82), depth + 1, side * R(-0.4, 0.6));
+    }
+    // pucuk utama melanjutkan arah
+    grow(x, y, a + R(-0.25, 0.25), len * R(0.55, 0.75), w * (depth === 0 ? 0.62 : 0.55) * (1 - 0.62 * 1), depth + 1, 0);
+  }
+  grow(baseX, baseY, -Math.PI / 2 + (o.tilt || 0), o.trunkLen, o.trunkW, 0, o.lean || 0);
+
+
+  // ---------- bayangan dalam tajuk (satu lapis di belakang cabang; tidak ikut bergoyang) ----------
+  const _pre = tips.concat(mids.filter(() => rnd() < 0.6));
+  _pre.forEach((a) => {
+    const r = R(o.clu * 0.55, o.clu * 0.95);
+    const gr = tx.createRadialGradient(a.x, a.y, 0, a.x, a.y, r); gr.addColorStop(0, 'rgba(42,32,60,.85)'); gr.addColorStop(0.7, 'rgba(52,42,74,.55)'); gr.addColorStop(1, 'rgba(52,42,74,0)');
+    tx.fillStyle = gr; tx.beginPath(); tx.arc(a.x, a.y, r, 0, 7); tx.fill();
+  });
+
+  // ---------- batang & cabang ----------
+  const dark = o.bark ? o.bark[0] : '#2b2236', mid = o.bark ? o.bark[1] : '#4d4160', lite = o.bark ? o.bark[2] : '#8f80a6';
+  function outline(pts, scale, off) { // poligon bertepi halus dari polyline berlebar
+    const L = [], Rr = [];
+    pts.forEach((p, i) => {
+      const q = pts[Math.min(i + 1, pts.length - 1)], r = pts[Math.max(i - 1, 0)];
+      let dx = q.x - r.x, dy = q.y - r.y; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+      const nx = -dy, ny = dx, hw = p.w * scale / 2;
+      L.push([p.x + nx * (hw + off) , p.y + ny * (hw + off)]); Rr.push([p.x - nx * (hw - off), p.y - ny * (hw - off)]);
+    });
+    return L.concat(Rr.reverse());
+  }
+  function poly(ctx, P, fill) {
+    ctx.beginPath(); ctx.moveTo(P[0][0], P[0][1]);
+    for (let i = 1; i < P.length; i++) { const m = [(P[i - 1][0] + P[i][0]) / 2, (P[i - 1][1] + P[i][1]) / 2]; ctx.quadraticCurveTo(P[i - 1][0], P[i - 1][1], m[0], m[1]); }
+    ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+  }
+  const order = segs.slice().sort((a, b) => a.depth - b.depth);
+  tx.save(); tx.shadowColor = 'rgba(20,10,30,.35)'; tx.shadowBlur = 8; tx.shadowOffsetX = 3; tx.shadowOffsetY = 3;
+  order.forEach((s) => poly(tx, outline(s.pts, 1, 0), dark));
+  tx.restore();
+  order.forEach((s) => {
+    poly(tx, outline(s.pts, 0.82, 0), mid);
+    // sisi terkena cahaya lebih terang (dihitung dari arah cabang terhadap cahaya)
+    const mp = s.pts[Math.floor(s.pts.length / 2)], dx = Math.cos(mp.a), dy = Math.sin(mp.a), facing = -(dy * LIGHT[0] * -1 + dx * LIGHT[1] * -1);
+    const off = (LIGHT[0] * Math.sin(mp.a) * -1 + LIGHT[1] * Math.cos(mp.a)) > 0 ? 1 : -1;
+    poly(tx, outline(s.pts.map((p) => ({ x: p.x, y: p.y, w: p.w * 0.9 })), 0.34, off * 0.0), lite);
+    tx.globalAlpha = 0.5; poly(tx, outline(s.pts.map((p) => ({ x: p.x, y: p.y, w: p.w * 0.9 })), 0.16, 0), '#c8bad8'); tx.globalAlpha = 1;
+  });
+  // akar lateral pendek yang menyatu dengan tanah
+  for (let k = 0; k < 4; k++) {
+    const sd = k < 2 ? -1 : 1, len = R(o.trunkW * 0.9, o.trunkW * 1.5), x0 = baseX + sd * o.trunkW * 0.28, y0 = baseY - o.trunkW * R(0.55, 0.95), pts = [];
+    for (let i = 0; i <= 10; i++) { const t = i / 10; pts.push({ x: x0 + sd * len * Math.pow(t, 0.85), y: y0 + (baseY - y0 + 2) * Math.pow(t, 0.6), w: o.trunkW * 0.3 * (1 - 0.85 * t) }); }
+    poly(tx, outline(pts, 1, 0), dark); poly(tx, outline(pts, 0.7, 0), mid);
+  }
+  // kulit kayu: guratan memanjang + retakan melintang + simpul
+  const trunkSegs = segs.filter((s) => s.depth <= 1);
+  trunkSegs.forEach((s) => {
+    const pts = s.pts, base = s.depth === 0 ? 1 : 0.6, n = Math.round((s.depth === 0 ? 140 : 60) * (o.trunkW / 90));
+    for (let i = 0; i < n; i++) {
+      const f = R(-0.46, 0.46), t0 = R(0, 0.9), t1 = Math.min(1, t0 + R(0.06, 0.3));
+      tx.beginPath(); let first = 1;
+      for (let t = t0; t <= t1; t += 0.02) {
+        const idx = Math.min(pts.length - 1, Math.floor(t * (pts.length - 1))), p = pts[idx], q = pts[Math.min(idx + 1, pts.length - 1)];
+        let dx = q.x - p.x, dy = q.y - p.y; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+        const px = p.x - dy * f * p.w + Math.sin(t * 40 + i) * 0.8, py = p.y + dx * f * p.w;
+        if (first) { tx.moveTo(px, py); first = 0; } else tx.lineTo(px, py);
+      }
+      const lit = (f * -LIGHT[0] * 2 + rnd() * 0.6) > 0.3;
+      tx.strokeStyle = lit ? 'rgba(206,192,224,' + R(0.12, 0.3) + ')' : 'rgba(18,10,26,' + R(0.25, 0.5) + ')'; tx.lineWidth = R(0.8, 2.6) * base; tx.lineCap = 'round'; tx.stroke();
+    }
+    if (s.depth === 0) for (let i = 0; i < 26; i++) { // retakan melintang & simpul
+      const idx = Math.floor(R(0.04, 0.92) * (pts.length - 1)), p = pts[idx], f = R(-0.4, 0.4);
+      tx.beginPath(); tx.ellipse(p.x + f * p.w, p.y, R(2, 6), R(1, 2.4), R(-0.4, 0.4), 0, 7); tx.fillStyle = 'rgba(14,8,22,' + R(0.3, 0.55) + ')'; tx.fill();
+    }
+  });
+  // lumut/bayangan halus di bagian bawah batang
+  const g = tx.createLinearGradient(0, baseY - o.trunkLen * 0.35, 0, baseY); g.addColorStop(0, 'rgba(20,10,30,0)'); g.addColorStop(1, 'rgba(20,10,30,.42)');
+  tx.globalCompositeOperation = 'source-atop'; tx.fillStyle = g; tx.fillRect(0, baseY - o.trunkLen * 0.35, W, o.trunkLen * 0.35 + 8); tx.globalCompositeOperation = 'source-over';
+
+  // ---------- tajuk: daun & bunga ----------
+  const PAL = o.pal || ['#2f2542', '#463a5e', '#5f4e7c', '#7a68a0', '#9684bd', '#b5a2d6', '#d3c4ea', '#ece1f7'];
+  const BLOOM = o.bloom || ['#f4d9ec', '#e8c3e4', '#fff3fb', '#d9b9ee', '#cdb1ea'];
+  const anchors = _pre;
+  // pusat tajuk -> arah cahaya relatif
+  let sx = 0, sy = 0; tips.forEach((t) => { sx += t.x; sy += t.y; }); const cxm = sx / tips.length, cym = sy / tips.length;
+  let minY = 1e9, maxR = 1; tips.forEach((t) => { minY = Math.min(minY, t.y); maxR = Math.max(maxR, Math.hypot(t.x - cxm, t.y - cym)); });
+  const pivot = { x: baseX, y: baseY - o.trunkLen * 0.8 };
+  const group = () => 0; const grpL = (l) => l < 0.4 ? 0 : l < 0.62 ? 1 : 2;
+
+  // daun: kumpulkan lalu urutkan dari gelap ke terang agar sisi terang menimpa
+  const leaves = [];
+  anchors.forEach((a) => {
+    const n = Math.round(o.leaves * (a.depth >= o.depth ? 1 : 0.6) * R(0.75, 1.25));
+    const r = o.clu * (a.depth >= o.depth ? 1.2 : 0.8);
+    for (let i = 0; i < n; i++) {
+      const ang = R(0, 6.2832), d = Math.min(1.25, Math.abs((rnd() + rnd() + rnd() - 1.5) * 1.15)) * r * 0.9, ox = Math.cos(ang) * d * 1.1, oy = Math.sin(ang) * d * 0.85;
+      const x = a.x + ox, y = a.y + oy;
+      const hn = (Math.sin(x * 0.021 + 1.3) + Math.sin(y * 0.027 + 0.4) + Math.sin((x + y) * 0.017 + 2.1) + Math.sin(x * 0.05 - y * 0.04)) / 4;
+      const low = Math.max(0, Math.min(1, (y - minY) / Math.max(1, (baseY - o.trunkLen * 0.55 - minY))));
+      if (hn > o.hole - low * 0.42 && d > r * 0.25) continue;
+      // terang: menghadap sumber cahaya (kiri-atas) + makin tinggi makin terang + sedikit acak
+      const toL = (ox * LIGHT[0] + oy * LIGHT[1]) / (r * 0.9), hgt = 1 - Math.min(1, Math.max(0, (y - minY) / (baseY - minY - o.trunkLen * 0.5)));
+      let l = 0.3 + toL * 0.34 + hgt * 0.22 + (rnd() - 0.5) * 0.36; l = Math.max(0, Math.min(0.999, l));
+      leaves.push({ x, y, l, g: grpL(l), s: R(o.leafMin, o.leafMax), rot: R(0, 6.2832), bloom: rnd() < o.bloomP });
+    }
+  });
+  tips.forEach((a) => { for (let i = 0; i < 6; i++) { const ang = R(0, 6.28), d = R(o.clu * 1.1, o.clu * 2.1), x = a.x + Math.cos(ang) * d, y = a.y + Math.sin(ang) * d * 0.8; leaves.push({ x, y, l: (_l => (leaves._t = _l))(Math.max(0.1, Math.min(0.95, 0.5 + (Math.cos(ang) * LIGHT[0] + Math.sin(ang) * LIGHT[1]) * 0.3 + (rnd() - 0.5) * 0.3))), g: grpL(leaves._t), s: R(o.leafMin * 0.7, o.leafMax * 0.85), rot: R(0, 6.28), bloom: rnd() < o.bloomP * 1.4 }); } });
+  leaves.sort((p, q) => p.l - q.l);
+  leaves.forEach((p) => {
+    const ctx = cx[p.g];
+    if (p.bloom) { // bunga: lima kelopak kecil
+      const col = BLOOM[Math.floor(rnd() * BLOOM.length)], rr = p.s * 0.62;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = mix('#7d6a9c', col, 0.35 + p.l * 0.65);
+      for (let k = 0; k < 5; k++) { ctx.rotate(1.2566); ctx.beginPath(); ctx.ellipse(rr * 0.55, 0, rr * 0.62, rr * 0.4, 0, 0, 7); ctx.fill(); }
+      ctx.fillStyle = 'rgba(255,215,140,.9)'; ctx.beginPath(); ctx.arc(0, 0, rr * 0.2, 0, 7); ctx.fill(); ctx.restore(); return;
+    }
+    const t = p.l * (PAL.length - 1), i0 = Math.floor(t), c = mix(PAL[i0], PAL[Math.min(PAL.length - 1, i0 + 1)], t - i0);
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * 0.5, 0, 0, 7); ctx.fill();
+    if (p.l > 0.55) { ctx.fillStyle = 'rgba(255,255,255,' + ((p.l - 0.5) * 0.35) + ')'; ctx.beginPath(); ctx.ellipse(-p.s * 0.18, -p.s * 0.1, p.s * 0.55, p.s * 0.2, 0, 0, 7); ctx.fill(); }
+    ctx.restore();
+  });
+  return { trunk: trunkC, crowns, w: W, h: H, base: { x: baseX, y: baseY }, pivot, tipsN: tips.length, leavesN: leaves.length };
+};
+window.PRESETS = {
+  big:   { w: 1300, h: 1520, seed: 11, baseX: 0.46, trunkLen: 520, trunkW: 132, depth: 4, limbs: 4, lean: 0.12, tilt: 0.06, clu: 66, leaves: 30, leafMin: 14, leafMax: 25, bloomP: 0.12, hole: 0.3 },
+  big2:  { w: 1300, h: 1520, seed: 29, baseX: 0.54, trunkLen: 540, trunkW: 126, depth: 4, limbs: 4, lean: -0.14, tilt: -0.07, clu: 66, leaves: 30, leafMin: 14, leafMax: 25, bloomP: 0.11, hole: 0.3 },
+  mid:   { w: 900, h: 1100, seed: 5, baseX: 0.5, trunkLen: 360, trunkW: 88, depth: 4, limbs: 3, lean: 0.05, tilt: 0.0, clu: 48, leaves: 26, leafMin: 10, leafMax: 19, bloomP: 0.12, hole: 0.3 },
+};
+</script>

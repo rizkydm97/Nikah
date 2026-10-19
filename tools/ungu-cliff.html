@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Generator tebing & air terjun Tema 10</title>
+<body style="margin:0;background:#777">
+<script>
+/* Tebing batu lilac berhutan + 3 air terjun. Keluaran:
+   cliff  : batu + vegetasi + dasar air (statis)
+   mask   : bentuk badan air (alpha) -> dipakai CSS untuk menggerakkan tekstur aliran
+   streak : tekstur aliran vertikal yang bisa diulang (tileable) */
+function rng32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+window.makeCliff = function () {
+  const W = 1400, H = 1100, rnd = rng32(77), R = (a, b) => a + (b - a) * rnd();
+  const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w || W; c.height = h || H; return c; };
+  const cl = mk(), x = cl.getContext('2d'), mk2 = mk(), mx = mk2.getContext('2d');
+  // ---- siluet tebing ----
+  const topY = (u) => 190 + Math.sin(u * 5.1 + 0.6) * 38 + Math.sin(u * 11.3 + 2) * 20 + Math.sin(u * 23 + 1) * 9 - Math.exp(-Math.pow((u - 0.5) * 7.5, 2)) * 60 + Math.pow(Math.abs(u - 0.5) * 2, 3) * 150;
+  const sideIn = (y) => 0; // tepi kiri-kanan memenuhi kanvas, dipudarkan oleh mask
+  const path = new Path2D(); path.moveTo(-10, H + 10);
+  for (let i = 0; i <= 140; i++) { const u = i / 140; path.lineTo(u * W, topY(u)); }
+  path.lineTo(W + 10, H + 10); path.closePath();
+  // dasar batu
+  const g = x.createLinearGradient(0, 160, 0, 980); g.addColorStop(0, '#b6a4c9'); g.addColorStop(0.35, '#9987b2'); g.addColorStop(0.7, '#7b6a97'); g.addColorStop(1, '#5d4e7a');
+  x.fillStyle = g; x.fill(path);
+  x.save(); x.clip(path);
+  // strata vertikal besar (halus)
+  const t = mk(), tx = t.getContext('2d');
+  for (let i = 0; i < 70; i++) { const px = R(-40, W), w = R(30, 150), l = rnd() < 0.5; tx.fillStyle = l ? 'rgba(235,222,250,' + R(0.05, 0.16) + ')' : 'rgba(40,28,62,' + R(0.08, 0.2) + ')'; tx.fillRect(px, 150, w, H); }
+  x.filter = 'blur(14px)'; x.drawImage(t, 0, 0); x.filter = 'none';
+  // bercak batu alami (noise berskala besar, diburamkan)
+  { const n = mk(), nx = n.getContext('2d');
+    for (let i = 0; i < 520; i++) { const px = R(0, W), py = R(180, 1000), rw = R(20, 90), rh = R(30, 150), l = rnd() < 0.5; nx.fillStyle = l ? 'rgba(240,228,252,' + R(0.04, 0.12) + ')' : 'rgba(38,26,60,' + R(0.05, 0.14) + ')'; nx.beginPath(); nx.ellipse(px, py, rw, rh, R(-0.25, 0.25), 0, 7); nx.fill(); }
+    x.filter = 'blur(7px)'; x.drawImage(n, 0, 0); x.filter = 'none'; }
+  // gurat batu vertikal (tipis, tidak saling silang)
+  for (let i = 0; i < 1500; i++) {
+    const px = R(0, W), py = R(190, 1000), len = R(40, 160), a = Math.PI / 2 + R(-0.08, 0.08), lit = rnd() < 0.42;
+    x.strokeStyle = lit ? 'rgba(238,226,252,' + R(0.04, 0.12) + ')' : 'rgba(34,22,54,' + R(0.05, 0.14) + ')'; x.lineWidth = R(1.5, 5); x.lineCap = 'round';
+    x.beginPath(); x.moveTo(px, py); x.lineTo(px + Math.cos(a) * len, py + Math.sin(a) * len); x.stroke();
+  }
+  // bidang batu bertingkat (ledge) & retakan
+  for (let i = 0; i < 16; i++) {
+    const px = R(40, W - 40), py = R(260, 900), w = R(90, 280);
+    x.strokeStyle = 'rgba(232,220,248,' + R(0.1, 0.2) + ')'; x.lineWidth = R(2, 4); x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + w / 2, py + R(-10, 10), px + w, py + R(-6, 6)); x.stroke();
+    x.strokeStyle = 'rgba(30,20,50,' + R(0.12, 0.24) + ')'; x.lineWidth = R(3, 8); x.beginPath(); x.moveTo(px, py + 5); x.quadraticCurveTo(px + w / 2, py + R(6, 16), px + w, py + R(5, 11)); x.stroke();
+  }
+  x.restore();
+  // ---- vegetasi (rumpun daun ungu gelap) di puncak dan tepian ----
+  const PAL = ['#2c2240', '#3c2f58', '#4e3f6e', '#63518a', '#7a67a3', '#9a86c0'];
+  function bush(cx, cy, r, n) {
+    for (let i = 0; i < n; i++) {
+      const a = R(0, 6.28), d = Math.pow(rnd(), 0.7) * r, px = cx + Math.cos(a) * d * 1.2, py = cy + Math.sin(a) * d * 0.8;
+      const l = Math.max(0, Math.min(0.99, 0.3 + (-(Math.cos(a)) * 0.18 - Math.sin(a) * 0.3) * (d / r) + (rnd() - 0.5) * 0.4)); const k = l * (PAL.length - 1), i0 = Math.floor(k);
+      x.fillStyle = PAL[i0]; x.save(); x.translate(px, py); x.rotate(R(0, 6.28)); x.beginPath(); x.ellipse(0, 0, R(8, 17), R(4, 9), 0, 0, 7); x.fill(); x.restore();
+    }
+  }
+  for (let i = 0; i <= 120; i++) { const u = i / 120; if (Math.abs(u - 0.5) < 0.1 && i % 2) continue; bush(u * W + R(-10, 10), topY(u) + R(-4, 16), R(26, 52), 34); }
+  for (let i = 0; i < 11; i++) { const py = R(300, 840), x0 = R(0, W - 200), len = R(60, 170); for (let k = 0; k < len; k += R(26, 40)) { const px = x0 + k; if (Math.abs(px - 700) < 140 || Math.abs(px - 505) < 55 || Math.abs(px - 910) < 60) continue; bush(px, py + Math.sin(k * 0.05) * 6, R(14, 28), 14); } }
+  // sulur menjuntai dari puncak
+  for (let i = 0; i < 60; i++) { const u = R(0.02, 0.98); if (Math.abs(u - 0.5) < 0.1) continue; const px = u * W, py = topY(u) + 10, len = R(30, 120); x.strokeStyle = 'rgba(48,36,74,.55)'; x.lineWidth = R(1, 2.4); x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + R(-12, 12), py + len / 2, px + R(-8, 8), py + len); x.stroke(); }
+
+  // ---- air terjun ----
+  const falls = [
+    { x0: 700, y0: topY(0.5) + 24, w0: 84, x1: 696, y1: 900, w1: 230, sway: 16 },
+    { x0: 505, y0: 318, w0: 46, x1: 496, y1: 868, w1: 112, sway: 12 },
+    { x0: 905, y0: 330, w0: 52, x1: 916, y1: 874, w1: 124, sway: 12 },
+  ];
+  const body = (f, ctx, sc) => { // poligon badan air melebar ke bawah, sedikit berkelok
+    const L = [], Rr = []; for (let i = 0; i <= 40; i++) { const t = i / 40, cxp = f.x0 + (f.x1 - f.x0) * t + Math.sin(t * 6 + f.x0) * f.sway * (0.3 + t * 0.7), w = (f.w0 + (f.w1 - f.w0) * Math.pow(t, 1.5)) * (1 + Math.sin(t * 7 + f.x0) * 0.025) * (sc || 1), y = f.y0 + (f.y1 - f.y0) * t; L.push([cxp - w / 2, y]); Rr.push([cxp + w / 2, y]); }
+    ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]); L.forEach((p) => ctx.lineTo(p[0], p[1])); Rr.reverse().forEach((p) => ctx.lineTo(p[0], p[1])); ctx.closePath();
+  };
+  // celah gelap tempat air keluar (bayangan di sisi)
+  falls.forEach((f) => { x.save(); x.filter = 'blur(10px)'; body(f, x, 1.5); x.fillStyle = 'rgba(40,28,66,.45)'; x.fill(); x.restore(); });
+  const wcan = mk(), wx = wcan.getContext('2d');
+  falls.forEach((f) => { // badan air: putih lilac dengan tepi lembut
+    wx.save(); wx.filter = 'blur(5px)'; body(f, wx, 1.0); wx.fillStyle = 'rgba(244,238,252,.96)'; wx.fill(); wx.restore();
+    wx.save(); wx.filter = 'blur(2px)'; body(f, wx, 0.55); wx.fillStyle = 'rgba(255,255,255,1)'; wx.fill(); wx.restore();
+  });
+  // alur di dalam air
+  wx.globalCompositeOperation = 'source-atop';
+  for (let i = 0; i < 900; i++) { const f = falls[i % 3 === 0 ? 0 : i % 3], t = R(0, 1), cxp = f.x0 + (f.x1 - f.x0) * t + Math.sin(t * 6 + f.x0) * f.sway * (0.3 + t * 0.7), w = f.w0 + (f.w1 - f.w0) * Math.pow(t, 1.7), px = cxp + R(-0.5, 0.5) * w, py = f.y0 + (f.y1 - f.y0) * t, len = R(30, 120);
+    wx.strokeStyle = rnd() < 0.5 ? 'rgba(190,172,222,' + R(0.1, 0.28) + ')' : 'rgba(255,255,255,' + R(0.2, 0.5) + ')'; wx.lineWidth = R(1, 3.4); wx.beginPath(); wx.moveTo(px, py); wx.lineTo(px + R(-3, 3), py + len); wx.stroke(); }
+  wx.globalCompositeOperation = 'source-over';
+  x.drawImage(wcan, 0, 0);
+  // mask (bentuk air untuk animasi) = badan air saja, tepi lembut
+  const mm = mk(), mmx = mm.getContext('2d');
+  falls.forEach((f) => { mmx.save(); mmx.filter = 'blur(4px)'; body(f, mmx, 0.92); mmx.fillStyle = '#fff'; mmx.fill(); mmx.restore(); });
+  // kolam kecil di dasar (tepi lembut), batu-batu, busa & kabut
+  const pool = mk(), px_ = pool.getContext('2d');
+  px_.filter = 'blur(10px)'; px_.fillStyle = 'rgba(224,212,246,.95)'; px_.beginPath(); px_.ellipse(700, 930, 330, 64, 0, 0, 7); px_.fill(); px_.filter = 'none';
+  px_.globalCompositeOperation = 'source-atop';
+  for (let i = 0; i < 46; i++) { px_.strokeStyle = 'rgba(255,255,255,' + R(0.2, 0.5) + ')'; px_.lineWidth = R(1, 2.4); px_.beginPath(); px_.ellipse(R(430, 970), R(905, 960), R(14, 60), R(2, 6), 0, 0, 7); px_.stroke(); }
+  px_.globalCompositeOperation = 'source-over'; x.drawImage(pool, 0, 0);
+  for (let i = 0; i < 14; i++) { const bx = R(380, 1020), by = R(900, 960), br = R(14, 34); const gr = x.createRadialGradient(bx - br * 0.3, by - br * 0.4, 1, bx, by, br); gr.addColorStop(0, '#b3a2c9'); gr.addColorStop(0.6, '#7d6b98'); gr.addColorStop(1, '#4f3f6b'); x.fillStyle = gr; x.beginPath(); x.ellipse(bx, by, br * 1.25, br * 0.8, 0, 0, 7); x.fill(); }
+  falls.forEach((f) => {
+    for (let i = 0; i < 120; i++) { const a = R(0, 6.28), d = Math.sqrt(rnd()) * f.w1 * 0.7, px = f.x1 + Math.cos(a) * d, py = f.y1 + Math.sin(a) * d * 0.35 - 6, r = R(10, 30) * (f.w1 / 230 + 0.5); const gr = x.createRadialGradient(px, py, 0, px, py, r); gr.addColorStop(0, 'rgba(255,255,255,.65)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.beginPath(); x.arc(px, py, r, 0, 7); x.fill(); }
+    const gr = x.createRadialGradient(f.x1, f.y1 - 20, 0, f.x1, f.y1 - 20, f.w1 * 1.5); gr.addColorStop(0, 'rgba(250,244,255,.8)'); gr.addColorStop(0.5, 'rgba(238,228,250,.38)'); gr.addColorStop(1, 'rgba(238,228,250,0)');
+    x.fillStyle = gr; x.save(); x.translate(f.x1, f.y1 - 20); x.scale(1, 0.55); x.beginPath(); x.arc(0, 0, f.w1 * 1.5, 0, 7); x.fill(); x.restore();
+  });
+  // kelembapan: lapisan kabut tipis di seluruh dasar tebing (kedalaman atmosfer)
+  const fg = x.createLinearGradient(0, 780, 0, 1100); fg.addColorStop(0, 'rgba(232,220,248,0)'); fg.addColorStop(1, 'rgba(232,220,248,.8)'); x.fillStyle = fg; x.fillRect(0, 780, W, 320);
+  // pudar tepi atas/samping supaya menyatu dengan langit & lapisan lain
+  x.globalCompositeOperation = 'destination-out';
+  const ft = x.createLinearGradient(0, 120, 0, 260); ft.addColorStop(0, 'rgba(0,0,0,1)'); ft.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = ft; x.fillRect(0, 100, W, 170);
+  const fl = x.createLinearGradient(0, 0, 170, 0); fl.addColorStop(0, 'rgba(0,0,0,1)'); fl.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = fl; x.fillRect(0, 0, 170, H);
+  const fr = x.createLinearGradient(W, 0, W - 170, 0); fr.addColorStop(0, 'rgba(0,0,0,1)'); fr.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = fr; x.fillRect(W - 170, 0, 170, H);
+  x.globalCompositeOperation = 'source-over';
+
+  // ---- tekstur aliran (tileable vertikal) ----
+  const SW = 256, SH = 512, st = mk(SW, SH), sx = st.getContext('2d');
+  for (let i = 0; i < 260; i++) {
+    const px = R(0, SW), py = R(0, SH), len = R(40, 200), w = R(1, 4.5), a = rnd() < 0.55 ? R(0.25, 0.8) : R(0.1, 0.3);
+    for (const off of [0, -SH, SH]) { const gr = sx.createLinearGradient(0, py + off, 0, py + off + len); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.2, 'rgba(255,255,255,' + a + ')'); gr.addColorStop(0.8, 'rgba(236,226,250,' + a * 0.9 + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)'); sx.strokeStyle = gr; sx.lineWidth = w; sx.lineCap = 'round'; sx.beginPath(); sx.moveTo(px, py + off); sx.lineTo(px + R(-1, 1), py + off + len); sx.stroke(); }
+  }
+  return { cliff: cl, mask: mm, streak: st };
+};
+</script>

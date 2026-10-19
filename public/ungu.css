@@ -63,7 +63,7 @@
 .spf-box{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * 784 / 1168));aspect-ratio:784/1168;transform:translate(-50%,-50%);container-type:inline-size;overflow:hidden}
 .spf-box .pg-w{position:absolute;inset:0}
 .spf-airterjun .spf-edge{border:2px solid rgba(255,255,255,.7);box-shadow:0 0 0 5px rgba(150,110,185,.22),inset 0 0 40px rgba(255,255,255,.28)}
-.spf-airterjun .spf-in{inset:6% 8% 44%;color:#4d2c55}
+.spf-airterjun .spf-in{inset:5% 8% 21%;justify-content:space-evenly;color:#4d2c55}
 .spf-airterjun .spf-n{color:#b4503e;text-shadow:0 1px 10px rgba(255,255,255,.9);font-family:var(--fScript);font-weight:400;text-transform:none;letter-spacing:.01em;font-size:min(13cqw,7cqh)}
 .spf-airterjun .spf-k{color:#4d2c55;text-shadow:0 1px 8px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to{text-shadow:0 1px 8px rgba(255,255,255,.9)}
@@ -119,13 +119,13 @@
 
 /* ===== v55: nama mempelai di sampul tebal & mencolok (ungu tua + aksen merah bata, kontur putih) ===== */
 .spf-airterjun .spf-n{color:#561b7a;font-weight:700;font-size:min(14.5cqw,7.8cqh);-webkit-text-stroke:1.3px #561b7a;paint-order:stroke fill;text-shadow:none;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px rgba(255,255,255,.95)) drop-shadow(0 3px 4px rgba(70,20,100,.35))}
-.spf-airterjun .spf-n i{color:#c2473a;-webkit-text-stroke:1px #c2473a}
+.spf-airterjun .spf-n i{color:#8a4fb3;-webkit-text-stroke:1px #8a4fb3}
 .spf-airterjun .spf-k{color:#561b7a;font-weight:700;-webkit-text-stroke:.5px #561b7a;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to span{color:#4a2260;font-weight:700;opacity:1;text-shadow:0 0 8px #fff,0 0 12px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to b{color:#3d1a57;font-weight:700;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
 
 /* ===== v56: bagian dalam Tema 10 — bersih, terang, mudah dibaca (palet ungu tetap, tidak bergantung pengaturan admin) ===== */
-body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#b4503e;--gold:#b79ad0;--paper:#fbf8fe;--ink:#2b1a40;--body:#3f2f52;--tint:#f5eefb;--tint2:#e6d8f3;--tint3:#d4bfe8;--shade:#4a2766}
+body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad0;--paper:#fbf8fe;--ink:#2b1a40;--body:#3f2f52;--tint:#f5eefb;--tint2:#e6d8f3;--tint3:#d4bfe8;--shade:#4a2766}
 /* salinan aturan "section terang" (dari Tema 2) dengan palet ungu */
 .t-airterjun .sec.bgi{background:var(--tint);color:var(--ink)}
 .t-airterjun .sec.bgi::before,.t-airterjun .quote::before,.t-airterjun .live::before,.t-airterjun .wishes::before{background:linear-gradient(color-mix(in srgb,var(--tint) 72%,transparent),color-mix(in srgb,var(--tint) 86%,transparent))!important}
@@ -145,7 +145,7 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#b4503e;--gold:#b79ad
 .t-airterjun .story .card{box-shadow:0 12px 28px color-mix(in srgb,var(--accent) 22%,transparent)}
 /* rsvp */
 .t-airterjun .rsvp .fm label{color:var(--ink)}
-.t-airterjun .rsvp .fm input,.t-airterjun .rsvp .fm select{background:rgba(255,255,255,.75);border-color:var(--accent);color:var(--ink)}
+.t-airterjun .rsvp .fm input,.t-airterjun .rsvp .fm select{background-color:rgba(255,255,255,.75);border-color:var(--accent);color:var(--ink)}
 .t-airterjun .rsvp .fm input::placeholder{color:var(--tint3)}
 .t-airterjun .rsvp .fm select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235a2a85' stroke-width='2'/%3E%3C/svg%3E")}
 .t-airterjun .rsvp .btn.ghostw{background:var(--accent);box-shadow:none;color:#fff}
@@ -188,3 +188,32 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#b4503e;--gold:#b79ad
 .t-airterjun .ev .time,.t-airterjun .ev .addr{color:var(--body);font-size:12.5px}
 .t-airterjun .ev .addr{line-height:1.7}
 .t-airterjun .bgi,.t-airterjun .rsvp .fm label{color:var(--ink)}
+
+/* ===== v57: dunia Tema 10 dibangun ulang — semua lapisan tampil sejak awal, pohon & air terjun baru, tanpa efek muncul tiba-tiba ===== */
+.spf-airterjun .spf-arch{width:min(44cqw,26cqh)}
+.t-airterjun .rsvp .fm select{background-repeat:no-repeat;background-position:right 12px center;background-size:12px 8px;padding-right:34px}
+/* matahari lembut di belakang air terjun */
+.ug-sun{position:absolute;left:50%;top:14%;width:90%;aspect-ratio:1;translate:-50% 0;border-radius:50%;background:radial-gradient(circle,rgba(255,244,250,.85),rgba(255,226,244,.38) 38%,transparent 66%);animation:ugSun 9s ease-in-out infinite alternate}
+@keyframes ugSun{from{opacity:.7;scale:1}to{opacity:1;scale:1.06}}
+/* tebing & air terjun: tekstur aliran bergulir di dalam bentuk air */
+.pg-w.ug .pg-o.cf>img{display:block;width:100%;height:auto}
+.ug-wt{position:absolute;inset:0;pointer-events:none;background:url(/assets/t/ungu/streak.webp) 0 0/14cqw auto repeat;-webkit-mask:url(/assets/t/ungu/fallmask.webp) center/100% 100% no-repeat;mask:url(/assets/t/ungu/fallmask.webp) center/100% 100% no-repeat;opacity:.75;animation:ugFlow 1.5s linear infinite}
+.ug-wt.b{background-size:8cqw auto;opacity:.5;animation-duration:.95s}
+@keyframes ugFlow{to{background-position:0 28cqw}}
+.ug-wt.b{animation-name:ugFlowB}@keyframes ugFlowB{to{background-position:0 16cqw}}
+/* pohon bunga lilac: batang diam, tiga lapis tajuk bergoyang beda fase */
+.pg-w.ug .pg-o.tree>img{display:block;width:100%;height:auto;max-width:none}
+.pg-w.ug .pg-o.tree>img.cr{position:absolute;left:0;top:0;transform-origin:var(--px) var(--py);animation:ugCr 7s ease-in-out infinite alternate}
+.pg-w.ug .pg-o.tree>img.c1{animation-duration:9s;animation-delay:-2.5s}.pg-w.ug .pg-o.tree>img.c2{animation-duration:5.6s;animation-delay:-4s}
+.pg-w.ug .pg-o.tree.tr>img.cr{animation-duration:8s}.pg-w.ug .pg-o.tree.tm>img.cr{animation-duration:10s}
+@keyframes ugCr{from{rotate:-.8deg;translate:-.25% 0}to{rotate:1deg;translate:.3% -.12%}}
+.pg-w.ug .pg-l.trees .pg-o>img{animation:none}
+.pg-w.ug .pg-l.trees .pg-o>img.cr{animation:ugCr 7s ease-in-out infinite alternate}
+.pg-w.ug .pg-l.trees .pg-o.tree>img.c1{animation-duration:9s}.pg-w.ug .pg-l.trees .pg-o.tree>img.c2{animation-duration:5.6s}
+/* cahaya hangat di rumah (berkedip pelan seperti pelita) */
+.ug-hg{position:absolute;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,206,130,.55),rgba(255,190,120,.18) 50%,transparent 70%);mix-blend-mode:screen;animation:ugHg 4.2s ease-in-out infinite alternate}
+.ug-hg.b{animation-duration:5.4s;animation-delay:-2s}
+@keyframes ugHg{from{opacity:.55}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ug-wt,.pg-w.ug .pg-o.tree>img.cr,.ug-hg,.ug-sun{animation:none}}
+.pg-w.ug .pg-o.cf>img{filter:brightness(1.14) saturate(1.05)}
+.pg-w.ug.cvr .pg-l.cliff,.pg-w.ug.cvr .pg-l.trees,.pg-w.ug.cvr .pg-l.house,.pg-w.ug.cvr .pg-l.glow,.pg-w.ug.cvr .pg-l.penjor,.pg-w.ug.cvr .pg-l.palms,.pg-w.ug.cvr .pg-l.gun,.pg-w.ug.cvr .pg-l.flw,.pg-w.ug.cvr .pg-l.mistb{display:none}
