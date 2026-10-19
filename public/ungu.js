@@ -11,7 +11,7 @@
   const f1 = (n) => +(+n).toFixed(1);
   const R = (i, k) => (Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2;
   const P = (x, y, w) => `left:${(x / BW * 100).toFixed(3)}%;top:${(y / BH * 100).toFixed(3)}%;width:${(w / BW * 100).toFixed(3)}%`;
-  const S0 = { sky: 1, clouds: 1, hz: 1.02, cliff: 1.04, mistb: 1.05, field: 1.06, trees: 1.08, house: 1.1, glow: 1.1, penjor: 1.12, palms: 1.15, gun: 1.15, flw: 1.18, bank: 1.2, jas: 1.2, pots: 1.25, canopy: 1.2, petals: 1 }; // skala awal per lapisan: kamera mundur halus (semua lapisan sudah tampil sejak awal)
+  const S0 = { sky: 1.04, moon: 1.08, clouds: 1.1, hz: 1.18, cliff: 1.3, mistb: 1.4, field: 1.5, trees: 1.75, house: 1.6, glow: 1.6, penjor: 1.9, palms: 2.2, gun: 2.2, flw: 2.5, bank: 2.8, jas: 2.7, pots: 3.2, canopy: 2.4, rays: 1.3, petals: 1 }; // skala awal per lapisan: kamera terbang masuk, makin dekat makin cepat (parallax 3D)
   const L = (cls, inner, z) => `<div class="pg-l ${cls} on" data-z="${z || 0}" style="--s0:${S0[cls] || 1}">${inner}</div>`;
   const im = (n, cls, x, y, w, st, fl) => `<div class="pg-o ${cls}" style="${P(x, y, w)}${st || ''}"><img src="${UG}${n}.webp" alt="" decoding="async"${fl ? ' style="transform:scaleX(-1)"' : ''}></div>`;
 
@@ -55,6 +55,7 @@
     return `<div class="pg-w ug ring${cover ? ' cvr' : ''}">
       ${L('sky', '<i class="ug-sky"></i><i class="ug-sun"></i>' + Array.from({ length: 5 }, (_, i) => `<i class="ug-cl c${i}"></i>`).join(''), -1)}
       ${L('clouds', cd('cl1', 'a', -70, 20, 430, .9) + cd('cl2', 'b', 400, 95, 380, .8) + cd('cl3', 'c', 30, 215, 330, .7) + cd('cl1', 'd', 440, 250, 340, .6, 1), -0.9)}
+      ${L('moon', `<i class="ug-moonhalo"></i><div class="pg-o mn" style="${P(292, 96, 200)}"><img src="${UG}moon.webp" alt="" decoding="async"></div>`, -0.8)}
       ${L('hz', im('hz', 'hz a', -110, 700, 1000, ';opacity:.7') + im('hz', 'hz b', -200, 790, 900, ';opacity:.6', 1), -0.7)}
       ${L('cliff', `<div class="pg-o cf" style="${cliffBox}"><img src="${UG}cliff.webp" alt="" decoding="async"><i class="ug-wt a"></i><i class="ug-wt b"></i></div>`, -0.55)}
       ${L('mistb', mist('mb1', -120, 560, 840, 0, .7) + mist('mb2', 160, 640, 760, 1, 0.8) + mist('mb3', -60, 300, 620, 0, 0.35), -0.45)}
@@ -70,10 +71,12 @@
       ${L('jas', im('jasL', 'js l', -56, 850, 330) + im('jasR', 'js r', 530, 830, 320), 0.4)}
       ${L('pots', im('potB', 'pt a', -120, 985, 420) + im('potP', 'pt b', 180, 1000, 400) + im('potB', 'pt c', 440, 985, 400) + im('potP2', 'pt d', 610, 1005, 360), 0.5)}
       ${L('canopy', im('ctopL', 'ucp l', -14, -26, 290) + im('ctopL', 'ucp r', 508, -26, 290, '', 1), 0.45)}
+      ${L('rays', '<i class="ug-ray a"></i><i class="ug-ray b"></i><i class="ug-ray c"></i><i class="ug-fg"></i>', 0.05)}
       <div class="pg-l petals on" data-z="0.3">${petals}</div>
       <div class="pg-l dust on" data-z="0.3">${dust}</div>
       <div class="pg-l birds on" data-z="-0.3"></div>
       <div class="pg-l fly on" data-z="0.5"></div>
+      <i class="ug-vig"></i>
     </div>`;
   }
 
@@ -99,10 +102,11 @@
     const fine = matchMedia('(pointer:fine)').matches, ls = $$('.pg-l', W).map((el) => ({ el, z: +el.dataset.z })).filter((l) => l.z);
     let tx = 0, ty = 0, px = 0, py = 0; const t0 = performance.now();
     if (fine) addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
+    if (!fine) addEventListener('deviceorientation', (e) => { if (e.gamma == null) return; tx = Math.max(-1, Math.min(1, e.gamma / 22)); ty = Math.max(-1, Math.min(1, ((e.beta || 50) - 50) / 22)); }, { passive: true });
     const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || W.closest('.cin-off')) return;
       const t = (now - t0) / 1000; px += (tx - px) * 0.04; py += (ty - py) * 0.04;
-      const ix = Math.sin(t * 0.22) * 0.9 + px, iy = Math.cos(t * 0.17) * 0.5 + py;
-      for (const l of ls) l.el.style.translate = `${(-ix * l.z * 1.1).toFixed(2)}cqw ${(-iy * l.z * 0.8).toFixed(2)}cqw`; };
+      const ix = Math.sin(t * 0.22) * 0.9 + px, iy = Math.cos(t * 0.17) * 0.5 + py, K = 3.4;
+      for (const l of ls) l.el.style.translate = `${(-ix * l.z * K).toFixed(2)}cqw ${(-iy * l.z * K * 0.7).toFixed(2)}cqw`; };
     requestAnimationFrame(tick);
     // jaring pengaman: bila film tidak pernah dijalankan, dunia tetap ditampilkan utuh
     const iv = setInterval(() => { if (!W.isConnected) return clearInterval(iv); if (!document.body.classList.contains('locked')) clearInterval(iv); }, 600);
@@ -112,7 +116,8 @@
   // Semua lapisan sudah tampil sejak awal (tidak ada yang muncul tiba-tiba). Kamera hanya mundur halus: lapisan dekat bergerak sedikit lebih jauh (parallax).
   function film(stage, later) {
     const W = $('.pg-w', stage); if (!W) return;
-    later(() => $$('.pg-l', W).forEach((l) => { const s0 = parseFloat(getComputedStyle(l).getPropertyValue('--s0')) || 1; if (s0 !== 1) l.animate([{ scale: s0 }, { scale: 1 }], { duration: 7200, easing: 'cubic-bezier(.25,.6,.25,1)', fill: 'both' }); }), 0);
+    later(() => $$('.pg-l', W).forEach((l) => { const s0 = parseFloat(getComputedStyle(l).getPropertyValue('--s0')) || 1; if (s0 !== 1) l.animate([{ scale: s0 }, { scale: 1 }], { duration: 6800, easing: 'cubic-bezier(.3,.05,.2,1)', fill: 'both' }); }), 0);
+    later(() => { const m = $('.pg-l.moon .mn', W), h = $('.ug-moonhalo', W); if (m) m.animate([{ transform: 'translateY(34cqw)', opacity: 0 }, { opacity: 1, offset: 0.35 }, { transform: 'none', opacity: 1 }], { duration: 6200, easing: 'cubic-bezier(.25,.5,.25,1)', fill: 'both' }); if (h) h.animate([{ opacity: 0, scale: .6 }, { opacity: 1, scale: 1 }], { duration: 6500, easing: 'ease-out', fill: 'both' }); }, 300);
     later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 2), 2200);
     later(() => birds(W), 2600);
     later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 2), 4200);
