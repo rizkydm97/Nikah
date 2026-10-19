@@ -180,3 +180,9 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 ## v48 — Tema 10 lebih natural
 - Sampul dan home memakai adegan dunia yang sama persis (tidak ada lagi rumah yang hilang lalu tumbuh ulang); kartu sampul memudar, lalu kupu-kupu & burung masuk dan panel nama muncul halus.
 - Bunga hiasan di section dalam muncul utuh (naik & memudar), tidak lagi terbelah dua dan menyapu dari kiri-kanan.
+
+## v49
+- Tema 10: rumah/pohon/air terjun tetap sama dengan sampul (tidak hilang), lalu penjor, gunungan, bunga ungu & melati tumbuh masuk bertahap, kupu-kupu & burung, baru panel nama.
+
+## v50
+- Tema 10: sampul hanya langit & padang; setelah dibuka dunia masuk satu per satu perlahan (air terjun, kabut, pohon, joglo, palem, gunungan, bunga, vas, penjor) lalu panel nama.

@@ -11,7 +11,8 @@
   const f1 = (n) => +(+n).toFixed(1);
   const R = (i, k) => (Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2;
   const P = (x, y, w) => `left:${(x / BW * 100).toFixed(3)}%;top:${(y / BH * 100).toFixed(3)}%;width:${(w / BW * 100).toFixed(3)}%`;
-  const L = (cls, inner, z) => `<div class="pg-l ${cls} on" data-z="${z || 0}">${inner}</div>`;
+  let COVER = false; // sampul: adegan dasar + padang bunga; lapisan 'late' tumbuh masuk setelah dibuka (di hero)
+  const L = (cls, inner, z, late) => late && COVER ? '' : `<div class="pg-l ${cls}${late ? '' : ' on'}" data-z="${z || 0}">${inner}</div>`;
   const im = (n, cls, x, y, w, st) => `<div class="pg-o ${cls}" style="${P(x, y, w)}${st || ''}"><img src="${UG}${n}.webp" alt="" decoding="async"></div>`;
 
   // ---------- penjor pink: lengkung bambu + untaian manik menjuntai berujung lampion ----------
@@ -36,23 +37,24 @@
   }
 
   // ---------- dunia ----------
-  function world() {
+  function world(cover) {
+    COVER = !!cover;
     const mist = (cls, x, y, w, flip, o) => `<div class="pg-o ${cls}" style="${P(x, y, w)}"><img class="is-cl" src="${UG}mist.webp" alt="" style="${flip ? 'transform:scaleX(-1);' : ''}${o ? `opacity:${o}` : ''}"></div>`;
     const dust = Array.from({ length: 22 }, (_, i) => `<i class="jw-d" style="left:${(6 + R(i, 1) * 88).toFixed(1)}%;--d:${(R(i, 2) * 9).toFixed(1)}s;--t:${(7 + R(i, 3) * 6).toFixed(1)}s;--x:${f1((R(i, 4) - 0.5) * 60)}px;--s:${f1(2 + R(i, 5) * 3)}px"></i>`).join('');
     const streams = [[0.30, 0.2], [0.405, 0.15], [0.62, 0.17], [0.77, 0.14]].map(([x, w], i) => `<i class="ug-st" style="left:${(x * 100).toFixed(1)}%;width:${(w * 14).toFixed(1)}%;animation-delay:${(-i * 0.37).toFixed(2)}s"></i>`).join('');
-    return `<div class="pg-w ug ring">
+    return `<div class="pg-w ug ring${cover ? '' : ' bld'}">
       ${L('sky', '<i class="ug-sky"></i>' + Array.from({ length: 5 }, (_, i) => `<i class="ug-cl c${i}"></i>`).join(''), -1)}
-      ${L('falls', `<div class="pg-o fl" style="${P(-150, 150, 780)}"><img src="${UG}falls.webp" alt="" decoding="async"><div class="ug-strs">${streams}</div></div>`, -0.6)}
+      ${L('falls', `<div class="pg-o fl" style="${P(-150, 150, 780)}"><img src="${UG}falls.webp" alt="" decoding="async"><div class="ug-strs">${streams}</div></div>`, -0.6, 1)}
       ${L('field', im('field', 'fd', -130, 850, 1044), -0.5)}
-      ${L('mistb', mist('mb1', -120, 330, 840) + mist('mb2', 160, 430, 760, 1, 0.8) + mist('mb3', -60, 200, 620, 0, 0.55), -0.4)}
-      ${L('trees', im('treeA', 'tr r', 270, 120, 610) + im('treeB', 'tr l', -200, 390, 400) + im('treeE', 'tr l2', 60, 560, 220), -0.3)}
-      ${L('house', im('house', 'hs', 40, 640, 590), -0.2)}
-      ${L('penjor', `<div class="pg-o pj l" style="${P(16, 480, 240)}">${penjor(0, 1)}</div><div class="pg-o pj r" style="${P(528, 490, 240)}">${penjor(1, 7)}</div>`, 0)}
-      ${L('palms', im('palm1', 'pm l', -70, 740, 290) + im('palm2', 'pm r', 470, 590, 300), 0.15)}
-      ${L('gun', im('gunA', 'gu l', -22, 770, 230) + im('gunB', 'gu r', 524, 760, 252), 0.25)}
-      ${L('flw', im('flL', 'fw a', 420, 770, 150) + im('flR', 'fw b', 130, 820, 128) + im('flL', 'fw c', -10, 840, 96), 0.3)}
-      ${L('jas', im('jasL', 'js l', -56, 850, 330) + im('jasR', 'js r', 530, 830, 320), 0.4)}
-      ${L('pots', im('potB', 'pt a', -120, 985, 420) + im('potP', 'pt b', 180, 1000, 400) + im('potB', 'pt c', 440, 985, 400) + im('potP2', 'pt d', 610, 1005, 360), 0.5)}
+      ${L('mistb', mist('mb1', -120, 330, 840) + mist('mb2', 160, 430, 760, 1, 0.8) + mist('mb3', -60, 200, 620, 0, 0.55), -0.4, 1)}
+      ${L('trees', im('treeA', 'tr r', 270, 120, 610) + im('treeB', 'tr l', -200, 390, 400) + im('treeE', 'tr l2', 60, 560, 220), -0.3, 1)}
+      ${L('house', im('house', 'hs', 40, 640, 590), -0.2, 1)}
+      ${L('penjor', `<div class="pg-o pj l" style="${P(16, 480, 240)}">${penjor(0, 1)}</div><div class="pg-o pj r" style="${P(528, 490, 240)}">${penjor(1, 7)}</div>`, 0, 1)}
+      ${L('palms', im('palm1', 'pm l', -70, 740, 290) + im('palm2', 'pm r', 470, 590, 300), 0.15, 1)}
+      ${L('gun', im('gunA', 'gu l', -22, 770, 230) + im('gunB', 'gu r', 524, 760, 252), 0.25, 1)}
+      ${L('flw', im('flL', 'fw a', 420, 770, 150) + im('flR', 'fw b', 130, 820, 128) + im('flL', 'fw c', -10, 840, 96), 0.3, 1)}
+      ${L('jas', im('jasL', 'js l', -56, 850, 330) + im('jasR', 'js r', 530, 830, 320), 0.4, 1)}
+      ${L('pots', im('potB', 'pt a', -120, 985, 420) + im('potP', 'pt b', 180, 1000, 400) + im('potB', 'pt c', 440, 985, 400) + im('potP2', 'pt d', 610, 1005, 360), 0.5, 1)}
       <div class="pg-l dust on" data-z="0.3">${dust}</div>
       <div class="pg-l birds on" data-z="-0.3"></div>
       <div class="pg-l fly on" data-z="0.5"></div>
@@ -77,17 +79,31 @@
     const W = stage && stage.querySelector('.pg-w'); if (!W) return;
     if (PG.start) PG.start(stage);
     if (!matchMedia('(prefers-reduced-motion:reduce)').matches) birds(W);
+    // jaring pengaman: bila film tidak pernah dijalankan, lapisan yang tumbuh masuk tetap ditampilkan
+    const iv = setInterval(() => { if (!W.isConnected) return clearInterval(iv); if (!document.body.classList.contains('locked')) { clearInterval(iv); setTimeout(() => { if (W.classList.contains('bld')) finish(stage); }, 14000); } }, 600);
   }
 
   // ---------- film masuk (dipanggil cinema.js) ----------
-  // Adegan SUDAH utuh & sama persis dengan sampul (tidak ada yang hilang lalu tumbuh lagi, seperti video referensi).
-  // Yang ditambahkan hanya kehidupan halus: kupu-kupu terbang masuk, burung, lalu panel nama muncul (cinema.js).
+  // Sampul hanya berisi langit & padang. Setelah dibuka, dunia 'hidup' satu per satu perlahan:
+  // air terjun → kabut → pohon tumbuh → joglo dibangun → palem → gunungan → bunga ungu & melati → vas bunga → penjor → kupu-kupu & burung
+  // → panel nama (cinema.js). Setiap bagian terus bergerak halus setelah masuk.
   function film(stage, later) {
     const W = $('.pg-w', stage); if (!W) return;
-    W.classList.add('ring');
-    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 1), 900);
-    later(() => birds(W), 1200);
-    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 1), 3800);
+    W.classList.add('bld');
+    const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
+    on('.falls', 500);
+    on('.mistb', 1700);
+    on('.trees', 2800);
+    on('.house', 4400);
+    on('.palms', 6000);
+    on('.gun', 6900);
+    on('.flw', 7800); on('.jas', 8400);
+    on('.pots', 9100);
+    on('.penjor', 10000);
+    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 1), 10800);
+    later(() => birds(W), 11200);
+    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 1), 13500);
+    later(() => W.classList.remove('bld'), 12800);
   }
   function finish(stage) {
     const W = $('.pg-w', stage); if (!W) return;
