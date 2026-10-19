@@ -218,3 +218,10 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 - **Pohon tumbuh**: batang naik dari tanah (disingkap lembut dari bawah, tanpa potongan lurus) lalu tiga lapis tajuk mekar dari ujung dahan. Urutan: pohon tengah → kiri → kanan.
 - Aset awan & bulan dibuat prosedural: `python3 tools/gen-cloud3d.py` → `public/assets/t/ungu/c3-{a..d}-{b,m,f}.webp`, `moon3d.webp`.
 - File berubah: `public/ungu.js`, `public/ungu.css`, `public/cinema.js`, `lib/index.template.html` (versi `?v=62`), `README.md`, `tools/gen-cloud3d.py`, + 13 aset baru.
+
+### v63 — Tema 10: panel setelah adegan selesai, rumah dari kabut, air terjun hidup mulus, awan di samping bulan
+- **Panel & nama** (oval + karangan bunga + nama) kini baru muncul setelah SEMUA animasi masuk adegan selesai (`sceneEnd` di `ungu.js`, dipakai `cinema.js`; `t: [11600, 12100, 16700]`). Bila kecepatan animasi diset "cepat", jeda otomatis disesuaikan agar panel tetap setelah adegan.
+- **Rumah** tidak lagi "dibangun" dengan potongan lurus (clip-path). Kini memudar dari buram & terang menjadi jelas sambil kabut di sekitarnya menipis dan naik (`.hs` + `.hm`).
+- **Air terjun hidup 3D**: aliran lama (animasi `background-position` + topeng + blend, berat & patah-patah, dan mati di HP) diganti 3 lapis aliran berkecepatan beda (halus di atas/lambat, besar di bawah/cepat) + kilau + busa di dasar. Hanya `transform`/`opacity` yang beranimasi (GPU), tekstur `streak-seamless.webp` menyambung mulus (`python3 tools/gen-streak-seamless.py`). Di HP memakai 2 lapis + potongan poligon (tanpa topeng gambar) sehingga tetap mengalir.
+- **Awan** dipindah ke langit di SAMPING bulan (kiri & kanan, di atas garis tebing, tidak lagi lewat di bawah tembok/menimpa bulan). Masuk dari sisi layar lalu hanyut pelan bolak-balik terus-menerus (tetap jalan), tetap bervolume 3D. Awan disembunyikan di sampul dan baru masuk saat adegan dibuka.
+- File berubah: `public/ungu.js`, `public/ungu.css`, `public/cinema.js`, `public/themes.js`, `lib/index.template.html` (`?v=63`), `README.md`, + aset `streak-seamless.webp`, `tools/gen-streak-seamless.py`.

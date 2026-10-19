@@ -45,18 +45,19 @@
   }
 
 
-  // ---------- awan 3D bervolume: tiap awan = 4 lembar bertumpuk di kedalaman berbeda (bayangan, badan, puncak terang, tonjolan) dalam ruang perspektif; mengalir pelan & sedikit berputar ----------
-  // [awan a-d, top%, lebar(cqw), kedalaman z(px), durasi(s), delay(s), balik]
-  const CL_FAR = [['a', 3, 60, -420, 150, -20], ['b', 13, 50, -300, 130, -82, 1], ['c', 22, 46, -200, 118, -41], ['d', 31, 44, -340, 160, -118, 1], ['b', 8, 40, -150, 104, -66], ['a', 18, 54, -480, 172, -9, 1], ['c', 27, 38, -90, 92, -53]];
-  const CL_NEAR = [['d', 21, 70, 130, 84, -30], ['a', 33, 64, 190, 98, -71, 1]];
-  const cloudRig = (list, cls) => {
-    const lite = matchMedia('(pointer:coarse)').matches, use = lite ? list.slice(0, cls === 'near' ? 1 : 5) : list;
-    return `<div class="ug-c3w ${cls}">${use.map((c, i) => {
-      const u = (k) => `${UG}c3-${c[0]}-${k}.webp`, fl = c[6] ? ' style="transform:scaleX(-1)"' : '';
-      return `<div class="ug-c3" style="top:${c[1]}%;--w:${c[2]}cqw;--z:${c[3]}px;--t:${c[4]}s;--d:${c[5]}s;--x0:${-c[2] - 24}cqw;--x1:126cqw"><div class="ug-c3b" style="--r:${f1(5 + R(i, 3) * 7)}deg;--bt:${f1(12 + R(i, 4) * 9)}s;--bd:${f1(-R(i, 6) * 10)}s"${fl}>`
-        + `<img class="sh" src="${u('b')}" alt="" decoding="async"><img class="md" src="${u('m')}" alt="" decoding="async"><img class="hl" src="${u('f')}" alt="" decoding="async"></div></div>`;
-    }).join('')}</div>`;
-  };
+  // ---------- awan 3D bervolume (v63): hanya di langit, di SAMPING bulan (kiri & kanan), di atas garis tebing ----------
+  // Tiap awan = 3 lembar di kedalaman berbeda (bayangan, badan, puncak terang). Masuk dari sisi layar (kiri/kanan) lalu mengalir pelan bolak-balik di tempatnya.
+  // [awan a-d, top%, left(cqw), lebar(cqw), kedalaman z(px), durasi hanyut(s), delay hanyut(s), balik, jarak hanyut(cqw), arah masuk(-1 kiri / 1 kanan), jeda masuk(ms)]
+  const CL_FAR = [['a', 10, 9, 34, -90, 42, -6, 0, 2.5, -1, 1700], ['c', 11.5, 57, 34, -100, 48, -20, 1, 2.5, 1, 2300], ['d', 3.5, 20, 24, -130, 52, -30, 1, 2, -1, 2600]];
+  const CL_NEAR = [['b', 17, 1, 30, 40, 34, -10, 0, 2.2, -1, 2900], ['a', 5.5, 68, 30, 40, 38, -16, 1, 2.2, 1, 3500]];
+  const cloudRig = (list, cls) => `<div class="ug-c3w ${cls}">${list.map((c, i) => {
+    const u = (k) => `${UG}c3-${c[0]}-${k}.webp`, fl = c[7] ? ' style="transform:scaleX(-1)"' : '';
+    return `<div class="ug-c3" data-dir="${c[9]}" data-in="${c[10]}" style="top:${c[1]}%;left:${c[2]}cqw;--w:${c[3]}cqw;--z:${c[4]}px;--t:${c[5]}s;--d:${c[6]}s;--dx:${c[8]}cqw"><div class="ug-c3b" style="--r:${f1(5 + R(i, 3) * 6)}deg;--bt:${f1(12 + R(i, 4) * 9)}s;--bd:${f1(-R(i, 6) * 10)}s"${fl}>`
+      + `<img class="sh" src="${u('b')}" alt="" decoding="async"><img class="md" src="${u('m')}" alt="" decoding="async"><img class="hl" src="${u('f')}" alt="" decoding="async"></div></div>`;
+  }).join('')}</div>`;
+
+  // ---------- air terjun hidup (v63): 3 lapis aliran berkecepatan beda (dalam/tengah/dekat) + kilau + busa di dasar; semua hanya transform/opacity (mulus, tanpa patah) ----------
+  const waterFlow = () => `<div class="ug-wf"><b class="wl c"><i></i></b><b class="wl b"><i></i></b><b class="wl a"><i></i></b><b class="wl s"><i></i></b></div><i class="ug-fm l"></i><i class="ug-fm m"></i><i class="ug-fm r"></i>`;
 
   // ---------- dunia ----------
   function world(cover) {
@@ -72,11 +73,11 @@
       ${L('moon', `<i class="ug-moonhalo"></i><div class="pg-o mn" style="${P(292, 96, 200)}"><div class="ug-orb"><img src="${UG}moon3d.webp" alt="" decoding="async"><i class="ug-orb-sh"></i></div></div>`, -0.8)}
       ${L('clouds2', cloudRig(CL_NEAR, 'near'), -0.72)}
       ${L('hz', im('hz', 'hz a', -110, 700, 1000, ';opacity:.7') + im('hz', 'hz b', -200, 790, 900, ';opacity:.6', 1), -0.7)}
-      ${L('cliff', `<div class="pg-o cf" style="${cliffBox}"><img src="${UG}cliff.webp" alt="" decoding="async"><i class="ug-wt a"></i><i class="ug-wt b"></i></div>`, -0.55)}
+      ${L('cliff', `<div class="pg-o cf" style="${cliffBox}"><img src="${UG}cliff.webp" alt="" decoding="async">${waterFlow()}</div>`, -0.55)}
       ${L('mistb', mist('mb1', -120, 560, 840, 0, .7) + mist('mb2', 160, 640, 760, 1, 0.8) + mist('mb3', -60, 300, 620, 0, 0.35), -0.45)}
       ${L('field', im('field', 'fd', -130, 850, 1044), -0.4)}
       ${L('trees', tree('mid', 'tm', 400, 790, 190) + tree('big', 'tl', 140, 935, 430) + tree('big2', 'tr', 655, 935, 440), -0.3)}
-      ${L('house', im('house', 'hs', 40, 640, 590), -0.2)}
+      ${L('house', im('house', 'hs', 40, 640, 590) + mist('hm a', -40, 735, 720, 0, 1) + mist('hm b', 120, 790, 640, 1, 1), -0.2)}
       ${L('glow', '<i class="ug-hg" style="left:34%;top:76%;width:26%"></i><i class="ug-hg b" style="left:14%;top:80%;width:14%"></i>', -0.2)}
       ${L('penjor', `<div class="pg-o pj l" style="${P(16, 480, 240)}">${penjor(0, 1)}</div><div class="pg-o pj r" style="${P(528, 490, 240)}">${penjor(1, 7)}</div>`, 0)}
       ${L('palms', im('palm1', 'pm l', -70, 760, 290) + im('palm2', 'pm r', 640, 760, 190), 0.15)}
@@ -137,7 +138,7 @@
   function film(stage, later) {
     const W = $('.pg-w', stage); if (!W) return;
     const EZ = 'cubic-bezier(.22,.7,.2,1)', GROW = 'cubic-bezier(.28,.62,.3,1)', OPEN = 1300; // OPEN: gerbang sampul masih menutupi
-    const coarse = matchMedia('(pointer:coarse)').matches;
+    const coarse = matchMedia('(pointer:coarse)').matches, HOUSE = 4200;
     const mine = W._an = []; // semua animasi film disimpan agar finish() bisa membatalkan tanpa mengganggu animasi CSS/burung
     const A = (el, kf, o) => { const a = el.animate(kf, Object.assign({ fill: 'backwards' }, o)); mine.push(a); return a; };
     const from = (sel, tr, delay, dur, o) => $$(sel, W).forEach((el) => A(el, [{ transform: tr, opacity: o === undefined ? 1 : o }, { transform: 'none', opacity: 1 }], { duration: dur, delay: OPEN + delay, easing: EZ }));
@@ -168,12 +169,16 @@
     growTree('.pg-o.tree.tm', 4300, 3000);
     growTree('.pg-o.tree.tl', 5000, 3800);
     growTree('.pg-o.tree.tr', 5900, 3800);
-    // 7. rumah dibangun dari bawah ke atas, penjor menjuntai turun, palem & gunungan tumbuh
-    $$('.pg-l.house .pg-o', W).forEach((el) => A(el, [{ clipPath: 'inset(100% 0 0 0)', transform: 'translateY(4cqw)', opacity: .3 }, { clipPath: 'inset(0 0 0 0)', transform: 'none', opacity: 1 }], { duration: 3200, delay: OPEN + 5600, easing: GROW }));
+    // 7. rumah muncul halus dari kabut (tanpa dipotong): memudar dari buram & terang ke jelas, kabut di sekelilingnya perlahan menipis dan naik
+    $$('.pg-l.house .pg-o.hs', W).forEach((el) => A(el, [{ opacity: 0, filter: coarse ? 'none' : 'blur(16px) brightness(1.3)', transform: 'translateY(1.6cqw) scale(.985)' }, { opacity: .5, filter: coarse ? 'none' : 'blur(7px) brightness(1.15)', transform: 'translateY(.8cqw) scale(.992)', offset: .5 }, { opacity: 1, filter: coarse ? 'none' : 'blur(0px) brightness(1)', transform: 'none' }], { duration: HOUSE, delay: OPEN + 5600, easing: 'cubic-bezier(.3,.5,.3,1)' }));
+    $$('.pg-l.house .pg-o.hm', W).forEach((el, i) => A(el, [{ opacity: 0, transform: 'translateY(2cqw) scaleX(.96)' }, { opacity: .95, transform: 'translateY(0) scaleX(1)', offset: .38 }, { opacity: 0, transform: `translateY(${-3 - i * 1.5}cqw) scaleX(1.06)` }], { duration: HOUSE + 1100, delay: OPEN + 5300 + i * 350, easing: 'ease-in-out' }));
     from('.pg-l.glow', 'none', 7600, 2000, 0);
     from('.pg-l.penjor', 'translateY(-44cqw)', 6900, 3000, 0);
     sprout('.pg-l.palms .pg-o', 6600, 3000, 380);
     sprout('.pg-l.gun .pg-o', 7100, 3000, 420);
+    // 7b. awan di samping bulan masuk dari sisi layar (kiri & kanan), lalu mengalir pelan bolak-balik di tempatnya (CSS)
+    $$('.ug-c3', W).forEach((el) => { const dir = +el.dataset.dir || 1, dl = +el.dataset.in || 2000;
+      A(el, [{ transform: `translateX(${dir * 42}cqw)`, opacity: 0 }, { opacity: 1, offset: .35 }, { transform: 'none', opacity: 1 }], { duration: 5600, delay: OPEN + dl, easing: 'cubic-bezier(.2,.6,.2,1)' }); });
     // 8. makhluk hidup: kupu-kupu menyusul setelah bulan terbit, burung di langit
     later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 2), OPEN + 3000);
     later(() => birds(W), OPEN + 3600);
@@ -188,6 +193,8 @@
     if (!$('.pg-bf', W) && PG.flyers) PG.flyers(W, 'bf_pink1', 2);
     birds(W);
   }
-  window.LIVEW = Object.assign(window.LIVEW || {}, { airterjun: { world, start, film, finish } });
+  // sceneEnd: ms (sejak film mulai) saat SEMUA animasi masuk adegan selesai; cinema.js memunculkan panel & nama setelahnya
+  const sceneEnd = 11300;
+  window.LIVEW = Object.assign(window.LIVEW || {}, { airterjun: { world, start, film, finish, sceneEnd } });
   window.UNGU = { penjor, im, UG };
 })();
