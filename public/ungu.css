@@ -89,3 +89,30 @@
 .pg-w.ug .pg-l.trees .pg-o>img,.pg-w.ug .pg-l.palms .pg-o>img,.pg-w.ug .pg-l.house .pg-o>img{filter:drop-shadow(0 10px 14px rgba(60,30,80,.28))}
 .pg-w.ug .pg-l.flw .pg-o>img,.pg-w.ug .pg-l.jas .pg-o>img,.pg-w.ug .pg-l.gun .pg-o>img{filter:drop-shadow(0 8px 10px rgba(60,30,80,.3))}
 @media (pointer:coarse){.pg-w.ug .pg-l.trees .pg-o>img,.pg-w.ug .pg-l.palms .pg-o>img,.pg-w.ug .pg-l.house .pg-o>img,.pg-w.ug .pg-l.flw .pg-o>img,.pg-w.ug .pg-l.jas .pg-o>img,.pg-w.ug .pg-l.gun .pg-o>img{filter:none}}
+
+/* ===== v54: adegan lebih penuh & hidup — awan, barisan pohon jauh, pohon tepi, bank bunga, kanopi bunga atas, kelopak jatuh ===== */
+.pg-w.ug .pg-l.clouds .ucd{transition:none;animation:ugCd 70s ease-in-out infinite alternate}
+.pg-w.ug .pg-l.clouds .ucd.b{animation-duration:90s;animation-direction:alternate-reverse}.pg-w.ug .pg-l.clouds .ucd.c{animation-duration:80s}.pg-w.ug .pg-l.clouds .ucd.d{animation-duration:100s;animation-direction:alternate-reverse}
+@keyframes ugCd{from{translate:-5% 0}to{translate:7% 1%}}
+.pg-w.ug .pg-l.hz.on .hz.a{animation:ugDrift 70s ease-in-out infinite alternate}.pg-w.ug .pg-l.hz.on .hz.b{animation:ugDrift 90s ease-in-out infinite alternate-reverse}
+/* pohon tepi bergoyang pelan dari pangkal; kanopi atas berayun dari atas; bank bunga bergoyang */
+.pg-w.ug .pg-l.edge .pg-o>img,.pg-w.ug .pg-l.trees .pg-o>img{transform-origin:50% 100%}
+.pg-w.ug .pg-l.edge .pg-o>img{animation:ugSway 10s ease-in-out infinite}.pg-w.ug .pg-l.edge .ed.b>img{animation-duration:12s;animation-direction:reverse}.pg-w.ug .pg-l.edge .ed.c>img{animation-duration:8s}.pg-w.ug .pg-l.edge .ed.d>img{animation-duration:9s;animation-direction:reverse}
+.pg-w.ug .pg-l.trees.on .pg-o>img{animation:ugSway 11s ease-in-out infinite}.pg-w.ug .pg-l.trees.on .tr.l>img,.pg-w.ug .pg-l.trees.on .tr.n>img{animation-duration:13s;animation-direction:reverse}.pg-w.ug .pg-l.trees.on .tr.m>img{animation-duration:9s}
+.pg-w.ug .pg-l.canopy{transform-origin:50% 0}.pg-w.ug .pg-l.bank{transform-origin:50% 100%}
+.pg-w.ug .pg-l.canopy .pg-o>img{transform-origin:50% 0}
+.pg-w.ug .pg-l.canopy .pg-o>img{animation:ugHang 8s ease-in-out infinite}.pg-w.ug .pg-l.canopy .ucp.r>img{animation-duration:10s;animation-direction:reverse}
+.pg-w.ug .pg-l.hang .pg-o>img{transform-origin:50% 100%}.pg-w.ug .pg-l.hang.on .pg-o>img{animation:ugSway 12s ease-in-out infinite}
+@keyframes ugHang{0%,100%{rotate:-1.1deg}50%{rotate:1.3deg}}
+.pg-w.ug .pg-l.bank .pg-o>img{transform-origin:50% 100%;animation:ugSway 9s ease-in-out infinite}
+.pg-l.palms.on .pm.l2>img{animation-duration:8s}
+.pg-l.flw .fw.d{transition-delay:1.2s}.pg-l.flw .fw.e{transition-delay:1.5s}.pg-l.flw.on .fw.d>img{animation-duration:7s}.pg-l.flw.on .fw.e>img{animation-duration:9s;animation-direction:reverse}
+.pg-l.hang .pg-o{transition:opacity 2.4s ease}
+/* kelopak anggrek/kamboja yang jatuh pelan */
+.pg-w.ug .pg-l.petals{scale:1}
+.ug-pt{position:absolute;top:-6%;width:var(--w,3cqw);aspect-ratio:1;background:var(--im) center/contain no-repeat;opacity:0;animation:ugPt var(--t,16s) linear infinite;animation-delay:var(--d,0s);filter:drop-shadow(0 0 4px rgba(255,255,255,.6))}
+@keyframes ugPt{0%{top:-6%;translate:0 0;rotate:0deg;opacity:0}8%{opacity:.95}50%{translate:var(--x,6cqw) 0;rotate:200deg}92%{opacity:.95}100%{top:104%;translate:calc(var(--x,6cqw)*-.7) 0;rotate:400deg;opacity:0}}
+@media (pointer:coarse){.ug-pt:nth-child(n+6){display:none}}
+/* sampul Tema 10: lapisan lembut di belakang teks agar tetap terbaca di atas barisan pohon & bunga */
+.spf-airterjun .spf-in{isolation:isolate}
+.spf-airterjun .spf-in::before{content:"";position:absolute;inset:-4% -16% -6%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 56%,rgba(246,239,251,.86) 0,rgba(246,239,251,.58) 42%,rgba(246,239,251,0) 72%)}

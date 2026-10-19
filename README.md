@@ -195,3 +195,10 @@ Panel akhir hero Tema 10 kini berbentuk pill tinggi (bingkai merah tua) dengan m
 
 ### v53 — Tema 10: karangan bunga melingkar
 Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat oleh tools/gen-ungu.py make_wreath).
+
+### v54 — Tema 10: adegan penuh, tidak ada ruang kosong
+- Mengikuti gaya video referensi (rapat, pohon & bunga di semua tepi): sampul dan adegan hero Tema 10 kini terisi penuh.
+- Lapisan baru yang sudah terlihat di **sampul** dan tetap ada saat hero (tidak hilang lalu muncul lagi): `clouds` (awan merah muda melayang), `hz` (barisan pohon ungu di kejauhan), `edge` (pohon & semak di kiri-kanan, bergoyang), `bank` (bank bunga mawar & anggrek di bawah), `canopy` (rangkaian bunga menggantung di sudut atas, berayun), serta kelopak anggrek/kamboja yang jatuh pelan dan debu cahaya lebih banyak.
+- Lapisan baru yang masuk bertahap setelah dibuka: pohon tambahan (treeC/treeD/treeE) di kiri-kanan joglo, palem ketiga, dua bunga ungu tambahan, dan dahan pohon menggantung di tengah atas (`hang`); kupu-kupu pink kedua.
+- Sampul: lapisan lembut di belakang teks agar nama & tombol tetap terbaca di atas barisan pohon.
+- Aset baru (`public/assets/t/ungu/`): `ctopL`, `hz`, `bank`, `cl1`–`cl3` (diambil dari palet lilac yang sudah ada). Versi file di `index.template.html` naik ke `?v=54`.
