@@ -202,3 +202,7 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 - Lapisan baru yang masuk bertahap setelah dibuka: pohon tambahan (treeC/treeD/treeE) di kiri-kanan joglo, palem ketiga, dua bunga ungu tambahan, dan dahan pohon menggantung di tengah atas (`hang`); kupu-kupu pink kedua.
 - Sampul: lapisan lembut di belakang teks agar nama & tombol tetap terbaca di atas barisan pohon.
 - Aset baru (`public/assets/t/ungu/`): `ctopL`, `hz`, `bank`, `cl1`–`cl3` (diambil dari palet lilac yang sudah ada). Versi file di `index.template.html` naik ke `?v=54`.
+
+### v55 — Tema 10: nama sampul lebih tebal, air terjun penuh lebar
+- Nama mempelai, "The Wedding Of", dan nama tamu di sampul kini tebal (kontur + ungu tua, "&" merah bata) dengan kilau putih agar menonjol.
+- Air terjun diperlebar sehingga tidak ada lagi tepi terpotong & ruang kosong di sisi kanan saat animasi.

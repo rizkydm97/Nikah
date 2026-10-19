@@ -116,3 +116,10 @@
 /* sampul Tema 10: lapisan lembut di belakang teks agar tetap terbaca di atas barisan pohon & bunga */
 .spf-airterjun .spf-in{isolation:isolate}
 .spf-airterjun .spf-in::before{content:"";position:absolute;inset:-4% -16% -6%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 56%,rgba(246,239,251,.86) 0,rgba(246,239,251,.58) 42%,rgba(246,239,251,0) 72%)}
+
+/* ===== v55: nama mempelai di sampul tebal & mencolok (ungu tua + aksen merah bata, kontur putih) ===== */
+.spf-airterjun .spf-n{color:#561b7a;font-weight:700;font-size:min(14.5cqw,7.8cqh);-webkit-text-stroke:1.3px #561b7a;paint-order:stroke fill;text-shadow:none;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px rgba(255,255,255,.95)) drop-shadow(0 3px 4px rgba(70,20,100,.35))}
+.spf-airterjun .spf-n i{color:#c2473a;-webkit-text-stroke:1px #c2473a}
+.spf-airterjun .spf-k{color:#561b7a;font-weight:700;-webkit-text-stroke:.5px #561b7a;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
+.spf-airterjun .spf-to span{color:#4a2260;font-weight:700;opacity:1;text-shadow:0 0 8px #fff,0 0 12px rgba(255,255,255,.9)}
+.spf-airterjun .spf-to b{color:#3d1a57;font-weight:700;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}

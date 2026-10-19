@@ -49,7 +49,7 @@
     return `<div class="pg-w ug ring${cover ? '' : ' bld'}">
       ${L('sky', '<i class="ug-sky"></i>' + Array.from({ length: 5 }, (_, i) => `<i class="ug-cl c${i}"></i>`).join(''), -1)}
       ${L('clouds', cd('cl1', 'a', -70, 20, 430, .9) + cd('cl2', 'b', 400, 95, 380, .8) + cd('cl3', 'c', 30, 215, 330, .7) + cd('cl1', 'd', 440, 250, 340, .6, 1), -0.9)}
-      ${L('falls', `<div class="pg-o fl" style="${P(-150, 150, 780)}"><img src="${UG}falls.webp" alt="" decoding="async"><div class="ug-strs">${streams}</div></div>`, -0.6, 1)}
+      ${L('falls', `<div class="pg-o fl" style="${P(-120, 150, 940)}"><img src="${UG}falls.webp" alt="" decoding="async"><div class="ug-strs">${streams}</div></div>`, -0.6, 1)}
       ${L('field', im('field', 'fd', -130, 850, 1044), -0.5)}
       ${L('hz', im('hz', 'hz a', -110, 740, 1000, ';opacity:.7') + im('hz', 'hz b', -200, 830, 900, ';opacity:.6', 1), -0.45)}
       ${L('mistb', mist('mb1', -120, 330, 840) + mist('mb2', 160, 430, 760, 1, 0.8) + mist('mb3', -60, 200, 620, 0, 0.55), -0.4, 1)}
