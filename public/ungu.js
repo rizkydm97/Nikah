@@ -11,7 +11,7 @@
   const f1 = (n) => +(+n).toFixed(1);
   const R = (i, k) => (Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2;
   const P = (x, y, w) => `left:${(x / BW * 100).toFixed(3)}%;top:${(y / BH * 100).toFixed(3)}%;width:${(w / BW * 100).toFixed(3)}%`;
-  const S0 = { sky: 1.04, moon: 1.08, clouds: 1.1, hz: 1.18, cliff: 1.3, mistb: 1.4, field: 1.5, trees: 1.75, house: 1.6, glow: 1.6, penjor: 1.9, palms: 2.2, gun: 2.2, flw: 2.5, bank: 2.8, jas: 2.7, pots: 3.2, canopy: 2.4, rays: 1.3, petals: 1 }; // skala awal per lapisan: kamera terbang masuk, makin dekat makin cepat (parallax 3D)
+  const S0 = { sky: 1.02, moon: 1.04, clouds: 1.05, hz: 1.08, cliff: 1.12, mistb: 1.15, field: 1.2, trees: 1.3, house: 1.25, glow: 1.25, penjor: 1.35, palms: 1.45, gun: 1.45, flw: 1.55, bank: 1.6, jas: 1.6, pots: 1.7, canopy: 1.5, rays: 1.1, petals: 1 }; // skala awal per lapisan (dijaga kecil agar ringan di HP)
   const L = (cls, inner, z) => `<div class="pg-l ${cls} on" data-z="${z || 0}" style="--s0:${S0[cls] || 1}">${inner}</div>`;
   const im = (n, cls, x, y, w, st, fl) => `<div class="pg-o ${cls}" style="${P(x, y, w)}${st || ''}"><img src="${UG}${n}.webp" alt="" decoding="async"${fl ? ' style="transform:scaleX(-1)"' : ''}></div>`;
 
