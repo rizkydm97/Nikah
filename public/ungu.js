@@ -11,8 +11,9 @@
   const f1 = (n) => +(+n).toFixed(1);
   const R = (i, k) => (Math.sin((i + 1) * 9301 + k * 49297) + 1) / 2;
   const P = (x, y, w) => `left:${(x / BW * 100).toFixed(3)}%;top:${(y / BH * 100).toFixed(3)}%;width:${(w / BW * 100).toFixed(3)}%`;
+  const S0 = { sky: 1.0, field: 1.1, falls: 1.12, mistb: 1.18, trees: 1.3, house: 1.38, penjor: 1.45, palms: 1.58, gun: 1.62, flw: 1.8, jas: 1.9, pots: 2.05 }; // skala awal per lapisan (kedalaman)
   let COVER = false; // sampul: adegan dasar + padang bunga; lapisan 'late' tumbuh masuk setelah dibuka (di hero)
-  const L = (cls, inner, z, late) => late && COVER ? '' : `<div class="pg-l ${cls}${late ? '' : ' on'}" data-z="${z || 0}">${inner}</div>`;
+  const L = (cls, inner, z, late) => late && COVER ? '' : `<div class="pg-l ${cls}${late ? '' : ' on'}" data-z="${z || 0}" style="--s0:${S0[cls] || 1}">${inner}</div>`;
   const im = (n, cls, x, y, w, st) => `<div class="pg-o ${cls}" style="${P(x, y, w)}${st || ''}"><img src="${UG}${n}.webp" alt="" decoding="async"></div>`;
 
   // ---------- penjor pink: lengkung bambu + untaian manik menjuntai berujung lampion ----------
@@ -75,39 +76,41 @@
     }
   }
 
+  // gerak kamera halus terus-menerus (parallax kedalaman) — juga di HP; di desktop ikut gerak mouse
   function start(stage) {
-    const W = stage && stage.querySelector('.pg-w'); if (!W) return;
-    if (PG.start) PG.start(stage);
-    if (!matchMedia('(prefers-reduced-motion:reduce)').matches) birds(W);
-    // jaring pengaman: bila film tidak pernah dijalankan, lapisan yang tumbuh masuk tetap ditampilkan
-    const iv = setInterval(() => { if (!W.isConnected) return clearInterval(iv); if (!document.body.classList.contains('locked')) { clearInterval(iv); setTimeout(() => { if (W.classList.contains('bld')) finish(stage); }, 14000); } }, 600);
+    const W = stage && stage.querySelector('.pg-w'); if (!W || W.dataset.on) return; W.dataset.on = 1;
+    if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    birds(W);
+    const fine = matchMedia('(pointer:fine)').matches, ls = $$('.pg-l', W).map((el) => ({ el, z: +el.dataset.z })).filter((l) => l.z);
+    let tx = 0, ty = 0, px = 0, py = 0; const t0 = performance.now();
+    if (fine) addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
+    const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || W.closest('.cin-off')) return;
+      const t = (now - t0) / 1000; px += (tx - px) * 0.04; py += (ty - py) * 0.04;
+      const ix = Math.sin(t * 0.22) * 0.9 + px, iy = Math.cos(t * 0.17) * 0.5 + py;
+      for (const l of ls) l.el.style.translate = `${(-ix * l.z * 1.1).toFixed(2)}cqw ${(-iy * l.z * 0.8).toFixed(2)}cqw`; };
+    requestAnimationFrame(tick);
+    // jaring pengaman: bila film tidak pernah dijalankan, dunia tetap ditampilkan utuh
+    const iv = setInterval(() => { if (!W.isConnected) return clearInterval(iv); if (!document.body.classList.contains('locked')) { clearInterval(iv); setTimeout(() => { if (W.classList.contains('bld')) finish(stage); }, 16000); } }, 600);
   }
 
   // ---------- film masuk (dipanggil cinema.js) ----------
-  // Sampul hanya berisi langit & padang. Setelah dibuka, dunia 'hidup' satu per satu perlahan:
-  // air terjun → kabut → pohon tumbuh → joglo dibangun → palem → gunungan → bunga ungu & melati → vas bunga → penjor → kupu-kupu & burung
-  // → panel nama (cinema.js). Setiap bagian terus bergerak halus setelah masuk.
+  // Kamera 'dolly' 3D: semua lapisan mulai lebih besar (yang paling dekat paling besar) lalu mundur bersama dengan easing yang sama,
+  // sehingga benda dekat bergerak lebih jauh daripada yang jauh (parallax nyata). Lapisan muncul memudar berurutan dari belakang ke depan.
   function film(stage, later) {
     const W = $('.pg-w', stage); if (!W) return;
     W.classList.add('bld');
     const on = (sel, ms) => later(() => $$(sel, W).forEach((e) => e.classList.add('on')), ms);
-    on('.falls', 500);
-    on('.mistb', 1700);
-    on('.trees', 2800);
-    on('.house', 4400);
-    on('.palms', 6000);
-    on('.gun', 6900);
-    on('.flw', 7800); on('.jas', 8400);
-    on('.pots', 9100);
-    on('.penjor', 10000);
-    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 1), 10800);
-    later(() => birds(W), 11200);
-    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 1), 13500);
-    later(() => W.classList.remove('bld'), 12800);
+    later(() => $$('.pg-l', W).forEach((l) => { const s0 = parseFloat(getComputedStyle(l).getPropertyValue('--s0')) || 1; if (s0 !== 1) l.animate([{ scale: s0 }, { scale: 1 }], { duration: 9800, easing: 'cubic-bezier(.2,.62,.22,1)', fill: 'both' }); }), 0);
+    on('.falls', 200); on('.mistb', 1100); on('.trees', 1700); on('.house', 2500);
+    on('.palms', 3500); on('.gun', 4100); on('.flw', 4700); on('.jas', 5200); on('.pots', 5700); on('.penjor', 6500);
+    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 2), 7200);
+    later(() => birds(W), 7600);
+    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 2), 10500);
+    later(() => W.classList.remove('bld'), 9000);
   }
   function finish(stage) {
     const W = $('.pg-w', stage); if (!W) return;
-    W.classList.remove('bld'); W.classList.add('ring'); $$('.pg-l', W).forEach((l) => l.classList.add('on'));
+    W.classList.remove('bld'); W.classList.add('ring', 'settled'); $$('.pg-l', W).forEach((l) => { l.classList.add('on'); l.getAnimations().forEach((a) => a.cancel()); });
     if (!$('.pg-bf', W) && PG.flyers) PG.flyers(W, 'bf_pink1', 2);
     birds(W);
   }

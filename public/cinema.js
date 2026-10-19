@@ -19,6 +19,7 @@
     gunungan: 'M8 157 V98 C8 62 22 36 38 18 C44 11 48 7 50 3 C52 7 56 11 62 18 C78 36 92 62 92 98 V157 Z',
     capsule: 'M6 52 C6 22 26 4 50 4 C74 4 94 22 94 52 V108 C94 138 74 156 50 156 C26 156 6 138 6 108 Z',
     shield: 'M50 3 L94 34 V126 L50 157 L6 126 V34 Z',
+    pill: 'M5 50 A45 45 0 0 1 95 50 V110 A45 45 0 0 1 5 110 Z',
   };
   const GOLD = ['#fbe7b0', '#c9963e'], SILVER = ['#f4f7ff', '#9fb2d8'], ROSE = ['#ffe3cf', '#d29a6a'];
   const CFG = {
@@ -28,7 +29,7 @@
     biru: { cam: [392, 600, 1.25], frame: 'oval', metal: SILVER, fill: ['rgba(10,22,60,.66)', 'rgba(6,14,44,.42)'], ink: '#ead8a6', ink2: '#dfe8ff', orn: T + 'biru/divider.webp', ornB: T + 'biru/divider.webp', side: T + 'biru/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(6,16,48,.6),rgba(6,14,44,.4) 60%,rgba(2,6,24,.6))', moon: [392, 418, 82, 'blue'], reveal: 'moon', pfOrn: T + 'biru/divider.webp', dark: 1 },
     rimba: { cam: [430, 650, 1.55], frame: 'capsule', metal: GOLD, fill: ['rgba(6,18,40,.64)', 'rgba(4,12,30,.42)'], ink: '#f5d98c', ink2: '#e8eefc', orn: T + 'rimba/divider.webp', ornB: T + 'rimba/divider.webp', side: T + 'rimba/divider.webp', veil: 'radial-gradient(ellipse at 50% 48%,rgba(4,12,34,.6),rgba(4,10,30,.38) 60%,rgba(0,4,16,.6))', reveal: 'firefly', pfOrn: T + 'rimba/divider.webp', dark: 1 },
     klasik: { cam: [400, 640, 1.35], frame: 'gunungan', metal: GOLD, fill: ['rgba(40,18,4,.66)', 'rgba(20,8,2,.44)'], ink: '#f2d391', ink2: '#e8c886', orn: '/assets/scene/gunungan.webp', ornB: T + 'klasik/divider.webp', side: T + 'klasik/orn.webp', veil: 'radial-gradient(ellipse at 50% 44%,rgba(40,16,2,.5),rgba(24,10,2,.36) 60%,rgba(8,3,0,.6))', reveal: 'kelir', pfOrn: '/assets/scene/gunungan.webp', dark: 1 },
-    airterjun: { cam: [392, 584, 1], frame: 'arch', metal: ['#efe3f7', '#b99ad2'], fill: ['rgba(255,255,255,.97)', 'rgba(255,255,255,.95)'], ink: '#b4503e', ink2: '#2b2230', orn: T + 'ungu/divider.webp', ornB: T + 'ungu/divider.webp', veil: 'radial-gradient(ellipse at 50% 50%,rgba(250,242,255,.2),rgba(110,80,140,.28))', pfOrn: T + 'ungu/orn.webp', noDeco: 1, t: [11800, 12300, 16000], pfShape: 'arch' },
+    airterjun: { cam: [392, 584, 1], frame: 'pill', metal: ['#a8362e', '#6e1c1c'], fill: ['rgba(255,251,245,.88)', 'rgba(250,240,232,.84)'], ink: '#7a1f1f', ink2: '#3a2226', orn: T + 'ungu/divider.webp', ornB: T + 'ungu/divider.webp', veil: 'radial-gradient(ellipse at 50% 50%,rgba(250,242,255,.2),rgba(110,80,140,.28))', pfOrn: T + 'ungu/orn.webp', noDeco: 1, t: [9800, 10300, 14500], pfShape: 'arch' },
     istana: { cam: [392, 584, 1], frame: 'none', metal: GOLD, fill: ['rgba(0,0,0,0)', 'rgba(0,0,0,0)'], ink: '#5a1a0c', ink2: '#7a3a14', orn: '', ornB: '', veil: 'linear-gradient(180deg,rgba(255,236,190,.18),rgba(255,236,190,0) 40%,rgba(80,40,10,.12))', pfOrn: T + 'jawa/orn.webp', noDeco: 1, t: [10800, 11200, 13800], pfShape: 'capsule' },
     dayak: { cam: [392, 640, 1.0], frame: 'shield', metal: GOLD, fill: ['rgba(26,12,6,.62)', 'rgba(14,6,2,.4)'], ink: '#ffd98a', ink2: '#f6e6c4', orn: T + 'dayak/orn.webp', ornB: T + 'dayak/divider.webp', side: T + 'dayak/orn.webp', veil: 'radial-gradient(ellipse at 50% 46%,rgba(255,240,214,.3),rgba(80,40,10,.25) 60%,rgba(30,12,4,.45))', reveal: 'motif', pfOrn: T + 'dayak/orn.webp', noDeco: 1, dark: 1 , t: [9000, 9400, 11600] },
   };
@@ -145,12 +146,12 @@
     const f = document.createElement('div'); f.className = 'cin-frame f-' + cfg.frame + (cfg.dark ? ' dark' : '') + (cfg.grow ? ' grow' : '');
     f.style.cssText = `--ink:${cfg.ink};--ink2:${cfg.ink2};--m0:${cfg.metal[0]};--m1:${cfg.metal[1]};--f0:${cfg.fill[0]};--f1:${cfg.fill[1]}`;
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    f.innerHTML = `${cfg.frame === 'none' ? '' : `<div class="cf-glass" style="clip-path:url(#cfc-${cfg.frame})"></div>${lineSvg(cfg.frame, 'cfg-' + key)}`}
+    f.innerHTML = `${key === 'airterjun' ? `<img class="cf-wr" src="${T}ungu/wreath.webp" alt="">` : ''}${cfg.frame === 'none' ? '' : `<div class="cf-glass" style="clip-path:url(#cfc-${cfg.frame})"></div>${lineSvg(cfg.frame, 'cfg-' + key)}`}
       ${cfg.orn === 'fili' ? fili(0) + fili(1) : cfg.orn ? `<img class="cf-orn t" src="${cfg.orn}" alt=""><img class="cf-orn b" src="${cfg.ornB}" alt="">` : ''}
-      <div class="cf-in"><div class="cf-k">${esc(data.kicker)}</div><div class="cf-n"><span>${esc(data.groom)}</span><i>&amp;</i><span>${esc(data.bride)}</span></div>
-        <div class="cf-d">${esc(data.date)}</div><div class="cf-h">${esc(data.hashtag)}</div>${data.guest ? `<div class="cf-g"><span>${esc(data.toLabel)}</span><b>${esc(data.guest)}</b></div>` : ''}</div>`;
+      <div class="cf-in">${key === 'airterjun' ? `<div class="cf-mono"><b>${esc(String(data.groom || '').trim().charAt(0).toUpperCase())}</b><b>${esc(String(data.bride || '').trim().charAt(0).toUpperCase())}</b></div>` : ''}<div class="cf-k">${esc(data.kicker)}</div><div class="cf-n"><span>${esc(data.groom)}</span><i>&amp;</i><span>${esc(data.bride)}</span></div>
+        <div class="cf-d">${esc(key === 'airterjun' ? String(data.date || '').replace(/^\s*(\d{1,2})\s*[\/.\-]\s*(\d{1,2})\s*[\/.\-]\s*(\d{2,4})\s*$/, '$1 . $2 . $3') : data.date)}</div>${key === 'airterjun' ? '<div class="cf-scr"><i></i></div>' : ''}<div class="cf-h">${esc(data.hashtag)}</div>${data.guest ? `<div class="cf-g"><span>${esc(data.toLabel)}</span><b>${esc(data.guest)}</b></div>` : ''}</div>`;
     ($('.cin-deco', stage) || veil).after(f);
-    const fit = () => { const vw = stage.clientWidth, vh = stage.clientHeight, w = Math.min(vw * 0.8, vh * 0.66 / 1.6, 400); f.style.width = w + 'px'; f.style.height = w * 1.6 + 'px'; };
+    const fit = () => { const vw = stage.clientWidth, vh = stage.clientHeight, w = key === 'airterjun' ? Math.min(vw * 0.73, vh * 0.66 / 1.6, 420) : Math.min(vw * 0.8, vh * 0.66 / 1.6, 400); f.style.width = w + 'px'; f.style.height = w * 1.6 + 'px'; };
     fit(); addEventListener('resize', fit, { passive: true });
   }
 

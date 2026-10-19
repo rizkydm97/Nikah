@@ -240,14 +240,26 @@
 .cf-orn.fili{width:44%!important;height:auto;filter:drop-shadow(0 0 3px rgba(255,255,255,.6))}
 .cf-orn.fili.t{top:7%!important}.cf-orn.fili.b{bottom:5%!important}
 .cin-frame.grow .cf-orn{transition-delay:1.6s}
-.cine-airterjun .cf-n{font-size:15cqi;color:#b4503e}
-.cine-airterjun .cf-glass{inset:0;border-radius:999px 999px 6px 6px/46% 46% 2% 2%}
-.cine-airterjun .cf-in{inset:13% 10% 9%;text-shadow:none!important}
-.cine-airterjun .cf-k{font:italic 400 3.5cqi/1.5 var(--fBody);letter-spacing:.02em;text-transform:none;color:#2b2230}
-.cine-airterjun .cf-d{font:700 5cqi/1.2 var(--fBody);letter-spacing:.06em;color:#2b2230}
+.cine-airterjun .cf-glass{inset:0;border-radius:999px}
+.cine-airterjun .cf-in{inset:9% 8% 8%;text-shadow:none!important;justify-content:center}
+.cine-airterjun .cf-svg{filter:none}
+.cine-airterjun .cf-l.o{stroke-width:1.6}.cine-airterjun .cf-l.i{stroke-width:.5}
+.cine-airterjun .cf-mono{display:flex;justify-content:center;align-items:center;margin-bottom:5cqi;transition-delay:.5s!important}
+.cine-airterjun .cf-mono b{font:400 21cqi/1 var(--fDisplay);color:#7a1f1f;display:block}
+.cine-airterjun .cf-mono b+b{margin-left:-6cqi;color:rgba(122,31,31,.72);transform:translateY(3cqi)}
+.cine-airterjun .cf-k{font:600 3.2cqi/1.4 var(--fDisplay);letter-spacing:.34em;text-transform:uppercase;color:#3a2226;transition-delay:1s!important}
+.cine-airterjun .cf-n{font:500 7.6cqi/1.25 var(--fDisplay);letter-spacing:.14em;text-transform:uppercase;color:#7a1f1f;margin:5cqi 0 4cqi;background:none;-webkit-background-clip:border-box;animation:none!important;transition-delay:1.4s!important}
+.cine-airterjun .cf-n i{font-size:.8em;opacity:1}
+.cine-airterjun .cf-d{font:500 5cqi/1.2 var(--fDisplay);letter-spacing:.22em;color:#3a2226;margin-top:1cqi;transition-delay:1.9s!important}
 .cine-airterjun .cf-h{color:#6a4a7a}
-.cine-airterjun .cf-g b{color:#b4503e}.cine-airterjun .cf-g span{color:#2b2230}
-.cine-airterjun .cf-orn{width:46%!important}
+.cine-airterjun .cf-g b{color:#7a1f1f}.cine-airterjun .cf-g span{color:#3a2226}
+.cine-airterjun .cf-scr{width:6.5cqi;height:10cqi;border:.6cqi solid #7a1f1f;border-radius:99px;margin-top:6cqi;position:relative;transition-delay:2.3s!important}
+.cine-airterjun .cf-scr i{position:absolute;left:50%;top:22%;width:1.4cqi;height:1.4cqi;margin-left:-.7cqi;border-radius:50%;background:#7a1f1f;animation:ugScr 1.8s ease-in-out infinite}
+@keyframes ugScr{0%{transform:translateY(0);opacity:1}80%,100%{transform:translateY(3.4cqi);opacity:0}}
+.cine-airterjun .cf-orn{display:none}
+.cine-airterjun .cin-frame{overflow:visible}
+.cf-wr{position:absolute;left:50%;top:50%;width:136.4%;max-width:none;height:auto;transform:translate(-50%,-50%) scale(.82) rotate(-4deg);opacity:0;transition:opacity 2.2s ease .2s,transform 3.6s cubic-bezier(.22,.8,.24,1) .2s;filter:drop-shadow(0 6px 10px rgba(70,30,80,.28));z-index:-1}
+.cin-frame.in .cf-wr{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
 /* Tema 11: tanpa bingkai, teks langsung di atas adegan yang meredup */
 .cin-frame.f-none .cf-in{inset:18% 4% 16%}
 .cin-frame.f-none .cf-n{font-size:20cqi;text-shadow:0 2px 14px rgba(60,0,20,.8)}

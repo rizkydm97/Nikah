@@ -10,10 +10,8 @@
 
 /* padang */
 .pg-o.fd{-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%);mask-image:linear-gradient(180deg,transparent 0,#000 16%)}
-.pg-w.ug.bld .pg-l.field:not(.on){transform:translateY(22%)}
 /* air terjun */
 .pg-l.falls{transform-origin:40% 62%}
-.pg-w.ug.bld .pg-l.falls:not(.on){transform:scale(.88) translateY(4%)}
 .pg-o.fl{opacity:.97}
 .pg-w.ug .pg-l.mistb .is-cl{opacity:.62;filter:blur(1.5px)}
 .ug-strs{position:absolute;inset:0;pointer-events:none}
@@ -21,47 +19,35 @@
 @keyframes ugFall{to{background-position:0 36px}}
 /* kabut */
 .pg-l.mistb .pg-o{transition:transform 4.2s cubic-bezier(.22,.8,.24,1),opacity 2.4s ease}
-.pg-w.ug.bld .pg-l.mistb:not(.on) .mb1{transform:translateX(-40%)}.pg-w.ug.bld .pg-l.mistb:not(.on) .mb2{transform:translateX(40%)}.pg-w.ug.bld .pg-l.mistb:not(.on) .mb3{transform:scale(.8)}
 .pg-w.ug .pg-l.mistb.on .pg-o{animation:ugDrift 26s ease-in-out infinite alternate}
 .pg-w.ug .pg-l.mistb.on .mb2{animation-duration:34s;animation-direction:alternate-reverse}.pg-w.ug .pg-l.mistb.on .mb3{animation-duration:48s}
 @keyframes ugDrift{from{translate:-4% 0}to{translate:5% -1%}}
 /* pohon tumbuh dari pangkal */
-.pg-w.ug.bld .pg-l.trees:not(.on) .pg-o,.pg-w.ug.bld .pg-l.trees:not(.on) .pg-o.l,.pg-w.ug.bld .pg-l.trees:not(.on) .pg-o.r{opacity:0;transform:scaleY(.12) scaleX(.5)}
-.pg-l.trees .tr.l{transition-delay:1.1s}.pg-l.trees .tr.l2{transition-delay:2s}
 /* joglo dibangun dari bawah */
-.pg-w.ug.bld .pg-l.house:not(.on){opacity:1}
-.pg-w.ug.bld .pg-l.house:not(.on) .hs{clip-path:inset(100% 0 0 0);transform:translateY(7%)}
-.pg-l.house .hs{clip-path:inset(0);transition:clip-path 3.8s cubic-bezier(.45,0,.2,1),transform 3.8s cubic-bezier(.22,.8,.24,1)}
 /* penjor pink */
 .pg-l.penjor .pj{transform-origin:50% 0;transition:transform 3.6s cubic-bezier(.3,1.25,.5,1),opacity 1.8s ease}
 .pg-l.penjor .pj.r{transition-delay:.7s}
-.pg-w.ug.bld .pg-l.penjor:not(.on) .pj{transform:translateY(-70%) scaleY(.6);opacity:0}
 .ug-pj{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 6px 8px rgba(110,40,80,.25))}
 .pj-s{animation:ugSwing 6s ease-in-out infinite;animation-delay:var(--d,0s)}
 @keyframes ugSwing{0%,100%{rotate:calc(var(--a,2deg)*-1)}50%{rotate:var(--a,2deg)}}
 /* palem */
 .pg-l.palms .pg-o{transform-origin:50% 100%;transition:transform 3.2s cubic-bezier(.22,.9,.3,1),opacity 1.6s ease}
 .pg-l.palms .pm.r{transition-delay:.6s}
-.pg-w.ug.bld .pg-l.palms:not(.on) .pm.l{transform:translateX(-80%) rotate(-12deg)}.pg-w.ug.bld .pg-l.palms:not(.on) .pm.r{transform:translateX(80%) rotate(12deg)}
 .pg-l.palms.on .pm>img{animation:ugPalm 7s ease-in-out infinite;transform-origin:50% 100%}.pg-l.palms.on .pm.r>img{animation-duration:9s;animation-direction:reverse}
 @keyframes ugPalm{0%,100%{rotate:-1.6deg}50%{rotate:1.8deg}}
 /* gunungan */
 .pg-l.gun .gu{transform-origin:50% 100%;transition:transform 3.2s cubic-bezier(.22,1.15,.3,1),opacity 1.8s ease}
 .pg-l.gun .gu.r{transition-delay:.6s}
-.pg-w.ug.bld .pg-l.gun:not(.on) .gu{transform:translateY(55%) scale(.7);opacity:0}
 .pg-w.ug .pg-l.gun.on .gu>img{animation:ugGlow 4.5s ease-in-out infinite alternate}
 @keyframes ugGlow{from{filter:drop-shadow(0 0 2px rgba(255,190,240,.2))}to{filter:drop-shadow(0 0 14px rgba(255,200,250,.9))}}
 /* bunga ungu, melati, vas */
 .pg-l.flw .pg-o,.pg-l.jas .pg-o{transform-origin:50% 100%;transition:transform 2.8s cubic-bezier(.3,1.4,.5,1),opacity 1.6s ease}
 .pg-l.flw .fw.b,.pg-l.jas .js.r{transition-delay:.5s}.pg-l.flw .fw.c{transition-delay:.9s}
-.pg-w.ug.bld .pg-l.flw:not(.on) .pg-o{transform:scale(.15) translateY(30%) rotate(-12deg);opacity:0}
-.pg-w.ug.bld .pg-l.jas:not(.on) .pg-o{transform:scale(.3) translateY(45%);opacity:0}
 .pg-l.flw.on .fw>img{animation:ugSway 6s ease-in-out infinite;transform-origin:50% 100%}.pg-l.flw.on .fw.b>img{animation-duration:7.5s;animation-direction:reverse}.pg-l.flw.on .fw.c>img{animation-duration:8.5s}
 .pg-l.jas.on .js>img{animation:ugSway 8s ease-in-out infinite;transform-origin:50% 100%}.pg-l.jas.on .js.r>img{animation-direction:reverse;animation-duration:9.5s}
 @keyframes ugSway{0%,100%{rotate:-1.4deg}50%{rotate:1.6deg}}
 .pg-l.pots .pg-o{transition:transform 3s cubic-bezier(.25,1.1,.35,1),opacity 1.6s ease}
 .pg-l.pots .pt.b{transition-delay:.35s}.pg-l.pots .pt.c{transition-delay:.7s}.pg-l.pots .pt.d{transition-delay:1.05s}
-.pg-w.ug.bld .pg-l.pots:not(.on) .pg-o{transform:translateY(70%);opacity:0}
 .pt.c>img{transform:scaleX(-1)}
 .pg-l.pots.on .pt>img{animation:ugSway 7s ease-in-out infinite;transform-origin:50% 90%}.pg-l.pots.on .pt.b>img{animation-duration:9s;animation-direction:reverse}
 /* burung & debu */
@@ -92,3 +78,14 @@
 .t-airterjun .rv[data-a^=bloom]:not(.in){transform:translateY(26px) scale(.98);transform-origin:50% 100%;transition-duration:calc(var(--dur)*1.9)}
 .t-airterjun .edge .half,.t-airterjun .fl .half,.t-airterjun .ft .half,.t-airterjun .fb .half{transition-delay:0s!important}
 .t-airterjun .rv[data-a^=bloom].in{transition-timing-function:cubic-bezier(.22,.8,.24,1)}
+
+/* ===== v51: kamera 'dolly' 3D — tiap lapisan mulai lebih besar (makin dekat makin besar) lalu mundur bersama-sama (parallax kedalaman) ===== */
+.pg-w.ug .pg-l{scale:var(--s0,1);transform-origin:50% 68%;transition:opacity 2.4s ease}
+.pg-w.ug.settled .pg-l{scale:1}
+.pg-w.ug .pg-l.sky{transform-origin:50% 50%}
+.pg-w.ug .pg-l.fly,.pg-w.ug .pg-l.birds,.pg-w.ug .pg-l.dust{scale:1}
+.pg-w.ug.bld .pg-l.sky,.pg-w.ug.bld .pg-l.field{opacity:1}
+/* bayangan lembut agar benda dekat terasa bervolume */
+.pg-w.ug .pg-l.trees .pg-o>img,.pg-w.ug .pg-l.palms .pg-o>img,.pg-w.ug .pg-l.house .pg-o>img{filter:drop-shadow(0 10px 14px rgba(60,30,80,.28))}
+.pg-w.ug .pg-l.flw .pg-o>img,.pg-w.ug .pg-l.jas .pg-o>img,.pg-w.ug .pg-l.gun .pg-o>img{filter:drop-shadow(0 8px 10px rgba(60,30,80,.3))}
+@media (pointer:coarse){.pg-w.ug .pg-l.trees .pg-o>img,.pg-w.ug .pg-l.palms .pg-o>img,.pg-w.ug .pg-l.house .pg-o>img,.pg-w.ug .pg-l.flw .pg-o>img,.pg-w.ug .pg-l.jas .pg-o>img,.pg-w.ug .pg-l.gun .pg-o>img{filter:none}}

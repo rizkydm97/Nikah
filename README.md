@@ -186,3 +186,12 @@ Tiap tema bergambar memakai hiasan sendiri yang disusun dari lembar aset: bunga 
 
 ## v50
 - Tema 10: sampul hanya langit & padang; setelah dibuka dunia masuk satu per satu perlahan (air terjun, kabut, pohon, joglo, palem, gunungan, bunga, vas, penjor) lalu panel nama.
+
+## v51
+- Tema 10: animasi masuk kamera dolly 3D (semua lapisan mundur bersama dengan kedalaman parallax, muncul memudar berurutan), gerak kamera halus terus-menerus (juga di HP), bayangan lembut agar benda bervolume.
+
+### v52 — Tema 10: panel nama bentuk pill + monogram
+Panel akhir hero Tema 10 kini berbentuk pill tinggi (bingkai merah tua) dengan monogram inisial mempelai di atas, "THE WEDDING OF", nama huruf kapital, tanggal bertitik ("28 . 12 . 2025" bila diisi angka), dan ikon scroll oval.
+
+### v53 — Tema 10: karangan bunga melingkar
+Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat oleh tools/gen-ungu.py make_wreath).

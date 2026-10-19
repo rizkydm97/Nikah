@@ -156,3 +156,39 @@ def make_motif():
 if __name__ == '__main__':
     make_bg(); make_top(); make_bottom(); make_orn(); make_divider(); make_frame(); make_bouquet(); make_motif()
     print('selesai')
+
+
+# ---------- wreath : karangan bunga melingkar mengelilingi panel nama (hero Tema 10) ----------
+def make_wreath():
+    W, H = 900, 1440; cx, cy, rx, ry = W / 2, H / 2, 372, 596
+    rnd = random.Random(7)
+    im = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+
+    def ring(sprite_names, n, hmin, hmax, off, rmul=1.0, start=0, alpha=1.0):
+        for i in range(n):
+            t = start + 2 * math.pi * i / n + rnd.uniform(-.05, .05)
+            x = cx + math.cos(t) * rx * rmul; y = cy + math.sin(t) * ry * rmul
+            # arah tangen (searah jarum jam) sebagai 'atas' gambar
+            tx, ty = -math.sin(t) * rx, math.cos(t) * ry
+            ang = -math.degrees(math.atan2(ty, tx)) - 90 if rnd.random() < .5 else -math.degrees(math.atan2(-ty, -tx)) - 90
+            sp = L(rnd.choice(sprite_names)); h = rnd.randint(hmin, hmax)
+            sp = fit(sp, h=h)
+            if rnd.random() < .5: sp = sp.transpose(Image.FLIP_LEFT_RIGHT)
+            if alpha < 1: sp.putalpha(sp.getchannel('A').point(lambda v: int(v * alpha)))
+            sp = sp.rotate(ang, expand=True, resample=Image.BICUBIC)
+            im.alpha_composite(sp, (int(x - sp.width / 2 + rnd.uniform(-off, off)), int(y - sp.height / 2 + rnd.uniform(-off, off))))
+    ring(['treeE', 'treeC'], 20, 150, 220, 14, 1.0)           # dedaunan dasar
+    ring(['jasL', 'jasR'], 14, 190, 250, 12, 1.02, .15)       # melati
+    ring(['flL', 'flR'], 16, 200, 270, 12, 1.0, .3)           # bunga ungu cat air
+    ring(['jasL', 'jasR'], 8, 120, 160, 10, .97, .5)          # isian kecil
+    # tebal di atas & bawah (seperti contoh): rumpun tambahan
+    for sx, sy, nm, h in ((cx, 20, 'bouquet', 230), (cx, H - 30, 'bouquet', 230)):
+        sp = fit(L(nm), h=h)
+        if sy > cy: sp = sp.rotate(180, resample=Image.BICUBIC)
+        im.alpha_composite(sp, (int(sx - sp.width / 2), int(sy - sp.height / 2)))
+    save(im, 'wreath', 86)
+    print('wreath ok')
+
+
+if __name__ == '__main__' and os.environ.get('WREATH'):
+    make_wreath()
