@@ -206,3 +206,7 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 ### v55 — Tema 10: nama sampul lebih tebal, air terjun penuh lebar
 - Nama mempelai, "The Wedding Of", dan nama tamu di sampul kini tebal (kontur + ungu tua, "&" merah bata) dengan kilau putih agar menonjol.
 - Air terjun diperlebar sehingga tidak ada lagi tepi terpotong & ruang kosong di sisi kanan saat animasi.
+
+### v56 — Tema 10: bagian dalam bersih & mudah dibaca
+- Semua section berfoto gelap (acara, hadiah, RSVP, ucapan) kini berlatar lilac terang polos; quote & live tetap berfoto dengan pudar lembut ke lilac.
+- Judul solid (tanpa gradien warna-warni), teks isi memakai Poppins 13.5px kontras tinggi, kartu acara putih berbingkai lilac. Palet ungu Tema 10 dikunci di CSS (`body.t-airterjun`) sehingga tidak bergantung pengaturan warna admin.

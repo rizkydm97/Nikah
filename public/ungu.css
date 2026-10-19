@@ -123,3 +123,68 @@
 .spf-airterjun .spf-k{color:#561b7a;font-weight:700;-webkit-text-stroke:.5px #561b7a;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to span{color:#4a2260;font-weight:700;opacity:1;text-shadow:0 0 8px #fff,0 0 12px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to b{color:#3d1a57;font-weight:700;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
+
+/* ===== v56: bagian dalam Tema 10 — bersih, terang, mudah dibaca (palet ungu tetap, tidak bergantung pengaturan admin) ===== */
+body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#b4503e;--gold:#b79ad0;--paper:#fbf8fe;--ink:#2b1a40;--body:#3f2f52;--tint:#f5eefb;--tint2:#e6d8f3;--tint3:#d4bfe8;--shade:#4a2766}
+/* salinan aturan "section terang" (dari Tema 2) dengan palet ungu */
+.t-airterjun .sec.bgi{background:var(--tint);color:var(--ink)}
+.t-airterjun .sec.bgi::before,.t-airterjun .quote::before,.t-airterjun .live::before,.t-airterjun .wishes::before{background:linear-gradient(color-mix(in srgb,var(--tint) 72%,transparent),color-mix(in srgb,var(--tint) 86%,transparent))!important}
+.t-airterjun .quote::before{background:linear-gradient(color-mix(in srgb,var(--tint) 0%,transparent) 30%,color-mix(in srgb,var(--tint) 82%,transparent) 58%,color-mix(in srgb,var(--tint) 95%,transparent))!important}
+.t-airterjun .live::before{background:linear-gradient(color-mix(in srgb,var(--tint) 0%,transparent) 25%,color-mix(in srgb,var(--tint) 93%,transparent))!important}
+.t-airterjun .story::before{background:linear-gradient(color-mix(in srgb,var(--tint) 55%,transparent),color-mix(in srgb,var(--tint) 25%,transparent) 55%,color-mix(in srgb,var(--tint) 60%,transparent))}
+.t-airterjun .bgi .h-display,.t-airterjun .h-head,.t-airterjun .script-h,.t-airterjun .rsvp .big{--tc:var(--primary)}
+.t-airterjun .quote .qt,.t-airterjun .quote .src,.t-airterjun .lead,.t-airterjun .live p,.t-airterjun .rsvp .sub,.t-airterjun .wtxt{color:var(--ink);text-shadow:0 1px 6px rgba(255,255,255,.7)}
+.t-airterjun .cd b{color:var(--primary)}.t-airterjun .cd span,.t-airterjun .cds .sep{color:var(--gold)}
+.t-airterjun .script-h,.t-airterjun .wishes .h-display{filter:drop-shadow(0 1px 6px rgba(255,255,255,.8))}
+.t-airterjun .btn{background:var(--accent);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 25%,transparent)}
+.t-airterjun .btn.dark{background:var(--primary);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+/* love story */
+.t-airterjun .story{color:var(--ink)}
+.t-airterjun .tl::before{background:var(--gold)}
+.t-airterjun .story .mk{box-shadow:0 0 0 1.5px var(--gold),0 2px 8px color-mix(in srgb,var(--accent) 25%,transparent)}
+.t-airterjun .story .card{box-shadow:0 12px 28px color-mix(in srgb,var(--accent) 22%,transparent)}
+/* rsvp */
+.t-airterjun .rsvp .fm label{color:var(--ink)}
+.t-airterjun .rsvp .fm input,.t-airterjun .rsvp .fm select{background:rgba(255,255,255,.75);border-color:var(--accent);color:var(--ink)}
+.t-airterjun .rsvp .fm input::placeholder{color:var(--tint3)}
+.t-airterjun .rsvp .fm select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235a2a85' stroke-width='2'/%3E%3C/svg%3E")}
+.t-airterjun .rsvp .btn.ghostw{background:var(--accent);box-shadow:none;color:#fff}
+.t-airterjun .msg.err{color:#b3261e}.t-airterjun .msg.ok{color:#1b7a37}
+/* ucapan & doa */
+.t-airterjun .wpanel{background:color-mix(in srgb,var(--tint) 72%,transparent);border-color:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--ink);box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 18%,transparent)}
+.t-airterjun .stats div{background:#fff;border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+.t-airterjun .stats b{color:var(--primary)}
+.t-airterjun .wbox{border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+.t-airterjun .wbox input,.t-airterjun .wbox textarea{border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.t-airterjun .more{border-color:var(--accent);color:var(--accent)}
+.t-airterjun .wl-item{box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 15%,transparent)}
+/* galeri, penutup, footer, samping */
+.t-airterjun .gpanel,.t-airterjun .cpanel{background:color-mix(in srgb,var(--tint) 94%,transparent);border-color:var(--accent)}
+.t-airterjun .rsvp .ph{box-shadow:0 0 0 4px #fff,0 0 0 5.5px var(--gold)}
+.t-airterjun .toast{background:color-mix(in srgb,var(--accent) 95%,transparent)}
+.t-airterjun .pop{background:color-mix(in srgb,var(--shade) 45%,transparent)}
+.t-airterjun .pop-x{background:var(--primary)}
+/* section bergambar foto (acara, hadiah, RSVP, ucapan) -> latar lilac polos & rapi; quote/live tetap berfoto dengan pudar lembut */
+.t-airterjun .sec.bgi:not(.quote):not(.live){background:linear-gradient(180deg,var(--tint),#eee3f7 55%,var(--tint));color:var(--ink)}
+.t-airterjun .sec.bgi:not(.quote):not(.live)::before{display:none!important}
+.t-airterjun .sec.bgi:not(.quote):not(.live)>.bgl{display:none}
+/* judul: solid, tegas, tanpa efek gradien warna-warni */
+.t-airterjun .h-display,.t-airterjun .h-head,.t-airterjun .script-h,.t-airterjun .rsvp .big,.t-airterjun .couple .script,.t-airterjun .sw,.t-airterjun .swx .sw{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;-webkit-text-fill-color:currentColor!important;animation:none!important;filter:none!important;text-shadow:none!important}
+.t-airterjun .h-display,.t-airterjun .h-head,.t-airterjun .script-h,.t-airterjun .rsvp .big{color:var(--primary);font-family:var(--fHeading);font-weight:600;font-size:30px;line-height:1.2;letter-spacing:.02em;text-transform:none}
+.t-airterjun .rsvp .big{font-size:clamp(40px,12vw,56px);line-height:1;text-transform:uppercase;letter-spacing:.04em}
+.t-airterjun .gallery>.h-display{color:var(--primary)}
+.t-airterjun .couple .script{color:var(--primary);font-size:clamp(46px,13vw,56px)}
+/* teks isi: Poppins, ukuran nyaman, kontras tinggi */
+.t-airterjun .lead,.t-airterjun .gpanel p,.t-airterjun .quote .qt,.t-airterjun .live p,.t-airterjun .rsvp .sub,.t-airterjun .wtxt{font-family:'Poppins',sans-serif;font-style:normal;font-weight:400;font-size:13.5px;line-height:1.8;color:var(--body);text-shadow:none}
+.t-airterjun .quote .src{font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;color:var(--primary);text-shadow:none}
+.t-airterjun .couple .fn{font-family:var(--fHeading);font-weight:600;font-size:18px;color:var(--ink);letter-spacing:.01em}
+.t-airterjun .couple .par{font-family:'Poppins',sans-serif;font-size:12px;line-height:1.75;color:var(--body)}
+.t-airterjun .couple .amp{color:var(--rose)}
+/* kartu acara */
+.t-airterjun .cap{background:linear-gradient(160deg,var(--tint3),var(--tint2));box-shadow:0 0 0 2px var(--tint3),0 14px 32px rgba(90,42,133,.2)}
+.t-airterjun .cap-in{background:#fff;box-shadow:inset 0 0 0 1.5px var(--gold);color:var(--body)}
+.t-airterjun .cap-in h3{color:var(--primary)}
+.t-airterjun .ev .date,.t-airterjun .ev .place{color:var(--ink);font-size:14px}
+.t-airterjun .ev .time,.t-airterjun .ev .addr{color:var(--body);font-size:12.5px}
+.t-airterjun .ev .addr{line-height:1.7}
+.t-airterjun .bgi,.t-airterjun .rsvp .fm label{color:var(--ink)}
