@@ -430,17 +430,10 @@
     if (FULL[k]) { // kartu naik ke atas, adegan di bawahnya terlihat (seperti video)
       const card = $('.spf-card', cv);
       sfx(k, 'swing');
-      if (k === 'airterjun') { // terbang menembus gerbang: lubang di tengah kartu membesar, bingkai bunga melesat ke tepi layar, adegan di belakang mendekat (parallax)
-        $$('.spf-in', cv).forEach((e) => an(e, [{ opacity: 1 }, { opacity: 0, transform: 'scale(1.08)' }], { duration: 520, easing: 'ease-out', fill: 'forwards' }));
-        card.style.transformOrigin = '50% 52%';
-        if (matchMedia('(pointer:coarse)').matches || innerWidth < 820) { // HP: hanya scale+fade (ringan), tanpa mask animasi
-          an(card, [{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0.9, offset: 0.5 }, { transform: 'scale(2.3)', opacity: 0 }], { duration: 1900, delay: 150, easing: 'cubic-bezier(.5,.05,.3,1)', fill: 'forwards' });
-        } else {
-          card.classList.add('portal');
-          an(card, [{ transform: 'scale(1)', '--hole': '0%' }, { transform: 'scale(1.7)', '--hole': '70%', offset: 0.55 }, { transform: 'scale(3)', '--hole': '135%', opacity: 1, offset: 0.9 }, { transform: 'scale(3.4)', '--hole': '135%', opacity: 0 }], { duration: 2300, delay: 150, easing: 'cubic-bezier(.55,.05,.3,1)', fill: 'forwards' });
-        }
-        hand(2500, 250);
-        return { camDelay: 250 * D };
+      if (k === 'airterjun') { // adegan di bawah sama persis dengan sampul: kartu memudar saja, tanpa gerakan yang membuat rumah 'hilang & muncul lagi'
+        an(card, [{ opacity: 1 }, { opacity: 0 }], { duration: 1100, delay: 150, easing: 'ease-in-out' });
+        hand(1300, 200);
+        return { camDelay: 700 * D };
       }
       an(card, [{ transform: 'translateY(0)' }, { transform: 'translateY(-104%)' }], { duration: 1500, delay: 150, easing: 'cubic-bezier(.6,0,.25,1)' });
       hand(1650, 200);

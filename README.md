@@ -210,3 +210,18 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 ### v56 — Tema 10: bagian dalam bersih & mudah dibaca
 - Semua section berfoto gelap (acara, hadiah, RSVP, ucapan) kini berlatar lilac terang polos; quote & live tetap berfoto dengan pudar lembut ke lilac.
 - Judul solid (tanpa gradien warna-warni), teks isi memakai Poppins 13.5px kontras tinggi, kartu acara putih berbingkai lilac. Palet ungu Tema 10 dikunci di CSS (`body.t-airterjun`) sehingga tidak bergantung pengaturan warna admin.
+
+## v58 — Tema 10: perbaikan gagal buka di HP + animasi kamera 3D
+**Bug "Terjadi masalah berulang kali" di iPhone (Safari)**: penyebabnya memori. Tema 10 memuat ±150 MB gambar terdekode (pohon 1300×1520 × 12 lapis, dll.) dan 17 lapisan layar penuh yang dianimasikan sekaligus → tab Safari dimatikan sistem. Perbaikan:
+- Semua aset `public/assets/t/ungu/` diperkecil sesuai ukuran tampil (decode turun ±45%); efek `brightness/saturate` tebing dipanggang ke gambar.
+- 17 lapisan → **8 bidang kedalaman** (`.ug-g`), satu loop kamera (bukan 13 penulisan style per frame), air terjun memakai `transform` (bukan animasi `background-position` bermasker).
+- Di layar sentuh dimatikan efek berat: `mix-blend-mode`, blur/drop-shadow beranimasi, kilau gunungan, sebagian pohon beranimasi.
+- **Mode LITE otomatis**: bila pemuatan sebelumnya crash (penanda `ungu-boot` di localStorage tidak sempat terhapus), halaman memuat versi ringan tanpa 3D berat. Paksa dengan `?lite=1`, matikan dengan `?full=1`.
+- Daftar `preload` Tema 10 dibersihkan (tidak lagi memuat aset lama yang tak terpakai).
+
+**Animasi 3D (mengikuti video referensi)**:
+- Kamera 3D sungguhan (`perspective` + `translateZ` per bidang): kamera mundur (dolly) sambil mengorbit → paralaks nyata; setelah itu bergoyang halus terus-menerus (di desktop ikut mouse).
+- Benda *berdiri dari tanah* seperti pop-up book: joglo → pohon → palem → gunungan; penjor menjuntai dari atas; bunga mekar bergantian; tebing/air terjun & kabut menyingkap; vas depan 'bernapas'.
+- Panel nama membesar dari tengah dengan kemiringan 3D (`grow`), lalu monogram & nama muncul bergantian.
+- Posisi diam semua benda identik dengan v57 (bidang diberi skala pengimbang perspektif).
+
