@@ -210,3 +210,11 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 ### v56 — Tema 10: bagian dalam bersih & mudah dibaca
 - Semua section berfoto gelap (acara, hadiah, RSVP, ucapan) kini berlatar lilac terang polos; quote & live tetap berfoto dengan pudar lembut ke lilac.
 - Judul solid (tanpa gradien warna-warni), teks isi memakai Poppins 13.5px kontras tinggi, kartu acara putih berbingkai lilac. Palet ungu Tema 10 dikunci di CSS (`body.t-airterjun`) sehingga tidak bergantung pengaturan warna admin.
+
+### v62 — Tema 10: animasi masuk mengikuti video, bulan berputar, awan 3D, pohon tumbuh
+- **Urutan masuk baru** (satu per satu, tiap tahap terlihat jelas): gapura sampul terbuka → kamera masuk → air terjun & tebing menyala dari kabut → **bulan terbit pelan dari balik tebing** → kupu-kupu lewat → **bunga tumbuh dari bawah** (bertunas bergantian) → **pohon tumbuh** → rumah naik dari bawah, penjor turun, palem & gunungan tumbuh → **panel oval membesar dari tengah** (`grow` di `cinema.js`) → karangan bunga, nama, tanggal. Waktu panel: `t: [8300, 8800, 13400]`.
+- **Bulan** kini bola: tekstur baru (`moon3d.webp`, lautan & kawah) **berputar pelan** (±210 detik/putaran) dengan bayangan tepi & arah cahaya yang bergeser pelan, plus cahaya (halo) yang berdenyut.
+- **Awan 3D bervolume**: tiap awan terdiri dari 3 lembar di kedalaman berbeda (belakang/badan/puncak terang) di ruang perspektif, berputar tipis (rotateY) dan **mengalir** kiri→kanan dengan kecepatan berbeda menurut kedalaman. Ada awan jauh (di belakang bulan) dan awan dekat (lewat di depan bulan). Di HP jumlah awan dikurangi agar ringan.
+- **Pohon tumbuh**: batang naik dari tanah (disingkap lembut dari bawah, tanpa potongan lurus) lalu tiga lapis tajuk mekar dari ujung dahan. Urutan: pohon tengah → kiri → kanan.
+- Aset awan & bulan dibuat prosedural: `python3 tools/gen-cloud3d.py` → `public/assets/t/ungu/c3-{a..d}-{b,m,f}.webp`, `moon3d.webp`.
+- File berubah: `public/ungu.js`, `public/ungu.css`, `public/cinema.js`, `lib/index.template.html` (versi `?v=62`), `README.md`, `tools/gen-cloud3d.py`, + 13 aset baru.
