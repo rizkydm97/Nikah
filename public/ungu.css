@@ -305,3 +305,19 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad
 .cine-airterjun .cf-h{font:500 3.2cqi/1.3 var(--fBody);letter-spacing:.08em;color:#7a4a9c;opacity:.9}
 .cine-airterjun .cf-scr{margin-top:5cqi}
 @media (prefers-reduced-motion:no-preference){.cin-frame.in.f-pill .cf-n{animation:none!important}}
+
+/* ===== v63: lampu rumah ===== */
+.hlt{position:absolute;inset:0;pointer-events:none}
+.hlt i{position:absolute;display:block}
+.hlt .sp{background:radial-gradient(ellipse at 50% 30%,rgba(255,206,120,.62),rgba(255,190,100,.22) 48%,transparent 72%);animation:ugFl 8s ease-in-out infinite alternate}
+.hlt .w{background:linear-gradient(180deg,#fff4c2,#ffc864);border-radius:1.5px;box-shadow:0 0 5px 1px rgba(255,214,120,.95),0 0 16px 5px rgba(255,184,84,.5);animation:ugFl 8s ease-in-out var(--d,0s) infinite alternate}
+.hlt .d{background:linear-gradient(180deg,rgba(255,236,170,.96),rgba(255,176,72,.92));border-radius:1.5px;box-shadow:0 0 8px 2px rgba(255,200,100,.7),0 0 22px 7px rgba(255,170,70,.35);animation:ugFl 8s ease-in-out var(--d,0s) infinite alternate}
+.hlt .d.c{background:linear-gradient(90deg,rgba(255,236,170,.96) 0 48%,rgba(120,60,20,.55) 48% 52%,rgba(255,236,170,.96) 52%),linear-gradient(180deg,rgba(255,236,170,.96),rgba(255,176,72,.92))}
+.hlt .l{width:3%;aspect-ratio:.62;top:58.8%;transform-origin:50% 0;animation:ugSw 5s ease-in-out var(--d,0s) infinite alternate}
+.hlt .l::before{content:"";position:absolute;left:50%;top:-30%;width:1px;height:32%;background:#7a3a20}
+.hlt .l u{position:absolute;inset:0;border-radius:42% 42% 52% 52%;background:radial-gradient(circle at 50% 38%,#fff8d0,#ffbe55 58%,#d9702a);box-shadow:0 0 7px 2px rgba(255,200,100,.95),0 0 22px 9px rgba(255,170,70,.5);animation:ugFl 8s ease-in-out var(--d,0s) infinite alternate}
+.hlt .b{width:.95%;aspect-ratio:1;border-radius:50%;background:var(--c,#ffe9a8);box-shadow:0 0 5px 2px rgba(255,214,130,.9);animation:ugTw 7s ease-in-out var(--d,0s) infinite alternate}
+@keyframes ugFl{from{opacity:.93}to{opacity:1}}
+@keyframes ugSw{from{rotate:-4deg}to{rotate:4deg}}
+@keyframes ugTw{from{opacity:.9}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.hlt *{animation:none}}

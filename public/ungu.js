@@ -59,6 +59,17 @@
   // ---------- air terjun hidup (v63): 3 lapis aliran berkecepatan beda (dalam/tengah/dekat) + kilau + busa di dasar; semua hanya transform/opacity (mulus, tanpa patah) ----------
   const waterFlow = () => `<div class="ug-wf"><b class="wl c"><i></i></b><b class="wl b"><i></i></b><b class="wl a"><i></i></b><b class="wl s"><i></i></b></div><i class="ug-fm l"></i><i class="ug-fm m"></i><i class="ug-fm r"></i>`;
 
+  // ---------- lampu rumah (v63): jendela & pintu menyala hangat, lampion bergoyang di tiap tiang, untaian lampu kecil di tepi atap, pendar di lantai teras ----------
+  // koordinat dalam % dari gambar rumah (1095 x 557)
+  function houseLights() {
+    const box = (c, x, y, w, h, st) => `<i class="${c}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;${st || ''}"></i>`;
+    const wins = box('w', 24, 61.6, 4.75, 6.3, '--d:-.6s') + box('w', 71.2, 61.9, 4.75, 6.3, '--d:-1.9s');
+    const doors = box('d', 29.4, 61, 3.84, 25, '--d:-1.2s') + box('d', 66.7, 61, 3.84, 25, '--d:-2.4s') + box('d c', 46.3, 64.1, 8, 22.1, '--d:-.3s');
+    const lant = [14.6, 37.1, 62.8, 85.2].map((x, i) => `<i class="l" style="left:${x - 1.5}%;--d:${-i * 1.1}s"><u></u></i>`).join('');
+    const bulbs = Array.from({ length: 27 }, (_, i) => `<i class="b" style="left:${(5 + i * 3.46).toFixed(2)}%;top:${(58.4 + (i % 2) * 0.5).toFixed(2)}%;--d:${(-R(i, 2) * 3).toFixed(2)}s;--c:${i % 3 === 0 ? '#ffd6e4' : '#ffe9a8'}"></i>`).join('');
+    return `<div class="hlt">${box('sp', 12, 80, 76, 13)}${wins}${doors}${bulbs}${lant}</div>`;
+  }
+
   // ---------- dunia ----------
   function world(cover) {
     const mist = (cls, x, y, w, flip, o) => `<div class="pg-o ${cls}" style="${P(x, y, w)}"><img class="is-cl" src="${UG}mist.webp" alt="" style="${flip ? 'transform:scaleX(-1);' : ''}${o ? `opacity:${o}` : ''}"></div>`;
@@ -77,7 +88,7 @@
       ${L('mistb', mist('mb1', -120, 560, 840, 0, .7) + mist('mb2', 160, 640, 760, 1, 0.8) + mist('mb3', -60, 300, 620, 0, 0.35), -0.45)}
       ${L('field', im('field', 'fd', -130, 850, 1044), -0.4)}
       ${L('trees', tree('mid', 'tm', 400, 790, 190) + tree('big', 'tl', 140, 935, 430) + tree('big2', 'tr', 655, 935, 440), -0.3)}
-      ${L('house', im('house', 'hs', 40, 640, 590), -0.2)}
+      ${L('house', im('house', 'hs', 40, 640, 590).replace(/<\/div>$/, houseLights() + '</div>'), -0.2)}
       ${L('glow', '<i class="ug-hg" style="left:34%;top:76%;width:26%"></i><i class="ug-hg b" style="left:14%;top:80%;width:14%"></i>', -0.2)}
       ${L('penjor', `<div class="pg-o pj l" style="${P(16, 480, 240)}">${penjor(0, 1)}</div><div class="pg-o pj r" style="${P(528, 490, 240)}">${penjor(1, 7)}</div>`, 0)}
       ${L('palms', im('palm1', 'pm l', -70, 760, 290) + im('palm2', 'pm r', 640, 760, 190), 0.15)}
@@ -171,6 +182,8 @@
     growTree('.pg-o.tree.tr', 5900, 3800);
     // 7. rumah muncul halus (tanpa dipotong, tanpa kabut tambahan): memudar pelan ke jelas
     $$('.pg-l.house .pg-o.hs', W).forEach((el) => A(el, [{ opacity: 0, transform: 'translateY(1.6cqw)' }, { opacity: .6, transform: 'translateY(.6cqw)', offset: .55 }, { opacity: 1, transform: 'none' }], { duration: HOUSE, delay: OPEN + 5600, easing: 'cubic-bezier(.3,.5,.3,1)' }));
+    // lampu rumah menyala setelah rumah tampak
+    $$('.pg-l.house .hlt', W).forEach((el) => A(el, [{ opacity: 0 }, { opacity: .35, offset: .4 }, { opacity: 1 }], { duration: 2200, delay: OPEN + 7400, easing: 'ease-in' }));
     from('.pg-l.glow', 'none', 7600, 2000, 0);
     from('.pg-l.penjor', 'translateY(-44cqw)', 6900, 3000, 0);
     sprout('.pg-l.palms .pg-o', 6600, 3000, 380);
