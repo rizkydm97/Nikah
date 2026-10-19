@@ -48,8 +48,8 @@
   // ---------- awan 3D bervolume (v63): hanya di langit, di SAMPING bulan (kiri & kanan), di atas garis tebing ----------
   // Tiap awan = 3 lembar di kedalaman berbeda (bayangan, badan, puncak terang). Masuk dari sisi layar (kiri/kanan) lalu mengalir pelan bolak-balik di tempatnya.
   // [awan a-d, top%, left(cqw), lebar(cqw), kedalaman z(px), durasi hanyut(s), delay hanyut(s), balik, jarak hanyut(cqw), arah masuk(-1 kiri / 1 kanan), jeda masuk(ms)]
-  const CL_FAR = [['a', 10, 9, 34, -90, 42, -6, 0, 2.5, -1, 1700], ['c', 11.5, 57, 34, -100, 48, -20, 1, 2.5, 1, 2300], ['d', 3.5, 20, 24, -130, 52, -30, 1, 2, -1, 2600]];
-  const CL_NEAR = [['b', 17, 1, 30, 40, 34, -10, 0, 2.2, -1, 2900], ['a', 5.5, 68, 30, 40, 38, -16, 1, 2.2, 1, 3500]];
+  const CL_FAR = [['a', 8.5, 16, 32, -60, 42, -6, 0, 2.2, -1, 1700], ['c', 9.5, 52, 32, -70, 48, -20, 1, 2.2, 1, 2300], ['d', 3, 24, 20, -100, 52, -30, 1, 1.8, -1, 2900], ['b', 3.5, 56, 20, -100, 46, -12, 0, 1.8, 1, 3500]];
+  const CL_NEAR = [];
   const cloudRig = (list, cls) => `<div class="ug-c3w ${cls}">${list.map((c, i) => {
     const u = (k) => `${UG}c3-${c[0]}-${k}.webp`, fl = c[7] ? ' style="transform:scaleX(-1)"' : '';
     return `<div class="ug-c3" data-dir="${c[9]}" data-in="${c[10]}" style="top:${c[1]}%;left:${c[2]}cqw;--w:${c[3]}cqw;--z:${c[4]}px;--t:${c[5]}s;--d:${c[6]}s;--dx:${c[8]}cqw"><div class="ug-c3b" style="--r:${f1(5 + R(i, 3) * 6)}deg;--bt:${f1(12 + R(i, 4) * 9)}s;--bd:${f1(-R(i, 6) * 10)}s"${fl}>`
@@ -77,7 +77,7 @@
       ${L('mistb', mist('mb1', -120, 560, 840, 0, .7) + mist('mb2', 160, 640, 760, 1, 0.8) + mist('mb3', -60, 300, 620, 0, 0.35), -0.45)}
       ${L('field', im('field', 'fd', -130, 850, 1044), -0.4)}
       ${L('trees', tree('mid', 'tm', 400, 790, 190) + tree('big', 'tl', 140, 935, 430) + tree('big2', 'tr', 655, 935, 440), -0.3)}
-      ${L('house', im('house', 'hs', 40, 640, 590) + mist('hm a', -40, 735, 720, 0, 1) + mist('hm b', 120, 790, 640, 1, 1), -0.2)}
+      ${L('house', im('house', 'hs', 40, 640, 590), -0.2)}
       ${L('glow', '<i class="ug-hg" style="left:34%;top:76%;width:26%"></i><i class="ug-hg b" style="left:14%;top:80%;width:14%"></i>', -0.2)}
       ${L('penjor', `<div class="pg-o pj l" style="${P(16, 480, 240)}">${penjor(0, 1)}</div><div class="pg-o pj r" style="${P(528, 490, 240)}">${penjor(1, 7)}</div>`, 0)}
       ${L('palms', im('palm1', 'pm l', -70, 760, 290) + im('palm2', 'pm r', 640, 760, 190), 0.15)}
@@ -169,9 +169,8 @@
     growTree('.pg-o.tree.tm', 4300, 3000);
     growTree('.pg-o.tree.tl', 5000, 3800);
     growTree('.pg-o.tree.tr', 5900, 3800);
-    // 7. rumah muncul halus dari kabut (tanpa dipotong): memudar dari buram & terang ke jelas, kabut di sekelilingnya perlahan menipis dan naik
-    $$('.pg-l.house .pg-o.hs', W).forEach((el) => A(el, [{ opacity: 0, filter: coarse ? 'none' : 'blur(16px) brightness(1.3)', transform: 'translateY(1.6cqw) scale(.985)' }, { opacity: .5, filter: coarse ? 'none' : 'blur(7px) brightness(1.15)', transform: 'translateY(.8cqw) scale(.992)', offset: .5 }, { opacity: 1, filter: coarse ? 'none' : 'blur(0px) brightness(1)', transform: 'none' }], { duration: HOUSE, delay: OPEN + 5600, easing: 'cubic-bezier(.3,.5,.3,1)' }));
-    $$('.pg-l.house .pg-o.hm', W).forEach((el, i) => A(el, [{ opacity: 0, transform: 'translateY(2cqw) scaleX(.96)' }, { opacity: .95, transform: 'translateY(0) scaleX(1)', offset: .38 }, { opacity: 0, transform: `translateY(${-3 - i * 1.5}cqw) scaleX(1.06)` }], { duration: HOUSE + 1100, delay: OPEN + 5300 + i * 350, easing: 'ease-in-out' }));
+    // 7. rumah muncul halus (tanpa dipotong, tanpa kabut tambahan): memudar pelan ke jelas
+    $$('.pg-l.house .pg-o.hs', W).forEach((el) => A(el, [{ opacity: 0, transform: 'translateY(1.6cqw)' }, { opacity: .6, transform: 'translateY(.6cqw)', offset: .55 }, { opacity: 1, transform: 'none' }], { duration: HOUSE, delay: OPEN + 5600, easing: 'cubic-bezier(.3,.5,.3,1)' }));
     from('.pg-l.glow', 'none', 7600, 2000, 0);
     from('.pg-l.penjor', 'translateY(-44cqw)', 6900, 3000, 0);
     sprout('.pg-l.palms .pg-o', 6600, 3000, 380);
