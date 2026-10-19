@@ -76,6 +76,7 @@
       <div class="pg-l dust on" data-z="0.3">${dust}</div>
       <div class="pg-l birds on" data-z="-0.3"></div>
       <div class="pg-l fly on" data-z="0.5"></div>
+      <i class="ug-dim"></i>
       <i class="ug-vig"></i>
     </div>`;
   }
@@ -116,12 +117,37 @@
   // Semua lapisan sudah tampil sejak awal (tidak ada yang muncul tiba-tiba). Kamera hanya mundur halus: lapisan dekat bergerak sedikit lebih jauh (parallax).
   function film(stage, later) {
     const W = $('.pg-w', stage); if (!W) return;
-    later(() => $$('.pg-l', W).forEach((l) => { const s0 = parseFloat(getComputedStyle(l).getPropertyValue('--s0')) || 1; if (s0 !== 1) l.animate([{ scale: s0 }, { scale: 1 }], { duration: 6800, easing: 'cubic-bezier(.3,.05,.2,1)', fill: 'both' }); }), 0);
-    later(() => { const m = $('.pg-l.moon .mn', W), h = $('.ug-moonhalo', W); if (m) m.animate([{ transform: 'translateY(34cqw)', opacity: 0 }, { opacity: 1, offset: 0.35 }, { transform: 'none', opacity: 1 }], { duration: 6200, easing: 'cubic-bezier(.25,.5,.25,1)', fill: 'both' }); if (h) h.animate([{ opacity: 0, scale: .6 }, { opacity: 1, scale: 1 }], { duration: 6500, easing: 'ease-out', fill: 'both' }); }, 300);
-    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 2), 2200);
-    later(() => birds(W), 2600);
-    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 2), 4200);
-    later(() => PG.flyers && PG.flyers(W, 'bf_pink2', 1), 5600);
+    // Urutan tertata (seperti video): gerbang terbuka -> kamera masuk -> bulan terbit -> pepohonan meluncur dari sisi -> bunga naik dari bawah -> kartu nama.
+    // Semua gerak hanya transform/opacity (ringan untuk HP); fill 'backwards' = tidak ada sisa animasi setelah selesai.
+    const EZ = 'cubic-bezier(.22,.7,.2,1)';
+    const from = (sel, tr, delay, dur, o) => later(() => $$(sel, W).forEach((el) => el.animate([{ transform: tr, opacity: o === undefined ? 1 : o }, { transform: 'none', opacity: 1 }], { duration: dur, easing: EZ, fill: 'backwards' })), delay);
+    // 1. kamera terbang masuk (parallax: lapisan dekat bergerak lebih jauh)
+    later(() => $$('.pg-l', W).forEach((l) => { const s0 = parseFloat(getComputedStyle(l).getPropertyValue('--s0')) || 1; if (s0 !== 1) l.animate([{ scale: s0 }, { scale: 1 }], { duration: 7400, easing: 'cubic-bezier(.3,.05,.2,1)', fill: 'both' }); }), 0);
+    // 2. dari senja gelap menuju terang
+    later(() => { const d = $('.ug-dim', W); if (d) d.animate([{ opacity: 0.62 }, { opacity: 0.2, offset: 0.55 }, { opacity: 0 }], { duration: 5200, easing: 'ease-out', fill: 'both' }); }, 0);
+    // 3. bulan terbit di balik tebing
+    later(() => { const m = $('.pg-l.moon .mn', W), h = $('.ug-moonhalo', W); if (m) m.animate([{ transform: 'translateY(34cqw)', opacity: 0 }, { opacity: 1, offset: 0.35 }, { transform: 'none', opacity: 1 }], { duration: 5600, easing: 'cubic-bezier(.25,.5,.25,1)', fill: 'both' }); if (h) h.animate([{ opacity: 0, scale: .6 }, { opacity: 1, scale: 1 }], { duration: 6000, easing: 'ease-out', fill: 'both' }); }, 500);
+    // 4. pohon besar meluncur dari kiri & kanan, pohon kecil naik dari belakang
+    from('.pg-o.tree.tm', 'translateY(16cqw)', 1200, 2800, 0);
+    from('.pg-o.tree.tl', 'translateX(-34cqw)', 1700, 3400);
+    from('.pg-o.tree.tr', 'translateX(34cqw)', 2000, 3400);
+    // rumah muncul perlahan dari kabut setelah pemandangan terbuka
+    from('.pg-l.house,.pg-l.glow', 'translateY(7cqw)', 1500, 3000, 0);
+    // 5. kanopi bunga turun dari atas, penjor menjuntai
+    from('.pg-l.canopy', 'translateY(-26cqw)', 2600, 2800);
+    from('.pg-l.penjor', 'translateY(-40cqw)', 3200, 2600, 0);
+    // 6. palem & gunungan menyusul dari bawah, bunga depan naik berurutan
+    from('.pg-l.palms', 'translateY(24cqw)', 3000, 2600);
+    from('.pg-l.gun', 'translateY(26cqw)', 3200, 2600);
+    from('.pg-l.flw', 'translateY(34cqw)', 3300, 2800);
+    from('.pg-l.jas', 'translateY(40cqw)', 3500, 2800);
+    from('.pg-l.bank', 'translateY(44cqw)', 3700, 2800);
+    from('.pg-l.pots', 'translateY(52cqw)', 3900, 2800);
+    // 7. makhluk hidup menyusul
+    later(() => PG.flyers && PG.flyers(W, 'bf_pink1', 2), 3600);
+    later(() => birds(W), 3000);
+    later(() => PG.flyers && PG.flyers(W, 'bf_blue2', 2), 5000);
+    later(() => PG.flyers && PG.flyers(W, 'bf_pink2', 1), 6300);
   }
   function finish(stage) {
     const W = $('.pg-w', stage); if (!W) return;

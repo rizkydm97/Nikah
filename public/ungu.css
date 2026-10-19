@@ -236,3 +236,5 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad
   .ug-moonhalo,.ug-hg,.ug-fg,.ug-sun{mix-blend-mode:normal}
   .ug-vig{background:radial-gradient(ellipse at 50% 56%,transparent 60%,rgba(70,36,110,.28) 100%)}
 }
+
+.ug-dim{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;background:linear-gradient(180deg,#2a1550,#3c2070 60%,#2a1550)}
