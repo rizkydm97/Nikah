@@ -71,8 +71,8 @@ window.makeCliff = function () {
   falls.forEach((f) => { x.save(); x.filter = 'blur(10px)'; body(f, x, 1.5); x.fillStyle = 'rgba(40,28,66,.45)'; x.fill(); x.restore(); });
   const wcan = mk(), wx = wcan.getContext('2d');
   falls.forEach((f) => { // badan air: putih lilac dengan tepi lembut
-    wx.save(); wx.filter = 'blur(5px)'; body(f, wx, 1.0); wx.fillStyle = 'rgba(244,238,252,.96)'; wx.fill(); wx.restore();
-    wx.save(); wx.filter = 'blur(2px)'; body(f, wx, 0.55); wx.fillStyle = 'rgba(255,255,255,1)'; wx.fill(); wx.restore();
+    wx.save(); wx.filter = 'blur(5px)'; body(f, wx, 1.0); wx.fillStyle = 'rgba(226,214,246,.8)'; wx.fill(); wx.restore();
+    wx.save(); wx.filter = 'blur(2px)'; body(f, wx, 0.55); wx.fillStyle = 'rgba(248,242,255,.78)'; wx.fill(); wx.restore();
   });
   // alur di dalam air
   wx.globalCompositeOperation = 'source-atop';
