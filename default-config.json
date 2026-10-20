@@ -63,7 +63,11 @@
     "livingWorld": true,
     "livingDensity": "normal",
     "perchButterfly": true,
-    "sectionClouds": true
+    "sectionClouds": true,
+    "birds": true,
+    "particles": true,
+    "lights": true,
+    "revealAnim": true
   },
   "scene": {
     "sky": "/assets/scene/sky-v2.jpg",

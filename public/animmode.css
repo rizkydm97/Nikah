@@ -1,0 +1,40 @@
+/* v64 — saklar animasi (Admin → Animasi & Efek) + putaran warna gambar mengikuti "Tema warna".
+   Semua aturan di sini hanya aktif bila saklar dimatikan / palet diubah dari bawaan tema, jadi tampilan bawaan tidak berubah. */
+
+/* ---------- awan ---------- */
+.noclouds .pcl,.noclouds .pg-l.clouds,.noclouds .pg-l.clouds2,.noclouds .pg-l.cloud,.noclouds .ug-c3w,.noclouds .ug-cl,
+.noclouds .dk-l.clouds,.noclouds .dk-cloud,.noclouds .lv-cl,.noclouds .clouds{display:none!important}
+
+/* ---------- burung, enggang, merpati ---------- */
+.nobirds .pbirds,.nobirds .ug-bird,.nobirds .pg-l.birds,.nobirds .lv-dove,.nobirds .lv-bird,.nobirds .lv-sil,.nobirds .lv-way,
+.nobirds .dk-flyer,.nobirds .birds,.nobirds .flock{display:none!important}
+
+/* ---------- kupu-kupu ---------- */
+.nobfly .pg-bf,.nobfly .rbf,.nobfly .flyers,.nobfly .dk-bfly,.nobfly .lv-bf{display:none!important}
+
+/* ---------- debu cahaya, kunang-kunang, kilau ---------- */
+.noparticles .pmo,.noparticles .jw-d,.noparticles .pg-l.dust,.noparticles .pff,.noparticles .ffs,.noparticles .sparkles{display:none!important}
+
+/* ---------- kelopak & daun jatuh ---------- */
+.nopetal .ug-pt,.nopetal .pg-l.petals,.nopetal #petals{display:none!important}
+
+/* ---------- cahaya, sinar & kabut ---------- */
+.nolights .pglow,.nolights .prays,.nolights .plsw,.nolights .pms,.nolights .ug-ray,.nolights .ug-fg,.nolights .ug-hg,.nolights .hlt,
+.nolights .pg-l.mistb,.nolights .lv-light,.nolights .pg-l.rays{display:none!important}
+
+/* ---------- goyangan pohon, penjor & hiasan di adegan ---------- */
+.nosway .pg-w .pg-o>img,.nosway .pg-w .pj,.nosway .pg-w .ug-pj,.nosway .pg-w .pg-o.tree>img.cr{animation:none!important}
+
+/* ---------- animasi teks & gambar saat masuk (scroll) dimatikan: langsung tampil ---------- */
+.norv .rv,.norv .rv.in,.norv .rv[data-a]{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;animation:none!important}
+
+/* ---------- Tema warna: gambar ikut berputar warna (hanya bila palet ≠ bawaan tema) ---------- */
+body.hued .pstage .pcam,
+body.hued .pg-w,body.hued .dk-w,
+body.hued .sec>.bgl,body.hued .sec.bgi>.bgl,
+body.hued .edge,body.hued .ft,body.hued .fb,body.hued .fl,
+body.hued .pf-fl,body.hued .pf-orn,body.hued .orn,
+body.hued .cin-deco,body.hued .cin-wfl,
+body.hued #cover .spf-card,body.hued #cover .spf-edge{
+  filter:hue-rotate(var(--hr,0deg)) saturate(var(--hs,1));
+}

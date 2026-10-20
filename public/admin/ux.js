@@ -20,6 +20,11 @@ const FRIENDLY = {
   'theme.body': ['Warna tulisan isi', ''], 'theme.sideBg': ['Warna latar samping (di komputer)', ''],
   'theme.fontDisplay': ['Font judul besar', ''], 'theme.fontHeading': ['Font sub-judul', ''], 'theme.fontBody': ['Font isi', ''],
   'theme.fontScript': ['Font tulisan tangan (nama mempelai)', ''], 'theme.colWidth': ['Lebar undangan di komputer (px)', 'Biarkan bila tidak yakin.'],
+  'effects.animMode': ['Mode animasi', 'Klik salah satu. Setelah itu Anda masih bisa menyalakan/mematikan satu per satu di kartu di bawahnya.'],
+  'effects.birds': ['Burung / enggang / merpati', 'Burung yang terbang melintas di langit pembuka dan latar.'],
+  'effects.particles': ['Debu cahaya, kunang-kunang & kilau', 'Titik-titik cahaya yang melayang pelan.'],
+  'effects.lights': ['Cahaya, sinar & kabut', 'Sinar matahari/bulan, pendar lampu, dan kabut yang bergerak.'],
+  'effects.revealAnim': ['Animasi teks & gambar muncul saat di-scroll', 'Mati = semua teks & gambar langsung tampil tanpa efek muncul.'],
   'effects.animSpeed': ['Kecepatan animasi', 'Seberapa cepat teks & foto muncul saat di-scroll.'],
   'effects.intro': ['Animasi pembuka', 'Layar pembuka sebentar sambil gambar dimuat agar animasi mulus.'],
   'effects.openZoom': ['Kamera masuk ke rumah saat dibuka', 'Efek "masuk" ke dalam rumah ketika tamu menekan Buka Undangan.'],
@@ -51,7 +56,7 @@ const FRIENDLY = {
   'quote.text': ['Terjemahan / kutipan', ''],
   'gallery.video': ['Video galeri (opsional)', 'Tempel link YouTube / .mp4, atau unggah. Putar otomatis tanpa suara.'],
   'gallery.slider': ['Slider foto berjalan sendiri', 'Foto di slider selalu tampil utuh sesuai aslinya.'], 'gallery.layout': ['Gaya susunan', 'Majalah = foto tampil sesuai ukuran aslinya. Kotak rata = semua foto seragam.'],
-  'gallery.shape': ['Bentuk foto', 'Pilih Potret / Persegi / Lanskap / Panjang untuk membuat SEMUA foto seragam. Pilih "Ukuran asli" untuk gaya majalah.'],
+  'gallery.shape': ['Bentuk foto', 'Berlaku untuk semua foto. Untuk satu foto saja, klik fotonya di atas lalu atur "Bentuk foto ini". Pilih "Ukuran asli" untuk gaya majalah.'],
   'gallery.cols': ['Jumlah kolom', '2 = dua foto sejajar, 4 = empat foto sejajar. "Otomatis" = 2 (majalah) atau 3 (kotak rata).'],
   'gift.title': ['Judul', 'Kata pertama memakai tulisan tangan.'],
   'gift.address': ['Alamat kirim kado', 'Kosongkan untuk menyembunyikan.'],
@@ -62,6 +67,13 @@ const FRIENDLY = {
 
 // Kelompok kartu di dalam satu halaman: [judul kartu, [kunci...], dilipat?]
 const LAYOUT = {
+  effects: [
+    ['Mode animasi (pilih cepat)', ['effects.animMode']],
+    ['Animasi pembuka saat tamu menekan "Buka Undangan"', ['effects.intro', 'effects.openZoom', 'effects.zoomFx']],
+    ['Teks & gambar saat masuk', ['effects.revealAnim', 'effects.animSpeed']],
+    ['Hiasan bergerak di halaman awal & latar', ['effects.clouds', 'effects.cloudSpeed', 'effects.butterflies', 'effects.butterflyCount', 'effects.birds', 'effects.particles', 'effects.petals', 'effects.lights', 'effects.glow', 'effects.sway', 'effects.parallax']],
+    ['Khusus Tema 1', ['effects.showTree', 'effects.javaFx'], true],
+  ],
   general: [
     ['Judul & tampilan saat link dibagikan', ['general.title', 'general.description', 'general.ogImage']],
     ['Tanggal & lokasi acara', ['general.eventDate', 'general.eventEnd', 'general.eventLocation', 'general.calendarTitle']],

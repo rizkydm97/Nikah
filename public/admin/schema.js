@@ -36,14 +36,19 @@ const SCHEMA = [
     { k: 'theme.fontScript', l: 'Font tulisan tangan (nama mempelai)', t: 'select', o: F_SCRIPT },
     { k: 'theme.colWidth', l: 'Lebar kolom undangan di desktop (px)', t: 'number', min: 320, max: 800 },
   ] },
-  { id: 'effects', title: 'Animasi & Efek', fields: [
+  { id: 'effects', title: 'Animasi & Efek', hint: 'Atur seberapa ramai animasinya. Pilih satu mode cepat, lalu ubah satu per satu bila perlu. Berlaku untuk semua tema; yang tidak ada di tema Anda otomatis diabaikan.', fields: [
+    { k: 'effects.animMode', l: 'Mode animasi', t: 'animmode' },
     { k: 'effects.animSpeed', l: 'Kecepatan animasi muncul', t: 'select', o: [['slow', 'Lambat'], ['normal', 'Normal'], ['fast', 'Cepat']] },
     { k: 'effects.intro', l: 'Animasi pembuka (monogram + memuat gambar dulu agar animasi mulus)', t: 'bool' },
     { k: 'effects.openZoom', l: 'Animasi kamera masuk ke rumah lalu mundur perlahan saat membuka undangan', t: 'bool' },
-    { k: 'effects.clouds', l: 'Awan bergerak di langit', t: 'bool' },
+    { k: 'effects.clouds', l: 'Awan bergerak (di langit pembuka & latar)', t: 'bool' },
     { k: 'effects.cloudSpeed', l: 'Kecepatan awan', t: 'select', o: [['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat']] },
     { k: 'effects.showTree', l: 'Tampilkan rumah pohon di samping rumah', t: 'bool' },
     { k: 'effects.butterflies', l: 'Kupu-kupu terbang', t: 'bool' },
+    { k: 'effects.birds', l: 'Burung / enggang / merpati terbang', t: 'bool' },
+    { k: 'effects.particles', l: 'Debu cahaya, kunang-kunang & kilau', t: 'bool' },
+    { k: 'effects.lights', l: 'Cahaya, sinar & kabut di adegan', t: 'bool' },
+    { k: 'effects.revealAnim', l: 'Animasi teks & gambar muncul saat di-scroll', t: 'bool' },
     { k: 'effects.butterflyCount', l: 'Jumlah kupu-kupu (0-12)', t: 'number', min: 0, max: 12 },
     { k: 'effects.petals', l: 'Kelopak bunga berjatuhan', t: 'bool' },
     { k: 'effects.parallax', l: 'Efek parallax saat scroll', t: 'bool' },
@@ -153,7 +158,7 @@ const SCHEMA = [
     { k: 'gallery.shape', l: 'Bentuk foto', t: 'select', rr: 1, o: [['', 'Ukuran asli foto (gaya majalah, tinggi bebas)'], ['3/4', 'Potret 3:4'], ['4/5', 'Potret 4:5'], ['2/3', 'Potret tinggi 2:3'], ['1/1', 'Persegi 1:1'], ['4/3', 'Lanskap 4:3'], ['3/2', 'Lanskap 3:2'], ['16/9', 'Lanskap lebar 16:9'], ['21/9', 'Panjang 21:9']] },
     { k: 'gallery.cols', l: 'Jumlah kolom (foto berjajar ke samping)', t: 'select', rr: 1, o: [['', 'Otomatis'], ['1', '1 kolom (foto besar)'], ['2', '2 kolom'], ['3', '3 kolom'], ['4', '4 kolom']] },
     { k: 'gallery.sliderSize', l: 'Tinggi slider', t: 'select', o: [['small', 'Kecil'], ['normal', 'Sedang'], ['large', 'Besar']] },
-    { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '3/4.3', arKey: 'gallery.shape' }] },
+    { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '3/4.3', arKey: 'gallery.shape', arOwn: 'shape' }] },
   ] },
   { id: 'story', title: 'Love Story', fields: [
     { k: 'story.title', l: 'Judul (tulisan tangan)', t: 'text' }, { k: 'story.bg', l: 'Foto latar (kosongkan untuk pakai langit bawaan)', t: 'image', ar: '9/19', bg: 1 },
@@ -203,4 +208,16 @@ const PALETTES = [
   { id: 'blue', name: 'Dusty Blue', c: { primary: '#3E5E85', accent: '#4D6F98', rose: '#4D6F98', gold: '#B39A6B', paper: '#F2F5F9', ink: '#1E2E44', body: '#3A4757', sideBg: '#E3E9F0' } },
   { id: 'peach', name: 'Peach Terakota', c: { primary: '#B0603C', accent: '#C0714B', rose: '#C0714B', gold: '#B8955A', paper: '#FBF4EF', ink: '#46281C', body: '#5A4038', sideBg: '#F2E6DE' } },
   { id: 'champagne', name: 'Champagne Emas', c: { primary: '#977548', accent: '#A68457', rose: '#A68457', gold: '#B8955A', paper: '#FBF8F2', ink: '#3E3222', body: '#54483A', sideBg: '#EFE9DF' } },
+];
+
+// Mode animasi (Admin → Animasi & Efek): satu klik mengatur banyak saklar sekaligus. Saklar yang tidak disebut tidak diubah.
+const ANIM_INNER_OFF = { livingWorld: false, sectionClouds: false, perchButterfly: false, bgParallax: false, bloomOrnament: false, skyShift: false, sectionVeil: false, galleryFx: false, wishFloat: false, countdownFlip: false };
+const ANIM_MODES = [
+  { id: 'full', ico: '✨', name: 'Lengkap', note: 'Semua animasi menyala: pembuka sinematik, awan, burung, kupu-kupu, cahaya, efek scroll.',
+    v: { openZoom: true, clouds: true, butterflies: true, birds: true, particles: true, petals: true, lights: true, glow: true, sway: true, parallax: true, revealAnim: true, scrollReveal: true,
+      livingWorld: true, sectionClouds: true, perchButterfly: true, bgParallax: true, bloomOrnament: true, skyShift: true, sectionVeil: true, galleryFx: true, wishFloat: true, countdownFlip: true } },
+  { id: 'intro', ico: '🎬', name: 'Animasi awal saja', note: 'Pembuka & halaman awal tetap penuh animasi (awan, burung, kupu-kupu). Setelah di dalam: bersih, hanya teks & gambar masuk.',
+    v: Object.assign({ openZoom: true, clouds: true, butterflies: true, birds: true, particles: true, petals: true, lights: true, glow: true, sway: true, parallax: true, revealAnim: true, scrollReveal: true }, ANIM_INNER_OFF) },
+  { id: 'clean', ico: '🧼', name: 'Bersih total', note: 'Tanpa awan, burung, kupu-kupu, partikel & kamera sinematik di mana pun. Hanya animasi teks & gambar masuk.',
+    v: Object.assign({ openZoom: false, clouds: false, butterflies: false, birds: false, particles: false, petals: false, lights: false, glow: false, sway: false, parallax: false, revealAnim: true, scrollReveal: true }, ANIM_INNER_OFF) },
 ];

@@ -63,9 +63,9 @@
 .spf-box{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * 784 / 1168));aspect-ratio:784/1168;transform:translate(-50%,-50%);container-type:inline-size;overflow:hidden}
 .spf-box .pg-w{position:absolute;inset:0}
 .spf-airterjun .spf-edge{border:2px solid rgba(255,255,255,.7);box-shadow:0 0 0 5px rgba(150,110,185,.22),inset 0 0 40px rgba(255,255,255,.28)}
-.spf-airterjun .spf-in{inset:5% 8% 21%;justify-content:space-evenly;color:#4d2c55}
-.spf-airterjun .spf-n{color:#b4503e;text-shadow:0 1px 10px rgba(255,255,255,.9);font-family:var(--fScript);font-weight:400;text-transform:none;letter-spacing:.01em;font-size:min(13cqw,7cqh)}
-.spf-airterjun .spf-k{color:#4d2c55;text-shadow:0 1px 8px rgba(255,255,255,.9)}
+.spf-airterjun .spf-in{inset:5% 8% 21%;justify-content:space-evenly;color:var(--pdeep)}
+.spf-airterjun .spf-n{color:var(--rose);text-shadow:0 1px 10px rgba(255,255,255,.9);font-family:var(--fScript);font-weight:400;text-transform:none;letter-spacing:.01em;font-size:min(13cqw,7cqh)}
+.spf-airterjun .spf-k{color:var(--pdeep);text-shadow:0 1px 8px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to{text-shadow:0 1px 8px rgba(255,255,255,.9)}
 .spf-airterjun .spf-arch{background:linear-gradient(160deg,#fff,#cdb5d9)}
 .spf-airterjun .spf-btn{color:#fff;background:linear-gradient(180deg,#c28ad6,#8a5aa8)}
@@ -118,14 +118,16 @@
 .spf-airterjun .spf-in::before{content:"";position:absolute;inset:-4% -16% -6%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 56%,rgba(246,239,251,.86) 0,rgba(246,239,251,.58) 42%,rgba(246,239,251,0) 72%)}
 
 /* ===== v55: nama mempelai di sampul tebal & mencolok (ungu tua + aksen merah bata, kontur putih) ===== */
-.spf-airterjun .spf-n{color:#561b7a;font-weight:700;font-size:min(14.5cqw,7.8cqh);-webkit-text-stroke:1.3px #561b7a;paint-order:stroke fill;text-shadow:none;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px rgba(255,255,255,.95)) drop-shadow(0 3px 4px rgba(70,20,100,.35))}
-.spf-airterjun .spf-n i{color:#8a4fb3;-webkit-text-stroke:1px #8a4fb3}
-.spf-airterjun .spf-k{color:#561b7a;font-weight:700;-webkit-text-stroke:.5px #561b7a;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
-.spf-airterjun .spf-to span{color:#4a2260;font-weight:700;opacity:1;text-shadow:0 0 8px #fff,0 0 12px rgba(255,255,255,.9)}
-.spf-airterjun .spf-to b{color:#3d1a57;font-weight:700;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
+.spf-airterjun .spf-n{color:var(--pdeep);font-weight:700;font-size:min(14.5cqw,7.8cqh);-webkit-text-stroke:1.3px var(--pdeep);paint-order:stroke fill;text-shadow:none;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px rgba(255,255,255,.95)) drop-shadow(0 3px 4px rgba(70,20,100,.35))}
+.spf-airterjun .spf-n i{color:var(--rose);-webkit-text-stroke:1px var(--rose)}
+.spf-airterjun .spf-k{color:var(--pdeep);font-weight:700;-webkit-text-stroke:.5px var(--pdeep);text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
+.spf-airterjun .spf-to span{color:var(--pdeep);font-weight:700;opacity:1;text-shadow:0 0 8px #fff,0 0 12px rgba(255,255,255,.9)}
+.spf-airterjun .spf-to b{color:var(--pdeep);font-weight:700;text-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.9)}
 
 /* ===== v56: bagian dalam Tema 10 — bersih, terang, mudah dibaca (palet ungu tetap, tidak bergantung pengaturan admin) ===== */
-body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad0;--paper:#fbf8fe;--ink:#2b1a40;--body:#3f2f52;--tint:#f5eefb;--tint2:#e6d8f3;--tint3:#d4bfe8;--shade:#4a2766}
+/* v64: warna utama mengikuti Admin → Tema warna (tidak lagi dikunci ungu); warna muda diturunkan dari warna utama */
+body.t-airterjun,.spf-airterjun,.cine-airterjun{--pdeep:color-mix(in srgb,var(--primary) 78%,#000)}
+body.t-airterjun{--tint:color-mix(in srgb,var(--primary) 7%,#fff);--tint2:color-mix(in srgb,var(--primary) 17%,#fff);--tint3:color-mix(in srgb,var(--primary) 30%,#fff);--shade:color-mix(in srgb,var(--primary) 82%,#000)}
 /* salinan aturan "section terang" (dari Tema 2) dengan palet ungu */
 .t-airterjun .sec.bgi{background:var(--tint);color:var(--ink)}
 .t-airterjun .sec.bgi::before,.t-airterjun .quote::before,.t-airterjun .live::before,.t-airterjun .wishes::before{background:linear-gradient(color-mix(in srgb,var(--tint) 72%,transparent),color-mix(in srgb,var(--tint) 86%,transparent))!important}
@@ -165,7 +167,7 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad
 .t-airterjun .pop{background:color-mix(in srgb,var(--shade) 45%,transparent)}
 .t-airterjun .pop-x{background:var(--primary)}
 /* section bergambar foto (acara, hadiah, RSVP, ucapan) -> latar lilac polos & rapi; quote/live tetap berfoto dengan pudar lembut */
-.t-airterjun .sec.bgi:not(.quote):not(.live){background:linear-gradient(180deg,var(--tint),#eee3f7 55%,var(--tint));color:var(--ink)}
+.t-airterjun .sec.bgi:not(.quote):not(.live){background:linear-gradient(180deg,var(--tint),color-mix(in srgb,var(--primary) 11%,#fff) 55%,var(--tint));color:var(--ink)}
 .t-airterjun .sec.bgi:not(.quote):not(.live)::before{display:none!important}
 .t-airterjun .sec.bgi:not(.quote):not(.live)>.bgl{display:none}
 /* judul: solid, tegas, tanpa efek gradien warna-warni */
@@ -181,7 +183,7 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad
 .t-airterjun .couple .par{font-family:'Poppins',sans-serif;font-size:12px;line-height:1.75;color:var(--body)}
 .t-airterjun .couple .amp{color:var(--rose)}
 /* kartu acara */
-.t-airterjun .cap{background:linear-gradient(160deg,var(--tint3),var(--tint2));box-shadow:0 0 0 2px var(--tint3),0 14px 32px rgba(90,42,133,.2)}
+.t-airterjun .cap{background:linear-gradient(160deg,var(--tint3),var(--tint2));box-shadow:0 0 0 2px var(--tint3),0 14px 32px color-mix(in srgb,var(--primary) 22%,transparent)}
 .t-airterjun .cap-in{background:#fff;box-shadow:inset 0 0 0 1.5px var(--gold);color:var(--body)}
 .t-airterjun .cap-in h3{color:var(--primary)}
 .t-airterjun .ev .date,.t-airterjun .ev .place{color:var(--ink);font-size:14px}
@@ -297,12 +299,12 @@ body.t-airterjun{--primary:#5a2a85;--accent:#6e3d99;--rose:#8a4fb3;--gold:#b79ad
 /* ===== v63: panel nama Tema 10 — nama skrip besar, pemisah gunungan, tanggal berbingkai garis ===== */
 .cine-airterjun .cf-glass{background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,1),rgba(250,244,254,.97) 55%,rgba(238,226,250,.96))!important}
 .cine-airterjun .cf-dv{display:block;width:46%;height:auto;margin:0 auto 3.4cqi;transition-delay:.5s!important}
-.cine-airterjun .cf-k{font:600 3cqi/1.4 var(--fDisplay);letter-spacing:.42em;color:#7a4a9c;transition-delay:1s!important}
-.cine-airterjun .cf-n{display:flex;flex-direction:column;align-items:center;margin:3.4cqi 0 3.2cqi;font:400 21cqi/1 var(--fScript);text-transform:none;letter-spacing:0;color:#4a1f73;filter:drop-shadow(0 2px 2px rgba(90,42,133,.22));background:none;transition-delay:1.4s!important}
+.cine-airterjun .cf-k{font:600 3cqi/1.4 var(--fDisplay);letter-spacing:.42em;color:var(--accent);transition-delay:1s!important}
+.cine-airterjun .cf-n{display:flex;flex-direction:column;align-items:center;margin:3.4cqi 0 3.2cqi;font:400 21cqi/1 var(--fScript);text-transform:none;letter-spacing:0;color:var(--pdeep);filter:drop-shadow(0 2px 2px rgba(90,42,133,.22));background:none;transition-delay:1.4s!important}
 .cine-airterjun .cf-n span{display:block;max-width:100%;overflow-wrap:anywhere}
-.cine-airterjun .cf-n i{font:400 11cqi/1 var(--fScript);font-style:normal;color:#8a4fb3;margin:.5cqi 0 .2cqi}
-.cine-airterjun .cf-d{display:inline-block;font:600 4.6cqi/1 var(--fDisplay);letter-spacing:.3em;color:#4a1f73;padding:2.6cqi 0 2.6cqi .3em;border-top:1px solid rgba(138,79,179,.5);border-bottom:1px solid rgba(138,79,179,.5);margin-top:0;min-width:62%;transition-delay:1.9s!important}
-.cine-airterjun .cf-h{font:500 3.2cqi/1.3 var(--fBody);letter-spacing:.08em;color:#7a4a9c;opacity:.9}
+.cine-airterjun .cf-n i{font:400 11cqi/1 var(--fScript);font-style:normal;color:var(--rose);margin:.5cqi 0 .2cqi}
+.cine-airterjun .cf-d{display:inline-block;font:600 4.6cqi/1 var(--fDisplay);letter-spacing:.3em;color:var(--pdeep);padding:2.6cqi 0 2.6cqi .3em;border-top:1px solid rgba(138,79,179,.5);border-bottom:1px solid rgba(138,79,179,.5);margin-top:0;min-width:62%;transition-delay:1.9s!important}
+.cine-airterjun .cf-h{font:500 3.2cqi/1.3 var(--fBody);letter-spacing:.08em;color:var(--accent);opacity:.9}
 .cine-airterjun .cf-scr{margin-top:5cqi}
 @media (prefers-reduced-motion:no-preference){.cin-frame.in.f-pill .cf-n{animation:none!important}}
 

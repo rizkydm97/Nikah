@@ -32,6 +32,8 @@
     const out = THEME === 'rose' ? Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene, cfg.scene2 || {}) }) : Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene) });
     PAL = PAL_HUE[cfg.theme && cfg.theme.palette] !== undefined ? cfg.theme.palette : 'auto';
     if (PT && PAL === 'auto') PAL = PT.pal;
+    // konfigurasi lama yang masih memakai warna bawaan Tema 1/2 pada tema bergambar -> pakai warna bawaan tema itu
+    if (PT && PT.colors && (!cfg.theme.palette || cfg.theme.palette === 'auto') && ['#A00818', '#B4536D'].includes(String(cfg.theme.primary || '').toUpperCase())) out.theme = Object.assign({}, cfg.theme, PT.colors);
     if (PT) {
       out.scene.palace = PT.bg; out.scene.sky = PT.bg;
       // hiasan dalam milik tema (hanya mengganti gambar bawaan; gambar yang diunggah sendiri tetap dipakai)
@@ -173,9 +175,16 @@
     r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide)); r.setProperty('--div', PT ? cssUrl(PT.divider) : 'none'); r.setProperty('--motif', PT && PT.motif ? cssUrl(PT.motif) : 'none');
     document.title = c.general.title || document.title;
     const b = document.body.classList;
-    { let d = PAL === 'auto' ? 0 : (PAL_HUE[PAL] - 0.95) * 360; d = ((d + 540) % 360) - 180; r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', PAL === 'champagne' ? '.45' : '1'); }
+    { // putaran warna gambar tema bergambar: relatif terhadap palet asli tema itu (0 = tidak diputar)
+      const nat = PT ? PT.pal : THEME === 'rose' ? 'pink' : 'maroon';
+      let d = PAL === 'auto' || PAL === nat || PAL_HUE[PAL] === undefined ? 0 : (PAL_HUE[PAL] - PAL_HUE[nat]) * 360; d = ((d + 540) % 360) - 180;
+      r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', d !== 0 && PAL === 'champagne' ? '.5' : '1');
+      document.body.classList.toggle('hued', !!PT && d !== 0); }
     b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
+    // saklar animasi (admin → Animasi & Efek); kosong/true = menyala
+    ['birds', 'particles', 'lights'].forEach((k) => b.toggle('no' + k, c.effects[k] === false));
+    b.toggle('norv', c.effects.revealAnim === false); b.toggle('nobfly', c.effects.butterflies === false); b.toggle('nopetal', c.effects.petals === false); b.toggle('nopar', c.effects.parallax === false);
   }
 
   // ---------- adegan: langit, awan bergerak, pepohonan, rumah ----------
@@ -330,7 +339,7 @@
   // burung terbang melintasi langit lukisan
   const SVGBIRD = '<svg viewBox="0 0 24 12"><path d="M0 4 Q6 0 12 6 Q18 0 24 4 Q18 2.6 12 8.4 Q6 2.6 0 4Z"/></svg>';
   function picBirds(stage) {
-    const box = $('.pbirds', stage); if (!box || !PT.birds || reduce) return;
+    const box = $('.pbirds', stage); if (!box || !PT.birds || reduce || C.effects.birds === false) return;
     const [y0, y1] = PT.cloudBand[1] ? PT.cloudBand : [380, 470];
     const n = PT.birds === 'svg' ? 5 : 3, dir = Math.random() < 0.5 ? 1 : -1, y = y0 + Math.random() * (y1 - y0);
     const flip = PT.birds === 'svg' ? 1 : -1; // sprite burung menghadap kiri, jadi dibalik saat terbang ke kanan
@@ -390,7 +399,7 @@
   }
   let picAmb = null;
   function picAmbient(stage) { // efek yang terus hidup: burung sesekali lewat
-    clearInterval(picAmb); if (reduce) return;
+    clearInterval(picAmb); if (reduce || C.effects.birds === false) return;
     picAmb = setInterval(() => { if (document.hidden || scrollY > innerHeight) return; picBirds(stage); }, 16000);
   }
 
@@ -1019,14 +1028,22 @@
     if (!items.length) return '';
     const lay = o.layout || 'masonry', slider = o.slider !== false && items.length > 1;
     // bentuk foto (mis. 3/4 potret, 4/3 lanskap, 21/9 panjang) & jumlah kolom — kosong = bawaan
-    const shape = /^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(String(o.shape || '')) ? o.shape : '';
+    const okS = (v) => (/^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(String(v || '')) ? String(v) : '');
+    const shape = okS(o.shape);
+    items.forEach((x) => { x.sh = okS(x.g.shape); }); // bentuk khusus satu foto (menimpa bentuk galeri)
     const cols = ['1', '2', '3', '4'].includes(String(o.cols)) ? +o.cols : 0;
     const uniform = lay === 'grid' || (lay === 'masonry' && !!shape); // bentuk dipilih = semua foto seragam
     const size = ['small', 'large'].includes(o.sliderSize) ? o.sliderSize : 'normal';
     const slide = (x) => `<figure class="sl" data-lb="${x.i}"><img src="${esc(x.u)}" alt="" decoding="async" draggable="false"></figure>`;
     const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}" data-size="${size}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
     let rest = '';
-    if (uniform) rest = `<div class="grid" style="--gcols:${cols || 3};--gar:${shape || '3/4.3'}">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
+    if (items.some((x) => x.sh) && lay !== 'none') { // ada foto dengan bentuk sendiri: susun kolom, tinggi mengikuti bentuk tiap foto
+      rest = `<div class="mixg" style="--gcols:${cols || 2}">${items.map((x, k) => {
+        const sh = x.sh || shape || (lay === 'grid' ? '3/4.3' : ''), p = sh.split('/'), wide = x.sh && +p[0] / +p[1] >= 1.7;
+        return sh ? `<div class="rv gi mx${wide ? ' wide' : ''}" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3};aspect-ratio:${sh}"><div class="phb">${photo(x.g, 'image')}</div></div>`
+          : `<figure class="rv gi mx" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy" style="width:100%;height:auto;display:block"></figure>`;
+      }).join('')}</div>`;
+    } else if (uniform) rest = `<div class="grid" style="--gcols:${cols || 3};--gar:${shape || '3/4.3'}">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
     else if (lay === 'masonry') rest = `<div class="masonry" style="--gcols:${cols || 2}"${cols ? ` data-c="${cols}"` : ''}>${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy"></figure>`).join('')}</div>`;
     return strip + rest;
   }

@@ -110,7 +110,7 @@
 
   // ---------- burung kecil di langit ----------
   function birds(W) {
-    const box = $('.birds', W); if (!box || box.dataset.on) return; box.dataset.on = 1;
+    const box = $('.birds', W); if (!box || box.dataset.on || ((window.__CFG && window.__CFG.effects) || {}).birds === false) return; box.dataset.on = 1;
     for (let i = 0; i < 7; i++) {
       const b = document.createElement('i'); b.className = 'ug-bird';
       b.innerHTML = '<svg viewBox="0 0 24 10"><path d="M1 8 Q6 -1 12 6 Q18 -1 23 8" fill="none" stroke="#7a5a92" stroke-width="1.6" stroke-linecap="round"/></svg>';
@@ -131,6 +131,7 @@
     let tx = 0, ty = 0, px = 0, py = 0; const t0 = performance.now();
     if (fine) addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
     if (!fine) addEventListener('deviceorientation', (e) => { if (e.gamma == null) return; tx = Math.max(-1, Math.min(1, e.gamma / 22)); ty = Math.max(-1, Math.min(1, ((e.beta || 50) - 50) / 22)); }, { passive: true });
+    if (((window.__CFG && window.__CFG.effects) || {}).parallax === false) return; // gerak kamera halus dimatikan dari admin
     const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || W.closest('.cin-off')) return;
       const t = (now - t0) / 1000; px += (tx - px) * 0.04; py += (ty - py) * 0.04;
       const ix = Math.sin(t * 0.22) * 0.9 + px, iy = Math.cos(t * 0.17) * 0.5 + py, K = 3.4;

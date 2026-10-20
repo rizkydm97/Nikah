@@ -82,7 +82,7 @@
       motes:{n:14,c:'255,236,170',up:1},
       name: 'Dayak — Kerajaan Malinau', base: 'jawa', pal: 'maroon', dark: false,
       btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566,
-      text: '#5a1a0c', glowText: 'rgba(255,246,226,.95)',
+      text: 'color-mix(in srgb,var(--primary) 80%,#000)', glowText: 'rgba(255,246,226,.95)',
       wf: [], mist: [[0, 560, 784, 130, 1], [260, 690, 520, 90]], water: [],
       glow: [[560, 470, 170, 'rgba(255,236,190,.55)']], clouds: [], cloudBand: [150, 330],
       birds: '', bf: ['bf_rajah'], petals: ['orchid', 'leafj', 'orchid'], sparkle: 0, flies: 0,
@@ -92,14 +92,14 @@
     airterjun: { // Tema 10 — Ungu Adat Jawa (ungu.js). Kunci 'airterjun' dipertahankan agar pilihan tema lama tetap jalan
       live: 1, tint:[.95,.88,1], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,640],
       motes:{n:12,c:'236,214,255',up:1}, name: 'Ungu Adat Jawa — Joglo, Air Terjun & Gunungan', base: 'jawa', pal: 'lilac', dark: false,
-      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#4d2c55', glowText: 'rgba(255,255,255,.95)',
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: 'color-mix(in srgb,var(--primary) 80%,#000)', glowText: 'rgba(255,255,255,.95)',
       wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [140, 360], birds: '', bf: ['bf_pink1', 'bf_blue2'], petals: ['orchid', 'frangi1'], sparkle: 0, flies: 0,
       preload: ['/assets/t/ungu/field.webp', '/assets/t/ungu/ctopL.webp', '/assets/t/ungu/hz.webp', '/assets/t/ungu/bank.webp', '/assets/t/ungu/treeC.webp', '/assets/t/ungu/treeD.webp', '/assets/t/ungu/cl1.webp', '/assets/t/ungu/falls.webp', '/assets/t/ungu/house.webp', '/assets/t/ungu/treeA.webp', '/assets/t/ungu/treeB.webp', '/assets/t/ungu/palm2.webp', '/assets/t/ungu/gunA.webp', '/assets/t/ungu/gunB.webp', '/assets/t/ungu/jasL.webp', '/assets/t/ungu/potB.webp', '/assets/t/ungu/mist.webp', '/assets/t/ungu/streak-seamless.webp', '/assets/t/ungu/fallmask.webp', '/assets/t/ungu/c3-a-m.webp', '/assets/t/ungu/c3-b-m.webp', '/assets/t/ungu/c3-c-m.webp', '/assets/t/ungu/c3-d-m.webp', 'bf_pink1'], shots: [['end', 1000]],
     },
     istana: { // Tema 11 — Adat Jawa (kunci 'istana' dipertahankan agar pilihan tema lama tetap jalan)
       live: 1, tint:[1,.92,.78], cx:'', entry:'cover', ct:[0,0,0,0], cb:[0,0,0,0], focus:[392,700],
       motes:{n:12,c:'255,226,150',up:1}, name: 'Adat Jawa — Joglo & Gunungan', base: 'jawa', pal: 'maroon', dark: false,
-      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: '#5a1a0c', glowText: 'rgba(255,246,226,.95)',
+      btn: [196, 978, 588, 1076, 46], title: [130, 116, 654, 372], namesY: 300, guestY: 566, text: 'color-mix(in srgb,var(--primary) 80%,#000)', glowText: 'rgba(255,246,226,.95)',
       wf: [], mist: [], water: [], glow: [], clouds: [], cloudBand: [140, 360], birds: '', bf: ['bf_gold', 'bf_gold2'], petals: ['leafj', 'orchid'], sparkle: 0, flies: 0,
       preload: ['/assets/t/jawa/hill.webp', '/assets/t/jawa/house.webp', '/assets/t/jawa/tree.webp', '/assets/t/jawa/gunungan.webp', '/assets/t/jawa/gongL.webp', '/assets/t/jawa/gongR.webp', '/assets/t/jawa/cloudL.webp', '/assets/t/jawa/bush.webp', 'bf_gold'], shots: [['end', 1000]],
     },
@@ -121,4 +121,7 @@
     x.bg = x.world = x.cover = d + 'bg.webp';
     x.deco = { floralTop: d + 'fl-top.webp', floralBottom: d + 'fl-bottom.webp', frameArc: d + 'frame-arc.webp', frameSide: d + 'frame-side.webp', flowers: d + 'bouquet.webp', ornament: d + 'orn.webp' };
     x.divider = d + 'divider.webp'; x.motif = d + 'motif.webp'; }
+  // Warna bawaan tiap tema (dipakai bila konfigurasi lama masih memakai warna Tema 1/2 dan palet = bawaan)
+  const NATIVE_COL = {"bali":{"primary":"#8A5A1E","accent":"#A0702A","rose":"#A0702A","gold":"#B8913F","paper":"#FBF6EC","ink":"#3A2610","body":"#4D3A26","sideBg":"#EFE6D6"},"princess":{"primary":"#B4536D","accent":"#C0607A","rose":"#C0607A","gold":"#B8955A","paper":"#FDF3F4","ink":"#4A2530","body":"#5A3A42","sideBg":"#F6E4E7"},"emas":{"primary":"#9A6B1F","accent":"#B07F2C","rose":"#B07F2C","gold":"#C9A250","paper":"#FBF5E8","ink":"#3A2A12","body":"#4F4027","sideBg":"#EEE4CF"},"biru":{"primary":"#2F4C7A","accent":"#3E5F92","rose":"#3E5F92","gold":"#B9A06A","paper":"#F2F5FA","ink":"#16243B","body":"#36445A","sideBg":"#E2E8F1"},"rimba":{"primary":"#1F5560","accent":"#2B6A73","rose":"#2B6A73","gold":"#C8A24E","paper":"#F1F5F4","ink":"#0E2328","body":"#2E4247","sideBg":"#DEE8E6"},"klasik":{"primary":"#6B3E16","accent":"#8A5422","rose":"#8A5422","gold":"#B88A3E","paper":"#F8F1E6","ink":"#2C1A0B","body":"#47321F","sideBg":"#EBDFCC"},"dayak":{"primary":"#9A2A1E","accent":"#B8341F","rose":"#B8341F","gold":"#C99A3C","paper":"#FBF4E8","ink":"#1E120C","body":"#3E2A1E","sideBg":"#EFE2CC"},"airterjun":{"primary":"#6B4A8A","accent":"#8E6BB0","rose":"#B4503E","gold":"#C9A27A","paper":"#F7F1FB","ink":"#2E2140","body":"#4A3B5C","sideBg":"#E6DDF0"},"istana":{"primary":"#8A3A12","accent":"#B8561E","rose":"#B8561E","gold":"#C99A3C","paper":"#FFF6E4","ink":"#3A1D0C","body":"#5A3A22","sideBg":"#F1DDB4"}};
+  for (const k in NATIVE_COL) if (window.PIC_THEMES[k]) window.PIC_THEMES[k].colors = NATIVE_COL[k];
 })();

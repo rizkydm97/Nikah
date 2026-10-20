@@ -171,7 +171,7 @@
     const ch = () => { obj[key + 'Adj'] = { ...a }; (onChange || (() => changed(true)))(); };
     const A0 = { x: 50, y: 50, z: 1, fit: 'cover', o: 100 };
     let a = { ...A0, ...(obj[key + 'Adj'] || {}) };
-    const ratio = () => (f.arKey ? getPath(cfg, f.arKey) : '') || f.ar || '4/5';
+    const own = f.arOwn, ratio = () => (own ? obj[own] : '') || (f.arKey ? getPath(cfg, f.arKey) : '') || f.ar || '4/5';
     const m = $('#adj'), body = $('#adjBody'); body.textContent = '';
     const im = h('img', { src: url, alt: '', draggable: 'false' });
     const fill = h('span', { class: 'bfill', style: `background-image:url("${String(url).replace(/"/g, '')}")` });
@@ -209,7 +209,7 @@
     const bc = h('button', { type: 'button', class: 'seg', onclick: () => set({ fit: 'cover' }) }, 'Penuhi bingkai'), bu = h('button', { type: 'button', class: 'seg', onclick: () => set({ fit: 'contain', z: 1 }) }, 'Tampilkan foto utuh');
     const ctl = h('div', { class: 'adj-ctl' },
       h('div', { class: 'segs' }, bc, bu),
-      f.arKey ? h('label', {}, 'Bentuk bingkai', (() => { const fdef = SCHEMA.flatMap((g) => g.fields).find((x) => x.k === f.arKey); const sel = h('select', { onchange: (e) => { const [o, k] = parentOf(cfg, f.arKey); o[k] = e.target.value; paintStage(); changed(true); } }, (fdef ? fdef.o : []).map(([v, t]) => h('option', { value: v }, t))); sel.value = getPath(cfg, f.arKey) || ''; return sel; })()) : null,
+      f.arKey ? h('label', {}, own ? 'Bentuk foto ini' : 'Bentuk bingkai', (() => { const fdef = SCHEMA.flatMap((g) => g.fields).find((x) => x.k === f.arKey); const sel = h('select', { onchange: (e) => { if (own) { if (e.target.value) obj[own] = e.target.value; else delete obj[own]; } else { const [o, k] = parentOf(cfg, f.arKey); o[k] = e.target.value; } paintStage(); (onChange || (() => changed(true)))(); } }, (fdef ? fdef.o : []).map(([v, t]) => h('option', { value: v }, v === '' && own ? 'Ikuti pengaturan galeri' : t))); sel.value = (own ? obj[own] : getPath(cfg, f.arKey)) || ''; return sel; })()) : null,
       h('label', {}, h('span', {}, 'Zoom ', zv), zr),
       h('label', {}, 'Geser kiri ↔ kanan', xr),
       h('label', {}, 'Geser atas ↕ bawah', yr),
@@ -272,6 +272,15 @@
         !isImg ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();
       wrap.append(label, h('div', { class: 'imgf' }, th, h('div', { style: 'flex:1;min-width:0' }, tx, btns, au)));
+    } else if (f.t === 'animmode') {
+      const eff = cfg.effects || (cfg.effects = {}), on = (k) => eff[k] !== false;
+      const same = (m) => Object.keys(m.v).every((k) => on(k) === m.v[k]);
+      const cur = (ANIM_MODES.find(same) || { id: 'custom' }).id;
+      const grid = h('div', { class: 'pals modes' });
+      ANIM_MODES.forEach((m) => grid.append(h('button', { type: 'button', class: 'pal mode' + (cur === m.id ? ' on' : ''), onclick: () => { Object.assign(eff, m.v); changed(true); show(current); } },
+        h('span', { class: 'mi' }, m.ico), h('b', {}, m.name), h('small', {}, m.note))));
+      grid.append(h('div', { class: 'pal mode' + (cur === 'custom' ? ' on' : ''), style: 'cursor:default' }, h('span', { class: 'mi' }, '🎛️'), h('b', {}, 'Kustom'), h('small', {}, 'Aktif otomatis bila Anda mengubah saklar satu per satu di bawah.')));
+      wrap.append(label, grid);
     } else if (f.t === 'palette') {
       const grid = h('div', { class: 'pals' });
       const paint = () => grid.querySelectorAll('.pal').forEach((b) => b.classList.toggle('on', b.dataset.id === (get() || 'auto')));
@@ -308,7 +317,7 @@
       box.textContent = '';
       if (photoOnly) {
         const g = h('div', { class: 'gl' });
-        arr.forEach((it, i) => g.append(h('div', { class: 'g' }, h('div', { class: 'im', title: 'Klik untuk atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }), style: `background-image:url("${String(it[f.fields[0].k] || '').replace(/"/g, '')}");background-position:${(it[f.fields[0].k + 'Adj'] || {}).x ?? 50}% ${(it[f.fields[0].k + 'Adj'] || {}).y ?? 50}%;aspect-ratio:${(f.fields[0].arKey && getPath(cfg, f.fields[0].arKey)) || f.fields[0].ar || '3/4'}` }),
+        arr.forEach((it, i) => g.append(h('div', { class: 'g' }, h('div', { class: 'im', title: 'Klik untuk atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }), style: `background-image:url("${String(it[f.fields[0].k] || '').replace(/"/g, '')}");background-position:${(it[f.fields[0].k + 'Adj'] || {}).x ?? 50}% ${(it[f.fields[0].k + 'Adj'] || {}).y ?? 50}%;aspect-ratio:${it.shape || (f.fields[0].arKey && getPath(cfg, f.fields[0].arKey)) || f.fields[0].ar || '3/4'}` }),
           h('div', { class: 't' },
             h('span', {}, h('button', { title: 'Geser kiri', onclick: () => { if (i > 0) { [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]]; ch(); render(); } } }, '←'), h('button', { title: 'Geser kanan', onclick: () => { if (i < arr.length - 1) { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; ch(); render(); } } }, '→')),
             h('button', { title: 'Atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }) }, '✥'),

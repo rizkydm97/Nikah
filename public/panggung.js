@@ -111,7 +111,7 @@
   function start(stage) {
     const W = stage && stage.querySelector('.pg-w'); if (!W || W.dataset.on) return; W.dataset.on = 1;
     const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches; if (reduce) return;
-    if (matchMedia('(pointer:fine)').matches) {
+    if (matchMedia('(pointer:fine)').matches && ((window.__CFG && window.__CFG.effects) || {}).parallax !== false) {
       const ls = [...W.querySelectorAll('.pg-l')].map((el) => ({ el, z: +el.dataset.z }));
       let tx = 0, ty = 0, px = 0, py = 0, t0 = performance.now();
       addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
@@ -120,7 +120,7 @@
     }
   }
   function flyers(W, sprite, n) {
-    const box = W.querySelector('.fly'); if (!box) return;
+    const box = W.querySelector('.fly'); if (!box || ((window.__CFG && window.__CFG.effects) || {}).butterflies === false) return;
     for (let i = 0; i < n; i++) {
       const b = document.createElement('div'); b.className = 'rbf pg-bf'; const d = (0.18 + Math.random() * 0.1).toFixed(2);
       b.innerHTML = `<div class="rb-in"><i class="l" style="background-image:url(${T}spr/${sprite}.webp);animation-duration:${d}s"></i><i class="r" style="background-image:url(${T}spr/${sprite}.webp);animation-duration:${d}s"></i></div>`;

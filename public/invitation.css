@@ -925,3 +925,10 @@ a{color:inherit}
 /* ukuran slider galeri */
 .gslider[data-size=small] .gtrack .sl{height:clamp(180px,54vw,240px)}
 .gslider[data-size=large] .gtrack .sl{height:clamp(320px,96vw,460px)}
+
+/* galeri campuran: tiap foto bisa punya bentuk sendiri */
+.mixg{columns:var(--gcols,2);column-gap:8px;margin-top:18px}
+.mixg .gi{position:relative;display:block;break-inside:avoid;margin:0 0 8px;overflow:hidden;cursor:zoom-in;background:#ddd}
+.mixg .gi.wide{column-span:all}
+.mixg .gi .phb{transition:transform .8s}
+.mixg .gi:hover .phb{transform:scale(1.06)}
