@@ -1009,7 +1009,7 @@
         <div class="rv wpanel"><p class="wtxt">${br(o.text)}</p>
         <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div></div>
         <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea><button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
-        <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat lebih banyak</button></div></div></section>`;
+        <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat 5 ucapan lagi</button></div></div></section>`;
     },
     closing(c) {
       const o = c.closing, s = c.scene;
@@ -1497,18 +1497,23 @@
         if (r.ok) { m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
       }, sig);
       $('#wishMore').onclick = () => loadWishes(false);
+      // 5 ucapan per muatan; sisanya otomatis dimuat saat scroll sampai bawah (HP: scroll halaman, desktop: scroll di dalam daftar)
+      { const wl = $('#wishList'), mb = $('#wishMore');
+        wl.addEventListener('scroll', () => { if (!mb.hidden && wl.scrollTop + wl.clientHeight >= wl.scrollHeight - 80) loadWishes(false); }, { passive: true, signal: AC.signal }); }
       loadWishes(true);
     }
   }
-  let wOff = 0;
+  let wOff = 0, wBusy = false;
   async function loadWishes(reset) {
     const list = $('#wishList'); if (!list) return;
+    if (wBusy && !reset) return; wBusy = true;
     if (reset) wOff = 0;
-    const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`).then((r) => r.json()).catch(() => null); if (!d || !d.items) return;
+    const d = await fetch(`/api/wishes?limit=5&offset=${wOff}`).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
     if (reset) list.innerHTML = '';
     $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak;
     list.insertAdjacentHTML('beforeend', d.items.map((w, i) => `<div class="wl-item" style="animation-delay:${i * 0.06}s"><b>${esc(w.name)}</b><small>${esc(new Date(w.ts).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }))}</small><p>${esc(w.message)}</p></div>`).join(''));
     wOff += d.items.length; $('#wishMore').hidden = wOff >= d.total;
+    if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // isi belum cukup panjang untuk di-scroll: muat lagi
   }
   async function post(url, body) {
     try { const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); return await r.json(); } catch (e) { return { error: 'Koneksi bermasalah' }; }
