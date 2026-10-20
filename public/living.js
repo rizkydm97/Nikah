@@ -92,7 +92,7 @@
 
   function frame(now) {
     if (!running) return; requestAnimationFrame(frame);
-    if (document.hidden) { last = now; return; }
+    if (document.hidden || window.__wlBusy) { last = now; return; } // dijeda saat kotak ucapan digulir (HP)
     const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016); last = now;
     const t = (now - t0) / 1000, w = windAt(t), g = wind.gust;
     // scroll: lapisan dekat bergeser lebih cepat dari isi, lapisan jauh lebih lambat
@@ -316,7 +316,7 @@
     resize(); addEventListener('resize', () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 200); }, { passive: true });
     buildLight();
     // sentuhan/geser: partikel menyingkir; ketuk: hembusan kecil
-    const mv = (x, y) => { const cr = cv.getBoundingClientRect(), nx = x - cr.left, ny = y - cr.top, n = performance.now(), dt = Math.max(16, n - ptr.t); ptr.vx = (nx - ptr.x) / dt * 1000; ptr.vy = (ny - ptr.y) / dt * 1000; if (n - ptr.t > 200) { ptr.vx = ptr.vy = 0; } ptr.x = nx; ptr.y = ny; ptr.t = n; };
+    const mv = (x, y) => { if (window.__wlBusy) return; const cr = cv.getBoundingClientRect(), nx = x - cr.left, ny = y - cr.top, n = performance.now(), dt = Math.max(16, n - ptr.t); ptr.vx = (nx - ptr.x) / dt * 1000; ptr.vy = (ny - ptr.y) / dt * 1000; if (n - ptr.t > 200) { ptr.vx = ptr.vy = 0; } ptr.x = nx; ptr.y = ny; ptr.t = n; };
     addEventListener('pointermove', (e) => mv(e.clientX, e.clientY), { passive: true });
     addEventListener('touchmove', (e) => { const t = e.touches[0]; if (t) mv(t.clientX, t.clientY); }, { passive: true });
     addEventListener('pointerdown', (e) => { if (!cv) return; const cr = cv.getBoundingClientRect(); push(e.clientX - cr.left, e.clientY - cr.top, 120, 150); }, { passive: true });

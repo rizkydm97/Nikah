@@ -132,7 +132,7 @@
     if (fine) addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
     if (!fine) addEventListener('deviceorientation', (e) => { if (e.gamma == null) return; tx = Math.max(-1, Math.min(1, e.gamma / 22)); ty = Math.max(-1, Math.min(1, ((e.beta || 50) - 50) / 22)); }, { passive: true });
     if (((window.__CFG && window.__CFG.effects) || {}).parallax === false) return; // gerak kamera halus dimatikan dari admin
-    const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || W.closest('.cin-off')) return;
+    const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || window.__wlBusy || W.closest('.cin-off')) return;
       const t = (now - t0) / 1000; px += (tx - px) * 0.04; py += (ty - py) * 0.04;
       const ix = Math.sin(t * 0.22) * 0.9 + px, iy = Math.cos(t * 0.17) * 0.5 + py, K = 3.4;
       for (const l of ls) l.el.style.translate = `${(-ix * l.z * K).toFixed(2)}cqw ${(-iy * l.z * K * 0.7).toFixed(2)}cqw`; };

@@ -115,7 +115,7 @@
       const ls = [...W.querySelectorAll('.pg-l')].map((el) => ({ el, z: +el.dataset.z }));
       let tx = 0, ty = 0, px = 0, py = 0, t0 = performance.now();
       addEventListener('pointermove', (e) => { tx = (e.clientX / innerWidth - 0.5) * 2; ty = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
-      const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || W.closest('.cin-off')) return; const t = (now - t0) / 1000; px += (tx - px) * 0.04; py += (ty - py) * 0.04; const ix = Math.sin(t * 0.2) * 0.5 + px, iy = Math.cos(t * 0.16) * 0.35 + py; for (const l of ls) l.el.style.translate = `${(-ix * l.z * 0.9).toFixed(2)}cqw ${(-iy * l.z * 0.7).toFixed(2)}cqw`; };
+      const tick = (now) => { if (!W.isConnected) return; requestAnimationFrame(tick); if (document.hidden || window.__wlBusy || W.closest('.cin-off')) return; const t = (now - t0) / 1000; px += (tx - px) * 0.04; py += (ty - py) * 0.04; const ix = Math.sin(t * 0.2) * 0.5 + px, iy = Math.cos(t * 0.16) * 0.35 + py; for (const l of ls) l.el.style.translate = `${(-ix * l.z * 0.9).toFixed(2)}cqw ${(-iy * l.z * 0.7).toFixed(2)}cqw`; };
       requestAnimationFrame(tick);
     }
   }

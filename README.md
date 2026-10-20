@@ -241,5 +241,6 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 ## Pembaruan Ucapan & Doa
 - Daftar ucapan berupa kotak setinggi layar (maks 430px) yang bisa di-scroll sendiri, 10 ucapan per muatan dan otomatis memuat berikutnya saat sampai bawah. Di HP blur dan animasi dalam kotak dimatikan agar scroll sentuh lancar.
 - Statistik: Hadir, Tidak Hadir, **Yang Mengucapkan** (jumlah pengirim unik) dan **Total Ucapan**.
-- Tamu bisa melampirkan **foto** (dikecilkan otomatis di browser). Tiap ucapan menampilkan tanggal dan jam (WIB).
+- Tamu bisa menambah **foto profil** (dipotong persegi & dikecilkan otomatis; tampil sebagai avatar bulat di samping nama). Tiap ucapan menampilkan tanggal dan jam (WIB).
 - **PENTING (sekali saja):** jalankan ulang `supabase/schema.sql` di Supabase → SQL Editor agar kolom `photo` pada tabel `wishes` dibuat. Tanpa itu ucapan tetap terkirim, tetapi foto tidak tersimpan.
+- Perbaikan scroll HP: selama kotak ucapan disentuh/digulir, animasi latar (kanvas partikel, awan, kilau) dijeda sementara lalu jalan lagi otomatis.

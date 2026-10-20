@@ -1009,7 +1009,7 @@
         <div class="rv wpanel"><p class="wtxt">${br(o.text)}</p>
         <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div><div><b id="stS">0</b><span>Yang Mengucapkan</span></div><div><b id="stW">0</b><span>Total Ucapan</span></div></div>
         <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea>
-          <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto">✕</button></div></div>
+          <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
         <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
     },
@@ -1495,11 +1495,11 @@
     if (wf) {
       let photoData = '';
       const pin = $('#wishPhoto'), prev = $('#wishPrev'), pimg = $('#wishPrevImg'), ptxt = $('#wishPhotoTxt');
-      const clearPhoto = () => { photoData = ''; pin.value = ''; prev.hidden = true; pimg.removeAttribute('src'); ptxt.textContent = 'Tambah foto (opsional)'; };
+      const clearPhoto = () => { photoData = ''; pin.value = ''; prev.hidden = true; pimg.removeAttribute('src'); ptxt.textContent = 'Tambah foto profil (opsional)'; };
       pin.addEventListener('change', async () => {
         const f = pin.files && pin.files[0]; if (!f) return clearPhoto();
         const m = $('#wishMsg'); m.className = 'msg'; m.textContent = 'Memproses foto…';
-        try { photoData = await shrinkImage(f, 1000, 0.82); pimg.src = photoData; prev.hidden = false; ptxt.textContent = 'Ganti foto'; m.textContent = ''; }
+        try { photoData = await shrinkImage(f, 320, 0.85); pimg.src = photoData; prev.hidden = false; ptxt.textContent = 'Ganti foto profil'; m.textContent = ''; }
         catch (e) { clearPhoto(); m.className = 'msg err'; m.textContent = 'Foto tidak bisa dibaca. Gunakan JPG, PNG, atau WebP.'; }
       }, sig);
       $('#wishPrevX').addEventListener('click', clearPhoto, sig);
@@ -1511,21 +1511,26 @@
       }, sig);
       $('#wishMore').onclick = () => loadWishes(false);
       // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
-      { const wl = $('#wishList'), mb = $('#wishMore');
+      { const wl = $('#wishList'), mb = $('#wishMore'), touch = matchMedia('(pointer:coarse)').matches; let wt = 0;
+        // HP: selama kotak digulir, semua animasi latar dijeda sementara supaya scroll tidak patah-patah
+        const kick = () => { if (!touch) return; window.__wlBusy = true; document.documentElement.classList.add('wl-touch'); clearTimeout(wt); wt = setTimeout(() => { window.__wlBusy = false; document.documentElement.classList.remove('wl-touch'); }, 450); };
+        ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((ev) => wl.addEventListener(ev, kick, { passive: true, signal: AC.signal }));
+        AC.signal.addEventListener('abort', () => { window.__wlBusy = false; document.documentElement.classList.remove('wl-touch'); });
+        wl.addEventListener('scroll', kick, { passive: true, signal: AC.signal });
         wl.addEventListener('scroll', () => { if (!mb.hidden && wl.scrollTop + wl.clientHeight >= wl.scrollHeight - 120) loadWishes(false); }, { passive: true, signal: AC.signal }); }
       loadWishes(true);
     }
   }
-  // kecilkan foto di browser (maks sisi 1000px, JPEG) supaya cepat terkirim & hemat penyimpanan
+  // foto profil: dipotong persegi di tengah & dikecilkan (320px, JPEG) supaya cepat terkirim & hemat penyimpanan
   function shrinkImage(file, max, q) {
     return new Promise((ok, no) => {
       if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) return no(new Error('type'));
       const url = URL.createObjectURL(file), im = new Image();
       im.onload = () => {
         URL.revokeObjectURL(url);
-        const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
-        const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
-        const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h); cx.drawImage(im, 0, 0, w, h);
+        const side = Math.min(im.naturalWidth, im.naturalHeight), sx = (im.naturalWidth - side) / 2, sy = (im.naturalHeight - side) / 2, out = Math.min(max, side);
+        const cv = document.createElement('canvas'); cv.width = out; cv.height = out;
+        const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, out, out); cx.drawImage(im, sx, sy, side, side, 0, 0, out, out);
         ok(cv.toDataURL('image/jpeg', q));
       };
       im.onerror = () => { URL.revokeObjectURL(url); no(new Error('decode')); };
@@ -1548,8 +1553,8 @@
     $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stS').textContent = d.senders == null ? d.total : d.senders; $('#stW').textContent = d.total;
     if (reset && !d.items.length) list.innerHTML = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
     list.insertAdjacentHTML('beforeend', d.items.map((w, i) => {
-      const ph = safeUrl(w.photo);
-      return `<div class="wl-item" style="animation-delay:${Math.min(i, 6) * 0.05}s"><div class="wl-av">${esc((w.name || '?').trim().charAt(0).toUpperCase())}</div><div class="wl-bd"><b>${esc(w.name)}</b><small>${esc(wDate(w.ts))}</small><p>${esc(w.message)}</p>${ph ? `<a class="wl-ph" href="${esc(ph)}" target="_blank" rel="noopener"><img src="${esc(ph)}" alt="Foto dari ${esc(w.name)}" loading="lazy" decoding="async"></a>` : ''}</div></div>`;
+      const ph = safeUrl(w.photo), ini = esc((w.name || '?').trim().charAt(0).toUpperCase());
+      return `<div class="wl-item" style="animation-delay:${Math.min(i, 6) * 0.05}s"><div class="wl-av">${ph ? `<img src="${esc(ph)}" alt="${esc(w.name)}" decoding="async" onerror="this.remove()">` : ''}<span>${ini}</span></div><div class="wl-bd"><b>${esc(w.name)}</b><small>${esc(wDate(w.ts))}</small><p>${esc(w.message)}</p></div></div>`;
     }).join(''));
     wOff += d.items.length; $('#wishMore').hidden = wOff >= d.total;
     if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // belum cukup panjang untuk di-scroll: muat lagi
