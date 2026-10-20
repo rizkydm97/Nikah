@@ -260,7 +260,7 @@
     };
     addEventListener('wheel', (e) => {
       if (e.ctrlKey || document.body.classList.contains('locked') || document.documentElement.classList.contains('locked')) return;
-      if (e.target.closest && e.target.closest('textarea,select,.lb:not([hidden]),.gslider,iframe')) return;
+      if (e.target.closest && e.target.closest('textarea,select,.lb:not([hidden]),.gslider,iframe,.wl-list')) return;
       const lb = document.getElementById('lightbox'); if (lb && !lb.hidden) return;
       // biarkan area yang punya scroll sendiri (daftar ucapan, dll) bergulir normal selama masih bisa digulir ke arah itu
       for (let n = e.target; n && n !== document.body && n !== document.documentElement && n.nodeType === 1; n = n.parentElement) {

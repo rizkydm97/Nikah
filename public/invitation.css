@@ -385,7 +385,7 @@ a{color:inherit}
 .wpanel{position:relative;isolation:isolate;max-width:420px;margin:0 auto;padding:22px 16px 18px;border:1px solid rgba(255,255,255,.38);border-radius:16px;background:rgba(55,14,22,.42)}
 .wpanel::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .wtxt{font-family:'Lora',Georgia,serif;font-weight:700;font-size:11.5px;line-height:1.6;max-width:300px;margin:0 auto}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 4px}
 .stats div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 8px;min-width:0}
 .stats b{display:block;font-family:var(--fDisplay);font-size:24px;line-height:1.1}
 .stats span{font-family:'Lora',Georgia,serif;font-size:11px}
@@ -393,7 +393,11 @@ a{color:inherit}
 .wbox input,.wbox textarea{border:0;border-radius:7px;font-size:12.5px;margin-bottom:8px}
 .wbox textarea{min-height:70px;margin-bottom:0}
 .wbox .btn{width:100%;margin-top:10px;border-radius:7px}
-.wl-list{margin-top:16px;text-align:left;height:min(62vh,430px);overflow-y:scroll;overflow-x:hidden;padding-right:4px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;transform:translateZ(0)}
+.wl-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;text-align:left}
+.wl-head span{font-family:var(--fHeading);font-size:16px;font-weight:700}
+.wl-head em{font-style:normal;font-family:'Lora',Georgia,serif;font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:99px;background:color-mix(in srgb,currentColor 12%,transparent);border:1px solid color-mix(in srgb,currentColor 38%,transparent);white-space:nowrap}
+.wl-head b{font-size:14px}
+.wl-list{margin-top:10px;text-align:left;height:min(62vh,430px);overflow-y:scroll;overflow-x:hidden;padding-right:4px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto;touch-action:pan-y}
 .wl-list::-webkit-scrollbar{width:5px}.wl-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.5);border-radius:9px}
 .wl-list:empty{height:auto;overflow:visible}
 /* HP: blur & animasi di dalam kotak scroll sering membuat scroll sentuh macet → dimatikan */
@@ -410,9 +414,9 @@ a{color:inherit}
 .wprev img{display:block;width:88px;height:88px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,255,255,.8)}
 .wprev button{position:absolute;top:0;right:0;width:26px;height:26px;border:0;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}}
-.wl-item b{font-family:var(--fHeading);font-size:13.5px;color:var(--primary)}
-.wl-item small{display:block;color:#8a7a7d;font-size:10.5px;margin-bottom:3px}
-.wl-item p{font-family:'Lora',Georgia,serif;font-size:12.5px;white-space:pre-wrap;word-break:break-word}
+.wl-item b{font-family:var(--fHeading);font-size:15px;color:var(--primary)}
+.wl-item small{display:block;color:#6f5f62;font-family:'Lora',Georgia,serif;font-size:13px;margin:1px 0 4px}
+.wl-item p{font-family:'Lora',Georgia,serif;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .more{background:none;border:1px solid rgba(255,255,255,.7);color:#fff;padding:6px 18px;border-radius:99px;cursor:pointer;margin-top:6px;font-size:12px}
 
 /* penutup */

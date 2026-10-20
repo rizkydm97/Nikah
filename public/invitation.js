@@ -1007,10 +1007,11 @@
       const o = c.wishes;
       return `<section class="sec bgi wishes" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.quote.bg, c.cover.photo))}${o.title ? `<h2 class="rv h-display">${esc(o.title)}</h2>` : ''}
         <div class="rv wpanel"><p class="wtxt">${br(o.text)}</p>
-        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div><div><b id="stS">0</b><span>Yang Mengucapkan</span></div><div><b id="stW">0</b><span>Total Ucapan</span></div></div>
+        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div><div><b id="stS">0</b><span>Yang Mengucapkan</span></div></div>
         <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea>
           <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
+        <div class="wl-head"><span>Ucapan Tamu</span><em><b id="stW">0</b> Ucapan</em></div>
         <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
     },
     closing(c) {
@@ -1517,6 +1518,12 @@
         ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((ev) => wl.addEventListener(ev, kick, { passive: true, signal: AC.signal }));
         AC.signal.addEventListener('abort', () => { window.__wlBusy = false; document.documentElement.classList.remove('wl-touch'); });
         wl.addEventListener('scroll', kick, { passive: true, signal: AC.signal });
+        // roda mouse: di ujung atas/bawah daftar, scroll langsung lanjut ke halaman (tidak "macet")
+        wl.addEventListener('wheel', (e) => {
+          if (e.ctrlKey || wl.scrollHeight <= wl.clientHeight + 1) return;
+          const top = wl.scrollTop <= 0, bot = wl.scrollTop + wl.clientHeight >= wl.scrollHeight - 1;
+          if ((e.deltaY < 0 && top) || (e.deltaY > 0 && bot)) { e.preventDefault(); scrollBy(0, e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1)); }
+        }, { passive: false, signal: AC.signal });
         wl.addEventListener('scroll', () => { if (!mb.hidden && wl.scrollTop + wl.clientHeight >= wl.scrollHeight - 120) loadWishes(false); }, { passive: true, signal: AC.signal }); }
       loadWishes(true);
     }
