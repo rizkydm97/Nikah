@@ -31,10 +31,10 @@
 /* ---------- Tema warna: gambar ikut berputar warna (hanya bila palet ≠ bawaan tema) ---------- */
 body.hued .pstage .pcam,
 body.hued .pg-w,body.hued .dk-w,
-body.hued .sec>.bgl,body.hued .sec.bgi>.bgl,
+body.hued .bgl.palace,
 body.hued .edge,body.hued .ft,body.hued .fb,body.hued .fl,
 body.hued .pf-fl,body.hued .pf-orn,body.hued .orn,
 body.hued .cin-deco,body.hued .cin-wfl,
-body.hued #cover .spf-card,body.hued #cover .spf-edge{
+body.hued #cover .spf-card>:not(.spf-in){
   filter:hue-rotate(var(--hr,0deg)) saturate(var(--hs,1));
 }

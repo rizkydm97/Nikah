@@ -58,7 +58,7 @@
 @media (pointer:coarse){.ug-cl{animation:none}.ug-pj{filter:none}.ug-st{animation-duration:1.6s}}
 
 /* ===== sampul Tema 10 (kartu penuh) ===== */
-.spf-airterjun .spf-card{background:linear-gradient(180deg,#f1e8f6 0%,#e0cfea 34%,#cdb5d9 56%,#b79dc2 70%,#a98eb5)}
+.spf-airterjun .spf-card{background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 9%,#fff) 0%,color-mix(in srgb,var(--primary) 20%,#fff) 34%,color-mix(in srgb,var(--primary) 33%,#fff) 56%,color-mix(in srgb,var(--primary) 45%,#fff) 70%,color-mix(in srgb,var(--primary) 55%,#fff))}
 /* sampul memakai adegan dunia yang sama, ditempatkan persis seperti .pbox hero */
 .spf-box{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * 784 / 1168));aspect-ratio:784/1168;transform:translate(-50%,-50%);container-type:inline-size;overflow:hidden}
 .spf-box .pg-w{position:absolute;inset:0}
@@ -67,7 +67,7 @@
 .spf-airterjun .spf-n{color:var(--rose);text-shadow:0 1px 10px rgba(255,255,255,.9);font-family:var(--fScript);font-weight:400;text-transform:none;letter-spacing:.01em;font-size:min(13cqw,7cqh)}
 .spf-airterjun .spf-k{color:var(--pdeep);text-shadow:0 1px 8px rgba(255,255,255,.9)}
 .spf-airterjun .spf-to{text-shadow:0 1px 8px rgba(255,255,255,.9)}
-.spf-airterjun .spf-arch{background:linear-gradient(160deg,#fff,#cdb5d9)}
+.spf-airterjun .spf-arch{background:linear-gradient(160deg,#fff,color-mix(in srgb,var(--primary) 33%,#fff))}
 .spf-airterjun .spf-btn{color:#fff;background:linear-gradient(180deg,#c28ad6,#8a5aa8)}
 
 /* bagian lain undangan (Tema 10): judul galeri berwarna ungu karena latar terang */

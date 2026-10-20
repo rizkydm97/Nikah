@@ -126,10 +126,10 @@ const NAV = [
     ['gallery', '🖼️', 'Galeri'], ['story', '❤️', 'Love Story'], ['gift', '🎁', 'Wedding Gift'], ['rsvp', '✅', 'RSVP'],
     ['wishes', '💬', 'Ucapan & Doa'], ['closing', '🙏', 'Penutup'],
   ]],
-  ['Tampilan', [['theme', '🎨', 'Tema, Warna & Font'], ['sections', '↕️', 'Urutan & Tampil Section']]],
+  ['Tampilan', [['theme', '🎨', 'Tema, Warna & Font'], ['effects', '🎬', 'Animasi & Efek'], ['sections', '↕️', 'Urutan & Tampil Section']]],
   ['Data Tamu', [['d-rsvp', '📋', 'Kehadiran (RSVP)'], ['d-wishes', '📝', 'Ucapan Tamu'], ['d-gifts', '💳', 'Konfirmasi Gift'], ['links', '🔗', 'Buat Link Tamu']]],
   ['Pengaturan Lanjutan (opsional)', [
-    ['effects', '🎬', 'Animasi & Efek'], ['livingfx', '🌿', 'Sampul & Suasana Hidup'], ['scrollfx', '🖱️', 'Efek Scroll'], ['soundfx', '🔊', 'Suara & Sentuhan'],
+    ['livingfx', '🌿', 'Sampul & Suasana Hidup'], ['scrollfx', '🖱️', 'Efek Scroll'], ['soundfx', '🔊', 'Suara & Sentuhan'],
     ['scene', '🏡', 'Gambar Tema 1'], ['scene2', '🌹', 'Gambar Tema 2'],
   ], true],
   ['Lainnya', [['security', '🔒', 'Keamanan & Cadangan']]],
