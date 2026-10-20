@@ -1007,7 +1007,7 @@
       const o = c.wishes;
       return `<section class="sec bgi wishes" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.quote.bg, c.cover.photo))}${o.title ? `<h2 class="rv h-display">${esc(o.title)}</h2>` : ''}
         <div class="rv wpanel"><p class="wtxt">${br(o.text)}</p>
-        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div><div><b id="stS">0</b><span>Yang Mengucapkan</span></div></div>
+        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div></div>
         <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea>
           <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
@@ -1557,7 +1557,7 @@
     if (reset) wOff = 0;
     const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
     if (reset) list.innerHTML = '';
-    $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stS').textContent = d.senders == null ? d.total : d.senders; $('#stW').textContent = d.total;
+    $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stW').textContent = d.total;
     if (reset && !d.items.length) list.innerHTML = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
     list.insertAdjacentHTML('beforeend', d.items.map((w, i) => {
       const ph = safeUrl(w.photo), ini = esc((w.name || '?').trim().charAt(0).toUpperCase());
