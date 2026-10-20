@@ -1012,7 +1012,7 @@
           <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
         <div class="wl-head"><span>Ucapan Tamu</span><em><b id="stW">0</b> Ucapan</em></div>
-        <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
+        <div class="wl-list" id="wishList"></div><div class="wl-pager" id="wishPager" hidden></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
     },
     closing(c) {
       const o = c.closing, s = c.scene;
@@ -1512,7 +1512,11 @@
       }, sig);
       $('#wishMore').onclick = () => loadWishes(false);
       // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
-      { const wl = $('#wishList'), mb = $('#wishMore'), touch = matchMedia('(pointer:coarse)').matches; let wt = 0;
+      if (WTOUCH) {
+        $('#wishList').classList.add('paged');
+        $('#wishPager').addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b && !b.disabled) loadWishPage(+b.dataset.p, true); }, sig);
+      } else
+      { const wl = $('#wishList'), mb = $('#wishMore'), touch = false; let wt = 0;
         // HP: selama kotak digulir, semua animasi latar dijeda sementara supaya scroll tidak patah-patah
         const kick = () => { if (!touch) return; window.__wlBusy = true; document.documentElement.classList.add('wl-touch'); clearTimeout(wt); wt = setTimeout(() => { window.__wlBusy = false; document.documentElement.classList.remove('wl-touch'); }, 450); };
         ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((ev) => wl.addEventListener(ev, kick, { passive: true, signal: AC.signal }));
@@ -1550,19 +1554,37 @@
     const jam = d.toLocaleTimeString('id-ID', { ...z, hour: '2-digit', minute: '2-digit', hour12: false }).replace(':', '.');
     return `${tgl} · ${jam} WIB`;
   };
+  // Layar sentuh (HP/tablet): scroll di dalam kotak terbukti patah-patah di iOS/Android → daftar dibuat berhalaman (5 ucapan/halaman),
+  // sehingga yang bergulir hanya halaman utama (mulus). Desktop tetap memakai kotak yang bisa di-scroll.
+  const WTOUCH = matchMedia('(pointer:coarse)').matches;
+  const WPAGE = 5; let wPage = 1;
+  const wItem = (w, i) => {
+    const ph = safeUrl(w.photo), ini = esc((w.name || '?').trim().charAt(0).toUpperCase());
+    return `<div class="wl-item" style="animation-delay:${Math.min(i, 6) * 0.05}s"><div class="wl-av">${ph ? `<img src="${esc(ph)}" alt="${esc(w.name)}" decoding="async" onerror="this.remove()">` : ''}<span>${ini}</span></div><div class="wl-bd"><b>${esc(w.name)}</b><small>${esc(wDate(w.ts))}</small><p>${esc(w.message)}</p></div></div>`;
+  };
+  async function loadWishPage(p, userMove) {
+    const list = $('#wishList'), pg = $('#wishPager'); if (!list || wBusy) return; wBusy = true;
+    const d = await fetch(`/api/wishes?limit=${WPAGE}&offset=${(p - 1) * WPAGE}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
+    const pages = Math.max(1, Math.ceil(d.total / WPAGE));
+    if (p > pages) return loadWishPage(pages, userMove);
+    wPage = p;
+    $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stW').textContent = d.total;
+    list.innerHTML = d.items.length ? d.items.map(wItem).join('') : '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
+    pg.hidden = pages <= 1;
+    pg.innerHTML = `<button type="button" data-p="${p - 1}" ${p <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button><span>${p} / ${pages}</span><button type="button" data-p="${p + 1}" ${p >= pages ? 'disabled' : ''}>Berikutnya ›</button>`;
+    if (userMove) { const hd = $('.wl-head'); if (hd) { const r = hd.getBoundingClientRect(); if (r.top < 0 || r.top > innerHeight * 0.6) scrollBy({ top: r.top - 16, behavior: 'smooth' }); } }
+  }
   let wOff = 0, wBusy = false;
   async function loadWishes(reset) {
     const list = $('#wishList'); if (!list) return;
+    if (WTOUCH) return loadWishPage(reset ? 1 : wPage, false);
     if (wBusy && !reset) return; wBusy = true;
     if (reset) wOff = 0;
     const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
     if (reset) list.innerHTML = '';
     $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stW').textContent = d.total;
     if (reset && !d.items.length) list.innerHTML = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
-    list.insertAdjacentHTML('beforeend', d.items.map((w, i) => {
-      const ph = safeUrl(w.photo), ini = esc((w.name || '?').trim().charAt(0).toUpperCase());
-      return `<div class="wl-item" style="animation-delay:${Math.min(i, 6) * 0.05}s"><div class="wl-av">${ph ? `<img src="${esc(ph)}" alt="${esc(w.name)}" decoding="async" onerror="this.remove()">` : ''}<span>${ini}</span></div><div class="wl-bd"><b>${esc(w.name)}</b><small>${esc(wDate(w.ts))}</small><p>${esc(w.message)}</p></div></div>`;
-    }).join(''));
+    list.insertAdjacentHTML('beforeend', d.items.map(wItem).join(''));
     wOff += d.items.length; $('#wishMore').hidden = wOff >= d.total;
     if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // belum cukup panjang untuk di-scroll: muat lagi
   }

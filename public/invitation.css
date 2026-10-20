@@ -957,3 +957,11 @@ a{color:inherit}
 /* HP: jeda animasi lapisan latar (hanya lapisan fixed/dekorasi, bukan seluruh dokumen) saat kotak ucapan digulir */
 @media (pointer:coarse){html.wl-touch :is(.lv-light,.lv-cr,.sx-bloom,.sx-sky,.imm-fg,.imm-tap,.imm-veil,#petals,.zp,.zl,.cin-deco) *{animation-play-state:paused!important}
 .wl-item{box-shadow:0 1px 4px rgba(0,0,0,.16)!important}}
+
+/* HP: daftar ucapan berhalaman, bukan kotak scroll */
+.wl-list.paged{height:auto;overflow:visible;padding-right:0;transform:none;will-change:auto;backface-visibility:visible;touch-action:auto}
+.wl-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.wl-pager[hidden]{display:none}
+.wl-pager span{font-family:'Lora',Georgia,serif;font-size:13px;font-weight:700}
+.wl-pager button{background:none;border:1px solid color-mix(in srgb,currentColor 55%,transparent);color:inherit;padding:7px 14px;border-radius:99px;font-size:12.5px;font-weight:700;cursor:pointer}
+.wl-pager button:disabled{opacity:.35;cursor:default}
