@@ -149,8 +149,11 @@ const SCHEMA = [
     { k: 'gallery.slider', l: 'Slider foto berjalan sendiri (foto tampil utuh, landscape/portrait sesuai aslinya)', t: 'bool' },
     { k: 'gallery.sliderDir', l: 'Arah slider', t: 'select', o: [['right', 'Ke kanan'], ['left', 'Ke kiri']] },
     { k: 'gallery.sliderSpeed', l: 'Kecepatan slider', t: 'select', o: [['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat']] },
-    { k: 'gallery.layout', l: 'Tampilan foto di bawah slider', t: 'select', o: [['masonry', 'Galeri majalah — ukuran asli foto (disarankan)'], ['grid', 'Kotak 3 kolom (dipotong rapi)'], ['none', 'Tidak ada (slider saja)']] },
-    { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '3/4.3' }] },
+    { k: 'gallery.layout', l: 'Tampilan foto di bawah slider', t: 'select', o: [['masonry', 'Galeri majalah (disarankan)'], ['grid', 'Kotak rata / seragam'], ['none', 'Tidak ada (slider saja)']] },
+    { k: 'gallery.shape', l: 'Bentuk foto', t: 'select', rr: 1, o: [['', 'Ukuran asli foto (gaya majalah, tinggi bebas)'], ['3/4', 'Potret 3:4'], ['4/5', 'Potret 4:5'], ['2/3', 'Potret tinggi 2:3'], ['1/1', 'Persegi 1:1'], ['4/3', 'Lanskap 4:3'], ['3/2', 'Lanskap 3:2'], ['16/9', 'Lanskap lebar 16:9'], ['21/9', 'Panjang 21:9']] },
+    { k: 'gallery.cols', l: 'Jumlah kolom (foto berjajar ke samping)', t: 'select', rr: 1, o: [['', 'Otomatis'], ['1', '1 kolom (foto besar)'], ['2', '2 kolom'], ['3', '3 kolom'], ['4', '4 kolom']] },
+    { k: 'gallery.sliderSize', l: 'Tinggi slider', t: 'select', o: [['small', 'Kecil'], ['normal', 'Sedang'], ['large', 'Besar']] },
+    { k: 'gallery.items', l: 'Foto galeri', t: 'list', itemTitle: null, addLabel: 'Tambah foto', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '3/4.3', arKey: 'gallery.shape' }] },
   ] },
   { id: 'story', title: 'Love Story', fields: [
     { k: 'story.title', l: 'Judul (tulisan tangan)', t: 'text' }, { k: 'story.bg', l: 'Foto latar (kosongkan untuk pakai langit bawaan)', t: 'image', ar: '9/19', bg: 1 },

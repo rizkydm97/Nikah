@@ -31,7 +31,9 @@
   let toastT;
   function toast(m, bad) { const t = $('#toast'); t.textContent = m; t.classList.toggle('bad', !!bad); t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
 
-  let cfg = null, defaults = null, snap = '', current = 'general', defaultPw = false;
+  let cfg = null, defaults = null, snap = '', current = 'home', defaultPw = false, lastSaved = null;
+  // terapkan label singkat + penjelasan (ux.js)
+  SCHEMA.forEach((g) => g.fields.forEach((f) => { const fr = FRIENDLY[f.k]; if (fr) { f.l = fr[0]; if (fr[1]) f.h = fr[1]; } }));
 
   // ---------- path helper ----------
   function parentOf(root, path) {
@@ -44,19 +46,51 @@
   // ---------- dirty & preview ----------
   let pvT;
   function changed(fast) {
-    $('#dirty').hidden = JSON.stringify(cfg) === snap;
+    paintSave(JSON.stringify(cfg) !== snap);
     clearTimeout(pvT); pvT = setTimeout(sendPreview, fast === true ? 120 : 450);
+  }
+  // true bila bagian menu ini punya perubahan yang belum disimpan
+  function groupDirty(base, id) {
+    if (id === 'sections') return JSON.stringify(cfg.sections) !== JSON.stringify(base.sections);
+    const g = SCHEMA.find((x) => x.id === id); if (!g) return false;
+    const j = (v) => JSON.stringify(v);
+    return g.fields.some((f) => j(getPath(cfg, f.k)) !== j(getPath(base, f.k)) || (f.t === 'image' && j(getPath(cfg, f.k + 'Adj')) !== j(getPath(base, f.k + 'Adj'))));
+  }
+  const secOf = (id) => (cfg && cfg.sections || []).find((x) => x.id === id);
+  function paintNavOff() { document.querySelectorAll('#nav button[data-id]').forEach((b) => { const x = secOf(b.dataset.id); b.classList.toggle('off', !!x && !x.enabled); }); }
+  function moveSection(id, d) {
+    const i = cfg.sections.findIndex((x) => x.id === id), j = i + d;
+    if (i < 0 || j < 0 || j >= cfg.sections.length) return false;
+    [cfg.sections[j], cfg.sections[i]] = [cfg.sections[i], cfg.sections[j]]; changed(true); return true;
+  }
+  let okT;
+  function paintSave(dirty) {
+    const sb = $('#saveBtn'), bar = $('#savebar');
+    $('#dirty').hidden = !dirty;
+    sb.textContent = dirty ? 'Simpan' : 'Tersimpan ✓'; sb.classList.toggle('pri', dirty); sb.classList.toggle('done', !dirty);
+    if (dirty) { clearTimeout(okT); bar.classList.remove('ok'); bar.hidden = false; $('#sbMsg').textContent = 'Ada perubahan yang belum disimpan'; $('#sbSub').textContent = 'Pratinjau hanya contoh. Klik Simpan agar tampil di undangan asli.'; }
+    else if (!bar.classList.contains('ok')) bar.hidden = true;
+    paintNavOff();
+    const base = JSON.parse(snap || '{}');
+    document.querySelectorAll('#nav button[data-id]').forEach((b) => b.classList.toggle('mod', dirty && groupDirty(base, b.dataset.id)));
+  }
+  function discard() {
+    if (!confirm('Buang semua perubahan yang belum disimpan dan kembali ke versi tersimpan?')) return;
+    cfg = JSON.parse(snap); changed(true); show(current); toast('Perubahan dibuang');
   }
   const post = (msg) => { const f = $('#pvFrame'); try { f.contentWindow.postMessage(msg, location.origin); } catch { /* iframe belum siap */ } };
   function sendPreview() { post({ type: 'cfg', cfg }); }
   // pratinjau ikut melompat ke section yang sedang diedit
-  function gotoPreview() { if (current && current !== 'cover') post({ type: 'goto', id: current }); }
+  function gotoPreview(id) { const t = id || current; if (t && t !== 'cover') post({ type: 'goto', id: t }); }
+  // tunggu pratinjau selesai menerima urutan/isi baru, baru melompat ke bagian itu
+  function gotoPreviewSoon(id) { clearTimeout(gotoT); gotoT = setTimeout(() => gotoPreview(id), 700); }
+  let gotoT;
   function loadPreview() { const g = $('#pvGuest').value; $('#pvFrame').src = '/?preview=1' + ($('#pvMode').value ? '&cover=1' : '') + (g ? '&to=' + encodeURIComponent(g) : ''); }
   $('#pvFrame').addEventListener('load', () => { sendPreview(); setTimeout(gotoPreview, 700); });
   $('#pvReload').onclick = () => { try { sessionStorage.removeItem('pvCfg'); } catch { /* */ } loadPreview(); };
   $('#pvGuest').onchange = loadPreview; $('#pvMode').onchange = loadPreview;
   $('#pvToggle').onclick = () => $('#preview').classList.toggle('show');
-  $('#menuBtn').onclick = () => $('#nav').classList.toggle('open');
+  $('#menuBtn').onclick = () => { const o = $('#nav').classList.toggle('open'); $('#navBack').classList.toggle('show', o); };
   addEventListener('beforeunload', (e) => { if (cfg && JSON.stringify(cfg) !== snap) { e.preventDefault(); e.returnValue = ''; } });
   addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
 
@@ -68,13 +102,21 @@
     catch (er) { $('#loginErr').textContent = er.message; }
   });
   $('#logout').onclick = async () => { await api('/api/logout', { method: 'POST' }); location.reload(); };
-  $('#saveBtn').onclick = () => save();
+  $('#saveBtn').onclick = () => save(); $('#sbSave').onclick = () => save(); $('#sbDiscard').onclick = discard;
+  $('#navBack').onclick = () => { $('#nav').classList.remove('open'); $('#navBack').classList.remove('show'); };
 
   async function save() {
-    const b = $('#saveBtn'); b.disabled = true;
-    try { await api('/api/admin/config', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) }); snap = JSON.stringify(cfg); $('#dirty').hidden = true; toast('Tersimpan ✓ — undangan sudah diperbarui'); }
-    catch (e) { toast(e.message, true); }
-    b.disabled = false;
+    if (JSON.stringify(cfg) === snap) { toast('Tidak ada perubahan untuk disimpan'); return; }
+    const btns = [$('#saveBtn'), $('#sbSave')]; btns.forEach((b) => { b.disabled = true; b.textContent = 'Menyimpan…'; });
+    const bar = $('#savebar');
+    try {
+      await api('/api/admin/config', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
+      snap = JSON.stringify(cfg); lastSaved = new Date();
+      bar.classList.add('ok'); bar.hidden = false; $('#sbMsg').textContent = 'Tersimpan ✓ — undangan sudah diperbarui'; $('#sbSub').textContent = 'Terakhir disimpan pukul ' + lastSaved.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      clearTimeout(okT); okT = setTimeout(() => { bar.classList.remove('ok'); paintSave(JSON.stringify(cfg) !== snap); }, 6000);
+    } catch (e) { toast(e.message, true); }
+    btns.forEach((b) => { b.disabled = false; });
+    $('#sbSave').textContent = 'Simpan perubahan'; paintSave(JSON.stringify(cfg) !== snap);
   }
 
   // ---------- upload ----------
@@ -129,7 +171,7 @@
     const ch = () => { obj[key + 'Adj'] = { ...a }; (onChange || (() => changed(true)))(); };
     const A0 = { x: 50, y: 50, z: 1, fit: 'cover', o: 100 };
     let a = { ...A0, ...(obj[key + 'Adj'] || {}) };
-    const ratio = () => (f.arKey ? getPath(cfg, f.arKey) : f.ar) || '4/5';
+    const ratio = () => (f.arKey ? getPath(cfg, f.arKey) : '') || f.ar || '4/5';
     const m = $('#adj'), body = $('#adjBody'); body.textContent = '';
     const im = h('img', { src: url, alt: '', draggable: 'false' });
     const fill = h('span', { class: 'bfill', style: `background-image:url("${String(url).replace(/"/g, '')}")` });
@@ -167,7 +209,7 @@
     const bc = h('button', { type: 'button', class: 'seg', onclick: () => set({ fit: 'cover' }) }, 'Penuhi bingkai'), bu = h('button', { type: 'button', class: 'seg', onclick: () => set({ fit: 'contain', z: 1 }) }, 'Tampilkan foto utuh');
     const ctl = h('div', { class: 'adj-ctl' },
       h('div', { class: 'segs' }, bc, bu),
-      f.arKey ? h('label', {}, 'Bentuk bingkai', (() => { const fdef = SCHEMA.flatMap((g) => g.fields).find((x) => x.k === f.arKey); const sel = h('select', { onchange: (e) => { const [o, k] = parentOf(cfg, f.arKey); o[k] = e.target.value; paintStage(); changed(true); } }, (fdef ? fdef.o : []).map(([v, t]) => h('option', { value: v }, t))); sel.value = ratio(); return sel; })()) : null,
+      f.arKey ? h('label', {}, 'Bentuk bingkai', (() => { const fdef = SCHEMA.flatMap((g) => g.fields).find((x) => x.k === f.arKey); const sel = h('select', { onchange: (e) => { const [o, k] = parentOf(cfg, f.arKey); o[k] = e.target.value; paintStage(); changed(true); } }, (fdef ? fdef.o : []).map(([v, t]) => h('option', { value: v }, t))); sel.value = getPath(cfg, f.arKey) || ''; return sel; })()) : null,
       h('label', {}, h('span', {}, 'Zoom ', zv), zr),
       h('label', {}, 'Geser kiri ↔ kanan', xr),
       h('label', {}, 'Geser atas ↕ bawah', yr),
@@ -198,7 +240,7 @@
     } else if (f.t === 'select') {
       const opts = f.o.map((o) => (Array.isArray(o) ? o : [o, o]));
       const sel = h('select', { onchange: (e) => {
-        set(e.target.value);
+        set(e.target.value); if (f.rr) { changed(true); show(current); return; }
         const pr = f.preset && typeof THEME_PRESETS !== 'undefined' && THEME_PRESETS[e.target.value];
         if (pr && confirm('Terapkan juga warna & font bawaan tema ini? (bisa diubah lagi setelahnya)')) { Object.assign(cfg.theme, pr); changed(true); show(current); }
       } }, opts.map(([v, t]) => h('option', { value: v }, t)));
@@ -252,6 +294,7 @@
       wrap.append(label, h('input', { type: f.t === 'url' ? 'url' : 'text', value: get() == null ? '' : get(), oninput: (e) => set(e.target.value) }));
       if (f.t === 'url') wrap.querySelector('input').type = 'text';
     }
+    if (f.h) { const hp = h('small', { class: 'fh' }, f.h); const lb = wrap.querySelector(':scope > label:not(.sw)'); if (lb) lb.after(hp); else wrap.append(hp); }
     return wrap;
   }
 
@@ -265,7 +308,7 @@
       box.textContent = '';
       if (photoOnly) {
         const g = h('div', { class: 'gl' });
-        arr.forEach((it, i) => g.append(h('div', { class: 'g' }, h('div', { class: 'im', title: 'Klik untuk atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }), style: `background-image:url("${String(it[f.fields[0].k] || '').replace(/"/g, '')}");background-position:${(it[f.fields[0].k + 'Adj'] || {}).x ?? 50}% ${(it[f.fields[0].k + 'Adj'] || {}).y ?? 50}%;aspect-ratio:${f.fields[0].ar || '3/4'}` }),
+        arr.forEach((it, i) => g.append(h('div', { class: 'g' }, h('div', { class: 'im', title: 'Klik untuk atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }), style: `background-image:url("${String(it[f.fields[0].k] || '').replace(/"/g, '')}");background-position:${(it[f.fields[0].k + 'Adj'] || {}).x ?? 50}% ${(it[f.fields[0].k + 'Adj'] || {}).y ?? 50}%;aspect-ratio:${(f.fields[0].arKey && getPath(cfg, f.fields[0].arKey)) || f.fields[0].ar || '3/4'}` }),
           h('div', { class: 't' },
             h('span', {}, h('button', { title: 'Geser kiri', onclick: () => { if (i > 0) { [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]]; ch(); render(); } } }, '←'), h('button', { title: 'Geser kanan', onclick: () => { if (i < arr.length - 1) { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; ch(); render(); } } }, '→')),
             h('button', { title: 'Atur posisi', onclick: () => openAdjust(f.fields[0], it, f.fields[0].k, () => { ch(true); render(); }) }, '✥'),
@@ -300,29 +343,95 @@
   }
   SCHEMA.forEach((g) => attachDefaults(g.fields));
 
+  function resetFields(fields) {
+    fields.forEach((f) => {
+      const dv = getPath(defaults, f.k), [o, k] = parentOf(cfg, f.k);
+      if (dv === undefined) delete o[k]; else o[k] = clone(dv);
+      if (f.t === 'image') delete o[k + 'Adj'];
+    });
+  }
+  function sectionBar(g, sec, onToggle) {
+    const bar = h('div', { class: 'secbar' + (sec.enabled ? '' : ' off') });
+    const render = () => {
+      bar.textContent = ''; bar.classList.toggle('off', !sec.enabled);
+      const idx = cfg.sections.indexOf(sec) + 1, tot = cfg.sections.length;
+      const sw = h('label', { class: 'tgl' }, h('input', { type: 'checkbox', checked: sec.enabled, onchange: (e) => { sec.enabled = e.target.checked; changed(true); render(); onToggle(); if (sec.enabled) gotoPreviewSoon(g.id); } }), h('i'), h('b', {}, sec.enabled ? 'Ditampilkan di undangan' : 'Disembunyikan dari undangan'));
+      bar.append(sw,
+        h('div', { class: 'secpos' }, h('span', {}, `Posisi: ke-${idx} dari ${tot}`),
+          h('button', { class: 'btn sm', type: 'button', disabled: idx <= 1 || null, onclick: () => { moveSection(g.id, -1); render(); gotoPreviewSoon(g.id); } }, '↑ Naikkan'),
+          h('button', { class: 'btn sm', type: 'button', disabled: idx >= tot || null, onclick: () => { moveSection(g.id, 1); render(); gotoPreviewSoon(g.id); } }, '↓ Turunkan'),
+          h('button', { class: 'btn sm', type: 'button', onclick: () => show('sections') }, 'Atur semua urutan →')),
+        ...(sec.enabled ? [] : [h('small', { class: 'fh' }, 'Bagian ini tidak tampil di undangan. Isinya tetap tersimpan, jadi bisa diaktifkan lagi kapan saja.')]));
+    };
+    render(); return bar;
+  }
   function groupView(g) {
-    const m = h('div', {}, h('h2', {}, g.title), g.hint ? h('p', { class: 'hint' }, g.hint) : null);
-    const card = h('div', { class: 'card' });
-    g.fields.forEach((f) => { const [o, k] = parentOf(cfg, f.k); card.append(field(f, o, k)); });
-    m.append(card, h('button', { class: 'btn danger sm', onclick: () => { if (confirm(`Kembalikan seluruh pengaturan "${g.title}" ke bawaan?`)) { cfg[g.id] = clone(defaults[g.id]); changed(); show(g.id); } } }, 'Kembalikan bagian ini ke bawaan'));
+    const hint = g.hint || GROUP_HINT[g.id];
+    const m = h('div', {}, h('h2', {}, g.title), hint ? h('p', { class: 'hint' }, hint) : null);
+    const sec = secOf(g.id), cards = [];
+    if (sec) m.append(sectionBar(g, sec, () => cards.forEach((c) => c.classList.toggle('dim', !sec.enabled))));
+    const byKey = {}; g.fields.forEach((f) => { byKey[f.k] = f; });
+    const addCard = (title, fields, fold) => {
+      const card = h('div', { class: 'card' });
+      fields.forEach((f) => { const [o, k] = parentOf(cfg, f.k); card.append(field(f, o, k)); });
+      if (!title) { cards.push(card); m.append(card); return; }
+      const dt = h('details', { class: 'cardx' + (fold ? ' adv' : ''), open: fold ? null : true }, h('summary', {}, title, fold ? h('small', {}, ' — klik untuk membuka') : null), card);
+      cards.push(dt); m.append(dt);
+    };
+    const lay = LAYOUT[g.id];
+    if (lay) {
+      const used = new Set();
+      lay.forEach(([t, keys, fold]) => { const fs = keys.map((k) => byKey[k]).filter(Boolean); fs.forEach((f) => used.add(f.k)); if (fs.length) addCard(t, fs, fold); });
+      const rest = g.fields.filter((f) => !used.has(f.k)); if (rest.length) addCard('Lainnya', rest, true);
+    } else addCard(null, g.fields);
+    cards.forEach((c) => c.classList.toggle('dim', !!sec && !sec.enabled));
+    m.append(h('button', { class: 'btn danger sm', onclick: () => { if (confirm(`Kembalikan seluruh pengaturan "${g.title}" ke bawaan? (belum tersimpan sampai Anda klik Simpan)`)) { resetFields(g.fields); changed(true); show(g.id); } } }, 'Kembalikan halaman ini ke bawaan'));
     return m;
   }
 
   function sectionsView() {
-    const m = h('div', {}, h('h2', {}, 'Urutan, Tampil & Animasi Section'), h('p', { class: 'hint' }, 'Atur urutan section, tampilkan/sembunyikan, dan pilih animasi muncul tiap section saat di-scroll.'));
+    const m = h('div', {}, h('h2', {}, 'Urutan & Tampil Section'), h('p', { class: 'hint' }, 'Seret ⠿ (atau pakai ↑ ↓) untuk memindah posisi, mis. Galeri ke paling atas. Hilangkan centang untuk menyembunyikan bagian dari undangan. "Animasi" = cara bagian itu muncul saat tamu men-scroll.'));
     const wrap = h('div');
     const render = () => {
       wrap.textContent = '';
       cfg.sections.forEach((s, i) => {
-        const mv = (d) => () => { const j = i + d; if (j < 0 || j >= cfg.sections.length) return; [cfg.sections[j], cfg.sections[i]] = [cfg.sections[i], cfg.sections[j]]; changed(); render(); };
-        const sel = h('select', { onchange: (e) => { s.anim = e.target.value; changed(); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = s.anim;
-        wrap.append(h('div', { class: 'secrow' },
-          h('label', { class: 'sw' }, h('input', { type: 'checkbox', checked: s.enabled, onchange: (e) => { s.enabled = e.target.checked; changed(); } })),
-          h('span', { class: 'nm' }, (i + 1) + '. ' + (SECTION_NAMES[s.id] || s.id)), sel,
-          h('button', { class: 'ghost sm btn', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm btn', onclick: mv(1) }, '↓')));
+        const mv = (d) => () => { const j = i + d; if (j < 0 || j >= cfg.sections.length) return; [cfg.sections[j], cfg.sections[i]] = [cfg.sections[i], cfg.sections[j]]; changed(true); render(); gotoPreviewSoon(s.id); };
+        const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { s.anim = e.target.value; changed(); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = s.anim;
+        const row = h('div', { class: 'secrow' + (s.enabled ? '' : ' off'), draggable: 'true' },
+          h('span', { class: 'grip', title: 'Seret untuk memindah' }, '⠿'),
+          h('label', { class: 'sw', title: 'Tampilkan di undangan' }, h('input', { type: 'checkbox', checked: s.enabled, onchange: (e) => { s.enabled = e.target.checked; row.classList.toggle('off', !s.enabled); changed(true); if (s.enabled) gotoPreviewSoon(s.id); } })),
+          h('span', { class: 'nm' }, (i + 1) + '. ' + (SECTION_NAMES[s.id] || s.id), s.enabled ? null : h('small', { class: 'offtag' }, ' disembunyikan')),
+          SCHEMA.some((g) => g.id === s.id) ? h('button', { class: 'btn sm', onclick: () => show(s.id) }, 'Edit isi →') : null,
+          sel, h('button', { class: 'ghost sm btn', title: 'Naik', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm btn', title: 'Turun', onclick: mv(1) }, '↓'));
+        row.addEventListener('dragstart', (e) => { dragI = i; row.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(i)); } catch { /* */ } });
+        row.addEventListener('dragend', () => { row.classList.remove('drag'); wrap.querySelectorAll('.over').forEach((x) => x.classList.remove('over')); });
+        row.addEventListener('dragover', (e) => { if (dragI < 0) return; e.preventDefault(); wrap.querySelectorAll('.over').forEach((x) => x.classList.remove('over')); row.classList.add('over'); });
+        row.addEventListener('drop', (e) => { e.preventDefault(); if (dragI < 0 || dragI === i) return; const [it] = cfg.sections.splice(dragI, 1); cfg.sections.splice(i, 0, it); dragI = -1; changed(true); render(); gotoPreviewSoon(it.id); });
+        wrap.append(row);
       });
     };
-    render(); m.append(wrap, h('button', { class: 'btn sm', onclick: () => { const a = prompt('Terapkan animasi yang sama ke semua section? Ketik salah satu: ' + ANIMS.map((x) => x[0]).join(', '), 'fade-up'); if (a && ANIMS.some((x) => x[0] === a)) { cfg.sections.forEach((s) => (s.anim = a)); changed(); render(); } } }, 'Samakan animasi semua section'));
+    let dragI = -1;
+    render();
+    const all = h('select', {}, ANIMS.map(([v, t]) => h('option', { value: v }, t))); all.value = 'soft';
+    m.append(wrap, h('div', { class: 'card row', style: 'flex-wrap:wrap' }, h('b', {}, 'Samakan animasi semua section:'), all,
+      h('button', { class: 'btn sm', onclick: () => { cfg.sections.forEach((s) => (s.anim = all.value)); changed(true); render(); toast('Animasi disamakan'); } }, 'Terapkan')));
+    return m;
+  }
+
+  function homeView() {
+    const steps = CHECKS.slice(0, -1).map(([t, id, fn]) => [t, id, fn(cfg)]), last = CHECKS[CHECKS.length - 1];
+    const n = steps.filter((x) => x[2]).length, pct = Math.round(n / steps.length * 100);
+    const m = h('div', {}, h('h2', {}, 'Selamat datang 👋'), h('p', { class: 'hint' }, 'Ikuti daftar di bawah dari atas ke bawah. Menu di kiri sudah diurutkan sama seperti urutan di undangan.'));
+    m.append(h('div', { class: 'card' },
+      h('div', { class: 'prog' }, h('div', { style: `width:${pct}%` })), h('p', { class: 'hint', style: 'margin:6px 0 12px' }, `${n} dari ${steps.length} langkah terisi`),
+      steps.map(([t, id, ok]) => h('div', { class: 'chk' + (ok ? ' ok' : '') }, h('span', { class: 'cc' }, ok ? '✓' : ''), h('span', { class: 'ct' }, t), h('button', { class: 'btn sm' + (ok ? '' : ' pri'), onclick: () => show(id) }, ok ? 'Ubah' : 'Isi sekarang'))),
+      h('div', { class: 'chk' }, h('span', { class: 'cc' }, '→'), h('span', { class: 'ct' }, last[0]), h('button', { class: 'btn sm', onclick: () => show(last[1]) }, 'Buka'))));
+    m.append(h('div', { class: 'card tips' }, h('b', {}, 'Cara kerja admin'),
+      h('ol', {}, h('li', {}, 'Ubah isi di menu kiri. Tampilan kanan (Pratinjau) langsung ikut berubah — ini hanya contoh sementara.'),
+        h('li', {}, 'Bila sudah puas, klik ', h('b', {}, 'Simpan'), ' (tombol di atas atau bar di bawah layar). Barulah undangan asli berubah.'),
+        h('li', {}, 'Bagian menu yang berubah tapi belum disimpan diberi titik oranye ●.'),
+        h('li', {}, 'Salah ubah? Klik ', h('b', {}, 'Batalkan perubahan'), ' di bar bawah untuk kembali ke versi tersimpan.')),
+      h('div', { class: 'row', style: 'margin-top:10px;flex-wrap:wrap' }, h('a', { class: 'btn', href: '/', target: '_blank', rel: 'noopener' }, 'Buka undangan ↗'), h('button', { class: 'btn', onclick: () => show('theme') }, 'Ganti tema & warna'))));
     return m;
   }
 
@@ -429,20 +538,21 @@
   // ---------- navigasi ----------
   function buildNav() {
     const n = $('#nav'); n.textContent = '';
-    const add = (id, t) => n.append(h('button', { 'data-id': id, onclick: () => { show(id); n.classList.remove('open'); } }, t));
-    n.append(h('h6', {}, 'Isi Undangan')); SCHEMA.slice(0, 5).forEach((g) => add(g.id, g.title)); add('sections', 'Urutan & Animasi Section');
-    n.append(h('h6', {}, 'Konten Section')); SCHEMA.slice(5).forEach((g) => add(g.id, g.title));
-    n.append(h('h6', {}, 'Data Tamu')); add('d-rsvp', 'RSVP / Kehadiran'); add('d-wishes', 'Ucapan Tamu'); add('d-gifts', 'Konfirmasi Gift'); add('links', 'Buat Link Tamu');
-    n.append(h('h6', {}, 'Lainnya')); add('security', 'Keamanan & Cadangan');
+    const btn = (id, ico, t) => h('button', { 'data-id': id, onclick: () => { show(id); n.classList.remove('open'); $('#navBack').classList.remove('show'); } }, h('span', { class: 'ni' }, ico), h('span', { class: 'nt' }, t), h('i', { class: 'ndot', title: 'Belum disimpan' }));
+    NAV.forEach(([title, items, fold]) => {
+      if (fold) n.append(h('details', { class: 'ngrp' }, h('summary', {}, title), items.map(([id, ico, t]) => btn(id, ico, t))));
+      else n.append(h('h6', {}, title), ...items.map(([id, ico, t]) => btn(id, ico, t)));
+    });
   }
   async function show(id) {
     current = id;
     const wantCover = id === 'cover' ? '1' : ''; if ($('#pvMode').value !== wantCover && (id === 'cover' || $('#pvMode').value === '1')) { $('#pvMode').value = wantCover; if ($('#pvFrame').src) loadPreview(); }
     document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('on', b.dataset.id === id));
+    { const nb = $('#nav [data-id="' + id + '"]'), dt = nb && nb.closest('details'); if (dt) dt.open = true; }
     const main = $('#main'); main.textContent = 'Memuat…';
     try {
       const g = SCHEMA.find((x) => x.id === id);
-      const v = g ? groupView(g) : id === 'sections' ? sectionsView() : /^d-(rsvp|wishes|gifts)$/.test(id) ? await dataView(id.slice(2)) : id === 'links' ? linksView() : securityView();
+      const v = g ? groupView(g) : id === 'home' ? homeView() : id === 'sections' ? sectionsView() : /^d-(rsvp|wishes|gifts)$/.test(id) ? await dataView(id.slice(2)) : id === 'links' ? linksView() : securityView();
       main.textContent = ''; main.append(v); scrollTo(0, 0);
       gotoPreview();
     } catch (e) { main.textContent = e.message; }
@@ -457,7 +567,7 @@
       snap = JSON.stringify(cfg);
       $('#boot').hidden = true; $('#login').hidden = true; $('#app').hidden = false;
       window.__adminReady = true;
-      buildNav(); show(defaultPw ? 'security' : current); loadPreview();
+      buildNav(); paintSave(false); paintNavOff(); show(defaultPw ? 'security' : current); loadPreview();
     } catch (er) {
       window.__adminReady = true;
       if (er && er.auth) return; // sudah diarahkan ke form login

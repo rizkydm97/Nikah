@@ -205,6 +205,9 @@
     "slider": true,
     "sliderDir": "right",
     "sliderSpeed": "normal",
+    "sliderSize": "normal",
+    "cols": "",
+    "shape": "",
     "layout": "masonry"
   },
   "story": {

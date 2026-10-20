@@ -39,10 +39,11 @@
     <span class="sp"></span>
     <button id="pvToggle" class="ghost">Pratinjau</button>
     <a class="ghost" href="/" target="_blank" rel="noopener">Buka undangan ↗</a>
-    <button id="saveBtn" class="btn pri">Simpan</button>
+    <button id="saveBtn" class="btn done">Tersimpan ✓</button>
     <button id="logout" class="ghost">Keluar</button>
   </header>
   <div class="wrap">
+    <div id="navBack" class="navback"></div>
     <nav id="nav" class="nav"></nav>
     <main id="main" class="main"></main>
     <aside id="preview" class="preview">
@@ -52,6 +53,11 @@
         <button id="pvReload" class="ghost sm">↻</button></div>
       <div class="phone"><iframe id="pvFrame" title="Pratinjau"></iframe></div>
     </aside>
+  </div>
+  <div id="savebar" class="savebar" hidden>
+    <div class="sbtxt"><b id="sbMsg"></b><small id="sbSub"></small></div>
+    <a class="btn sbview" href="/" target="_blank" rel="noopener">Lihat hasilnya ↗</a>
+    <div class="sbbtns"><button id="sbDiscard" class="btn" type="button">Batalkan perubahan</button><button id="sbSave" class="btn pri" type="button">Simpan perubahan</button></div>
   </div>
 </div>
 
@@ -82,6 +88,7 @@
 })();
 </script>
 <script src="/admin/schema.js"></script>
+<script src="/admin/ux.js"></script>
 <script src="/admin/admin.js"></script>
 </body>
 </html>

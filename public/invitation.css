@@ -306,8 +306,8 @@ a{color:inherit}
 .edge .half img{width:100%;height:auto}
 .edge.bottom .half{position:absolute;left:0;bottom:0;width:100%}
 .edge.bottom .half.r,.edge.bottom .half.l{top:auto;bottom:0}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:18px}
-.grid .gi{position:relative;aspect-ratio:3/4.3;overflow:hidden;cursor:zoom-in;background:#ddd}
+.grid{display:grid;grid-template-columns:repeat(var(--gcols,3),1fr);gap:6px;margin-top:18px}
+.grid .gi{position:relative;aspect-ratio:var(--gar,3/4.3);overflow:hidden;cursor:zoom-in;background:#ddd}
 .grid .gi .phb{transition:transform .8s}
 .grid .gi:hover .phb{transform:scale(1.06)}
 .lb{position:fixed;inset:0;background:rgba(10,2,5,.94);z-index:300;display:flex;align-items:center;justify-content:center;animation:fi .3s}
@@ -670,7 +670,7 @@ a{color:inherit}
 .gtrack .sl::after{content:"";position:absolute;inset:5px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%) 200% 0/250% 100% no-repeat;animation:slShine 6s ease-in-out infinite}
 .gtrack .sl:nth-child(3n+2)::after{animation-delay:-2s}.gtrack .sl:nth-child(3n)::after{animation-delay:-4s}
 @keyframes slShine{0%,55%{background-position:200% 0}100%{background-position:-120% 0}}
-.masonry{columns:2;column-gap:10px;margin-top:8px}
+.masonry{columns:var(--gcols,2);column-gap:10px;margin-top:8px}
 .masonry .mi{break-inside:avoid;margin:0 0 10px;position:relative;cursor:zoom-in;padding:4px;background:#fff;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);box-shadow:0 8px 18px rgba(40,10,15,.16);overflow:hidden}
 .masonry .mi img{width:100%;height:auto;display:block;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
 .masonry .mi:hover img{transform:scale(1.05)}
@@ -921,3 +921,7 @@ a{color:inherit}
 
 /* ayat Arab: kolom sendiri, lebih besar, kanan-ke-kiri */
 .quote .qar{font-family:'Amiri','Scheherazade New','Traditional Arabic',serif;font-weight:400;font-size:calc(clamp(22px,6.2vw,28px) * var(--ars,1.25));line-height:2.05;direction:rtl;unicode-bidi:plaintext;margin:0 0 14px;text-shadow:0 1px 10px rgba(0,0,0,.45);word-spacing:.08em}
+
+/* ukuran slider galeri */
+.gslider[data-size=small] .gtrack .sl{height:clamp(180px,54vw,240px)}
+.gslider[data-size=large] .gtrack .sl{height:clamp(320px,96vw,460px)}

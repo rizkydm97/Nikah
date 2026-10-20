@@ -1018,11 +1018,16 @@
     const items = (o.items || []).map((g) => ({ u: safeUrl(g.image), g })).filter((x) => x.u).map((x, i) => Object.assign(x, { i }));
     if (!items.length) return '';
     const lay = o.layout || 'masonry', slider = o.slider !== false && items.length > 1;
+    // bentuk foto (mis. 3/4 potret, 4/3 lanskap, 21/9 panjang) & jumlah kolom — kosong = bawaan
+    const shape = /^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(String(o.shape || '')) ? o.shape : '';
+    const cols = ['1', '2', '3', '4'].includes(String(o.cols)) ? +o.cols : 0;
+    const uniform = lay === 'grid' || (lay === 'masonry' && !!shape); // bentuk dipilih = semua foto seragam
+    const size = ['small', 'large'].includes(o.sliderSize) ? o.sliderSize : 'normal';
     const slide = (x) => `<figure class="sl" data-lb="${x.i}"><img src="${esc(x.u)}" alt="" decoding="async" draggable="false"></figure>`;
-    const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
+    const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}" data-size="${size}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
     let rest = '';
-    if (lay === 'grid') rest = `<div class="grid">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
-    else if (lay === 'masonry') rest = `<div class="masonry">${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy"></figure>`).join('')}</div>`;
+    if (uniform) rest = `<div class="grid" style="--gcols:${cols || 3};--gar:${shape || '3/4.3'}">${items.map((x, k) => `<div class="rv gi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 3}"><div class="phb">${photo(x.g, 'image')}</div></div>`).join('')}</div>`;
+    else if (lay === 'masonry') rest = `<div class="masonry" style="--gcols:${cols || 2}"${cols ? ` data-c="${cols}"` : ''}>${items.map((x, k) => `<figure class="rv mi" data-lb="${x.i}" data-a="zoom-in" style="--i:${k % 2}"><img src="${esc(x.u)}" alt="" decoding="async" loading="lazy"></figure>`).join('')}</div>`;
     return strip + rest;
   }
   let sliderStop = null;
