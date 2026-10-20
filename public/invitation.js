@@ -1126,8 +1126,9 @@
     if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
     $$('#app section').forEach((sec, idx) => {
       if (!sec.id) sec.id = 's-' + order[idx].id;
-      const anim = order[idx] && order[idx].anim || 'fade-up';
-      $$('.rv', sec).forEach((el, i) => { if (!el.dataset.a) el.dataset.a = anim; if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', Math.min(i, 5)); });
+      const anim = order[idx] && order[idx].anim || 'fade-up', own = order[idx] && order[idx].anim;
+      // animasi pilihan admin berlaku untuk semua teks/gambar di section; hanya dekorasi khusus (bunga bloom, bingkai foto) yang tetap
+      $$('.rv', sec).forEach((el, i) => { if (!el.dataset.a || (own && !/^(bloom|pf)/.test(el.dataset.a))) el.dataset.a = anim; if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', Math.min(i, 5)); });
     });
     if (!opened || q.has('cover')) {
       $('#coverRoot').innerHTML = coverHtml(cfg);

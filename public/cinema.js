@@ -262,6 +262,13 @@
       if (e.ctrlKey || document.body.classList.contains('locked') || document.documentElement.classList.contains('locked')) return;
       if (e.target.closest && e.target.closest('textarea,select,.lb:not([hidden]),.gslider,iframe')) return;
       const lb = document.getElementById('lightbox'); if (lb && !lb.hidden) return;
+      // biarkan area yang punya scroll sendiri (daftar ucapan, dll) bergulir normal selama masih bisa digulir ke arah itu
+      for (let n = e.target; n && n !== document.body && n !== document.documentElement && n.nodeType === 1; n = n.parentElement) {
+        const oy = getComputedStyle(n).overflowY;
+        if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 1) {
+          if ((e.deltaY < 0 && n.scrollTop > 0) || (e.deltaY > 0 && n.scrollTop + n.clientHeight < n.scrollHeight - 1)) return;
+        }
+      }
       e.preventDefault();
       if (!raf) cur = target = scrollY;
       target = Math.max(0, Math.min(max(), target + e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1)));

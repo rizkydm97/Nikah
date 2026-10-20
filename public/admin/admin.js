@@ -405,7 +405,7 @@
       wrap.textContent = '';
       cfg.sections.forEach((s, i) => {
         const mv = (d) => () => { const j = i + d; if (j < 0 || j >= cfg.sections.length) return; [cfg.sections[j], cfg.sections[i]] = [cfg.sections[i], cfg.sections[j]]; changed(true); render(); gotoPreviewSoon(s.id); };
-        const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { s.anim = e.target.value; changed(); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = s.anim;
+        const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { s.anim = e.target.value; changed(true); gotoPreviewSoon(s.id); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = ANIMS.some((a) => a[0] === s.anim) ? s.anim : 'soft';
         const row = h('div', { class: 'secrow' + (s.enabled ? '' : ' off'), draggable: 'true' },
           h('span', { class: 'grip', title: 'Seret untuk memindah' }, '⠿'),
           h('label', { class: 'sw', title: 'Tampilkan di undangan' }, h('input', { type: 'checkbox', checked: s.enabled, onchange: (e) => { s.enabled = e.target.checked; row.classList.toggle('off', !s.enabled); changed(true); if (s.enabled) gotoPreviewSoon(s.id); } })),
