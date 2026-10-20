@@ -243,4 +243,4 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 - Statistik: Hadir, Tidak Hadir, **Yang Mengucapkan** (jumlah pengirim unik) dan **Total Ucapan**.
 - Tamu bisa menambah **foto profil** (dipotong persegi & dikecilkan otomatis; tampil sebagai avatar bulat di samping nama). Tiap ucapan menampilkan tanggal dan jam (WIB).
 - **PENTING (sekali saja):** jalankan ulang `supabase/schema.sql` di Supabase → SQL Editor agar kolom `photo` pada tabel `wishes` dibuat. Tanpa itu ucapan tetap terkirim, tetapi foto tidak tersimpan.
-- Perbaikan scroll HP: selama kotak ucapan disentuh/digulir, animasi latar (kanvas partikel, awan, kilau) dijeda sementara lalu jalan lagi otomatis.
+- HP/tablet: halaman menampilkan 5 ucapan terbaru + tombol "Lihat Semua Ucapan"; daftar lengkap dibuka di lembar layar-penuh yang bisa di-scroll (efek latar dimatikan selama terbuka; tombol Kembali HP menutup lembar). Desktop: kotak scroll biasa.

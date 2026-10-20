@@ -958,10 +958,19 @@ a{color:inherit}
 @media (pointer:coarse){html.wl-touch :is(.lv-light,.lv-cr,.sx-bloom,.sx-sky,.imm-fg,.imm-tap,.imm-veil,#petals,.zp,.zl,.cin-deco) *{animation-play-state:paused!important}
 .wl-item{box-shadow:0 1px 4px rgba(0,0,0,.16)!important}}
 
-/* HP: daftar ucapan berhalaman, bukan kotak scroll */
+/* HP: 5 ucapan terbaru di halaman + lembar layar-penuh yang bisa di-scroll */
 .wl-list.paged{height:auto;overflow:visible;padding-right:0;transform:none;will-change:auto;backface-visibility:visible;touch-action:auto}
-.wl-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.wl-pager{margin-top:6px}
 .wl-pager[hidden]{display:none}
-.wl-pager span{font-family:'Lora',Georgia,serif;font-size:13px;font-weight:700}
-.wl-pager button{background:none;border:1px solid color-mix(in srgb,currentColor 55%,transparent);color:inherit;padding:7px 14px;border-radius:99px;font-size:12.5px;font-weight:700;cursor:pointer}
-.wl-pager button:disabled{opacity:.35;cursor:default}
+.wl-open{display:block;width:100%;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.55);background:var(--primary);color:#fff;font-family:'Lora',Georgia,serif;font-size:13.5px;font-weight:700;cursor:pointer}
+.wl-sheet{position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;max-width:var(--col,480px);z-index:400;display:flex;flex-direction:column;background:#2b0b14;color:#fff;text-align:left}
+.t-rose .wl-sheet,.t-airterjun .wl-sheet{background:var(--tint,#fbf3f5);color:var(--ink,#2a1a1d)}
+.wls-head{flex:none;display:flex;align-items:center;gap:10px;padding:max(14px,env(safe-area-inset-top)) 14px 12px;border-bottom:1px solid color-mix(in srgb,currentColor 22%,transparent)}
+.wls-head span{flex:1;font-family:var(--fHeading);font-size:17px;font-weight:700}
+.wls-head em{font-style:normal;font-family:'Lora',Georgia,serif;font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:99px;background:color-mix(in srgb,currentColor 12%,transparent);border:1px solid color-mix(in srgb,currentColor 38%,transparent);white-space:nowrap}
+.wls-x{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid color-mix(in srgb,currentColor 40%,transparent);background:none;color:inherit;font-size:16px;cursor:pointer}
+.wls-list{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 14px calc(18px + env(safe-area-inset-bottom))}
+.wls-list .wl-item{animation:none!important}
+html.wl-sheet-on,html.wl-sheet-on body{overflow:hidden}
+html.wl-sheet-on #app{visibility:hidden}
+html.wl-sheet-on :is(.lv-cv,.lv-light,.lv-cr,.sx-bloom,.sx-sky,.imm-fg,.imm-tap,.imm-veil,.lv-perch){display:none!important}

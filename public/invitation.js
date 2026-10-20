@@ -1012,7 +1012,7 @@
           <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
         <div class="wl-head"><span>Ucapan Tamu</span><em><b id="stW">0</b> Ucapan</em></div>
-        <div class="wl-list" id="wishList"></div><div class="wl-pager" id="wishPager" hidden></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
+        <div class="wl-list" id="wishList"></div><div class="wl-pager" id="wishPager" hidden><button type="button" id="wishOpen" class="wl-open"></button></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
     },
     closing(c) {
       const o = c.closing, s = c.scene;
@@ -1514,7 +1514,7 @@
       // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
       if (WTOUCH) {
         $('#wishList').classList.add('paged');
-        $('#wishPager').addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b && !b.disabled) loadWishPage(+b.dataset.p, true); }, sig);
+        $('#wishOpen').addEventListener('click', openWishSheet, sig);
       } else
       { const wl = $('#wishList'), mb = $('#wishMore'), touch = false; let wt = 0;
         // HP: selama kotak digulir, semua animasi latar dijeda sementara supaya scroll tidak patah-patah
@@ -1554,30 +1554,54 @@
     const jam = d.toLocaleTimeString('id-ID', { ...z, hour: '2-digit', minute: '2-digit', hour12: false }).replace(':', '.');
     return `${tgl} · ${jam} WIB`;
   };
-  // Layar sentuh (HP/tablet): scroll di dalam kotak terbukti patah-patah di iOS/Android → daftar dibuat berhalaman (5 ucapan/halaman),
-  // sehingga yang bergulir hanya halaman utama (mulus). Desktop tetap memakai kotak yang bisa di-scroll.
+  // Layar sentuh (HP/tablet): scroll di dalam kotak pada halaman penuh animasi terbukti patah-patah (video: ~3 fps).
+  // Solusi: di halaman hanya tampil 5 ucapan terbaru + tombol; daftar lengkap dibuka di lembar layar-penuh yang
+  // bisa di-scroll dengan lancar (halaman & efek latar dimatikan sementara selama lembar terbuka).
   const WTOUCH = matchMedia('(pointer:coarse)').matches;
-  const WPAGE = 5; let wPage = 1;
+  const wEmpty = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
   const wItem = (w, i) => {
     const ph = safeUrl(w.photo), ini = esc((w.name || '?').trim().charAt(0).toUpperCase());
     return `<div class="wl-item" style="animation-delay:${Math.min(i, 6) * 0.05}s"><div class="wl-av">${ph ? `<img src="${esc(ph)}" alt="${esc(w.name)}" decoding="async" onerror="this.remove()">` : ''}<span>${ini}</span></div><div class="wl-bd"><b>${esc(w.name)}</b><small>${esc(wDate(w.ts))}</small><p>${esc(w.message)}</p></div></div>`;
   };
-  async function loadWishPage(p, userMove) {
-    const list = $('#wishList'), pg = $('#wishPager'); if (!list || wBusy) return; wBusy = true;
-    const d = await fetch(`/api/wishes?limit=${WPAGE}&offset=${(p - 1) * WPAGE}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
-    const pages = Math.max(1, Math.ceil(d.total / WPAGE));
-    if (p > pages) return loadWishPage(pages, userMove);
-    wPage = p;
+  async function loadWishPreview() {
+    const list = $('#wishList'), pg = $('#wishPager'), ob = $('#wishOpen'); if (!list || wBusy) return; wBusy = true;
+    const d = await fetch('/api/wishes?limit=5&offset=0', { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
     $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stW').textContent = d.total;
-    list.innerHTML = d.items.length ? d.items.map(wItem).join('') : '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
-    pg.hidden = pages <= 1;
-    pg.innerHTML = `<button type="button" data-p="${p - 1}" ${p <= 1 ? 'disabled' : ''}>‹ Sebelumnya</button><span>${p} / ${pages}</span><button type="button" data-p="${p + 1}" ${p >= pages ? 'disabled' : ''}>Berikutnya ›</button>`;
-    if (userMove) { const hd = $('.wl-head'); if (hd) { const r = hd.getBoundingClientRect(); if (r.top < 0 || r.top > innerHeight * 0.6) scrollBy({ top: r.top - 16, behavior: 'smooth' }); } }
+    list.innerHTML = d.items.length ? d.items.map(wItem).join('') : wEmpty;
+    pg.hidden = d.total <= d.items.length; ob.textContent = `Lihat Semua Ucapan (${d.total}) ›`;
+  }
+  function openWishSheet() {
+    if ($('#wlSheet')) return;
+    const sh = document.createElement('div'); sh.id = 'wlSheet'; sh.className = 'wl-sheet'; sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true');
+    sh.innerHTML = `<div class="wls-head"><span>Ucapan Tamu</span><em><b id="wlsN">${esc($('#stW').textContent)}</b> Ucapan</em><button type="button" class="wls-x" aria-label="Tutup">✕</button></div><div class="wls-list" id="wlsList"></div>`;
+    document.body.appendChild(sh);
+    const root = document.documentElement, ls = $('#wlsList');
+    let off = 0, total = Infinity, busy = false, closed = false;
+    const more = async () => {
+      if (busy || closed || off >= total) return; busy = true;
+      const d = await fetch(`/api/wishes?limit=10&offset=${off}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); busy = false;
+      if (closed || !d || !d.items) return;
+      total = d.total; $('#wlsN').textContent = d.total; off += d.items.length;
+      if (!off) ls.innerHTML = wEmpty; else ls.insertAdjacentHTML('beforeend', d.items.map(wItem).join(''));
+      if (off < total && ls.scrollHeight <= ls.clientHeight + 40) more();
+    };
+    ls.addEventListener('scroll', () => { if (ls.scrollTop + ls.clientHeight >= ls.scrollHeight - 200) more(); }, { passive: true });
+    root.classList.add('wl-sheet-on'); window.__wlBusy = true;
+    try { history.pushState({ wlSheet: 1 }, ''); } catch (e) { /* */ }
+    const onPop = () => close(true);
+    const close = (fromPop) => {
+      if (closed) return; closed = true; removeEventListener('popstate', onPop);
+      sh.remove(); root.classList.remove('wl-sheet-on'); window.__wlBusy = false;
+      if (!fromPop && history.state && history.state.wlSheet) history.back(); // tombol Kembali HP menutup lembar, bukan keluar dari undangan
+    };
+    addEventListener('popstate', onPop);
+    sh.querySelector('.wls-x').addEventListener('click', () => close(false));
+    more();
   }
   let wOff = 0, wBusy = false;
   async function loadWishes(reset) {
     const list = $('#wishList'); if (!list) return;
-    if (WTOUCH) return loadWishPage(reset ? 1 : wPage, false);
+    if (WTOUCH) return loadWishPreview();
     if (wBusy && !reset) return; wBusy = true;
     if (reset) wOff = 0;
     const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
