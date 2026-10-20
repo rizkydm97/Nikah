@@ -385,19 +385,34 @@ a{color:inherit}
 .wpanel{position:relative;isolation:isolate;max-width:420px;margin:0 auto;padding:22px 16px 18px;border:1px solid rgba(255,255,255,.38);border-radius:16px;background:rgba(55,14,22,.42)}
 .wpanel::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .wtxt{font-family:'Lora',Georgia,serif;font-weight:700;font-size:11.5px;line-height:1.6;max-width:300px;margin:0 auto}
-.stats{display:flex;gap:10px;justify-content:center;margin:16px 0 4px}
-.stats div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 14px;min-width:96px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 4px}
+.stats div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 8px;min-width:0}
 .stats b{display:block;font-family:var(--fDisplay);font-size:24px;line-height:1.1}
 .stats span{font-family:'Lora',Georgia,serif;font-size:11px}
 .wbox{margin-top:14px;padding:14px;border:1px solid rgba(255,255,255,.4);border-radius:12px}
 .wbox input,.wbox textarea{border:0;border-radius:7px;font-size:12.5px;margin-bottom:8px}
 .wbox textarea{min-height:70px;margin-bottom:0}
 .wbox .btn{width:100%;margin-top:10px;border-radius:7px}
-.wl-list{margin-top:16px;max-height:420px;overflow-y:auto;overflow-x:hidden;text-align:left;padding-right:4px;-webkit-overflow-scrolling:touch}
-.wl-item{background:rgba(255,255,255,.93);color:var(--body);border-radius:10px;padding:10px 13px;margin-bottom:9px;box-shadow:0 3px 10px rgba(0,0,0,.18);animation:fadeUp .6s both}
+.wl-list{margin-top:16px;text-align:left;height:min(62vh,430px);overflow-y:scroll;overflow-x:hidden;padding-right:4px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;transform:translateZ(0)}
+.wl-list::-webkit-scrollbar{width:5px}.wl-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.5);border-radius:9px}
+.wl-list:empty{height:auto;overflow:visible}
+/* HP: blur & animasi di dalam kotak scroll sering membuat scroll sentuh macet → dimatikan */
+@media (pointer:coarse),(max-width:700px){.wpanel::before{-webkit-backdrop-filter:none;backdrop-filter:none}.wpanel{background:rgba(55,14,22,.62)}.wl-item,.sx-wish .wl-item{animation:none!important}}
+.wl-item{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.93);color:var(--body);border-radius:10px;padding:10px 13px;margin-bottom:9px;box-shadow:0 3px 10px rgba(0,0,0,.18);animation:fadeUp .6s both}
+.wl-av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--fHeading);font-weight:700;font-size:15px}
+.wl-bd{min-width:0;flex:1}
+.wl-ph{display:block;margin-top:8px}
+.wl-ph img{display:block;max-width:100%;max-height:260px;border-radius:8px;object-fit:cover}
+.wl-empty{text-align:center;font-size:12px;opacity:.85;padding:8px 0}
+.wphoto{margin-top:8px}
+.wpick{display:flex!important;align-items:center;justify-content:center;gap:6px;margin:0!important;padding:9px 11px;border:1px dashed rgba(255,255,255,.7);border-radius:7px;color:#fff;font-size:12px!important;cursor:pointer;text-align:center}
+.wprev{position:relative;display:inline-block;margin-top:8px}
+.wprev[hidden]{display:none}
+.wprev img{display:block;max-width:100%;max-height:150px;border-radius:8px}
+.wprev button{position:absolute;top:4px;right:4px;width:26px;height:26px;border:0;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}}
 .wl-item b{font-family:var(--fHeading);font-size:13.5px;color:var(--primary)}
-.wl-item small{display:block;color:#8a7a7d;font-size:10.5px;margin-bottom:2px}
+.wl-item small{display:block;color:#8a7a7d;font-size:10.5px;margin-bottom:3px}
 .wl-item p{font-family:'Lora',Georgia,serif;font-size:12.5px;white-space:pre-wrap;word-break:break-word}
 .more{background:none;border:1px solid rgba(255,255,255,.7);color:#fff;padding:6px 18px;border-radius:99px;cursor:pointer;margin-top:6px;font-size:12px}
 
@@ -933,3 +948,5 @@ a{color:inherit}
 .mixg .gi.wide{column-span:all}
 .mixg .gi .phb{transition:transform .8s}
 .mixg .gi:hover .phb{transform:scale(1.06)}
+/* tombol foto ucapan mengikuti tema terang */
+.t-rose .wpick,.t-airterjun .wpick{color:var(--ink,#2a1a1d);border-color:color-mix(in srgb,var(--accent) 55%,transparent)}

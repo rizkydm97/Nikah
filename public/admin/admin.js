@@ -488,12 +488,12 @@
       m.append(h('div', { class: 'stats' }, h('div', {}, h('b', {}, hadir.reduce((a, r) => a + (+r.count || 1), 0)), 'Orang hadir'), h('div', {}, h('b', {}, hadir.length), 'Konfirmasi hadir'), h('div', {}, h('b', {}, rows.filter((r) => r.status === 'tidak').length), 'Tidak hadir'), h('div', {}, h('b', {}, rows.filter((r) => r.status === 'ragu').length), 'Ragu')));
     }
     m.append(h('p', { style: 'margin-bottom:10px' }, h('a', { class: 'btn sm', href: `/api/admin/${kind}.csv` }, '⬇ Unduh CSV')));
-    const cols = { rsvp: ['Nama', 'Status', 'Jumlah', 'Waktu'], wishes: ['Nama', 'Ucapan', 'Waktu'], gifts: ['Nama', 'Bank', 'Nominal', 'Ucapan', 'Bukti', 'Waktu'] }[kind];
+    const cols = { rsvp: ['Nama', 'Status', 'Jumlah', 'Waktu'], wishes: ['Nama', 'Ucapan', 'Foto', 'Waktu'], gifts: ['Nama', 'Bank', 'Nominal', 'Ucapan', 'Bukti', 'Waktu'] }[kind];
     const tb = h('table', {}, h('thead', {}, h('tr', {}, cols.map((c) => h('th', {}, c)), h('th', {}))));
     const body = h('tbody');
     rows.forEach((r) => {
       const cells = kind === 'rsvp' ? [r.name, h('span', { class: 'tag ' + r.status }, { hadir: 'Hadir', tidak: 'Tidak hadir', ragu: 'Ragu' }[r.status]), r.count || '-', fmtT(r.ts)]
-        : kind === 'wishes' ? [r.name, r.message, fmtT(r.ts)]
+        : kind === 'wishes' ? [r.name, r.message, r.photo ? h('a', { href: r.photo, target: '_blank', rel: 'noopener' }, h('img', { src: r.photo, alt: '', style: 'width:44px;height:44px;object-fit:cover;border-radius:6px;display:block' })) : '-', fmtT(r.ts)]
           : [r.name, r.bank, r.amount, r.message, r.proof ? h('a', { href: r.proof, target: '_blank', rel: 'noopener' }, 'Lihat') : '-', fmtT(r.ts)];
       const tr = h('tr', {}, cells.map((c) => h('td', {}, c)), h('td', {}, h('button', { class: 'btn danger sm', onclick: async () => { if (!confirm('Hapus data ini?')) return; await api(`/api/admin/${kind}/${r.id}`, { method: 'DELETE' }); tr.remove(); } }, 'Hapus')));
       body.append(tr);

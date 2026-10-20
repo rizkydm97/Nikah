@@ -236,3 +236,10 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 - Saklar baru: `effects.birds`, `effects.particles`, `effects.lights`, `effects.revealAnim`. Saklar lama (`clouds`, `butterflies`, `petals`, `parallax`, `sway`, `glow`) kini juga berlaku di adegan hero Tema 9–11 (sebelumnya diabaikan). Semua default menyala sehingga undangan lama tidak berubah.
 - File berubah: `invitation.js`, `themes.js`, `ungu.js`, `ungu.css`, `panggung.js`, `dayak.js`, `animmode.css` (baru), `admin/{schema,ux,admin}.js`, `admin/admin.css`, `default-config.json`, `lib/index.template.html` (`?v=64`).
 - v64 (perbaikan): putaran warna tidak lagi mengenai foto mempelai (sampul hanya memutar hiasan, latar kartu Tema 10 kini mengikuti warna utama); `.bgl` hanya latar tema (`.palace`). Menu **Animasi & Efek** dipindah ke grup "Tampilan" (sebelumnya terlipat di Pengaturan Lanjutan); file admin diberi `?v=64` agar tidak memakai cache lama.
+
+
+## Pembaruan Ucapan & Doa
+- Daftar ucapan berupa kotak setinggi layar (maks 430px) yang bisa di-scroll sendiri, 10 ucapan per muatan dan otomatis memuat berikutnya saat sampai bawah. Di HP blur dan animasi dalam kotak dimatikan agar scroll sentuh lancar.
+- Statistik: Hadir, Tidak Hadir, **Yang Mengucapkan** (jumlah pengirim unik) dan **Total Ucapan**.
+- Tamu bisa melampirkan **foto** (dikecilkan otomatis di browser). Tiap ucapan menampilkan tanggal dan jam (WIB).
+- **PENTING (sekali saja):** jalankan ulang `supabase/schema.sql` di Supabase → SQL Editor agar kolom `photo` pada tabel `wishes` dibuat. Tanpa itu ucapan tetap terkirim, tetapi foto tidak tersimpan.

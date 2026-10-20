@@ -18,8 +18,11 @@ create table if not exists public.wishes (
   id text primary key,
   name text not null,
   message text not null,
+  photo text not null default '',
   ts bigint not null
 );
+-- Untuk database yang sudah ada (aman dijalankan berulang):
+alter table public.wishes add column if not exists photo text not null default '';
 
 create table if not exists public.gifts (
   id text primary key,

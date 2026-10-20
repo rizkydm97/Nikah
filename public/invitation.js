@@ -1007,9 +1007,11 @@
       const o = c.wishes;
       return `<section class="sec bgi wishes" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.quote.bg, c.cover.photo))}${o.title ? `<h2 class="rv h-display">${esc(o.title)}</h2>` : ''}
         <div class="rv wpanel"><p class="wtxt">${br(o.text)}</p>
-        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div></div>
-        <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea><button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
-        <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat 5 ucapan lagi</button></div></div></section>`;
+        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div><div><b id="stS">0</b><span>Yang Mengucapkan</span></div><div><b id="stW">0</b><span>Total Ucapan</span></div></div>
+        <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea>
+          <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto">✕</button></div></div>
+          <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
+        <div class="wl-list" id="wishList"></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
     },
     closing(c) {
       const o = c.closing, s = c.scene;
@@ -1491,29 +1493,66 @@
     // wishes
     const wf = $('#wishForm');
     if (wf) {
+      let photoData = '';
+      const pin = $('#wishPhoto'), prev = $('#wishPrev'), pimg = $('#wishPrevImg'), ptxt = $('#wishPhotoTxt');
+      const clearPhoto = () => { photoData = ''; pin.value = ''; prev.hidden = true; pimg.removeAttribute('src'); ptxt.textContent = 'Tambah foto (opsional)'; };
+      pin.addEventListener('change', async () => {
+        const f = pin.files && pin.files[0]; if (!f) return clearPhoto();
+        const m = $('#wishMsg'); m.className = 'msg'; m.textContent = 'Memproses foto…';
+        try { photoData = await shrinkImage(f, 1000, 0.82); pimg.src = photoData; prev.hidden = false; ptxt.textContent = 'Ganti foto'; m.textContent = ''; }
+        catch (e) { clearPhoto(); m.className = 'msg err'; m.textContent = 'Foto tidak bisa dibaca. Gunakan JPG, PNG, atau WebP.'; }
+      }, sig);
+      $('#wishPrevX').addEventListener('click', clearPhoto, sig);
       wf.addEventListener('submit', async (e) => {
-        e.preventDefault(); const m = $('#wishMsg'); m.className = 'msg'; m.textContent = 'Mengirim…';
-        const r = await post('/api/wishes', { name: wf.name.value, message: wf.message.value });
-        if (r.ok) { m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
+        e.preventDefault(); const m = $('#wishMsg'), btn = wf.querySelector('button[type=submit]'); m.className = 'msg'; m.textContent = 'Mengirim…'; btn.disabled = true;
+        const r = await post('/api/wishes', { name: wf.name.value, message: wf.message.value, photoData });
+        btn.disabled = false;
+        if (r.ok) { m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; clearPhoto(); loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
       }, sig);
       $('#wishMore').onclick = () => loadWishes(false);
-      // 5 ucapan per muatan; sisanya otomatis dimuat saat scroll sampai bawah (HP: scroll halaman, desktop: scroll di dalam daftar)
+      // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
       { const wl = $('#wishList'), mb = $('#wishMore');
-        wl.addEventListener('scroll', () => { if (!mb.hidden && wl.scrollTop + wl.clientHeight >= wl.scrollHeight - 80) loadWishes(false); }, { passive: true, signal: AC.signal }); }
+        wl.addEventListener('scroll', () => { if (!mb.hidden && wl.scrollTop + wl.clientHeight >= wl.scrollHeight - 120) loadWishes(false); }, { passive: true, signal: AC.signal }); }
       loadWishes(true);
     }
   }
+  // kecilkan foto di browser (maks sisi 1000px, JPEG) supaya cepat terkirim & hemat penyimpanan
+  function shrinkImage(file, max, q) {
+    return new Promise((ok, no) => {
+      if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) return no(new Error('type'));
+      const url = URL.createObjectURL(file), im = new Image();
+      im.onload = () => {
+        URL.revokeObjectURL(url);
+        const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+        const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+        const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h); cx.drawImage(im, 0, 0, w, h);
+        ok(cv.toDataURL('image/jpeg', q));
+      };
+      im.onerror = () => { URL.revokeObjectURL(url); no(new Error('decode')); };
+      im.src = url;
+    });
+  }
+  const wDate = (ts) => {
+    const d = new Date(+ts), z = { timeZone: 'Asia/Jakarta' };
+    const tgl = d.toLocaleDateString('id-ID', { ...z, day: 'numeric', month: 'long', year: 'numeric' });
+    const jam = d.toLocaleTimeString('id-ID', { ...z, hour: '2-digit', minute: '2-digit', hour12: false }).replace(':', '.');
+    return `${tgl} · ${jam} WIB`;
+  };
   let wOff = 0, wBusy = false;
   async function loadWishes(reset) {
     const list = $('#wishList'); if (!list) return;
     if (wBusy && !reset) return; wBusy = true;
     if (reset) wOff = 0;
-    const d = await fetch(`/api/wishes?limit=5&offset=${wOff}`).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
+    const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
     if (reset) list.innerHTML = '';
-    $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak;
-    list.insertAdjacentHTML('beforeend', d.items.map((w, i) => `<div class="wl-item" style="animation-delay:${i * 0.06}s"><b>${esc(w.name)}</b><small>${esc(new Date(w.ts).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }))}</small><p>${esc(w.message)}</p></div>`).join(''));
+    $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stS').textContent = d.senders == null ? d.total : d.senders; $('#stW').textContent = d.total;
+    if (reset && !d.items.length) list.innerHTML = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
+    list.insertAdjacentHTML('beforeend', d.items.map((w, i) => {
+      const ph = safeUrl(w.photo);
+      return `<div class="wl-item" style="animation-delay:${Math.min(i, 6) * 0.05}s"><div class="wl-av">${esc((w.name || '?').trim().charAt(0).toUpperCase())}</div><div class="wl-bd"><b>${esc(w.name)}</b><small>${esc(wDate(w.ts))}</small><p>${esc(w.message)}</p>${ph ? `<a class="wl-ph" href="${esc(ph)}" target="_blank" rel="noopener"><img src="${esc(ph)}" alt="Foto dari ${esc(w.name)}" loading="lazy" decoding="async"></a>` : ''}</div></div>`;
+    }).join(''));
     wOff += d.items.length; $('#wishMore').hidden = wOff >= d.total;
-    if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // isi belum cukup panjang untuk di-scroll: muat lagi
+    if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // belum cukup panjang untuk di-scroll: muat lagi
   }
   async function post(url, body) {
     try { const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); return await r.json(); } catch (e) { return { error: 'Koneksi bermasalah' }; }

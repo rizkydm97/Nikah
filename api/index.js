@@ -68,14 +68,18 @@ async function route(req, res, url) {
   if (m === 'GET' && p === '/api/config') return send(res, 200, await C.getConfig(), { 'Cache-Control': 'no-cache' });
 
   if (m === 'GET' && p === '/api/wishes') {
-    const limit = Math.min(+url.searchParams.get('limit') || 20, 100), offset = Math.max(+url.searchParams.get('offset') || 0, 0);
-    const [w, r] = await Promise.all([
-      sb().from('wishes').select('id,name,message,ts', { count: 'exact' }).order('ts', { ascending: false }).range(offset, offset + limit - 1),
+    const limit = Math.min(+url.searchParams.get('limit') || 10, 100), offset = Math.max(+url.searchParams.get('offset') || 0, 0);
+    const page = async (cols) => sb().from('wishes').select(cols, { count: 'exact' }).order('ts', { ascending: false }).range(offset, offset + limit - 1);
+    let w = await page('id,name,message,photo,ts');
+    if (w.error) w = await page('id,name,message,ts'); // kolom photo belum dibuat (belum jalankan schema.sql terbaru)
+    const [r, n] = await Promise.all([
       sb().from('rsvp').select('status,count').limit(10000),
+      sb().from('wishes').select('name').limit(10000),
     ]);
-    const items = must(w), rs = must(r);
+    const items = must(w), rs = must(r), names = must(n);
+    const senders = new Set(names.map((x) => String(x.name || '').trim().toLowerCase().replace(/\s+/g, ' '))).size;
     return send(res, 200, {
-      total: w.count || 0, items,
+      total: w.count || 0, senders, items: items.map((x) => ({ photo: '', ...x })),
       hadir: rs.filter((x) => x.status === 'hadir').reduce((a, x) => a + (+x.count || 1), 0),
       tidak: rs.filter((x) => x.status === 'tidak').length,
     }, { 'Cache-Control': 'no-store' });
@@ -92,7 +96,22 @@ async function route(req, res, url) {
     if (limited(req, 'wish', 10, 600000)) return send(res, 429, { error: 'Terlalu banyak permintaan' });
     const b = await readJson(req), name = clean(b.name, 80), message = clean(b.message, 600);
     if (name.length < 2 || message.length < 2) return send(res, 400, { error: 'Nama dan ucapan minimal 2 karakter' });
-    must(await sb().from('wishes').insert({ id: uid(), name, message, ts: Date.now() }));
+    let photo = '';
+    if (b.photoData) {
+      const mt = /^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=]+)$/.exec(b.photoData);
+      if (!mt) return send(res, 400, { error: 'Format foto tidak didukung (gunakan JPG, PNG, atau WebP)' });
+      const buf = Buffer.from(mt[2], 'base64');
+      if (buf.length > MAX_PROOF) return send(res, 413, { error: 'Foto maksimal 2,5MB' });
+      const ext = mt[1] === 'png' ? '.png' : mt[1] === 'webp' ? '.webp' : '.jpg';
+      const key = `wish/${uid()}${ext}`;
+      must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: `image/${mt[1] === 'jpg' ? 'jpeg' : mt[1]}`, upsert: false }));
+      photo = C.publicUrl(key);
+    }
+    const row = { id: uid(), name, message, ts: Date.now() };
+    if (photo) {
+      const r = await sb().from('wishes').insert({ ...row, photo });
+      if (r.error) must(await sb().from('wishes').insert(row)); // kolom photo belum ada: simpan ucapan tanpa foto
+    } else must(await sb().from('wishes').insert(row));
     return send(res, 200, { ok: true });
   }
   if (m === 'POST' && p === '/api/gift') {
@@ -176,7 +195,7 @@ async function route(req, res, url) {
     if (m === 'GET' && !id) {
       const rows = await listAll(TABLES[name]);
       if (isCsv || url.searchParams.get('format') === 'csv') {
-        const cols = { rsvp: ['name', 'status', 'count', 'time'], wishes: ['name', 'message', 'time'], gifts: ['name', 'bank', 'amount', 'message', 'proof', 'time'] }[name];
+        const cols = { rsvp: ['name', 'status', 'count', 'time'], wishes: ['name', 'message', 'photo', 'time'], gifts: ['name', 'bank', 'amount', 'message', 'proof', 'time'] }[name];
         const data = rows.map((r) => ({ ...r, time: new Date(+r.ts).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }) }));
         return send(res, 200, csv(data, cols), { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="${name}.csv"` });
       }
