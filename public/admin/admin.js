@@ -224,7 +224,17 @@
       m.querySelector('[data-close]').onclick = () => close(null); m.onclick = (e) => { if (e.target === m) close(null); };
       g.textContent = '';
       if (!items.length) g.textContent = 'Belum ada file yang diunggah.';
-      items.forEach((u) => g.append(h('button', { onclick: () => close(u.url) }, filter === 'audio' ? h('div', { class: 'im' }, '♪') : filter === 'video' ? h('div', { class: 'im' }, '▶') : h('div', { class: 'im', style: `background-image:url("${u.url}")` }), h('small', {}, u.url.split('/').pop()))));
+      items.forEach((u) => {
+        const fname = u.url.split('/').pop().split('?')[0], isV = /\.(mp4|webm|mov|m4v)$/i.test(fname), isA = /\.(mp3|m4a|ogg|wav)$/i.test(fname);
+        const card = h('div', { class: 'libitem' },
+          h('button', { onclick: () => close(u.url) }, isA ? h('div', { class: 'im' }, '♪') : isV ? h('div', { class: 'im' }, '▶') : h('div', { class: 'im', style: `background-image:url("${u.url}")` }), h('small', {}, fname)),
+          h('button', { class: 'libdel', title: 'Hapus file ini', onclick: async (e) => {
+            e.stopPropagation();
+            if (!confirm('Hapus file ini dari Pustaka?\n' + fname + '\n\nBila masih dipakai di undangan, gambar/video-nya akan hilang.')) return;
+            try { await api('/api/admin/upload-delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: fname }) }); card.remove(); toast('File dihapus ✓'); } catch (er) { toast(er.message || 'Gagal menghapus', true); }
+          } }, '🗑'));
+        g.append(card);
+      });
     });
   }
 

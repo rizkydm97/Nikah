@@ -248,3 +248,7 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .secrow .grip{cursor:grab;font-size:18px;color:var(--mu);padding:0 4px;user-select:none}
 .secrow.drag{opacity:.4}
 .secrow.over{box-shadow:0 -3px 0 var(--p)}
+.libitem{position:relative}
+.libitem>button:first-child{width:100%}
+.libitem .libdel{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:14px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0}
+.libitem .libdel:hover{background:#c0392b}

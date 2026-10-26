@@ -184,6 +184,13 @@ async function route(req, res, url) {
     const d = must(await sb().storage.from(BUCKET).createSignedUploadUrl(key));
     return send(res, 200, { uploadUrl: d.signedUrl, url: C.publicUrl(key) });
   }
+  // Hapus file dari Pustaka (Supabase Storage)
+  if (m === 'POST' && p === '/api/admin/upload-delete') {
+    const b = await readJson(req), name = String(b.name || '').split('?')[0];
+    if (!/^[a-zA-Z0-9._-]{1,200}$/.test(name)) return send(res, 400, { error: 'Nama file tidak valid' });
+    must(await sb().storage.from(BUCKET).remove([name]));
+    return send(res, 200, { ok: true });
+  }
   if (m === 'GET' && p === '/api/admin/uploads') {
     const files = must(await sb().storage.from(BUCKET).list('', { limit: 1000, sortBy: { column: 'created_at', order: 'desc' } }));
     return send(res, 200, files.filter((f) => f.id).map((f) => ({ url: C.publicUrl(f.name), ts: Date.parse(f.created_at) || 0 })));
