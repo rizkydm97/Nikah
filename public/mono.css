@@ -227,3 +227,41 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
    ===================================================================== */
 body.t-mono{background:var(--sideBg,#e6e6e6)}
 .t-mono #loader{background:#fff}
+
+
+/* =====================================================================
+   PERBAIKAN v4 — bingkai BULAT & mode LAYAR PENUH (foto/video tanpa bingkai, nama di bawah)
+   ===================================================================== */
+.mono-hero{position:relative}
+/* bulat */
+.mh-frame.circle{aspect-ratio:1;width:min(78%,calc(46svh))}
+.mh-frame.circle .mh-ph{inset:5.5%;border-radius:50%}
+.mh-frame.circle::before,.mh-frame.circle::after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:2}
+.mh-frame.circle::before{inset:0;border:1px solid #1a1a1a}
+.mh-frame.circle::after{inset:3%;border:1px solid rgba(0,0,0,.35)}
+.mh-frame.circle .mh-fl.a{left:-20%;top:-10%;height:70%}
+.mh-frame.circle .mh-fl.b{right:-20%;bottom:-8%;width:46%}
+/* layar penuh tanpa bingkai */
+.mono-hero.full{color:#fff;background:#0d0d0d}
+.mono-hero.full::before{display:none}
+.mono-hero.full .mh-in{position:absolute;inset:0;width:100%;padding:6svh 0 5svh;justify-content:flex-end}
+.mono-hero.full .mh-in>*:not(.mh-frame){position:relative;z-index:3}
+.mono-hero.full .mh-frame{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;z-index:0}
+.mono-hero.full .mh-frame::before,.mono-hero.full .mh-frame::after{display:none}
+.mono-hero.full .mh-ph{inset:0;border-radius:0;background:#111}
+.mono-hero.full .mh-ph::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%)}
+.mono-hero.full .mh-ph .mn-yt{width:max(100%,177.78svh);height:max(100%,56.25vw);min-width:0;min-height:0;aspect-ratio:auto}
+.mono-hero.full .mh-mono{color:#fff}
+.mono-hero.full .mh-k{position:absolute;top:6svh;left:0;right:0;color:#fff}
+.mono-hero.full .mh-names{color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.5);margin-top:0}
+.mono-hero.full .mh-amp{color:rgba(255,255,255,.85)}
+.mono-hero.full .mh-orn{filter:invert(1) brightness(1.2);opacity:.9}
+.mono-hero.full .mh-date{color:#fff}
+.mono-hero.full .mh-tag{color:rgba(255,255,255,.8)}
+.mono-hero.full .mh-scroll{background:rgba(255,255,255,.25)}.mono-hero.full .mh-scroll i{background:#fff}
+.mono-hero.full.play .mh-frame{animation:mnFade 1.4s ease .1s both}
+@keyframes mnFade{from{opacity:0}to{opacity:1}}
+.mono-hero.full .mh-in>.mh-k{position:absolute;top:6svh;left:0;right:0}
+.mono-hero.full .mh-ph::after{background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 24%,rgba(0,0,0,.05) 38%,rgba(0,0,0,.88) 100%)}
+.mh-frame.circle .mh-fl.a{left:-9%;top:-8%;height:62%}
+.mh-frame.circle .mh-fl.b{right:-12%;bottom:-6%;width:42%}

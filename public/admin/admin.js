@@ -121,10 +121,31 @@
 
   // ---------- upload ----------
   function pickFile(accept, multiple) {
-    return new Promise((res) => { const i = h('input', { type: 'file', accept, multiple: multiple || null }); i.onchange = () => res([...i.files]); i.click(); });
+    return new Promise((res) => { if (/image\/\*/.test(accept)) accept += ',.heic,.heif,.avif,.bmp,.tif,.tiff,.jfif'; if (/video\/\*/.test(accept)) accept += ',.mov,.m4v,.mkv,.avi,.3gp,.wmv,.mts'; const i = h('input', { type: 'file', accept, multiple: multiple || null }); i.onchange = () => res([...i.files]); i.click(); });
   }
   // Kecilkan foto besar. PNG/gambar transparan -> WebP (transparansi tetap, ukuran jauh lebih kecil)
+  const IMG_EXT = /\.(jpe?g|png|webp|gif|svg|ico|heic|heif|avif|bmp|tiff?|jfif|jpe|dng)$/i;
+  const isImageFile = (f) => /^image\//.test(f.type) || IMG_EXT.test(f.name);
+  const IMG_DIRECT = /\.(jpe?g|png|webp|gif|svg|ico)$/i; // format yang langsung dikenal server
+  // format lain (HEIC iPhone, AVIF, BMP, TIFF, dll) -> diubah ke JPEG lewat browser
+  async function toJpeg(file) {
+    let bmp;
+    try { bmp = await createImageBitmap(file); }
+    catch (e) {
+      try { // cadangan: dekode lewat elemen <img>
+        const u = URL.createObjectURL(file);
+        bmp = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('x')); im.src = u; });
+      } catch (e2) { throw new Error('Format foto "' + (file.name.split('.').pop() || '?').toUpperCase() + '" belum bisa dibaca browser ini. Untuk HEIC (iPhone): unggah lewat Safari, atau di iPhone pilih Pengaturan → Kamera → Format → "Paling Kompatibel", atau kirim fotonya lewat WhatsApp dulu.'); }
+    }
+    const w = bmp.naturalWidth || bmp.width, h = bmp.naturalHeight || bmp.height, sc = Math.min(1, 2000 / Math.max(w, h));
+    const c = document.createElement('canvas'); c.width = Math.round(w * sc); c.height = Math.round(h * sc);
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.9));
+    if (!blob) throw new Error('Foto gagal dikonversi. Coba format JPG/PNG.');
+    return new File([blob], file.name.replace(/\.[^.]+$/, '').replace(/[^\w.-]+/g, '_') + '.jpg', { type: 'image/jpeg' });
+  }
   async function shrink(file) {
+    if (isImageFile(file) && !IMG_DIRECT.test(file.name)) file = await toJpeg(file);
     if (!/^image\/(jpeg|webp|png)$/.test(file.type) || file.size < 700e3) return file;
     try {
       const bmp = await createImageBitmap(file); const max = 2000; const sc = Math.min(1, max / Math.max(bmp.width, bmp.height));

@@ -101,7 +101,7 @@ const SCHEMA = [
   { id: 'mono', title: 'Tema 12 — Foto/Video Monokrom', hint: 'Dipakai bila "Tema undangan" = Tema 12. Cover & bingkai bisa diisi FOTO atau VIDEO (unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube/URL .mp4). Teks cover diisi di menu Cover & Pembuka.', fields: [
     { k: 'mono.coverMedia', l: 'Foto / video cover (layar penuh)', t: 'media', ar: '9/19' },
     { k: 'mono.frameMedia', l: 'Foto / video di dalam bingkai (halaman setelah undangan dibuka)', t: 'media', ar: '636/1007' },
-    { k: 'mono.frameStyle', l: 'Bentuk bingkai halaman setelah undangan dibuka', t: 'select', o: [['rect', 'Kotak — mawar di keempat sudut (bisa foto atau video)'], ['oval', 'Oval — bunga atas & bawah']] },
+    { k: 'mono.frameStyle', l: 'Bentuk bingkai halaman setelah undangan dibuka', t: 'select', o: [['rect', 'Kotak — mawar di keempat sudut (bisa foto atau video)'], ['oval', 'Oval — bunga atas & bawah'], ['circle', 'Bulat — lingkaran penuh dengan bunga'], ['full', 'Layar penuh — foto/VIDEO tanpa bingkai, nama di bawah']] },
     { k: 'mono.grayPhoto', l: 'Ubah foto/video jadi hitam putih (biarkan mati agar foto tampil berwarna; hanya tampilan undangan yang hitam putih)', t: 'bool' },
   ] },
   { id: 'scene2', title: 'Dekorasi Tema 2 (Rose Garden)', hint: 'Gambar khusus Tema 2. Dipakai bila "Tema undangan" = Tema 2. Ganti dengan PNG/WebP/SVG transparan bila ingin.', fields: [
