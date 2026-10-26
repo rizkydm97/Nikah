@@ -373,6 +373,8 @@
     "coverMedia": "",
     "frameMedia": "",
     "frameStyle": "rect",
+    "giftBg": "",
+    "rsvpBg": "",
     "grayPhoto": false
   }
 }

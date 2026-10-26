@@ -105,6 +105,8 @@ const SCHEMA = [
     { k: 'cover.textSpeed', l: 'Kecepatan animasi teks masuk di cover (Tema 12)', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
     { k: 'hero.textSpeed', l: 'Kecepatan animasi teks masuk di pembuka (Tema 12)', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
     { k: 'closing.textSpeed', l: 'Kecepatan animasi teks masuk di penutup (Tema 12)', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
+    { k: 'mono.giftBg', l: 'Latar Wedding Gift — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/19', bg: 1 },
+    { k: 'mono.rsvpBg', l: 'Latar RSVP — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/16', bg: 1 },
     { k: 'mono.grayPhoto', l: 'Ubah foto/video jadi hitam putih (biarkan mati agar foto tampil berwarna; hanya tampilan undangan yang hitam putih)', t: 'bool' },
   ] },
   { id: 'scene2', title: 'Dekorasi Tema 2 (Rose Garden)', hint: 'Gambar khusus Tema 2. Dipakai bila "Tema undangan" = Tema 2. Ganti dengan PNG/WebP/SVG transparan bila ingin.', fields: [
@@ -181,13 +183,15 @@ const SCHEMA = [
     { k: 'story.items', l: 'Cerita', t: 'list', itemTitle: 'title', addLabel: 'Tambah cerita', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '4/5' }, { k: 'title', l: 'Judul', t: 'text' }, { k: 'text', l: 'Cerita', t: 'area' }] },
   ] },
   { id: 'gift', title: 'Wedding Gift', fields: [
-    { k: 'gift.bg', l: 'Foto latar', t: 'image', ar: '9/19', bg: 1 }, { k: 'gift.title', l: 'Judul (kata pertama tulisan tangan, sisanya huruf biasa)', t: 'text' }, { k: 'gift.intro', l: 'Teks pengantar', t: 'area' }, { k: 'gift.copyBank', l: 'Teks tombol salin rekening', t: 'text' },
+    { k: 'mono.giftBg', l: 'Latar Wedding Gift — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/19', bg: 1 },
+    { k: 'gift.bg', l: 'Foto latar (Tema 1-11; Tema 12 memakai kolom "Latar Wedding Gift — khusus Tema 12")', t: 'image', ar: '9/19', bg: 1 }, { k: 'gift.title', l: 'Judul (kata pertama tulisan tangan, sisanya huruf biasa)', t: 'text' }, { k: 'gift.intro', l: 'Teks pengantar', t: 'area' }, { k: 'gift.copyBank', l: 'Teks tombol salin rekening', t: 'text' },
     { k: 'gift.banks', l: 'Rekening', t: 'list', itemTitle: 'bank', addLabel: 'Tambah rekening', fields: [{ k: 'bank', l: 'Nama bank / e-wallet', t: 'text' }, { k: 'number', l: 'Nomor rekening', t: 'text' }, { k: 'name', l: 'Atas nama', t: 'text' }] },
     { k: 'gift.addressTitle', l: 'Judul kirim kado', t: 'text' }, { k: 'gift.addressName', l: 'Nama penerima', t: 'text' }, { k: 'gift.address', l: 'Alamat kirim kado (kosongkan untuk menyembunyikan)', t: 'area' }, { k: 'gift.copyAddress', l: 'Teks tombol salin alamat', t: 'text' },
     { k: 'gift.formEnabled', l: 'Tampilkan form konfirmasi gift', t: 'bool' }, { k: 'gift.sendWhatsapp', l: 'Buka WhatsApp admin setelah konfirmasi gift (isi nomor di Umum)', t: 'bool' }, { k: 'gift.formTitle', l: 'Judul form (kata pertama tulisan tangan)', t: 'text' }, { k: 'gift.formText', l: 'Teks form', t: 'area' }, { k: 'gift.formButton', l: 'Teks tombol form', t: 'text' },
   ] },
   { id: 'rsvp', title: 'RSVP', fields: [
-    { k: 'rsvp.bg', l: 'Foto latar', t: 'image', ar: '9/16', bg: 1 }, { k: 'rsvp.photo', l: 'Foto di samping judul', t: 'image', ar: '1/1' }, { k: 'rsvp.title', l: 'Judul (dipecah dua baris, mis. RS / VP)', t: 'text' }, { k: 'rsvp.text', l: 'Teks', t: 'area' },
+    { k: 'mono.rsvpBg', l: 'Latar RSVP — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/16', bg: 1 },
+    { k: 'rsvp.bg', l: 'Foto latar (Tema 1-11; Tema 12 memakai kolom "Latar RSVP — khusus Tema 12")', t: 'image', ar: '9/16', bg: 1 }, { k: 'rsvp.photo', l: 'Foto di samping judul', t: 'image', ar: '1/1' }, { k: 'rsvp.title', l: 'Judul (dipecah dua baris, mis. RS / VP)', t: 'text' }, { k: 'rsvp.text', l: 'Teks', t: 'area' },
     { k: 'rsvp.maxGuests', l: 'Maksimal jumlah tamu per undangan', t: 'number', min: 1, max: 20 }, { k: 'rsvp.button', l: 'Teks tombol', t: 'text' },
     { k: 'rsvp.thanks', l: 'Pesan setelah submit', t: 'text' }, { k: 'rsvp.sendWhatsapp', l: 'Buka WhatsApp admin setelah submit', t: 'bool' },
   ] },

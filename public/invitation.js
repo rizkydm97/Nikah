@@ -977,6 +977,19 @@
   const hasWA = (c) => !!String(c.general.whatsapp || '').replace(/\D/g, '');
   const heartDiv = `<div class="divider">${ICON.heart}</div>`;
   // kartu kapsul berbingkai bunga: lengkung atas/bawah + sisi yang diulang (tidak pernah melar)
+  // Tema 12: latar Wedding Gift & RSVP khusus tema (terang, hiasan mengikuti bentuk pembuka: kotak / oval / bulat).
+  // Bila admin mengisi foto latar (mono.giftBg / mono.rsvpBg, atau foto latar bagian itu sendiri), foto itu yang dipakai.
+  const MNA = '/assets/mono/';
+  function monoDeco(c) {
+    const st = (c.mono && c.mono.frameStyle) || 'rect';
+    if (st === 'rect') return `<div class="mn-dec rect" aria-hidden="true">${['tl', 'tr', 'bl', 'br'].map((q) => `<img class="mn-dc ${q}" src="${MNA}rose-corner.webp" alt="" decoding="async">`).join('')}</div>`;
+    return `<div class="mn-dec sprig" aria-hidden="true"><img class="mn-dc a" src="${MNA}sprig-tall.webp" alt="" decoding="async"><img class="mn-dc b" src="${MNA}sprig-arc.webp" alt="" decoding="async"></div>`;
+  }
+  function monoSecBg(c, o, key) { // -> { html, style } bila ada foto latar buatan admin; null = pakai latar bawaan tema
+    const m = c.mono || {}, own = safeUrl(m[key]), u = own || safeUrl(o.bg);
+    if (!u || /\/assets\/default\//.test(u)) return null;
+    return own ? { html: bgl(m, key), style: ov(m, key) } : { html: bgl(o, 'bg'), style: ov(o, 'bg') };
+  }
   const capsule = (cls, inner) => `<div class="rv cap ${cls}"><div class="fr-side"></div><img class="fr-arc t" src="${link(C.scene.frameArc)}" alt=""><img class="fr-arc b" src="${link(C.scene.frameArc)}" alt=""><div class="cap-in ${cls === 'rosecap' ? 'gf' : 'ev'}">${inner}</div></div>`;
 
   const R = {
@@ -1045,12 +1058,14 @@
       const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}`);
       const form = o.formEnabled ? capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
         <form class="fm" id="giftForm"><label>Nama :</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Nama Bank :</label><input name="bank" maxlength="60" placeholder="Nama Bank"><label>Nominal :</label><input name="amount" maxlength="40" inputmode="numeric" placeholder="Nominal"><label>Ucapan :</label><input name="message" maxlength="500" placeholder="Ucapan"><label>Bukti TF :</label><input type="file" name="proof" accept="image/png,image/jpeg,image/webp"><button class="btn sq full" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.formButton)}</button><div class="msg" id="giftMsg"></div></form>`) : '';
+      if (MN) { const mb = monoSecBg(c, o, 'giftBg'); return mb ? `<section class="sec bgi gift" style="${mb.style}">${mb.html}${main}${form}</section>` : `<section class="sec mn-lite gift">${monoDeco(c)}${main}${form}</section>`; }
       return `<section class="sec bgi gift" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.quote.bg))}${main}${form}</section>`;
     },
     rsvp(c) {
       const o = c.rsvp, n = Math.max(1, +o.maxGuests || 1), wa = hasWA(c) && o.sendWhatsapp;
       const t = String(o.title || 'RSVP').trim(), k = Math.ceil(t.length / 2);
-      return `<section class="sec bgi rsvp" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.quote.bg))}<div class="rsvp-head"><h2 class="rv big"><span>${esc(t.slice(0, k))}</span><span>${esc(t.slice(k))}</span></h2>${safeUrl(o.photo) ? `<div class="rv ph"><div class="phb">${photo(o, 'photo')}</div></div>` : ''}</div>
+      const mb = MN ? monoSecBg(c, o, 'rsvpBg') : null, lite = MN && !mb;
+      return `<section class="sec ${lite ? 'mn-lite' : 'bgi'} rsvp" style="${MN ? (mb ? mb.style : '') : ov(o, 'bg')}">${lite ? monoDeco(c) : MN ? mb.html : bgl(o, 'bg', pick(o.bg, c.quote.bg))}<div class="rsvp-head"><h2 class="rv big"><span>${esc(t.slice(0, k))}</span><span>${esc(t.slice(k))}</span></h2>${safeUrl(o.photo) ? `<div class="rv ph"><div class="phb">${photo(o, 'photo')}</div></div>` : ''}</div>
         ${o.text ? `<p class="rv sub">${br(o.text)}</p>` : ''}
         <form class="rv fm" id="rsvpForm"><label>Nama *</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Konfirmasi Kehadiran *</label>
         <select name="status"><option value="hadir">Hadir</option><option value="tidak">Tidak Hadir</option><option value="ragu">Masih Ragu</option></select>
@@ -1371,7 +1386,9 @@
     observers.push(io);
     $$('#app .bgl.palace').forEach((el) => { if (!groups.has(el)) { groups.set(el, [el]); io.observe(el); } });
     $$('#app .rv').forEach((el) => {
-      const tgt = /^bloom/.test(el.dataset.a || '') && el.parentElement ? el.parentElement : el;
+      // Tema 12: satu mempelai muncul berurutan dari satu pemicu (bingkai → foto → nama → orang tua → tombol)
+      const pr = MN ? el.closest('.couple .person') : null;
+      const tgt = pr || (/^bloom/.test(el.dataset.a || '') && el.parentElement ? el.parentElement : el);
       if (!groups.has(tgt)) { groups.set(tgt, []); io.observe(tgt); }
       groups.get(tgt).push(el);
     });

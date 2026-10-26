@@ -265,3 +265,45 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mono-hero.full .mh-ph::after{background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 24%,rgba(0,0,0,.05) 38%,rgba(0,0,0,.88) 100%)}
 .mh-frame.circle .mh-fl.a{left:-9%;top:-8%;height:62%}
 .mh-frame.circle .mh-fl.b{right:-12%;bottom:-6%;width:42%}
+
+/* =====================================================================
+   v15 — Wedding Gift & RSVP: latar khusus Tema 12 (terang, hiasan mengikuti bentuk pembuka)
+   Foto latar dari admin tetap dipakai bila diisi (mono.giftBg / mono.rsvpBg / foto latar bagian).
+   ===================================================================== */
+.t-mono .sec.mn-lite{background:var(--paper);color:var(--mn-bd,#111);overflow:hidden;position:relative}
+.t-mono .mn-lite>*:not(.mn-dec){position:relative;z-index:1}
+.t-mono .mn-dec{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.t-mono .mn-dc{position:absolute;height:auto;pointer-events:none}
+.t-mono .mn-dec.rect .mn-dc{width:34%}
+.t-mono .mn-dec.rect .tl{left:-6%;top:-2%;transform:rotate(180deg)}
+.t-mono .mn-dec.rect .tr{right:-6%;top:-2%;transform:scaleY(-1)}
+.t-mono .mn-dec.rect .bl{left:-6%;bottom:-2%;transform:scaleX(-1)}
+.t-mono .mn-dec.rect .br{right:-6%;bottom:-2%}
+.t-mono .mn-dec.sprig .a{left:-5%;top:0;width:22%}
+.t-mono .mn-dec.sprig .b{right:-6%;bottom:0;width:44%}
+/* RSVP versi terang: tulisan & kolom gelap */
+.t-mono .mn-lite.rsvp .big{color:var(--mn-hd,#111)}
+.t-mono .mn-lite.rsvp .sub{color:var(--mn-bd,#111)}
+.t-mono .mn-lite.rsvp .fm label{color:var(--mn-bd,#111)}
+.t-mono .mn-lite.rsvp .fm input,.t-mono .mn-lite.rsvp .fm select{background:#fff;border:1px solid #111;color:#111}
+.t-mono .mn-lite.rsvp .fm input::placeholder{color:#8c8c8c}
+.t-mono .mn-lite.rsvp .fm select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23111' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.t-mono .mn-lite.rsvp .btn.ghostw{background:var(--mn-btn,#111);color:var(--mn-btnt,#fff);box-shadow:none;border-radius:999px}
+.t-mono .mn-lite.rsvp .ph{margin-right:22px;padding:5px;background:#fff;box-shadow:inset 0 0 0 1px #111}
+
+/* =====================================================================
+   v15 — animasi mempelai: bingkai masuk dulu → foto → nama → orang tua → tombol
+   ===================================================================== */
+@supports selector(:has(a)){
+  .t-mono .couple .pho-w::after{opacity:0;transform:scale(.9);transition:opacity calc(var(--dur)*1.1) ease,transform calc(var(--dur)*1.4) var(--lux)}
+  .t-mono .couple .pho-w:has(.pho.in)::after{opacity:1;transform:none}
+}
+.t-mono .couple .pho-w .rv.pho{transition-delay:calc(var(--dur)*.9)}
+.t-mono .couple .rv.script{transition-delay:calc(var(--dur)*1.7)}
+.t-mono .couple .rv.fn{transition-delay:calc(var(--dur)*2)}
+.t-mono .couple .rv.par{transition-delay:calc(var(--dur)*2.3)}
+.t-mono .couple .person .rv.btn{transition-delay:calc(var(--dur)*2.6)}
+.t-mono .couple .person .rv.btn{opacity:0;transform:translateY(14px);transition:opacity calc(var(--dur)*1.2) ease,transform calc(var(--dur)*1.4) var(--lux),filter .2s,background .2s;transition-delay:calc(var(--dur)*2.6)}
+.t-mono .couple .person .rv.btn.in{opacity:1;transform:none}
+/* RSVP dengan foto latar buatan admin: judul putih agar terbaca */
+.t-mono .rsvp.bgi .big{color:var(--mn-ph,#fff)}
