@@ -266,5 +266,5 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mh-frame.circle .mh-fl.a{left:-9%;top:-8%;height:62%}
 .mh-frame.circle .mh-fl.b{right:-12%;bottom:-6%;width:42%}
 
-/* teks di atas foto (section berlatar foto) */
-.t-mono .bgi,.t-mono .bgi p,.t-mono .bgi .lead{color:var(--mn-ph,inherit)}
+/* teks di atas foto (section berlatar foto) — hanya aktif bila warnanya diatur di admin */
+.t-mono.mn-ph-on .bgi,.t-mono.mn-ph-on .bgi p,.t-mono.mn-ph-on .bgi .lead,.t-mono.mn-ph-on .bgi small{color:var(--mn-ph)}

@@ -205,6 +205,7 @@
       sv('--mn-cv', MN ? (m.textCover || all) : ''); sv('--mn-nm', MN ? (m.textNames || all) : ''); sv('--mn-sm', MN ? (m.textSmall || all) : '');
       sv('--mn-hd', MN ? (m.textHeading || all) : ''); sv('--mn-bd', MN ? (m.textBody || all) : ''); sv('--mn-ph', MN ? (m.textOnPhoto || all) : '');
       sv('--mn-btn', MN ? m.btnBg : ''); sv('--mn-btnt', MN ? m.btnText : ''); sv('--mn-cbtn', MN ? m.coverBtnBg : ''); sv('--mn-cbtnt', MN ? m.coverBtnText : '');
+      document.body.classList.toggle('mn-ph-on', !!(MN && (m.textOnPhoto || all)));
       if (MN) { const hd = m.textHeading || all, bd = m.textBody || all; if (hd) { r.setProperty('--primary', hd); r.setProperty('--ink', hd); } if (bd) r.setProperty('--body', bd); } }
     r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide)); r.setProperty('--div', PT ? cssUrl(PT.divider) : 'none'); r.setProperty('--motif', PT && PT.motif ? cssUrl(PT.motif) : 'none');
     document.title = c.general.title || document.title;
