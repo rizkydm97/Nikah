@@ -215,7 +215,7 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 .mh-cr.cq-tl{left:-7%;top:-6%;transform:rotate(180deg)}
 .mh-cr.cq-tr{right:-7%;top:-6%;transform:scaleY(-1)}
 .mh-cr.cq-bl{left:-7%;bottom:-6%;transform:scaleX(-1)}
-.mono-hero.play .mh-cr{animation:mnCr 1.5s cubic-bezier(.2,.7,.2,1) var(--cd,1s) both}
+.mono-hero.play .mh-cr{animation:mnCr calc(1.5s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(var(--cd,1s)*var(--tk,1)) both}
 .mono-hero.instant .mh-cr{animation-duration:.01s!important;animation-delay:0s!important}
 .mh-frame.rect .mh-ph video,.mh-frame.rect .mh-ph .mn-m{object-fit:cover}
 @keyframes mnCr{from{opacity:0;scale:.86}to{opacity:1;scale:1}}
@@ -319,13 +319,47 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mono-hero:not(.full).play .mh-frame{animation:none}
 .mono-hero:not(.full) .mh-ring{opacity:0;transform:scale(.08)}
 .mono-hero:not(.full) .mh-ph{opacity:0}
-.mono-hero:not(.full).play .mh-ring{animation:mnRingGrow 1.4s cubic-bezier(.22,.8,.2,1) .3s both}
-.mono-hero:not(.full).play .mh-ph{animation:mnPhIn 1.3s cubic-bezier(.3,.7,.2,1) 1.7s both}
-.mono-hero:not(.full).play .mh-fl.a{animation:mnSprA 1.5s cubic-bezier(.2,.7,.2,1) 1.2s both,mnSway 7s ease-in-out 2.9s infinite alternate}
-.mono-hero:not(.full).play .mh-fl.b{animation:mnSprB 1.5s cubic-bezier(.2,.7,.2,1) 1.4s both,mnSway 8s ease-in-out 3.1s infinite alternate-reverse}
+.mono-hero:not(.full).play .mh-ring{animation:mnRingGrow calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.2,1) calc(.3s*var(--tk,1)) both}
+.mono-hero:not(.full).play .mh-ph{animation:mnPhIn calc(1.3s*var(--tk,1)) cubic-bezier(.3,.7,.2,1) calc(1.7s*var(--tk,1)) both}
+.mono-hero:not(.full).play .mh-fl.a{animation:mnSprA calc(1.5s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(1.2s*var(--tk,1)) both,mnSway 7s ease-in-out calc(2.9s*var(--tk,1)) infinite alternate}
+.mono-hero:not(.full).play .mh-fl.b{animation:mnSprB calc(1.5s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(1.4s*var(--tk,1)) both,mnSway 8s ease-in-out calc(3.1s*var(--tk,1)) infinite alternate-reverse}
 .mono-hero.instant .mh-ring,.mono-hero.instant .mh-ph{animation-duration:.01s!important;animation-delay:0s!important}
 @keyframes mnRingGrow{0%{opacity:0;transform:scale(.08)}30%{opacity:1}100%{opacity:1;transform:none}}
 @keyframes mnPhIn{from{opacity:0;clip-path:circle(0% at 50% 50%)}to{opacity:1;clip-path:circle(85% at 50% 50%)}}
 @media (prefers-reduced-motion:reduce){.mh-ring,.mh-ph{animation:none!important;opacity:1!important;transform:none!important;clip-path:none!important}}
 
 @media (prefers-reduced-motion:reduce){.t-mono .couple .pho-w .rv.pho{clip-path:none!important}.t-mono .couple .pho-w::after{transform:none!important}}
+
+
+/* =====================================================================
+   v19 — pilihan "Animasi muncul" section Pembuka (admin) berlaku di Tema 12
+   soft = animasi bawaan (bingkai tumbuh + teks per huruf) · none = langsung tampil · lainnya = gerak masuk seluruh isi pembuka
+   ===================================================================== */
+.mono-hero[data-ha="fade-in"].play .mh-in{animation:haFadeIn calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haFadeIn{from{opacity:0}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="fade-up"].play .mh-in{animation:haFadeUp calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haFadeUp{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="fade-down"].play .mh-in{animation:haFadeDown calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haFadeDown{from{opacity:0;transform:translateY(-34px)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="fade-left"].play .mh-in{animation:haLeft calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haLeft{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="fade-right"].play .mh-in{animation:haRight calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haRight{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="zoom-in"].play .mh-in{animation:haZoomIn calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haZoomIn{from{opacity:0;transform:scale(.9);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="zoom-out"].play .mh-in{animation:haZoomOut calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haZoomOut{from{opacity:0;transform:scale(1.1)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="flip"].play .mh-in{animation:haFlip calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haFlip{from{opacity:0;transform:perspective(700px) rotateX(-55deg);transform-origin:top}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="rotate-in"].play .mh-in{animation:haRotate calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haRotate{from{opacity:0;transform:rotate(-5deg) scale(.92)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="blur-in"].play .mh-in{animation:haBlur calc(1.4s*var(--tk,1)) cubic-bezier(.22,.8,.24,1) backwards}
+@keyframes haBlur{from{opacity:0;filter:blur(14px)}to{opacity:1;transform:none;filter:none}}
+.mono-hero[data-ha="bounce"].play .mh-in{animation:haBounce calc(1.5s*var(--tk,1)) cubic-bezier(.34,1.4,.64,1) backwards}
+@keyframes haBounce{from{opacity:0;transform:translateY(46px) scale(.94)}to{opacity:1;transform:none}}
+.mono-hero[data-ha="none"] .mn-c,.mono-hero[data-ha="none"] .mh-frame,.mono-hero[data-ha="none"] .mh-amp,.mono-hero[data-ha="none"] .mh-orn,.mono-hero[data-ha="none"] .mh-date,.mono-hero[data-ha="none"] .mh-tag,.mono-hero[data-ha="none"] .mh-scroll,.mono-hero[data-ha="none"] .mh-cr,.mono-hero[data-ha="none"] .mh-ring,.mono-hero[data-ha="none"] .mh-ph{animation-duration:.01s!important;animation-delay:0s!important}
+.mono-hero[data-ha="none"] .mh-fl{animation:none!important;opacity:1!important;transform:none!important}
+@media (prefers-reduced-motion:reduce){.mono-hero .mh-in{animation:none!important}}
+
+/* mempelai: teks yang baru terlihat belakangan tampil langsung (tanpa jeda berantai) */
+.t-mono .couple .rv.late{transition-delay:.12s!important}

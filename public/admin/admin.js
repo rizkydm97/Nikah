@@ -84,7 +84,8 @@
   function gotoPreview(id) { const t = id || current; if (t && t !== 'cover') post({ type: 'goto', id: t }); }
   // tunggu pratinjau selesai menerima urutan/isi baru, baru melompat ke bagian itu
   function gotoPreviewSoon(id) { clearTimeout(gotoT); gotoT = setTimeout(() => gotoPreview(id), 700); }
-  let gotoT;
+  let gotoT, replayT;
+  function replayPreviewSoon(id, ms) { clearTimeout(replayT); replayT = setTimeout(() => post({ type: 'replay', id }), ms || 1600); }
   function loadPreview() { const g = $('#pvGuest').value; $('#pvFrame').src = '/?preview=1' + ($('#pvMode').value ? '&cover=1' : '') + (g ? '&to=' + encodeURIComponent(g) : ''); }
   $('#pvFrame').addEventListener('load', () => { sendPreview(); setTimeout(gotoPreview, 700); });
   $('#pvReload').onclick = () => { try { sessionStorage.removeItem('pvCfg'); } catch { /* */ } loadPreview(); };
@@ -465,8 +466,11 @@
           h('button', { class: 'btn sm', type: 'button', disabled: idx >= tot || null, onclick: () => { moveSection(g.id, 1); render(); gotoPreviewSoon(g.id); } }, '↓ Turunkan'),
           h('button', { class: 'btn sm', type: 'button', onclick: () => show('sections') }, 'Atur semua urutan →')),
         h('div', { class: 'secanim' }, h('b', {}, 'Animasi muncul bagian ini'),
-          (() => { const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { sec.anim = e.target.value; changed(true); gotoPreviewSoon(g.id); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = ANIMS.some((a) => a[0] === sec.anim) ? sec.anim : 'soft'; return sel; })(),
-          h('small', { class: 'fh' }, 'Cara bagian ini muncul saat tamu men-scroll. Hanya berlaku untuk bagian ini.')),
+          (() => { const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { sec.anim = e.target.value; changed(true); gotoPreviewSoon(g.id); replayPreviewSoon(g.id); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = ANIMS.some((a) => a[0] === sec.anim) ? sec.anim : 'soft'; return sel; })(),
+          h('b', { style: 'margin-left:6px' }, 'Kecepatan'),
+          (() => { const sp = h('select', { title: 'Kecepatan animasi', onchange: (e) => { sec.speed = e.target.value; changed(true); gotoPreviewSoon(g.id); replayPreviewSoon(g.id); } }, SPEEDS.map(([v, t]) => h('option', { value: v }, t))); sp.value = SPEEDS.some((x) => x[0] === sec.speed) ? sec.speed : ''; return sp; })(),
+          h('button', { class: 'btn sm', type: 'button', onclick: () => { gotoPreview(g.id); replayPreviewSoon(g.id, 900); } }, '▶ Putar ulang di pratinjau'),
+          h('small', { class: 'fh' }, g.id === 'hero' ? 'Cara bagian ini muncul. Di Tema 12, \"Lembut mewah\" = animasi bawaan pembuka (bingkai tumbuh + teks per huruf), \"Tanpa animasi\" = langsung tampil, pilihan lain = gerak masuk seluruh isi pembuka.' : 'Cara bagian ini muncul saat tamu men-scroll. Hanya berlaku untuk bagian ini.')),
         ...(sec.enabled ? [] : [h('small', { class: 'fh' }, 'Bagian ini tidak tampil di undangan. Isinya tetap tersimpan, jadi bisa diaktifkan lagi kapan saja.')]));
     };
     render(); return bar;

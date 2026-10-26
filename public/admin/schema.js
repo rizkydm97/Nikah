@@ -6,6 +6,7 @@ const ANIMS = [
   ['fade-left', 'Geser dari kiri'], ['fade-right', 'Geser dari kanan'], ['zoom-in', 'Zoom masuk'], ['zoom-out', 'Zoom keluar'],
   ['flip', 'Flip'], ['rotate-in', 'Putar masuk'], ['blur-in', 'Blur ke tajam'], ['bounce', 'Memantul'],
 ];
+const SPEEDS = [['', 'Ikuti pengaturan umum'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']];
 const SECTION_NAMES = {
   hero: 'Pembuka (Nama & Tanggal)', quote: 'Ayat & Hitung Mundur', greeting: 'Sambutan', couple: 'Mempelai', events: 'Acara (Akad/Resepsi)',
   live: 'Live Streaming', gallery: 'Galeri', story: 'Love Story', gift: 'Wedding Gift', rsvp: 'RSVP', wishes: 'Ucapan & Doa', closing: 'Penutup',

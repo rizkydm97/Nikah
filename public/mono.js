@@ -57,7 +57,8 @@
     const src = m.frameMedia ? m : (H.safeUrl(C.cover.photo) && !/\/assets\/default\//.test(C.cover.photo) ? C.cover : null);
     const md = src ? media(H, src, src === m ? 'frameMedia' : 'photo', 'mn-fm') : '';
     const mono = `<div class="mh-mono"><span>${H.esc((h.groom || '♥')[0])}</span><i>&amp;</i><span>${H.esc((h.bride || '')[0] || '')}</span></div>`;
-    return `<section class="sec hero mono-hero pre${shape === 'full' ? ' full' : ''}${m.grayPhoto === true ? ' gray' : ''}" id="s-hero"><div class="mh-in">
+    const ha = ((C.sections || []).find((x) => x.id === 'hero') || {}).anim || 'soft';
+    return `<section class="sec hero mono-hero pre${shape === 'full' ? ' full' : ''}${m.grayPhoto === true ? ' gray' : ''}" id="s-hero" data-ha="${H.esc(ha)}"><div class="mh-in">
       <div class="mh-k">${chars(H, h.kicker, 40, 500)}</div>
       <div class="mh-frame ${shape}">
         <div class="mh-ph">${md || mono}</div>

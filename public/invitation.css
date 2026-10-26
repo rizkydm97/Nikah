@@ -988,3 +988,6 @@ html.wl-sheet-on :is(.lv-cv,.lv-light,.lv-cr,.sx-bloom,.sx-sky,.imm-fg,.imm-tap,
 #loader.has-media .ld-bar{background:rgba(255,255,255,.3)}
 #loader.has-media .ld-bar span{background:#fff}
 #loader.has-media .ld{border-color:rgba(255,255,255,.3);border-top-color:#fff}
+
+/* kecepatan per section: jeda antar elemen ikut diperlambat/dipercepat */
+section[data-spd] .rv{transition-delay:calc(var(--i,0)*.2s*var(--tk,1))}

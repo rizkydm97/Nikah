@@ -29,8 +29,9 @@
   function applyTextSpeed() {
     if (!C) return;
     textSpeedFor($('#cover'), C.cover && C.cover.textSpeed);
-    textSpeedFor($('#s-hero'), C.hero && C.hero.textSpeed);
-    textSpeedFor($('#s-closing'), C.closing && C.closing.textSpeed);
+    const secSpd = (id) => ((C.sections || []).find((x) => x.id === id) || {}).speed;
+    textSpeedFor($('#s-hero'), (C.hero && C.hero.textSpeed) || secSpd('hero'));
+    textSpeedFor($('#s-closing'), (C.closing && C.closing.textSpeed) || secSpd('closing'));
   }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // font -> [bobot, punya-italic]. Hanya yang punya italic asli diminta italic (hindari italic palsu).
@@ -151,6 +152,7 @@
         const y = scrollY; render(e.data.cfg); if (opened) { reveal(); requestAnimationFrame(() => scrollTo(0, y)); }
       }
       if (e.data.type === 'goto') gotoSection(e.data.id);
+      if (e.data.type === 'replay') replaySection(e.data.id);
     });
   }
   (pc ? Promise.resolve(pc) : fetch('/api/config', { cache: 'no-cache' }).then((r) => r.json())).then(init).catch((e) => { console.error(e); document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif">Gagal memuat undangan.</p>'; });
@@ -1207,6 +1209,9 @@
       const anim = order[idx] && order[idx].anim || 'fade-up', own = order[idx] && order[idx].anim;
       // animasi pilihan admin berlaku untuk semua teks/gambar di section; hanya dekorasi khusus (bunga bloom, bingkai foto) yang tetap
       $$('.rv', sec).forEach((el, i) => { if (!el.dataset.a || (own && !/^(bloom|pf)/.test(el.dataset.a))) el.dataset.a = anim; if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', Math.min(i, 5)); });
+      // kecepatan animasi per bagian (admin → tiap section → "Kecepatan"); kosong = ikut pengaturan umum. Pembuka & penutup lewat applyTextSpeed.
+      const spd = order[idx] && !/^(hero|closing)$/.test(order[idx].id) ? TSPD[order[idx].speed] : 0;
+      if (spd && !reduce) { sec.style.setProperty('--dur', spd + 's'); sec.style.setProperty('--tk', String(spd)); sec.setAttribute('data-spd', '1'); }
     });
     if (!opened || q.has('cover')) {
       $('#coverRoot').innerHTML = coverHtml(cfg);
@@ -1333,6 +1338,16 @@
     later(() => box.remove(), zin + zout + 9500);
   }
 
+  // pratinjau admin: putar ulang animasi muncul satu section (mis. setelah animasinya diganti)
+  function replaySection(id) {
+    const el = $('#s-' + id); if (!el) return;
+    if (id === 'hero') {
+      el.classList.remove('instant', 'done', 'play'); el.classList.add('pre'); void el.offsetWidth;
+      later(() => { el.classList.remove('pre'); el.classList.add('play'); }, 120); later(() => el.classList.add('done'), 4800); return;
+    }
+    const rv = $$('.rv', el); rv.forEach((r) => { r.style.transition = 'none'; r.classList.remove('in'); }); void el.offsetWidth;
+    rv.forEach((r) => { r.style.transition = ''; }); later(() => rv.forEach((r) => r.classList.add('in')), 90);
+  }
   function gotoSection(id) {
     const map = { scene: 'hero', scene2: 'hero', mono: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
     const el = $('#s-' + (map[id] || id)); if (!el) return;
@@ -1375,20 +1390,29 @@
   function startObserver() {
     // elemen yang digeser keluar layar (bunga) tidak bisa dideteksi sendiri -> amati wadah induknya
     const groups = new Map();
+    // animasi baru dimulai bila elemen sudah cukup terlihat (>=30% elemen, atau >=30% tinggi layar untuk elemen tinggi);
+    // sebelumnya mulai begitu 1 piksel masuk sehingga animasi sudah selesai saat tamu sampai di sana.
+    // Dicopot (agar bisa diputar lagi) hanya setelah elemen benar-benar keluar dari layar, bukan saat masih terlihat.
     const io = new IntersectionObserver((es) => es.forEach((e) => {
-      const on = e.isIntersecting;
+      const seen = e.isIntersecting && (e.intersectionRatio >= 0.3 || e.intersectionRect.height >= innerHeight * 0.3);
+      if (!seen && e.isIntersecting) return;
+      const on = seen;
       (groups.get(e.target) || []).forEach((t) => {
+        // Tema 12 mempelai: teks (nama, orang tua, tombol) diamati sendiri; bila baru terlihat setelah foto sudah lama muncul, tampil tanpa menunggu jeda berantai
+        if (t.classList.contains('pho')) t.dataset.tin = on ? String(performance.now()) : '0';
+        if (t.dataset.chain) { const ph = t.closest('.person') && t.closest('.person').querySelector('.pho'); t.classList.toggle('late', !!(on && ph && ph.classList.contains('in') && performance.now() - (+ph.dataset.tin || 0) > 500)); }
         t.classList.toggle('in', on);
         if (on && t.id === 'cds' && cdsRun) cdsRun();
         if (t.classList.contains('vid')) vidCtl(t, on);
       });
-    }), { threshold: 0.12, rootMargin: '0px 0px -4% 0px' });
+    }), { threshold: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.8, 1], rootMargin: '0px 0px -8% 0px' });
     observers.push(io);
     $$('#app .bgl.palace').forEach((el) => { if (!groups.has(el)) { groups.set(el, [el]); io.observe(el); } });
     $$('#app .rv').forEach((el) => {
       // Tema 12: satu mempelai muncul berurutan dari satu pemicu (bingkai → foto → nama → orang tua → tombol)
       const pr = MN ? el.closest('.couple .person') : null;
-      const tgt = pr || (/^bloom/.test(el.dataset.a || '') && el.parentElement ? el.parentElement : el);
+      const chain = !!pr && !el.closest('.pho-w'); if (chain) el.dataset.chain = '1';
+      const tgt = (pr && !chain) ? pr : (/^bloom/.test(el.dataset.a || '') && el.parentElement ? el.parentElement : el);
       if (!groups.has(tgt)) { groups.set(tgt, []); io.observe(tgt); }
       groups.get(tgt).push(el);
     });
@@ -1402,7 +1426,7 @@
       ho.observe(hero); observers.push(ho);
     }
   }
-  function reveal() { $$('#app .rv').forEach((el) => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add('in'); }); }
+  function reveal() { $$('#app .rv').forEach((el) => { const r = el.getBoundingClientRect(), vis = Math.min(r.bottom, innerHeight * 0.92) - Math.max(r.top, 0); if (vis > 0 && (vis >= r.height * 0.3 || vis >= innerHeight * 0.3)) el.classList.add('in'); }); }
 
   let parOn = false;
   function parallax() {
