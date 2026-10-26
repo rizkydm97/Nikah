@@ -5,8 +5,8 @@ const path = require('path');
 const C = require('../lib/core');
 const { sb, BUCKET } = C;
 
-const ADMIN_UPLOAD_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.mp3', '.m4a', '.ogg', '.wav', '.mp4', '.webm', '.ico'];
-const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.webm': 'video/webm', '.ico': 'image/x-icon' };
+const ADMIN_UPLOAD_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.mp3', '.m4a', '.ogg', '.wav', '.mp4', '.webm', '.mov', '.m4v', '.ico'];
+const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.m4v': 'video/mp4', '.mov': 'video/quicktime', '.mp4': 'video/mp4', '.webm': 'video/webm', '.ico': 'image/x-icon' };
 const MAX_PROOF = 2.5 * 1024 * 1024; // batas body fungsi Vercel ±4.5MB (base64 membesar ~33%)
 
 // ---------- pembatas laju (best-effort, per instance serverless) ----------

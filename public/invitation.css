@@ -974,3 +974,17 @@ a{color:inherit}
 html.wl-sheet-on,html.wl-sheet-on body{overflow:hidden}
 html.wl-sheet-on #app{visibility:hidden}
 html.wl-sheet-on :is(.lv-cv,.lv-light,.lv-cr,.sx-bloom,.sx-sky,.imm-fg,.imm-tap,.imm-veil,.lv-perch){display:none!important}
+
+
+/* ---------- pembuka layar penuh: foto / video menggantikan lingkaran ---------- */
+#loader .ld-bg{position:absolute;inset:0;overflow:hidden;background:#111}
+#loader .ld-bg>img,#loader .ld-bg>video,#loader .ld-bg>iframe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;pointer-events:none}
+#loader .ld-bg>iframe{inset:auto;top:50%;left:50%;width:max(100%,177.78vh);height:max(100%,56.25vw);transform:translate(-50%,-50%)}
+#loader .ld-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.2) 40%,rgba(0,0,0,.55))}
+#loader.has-media .ld-in{z-index:1;color:#fff}
+#loader.has-media .ld-ring{display:none}
+#loader.has-media .ld-mono{color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.45)}
+#loader.has-media .ld-mono i,#loader.has-media .ld-k{color:rgba(255,255,255,.9)}
+#loader.has-media .ld-bar{background:rgba(255,255,255,.3)}
+#loader.has-media .ld-bar span{background:#fff}
+#loader.has-media .ld{border-color:rgba(255,255,255,.3);border-top-color:#fff}

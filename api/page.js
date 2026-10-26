@@ -13,8 +13,15 @@ module.exports = async (req, res) => {
   const g = config.general;
   const html = TEMPLATE.replace(/\{\{title\}\}/g, attr(g.title)).replace(/\{\{description\}\}/g, attr(g.description)).replace(/\{\{ogImage\}\}/g, attr(g.ogImage))
     .replace('<meta name="theme-color" content="#AD2940">', `<meta name="theme-color" content="${attr(config.theme.primary)}">`);
+  // Tema 12 (Monokrom): warna awal putih/abu sejak byte pertama — tanpa kilatan krem & bilah browser ikut putih
+  let out = html;
+  if (config.theme && config.theme.preset === 'mono') {
+    out = out.replace('<body class="locked">', '<body class="locked t-mono">')
+      .replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#ffffff">')
+      .replace('</head>', '<style>html,body{background:#e6e6e6}#loader{background:#fff!important}</style></head>');
+  }
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');
-  res.end(html);
+  res.end(out);
 };

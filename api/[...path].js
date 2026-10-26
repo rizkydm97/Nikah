@@ -5,7 +5,7 @@ const path = require('path');
 const C = require('../lib/core');
 const { sb, BUCKET } = C;
 
-const ADMIN_UPLOAD_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.mp3', '.m4a', '.ogg', '.wav', '.mp4', '.webm', '.ico'];
+const ADMIN_UPLOAD_EXT = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.mp3', '.m4a', '.ogg', '.wav', '.mp4', '.webm', '.mov', '.m4v', '.ico'];
 const MAX_PROOF = 2.5 * 1024 * 1024; // batas body fungsi Vercel ±4.5MB (base64 membesar ~33%)
 
 // ---------- pembatas laju (best-effort, per instance serverless) ----------

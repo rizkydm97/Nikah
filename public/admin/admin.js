@@ -137,7 +137,50 @@
       return new File([blob], file.name.replace(/\.\w+$/, ext), { type: mime });
     } catch { return file; }
   }
+  // ---------- video: terima format apa saja, otomatis dikonversi ke MP4/WebM yang bisa diputar semua HP ----------
+  const VID_EXT = /\.(mp4|mov|m4v|webm|mkv|avi|3gp|3gpp|wmv|flv|mpg|mpeg|mts|m2ts|ts|ogv)$/i;
+  const isVideoFile = (f) => /^video\//.test(f.type) || VID_EXT.test(f.name);
+  const VID_MAX_SEC = 30, VID_SKIP_MB = 20; // cukup 30 detik (diputar berulang); video ≤20MB berformat mp4/webm tidak diubah
+  async function prepareVideo(file) {
+    const url = URL.createObjectURL(file);
+    const v = document.createElement('video');
+    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto'; v.src = url;
+    try {
+      await new Promise((res, rej) => { v.onloadedmetadata = res; v.onerror = () => rej(new Error('Browser ini tidak bisa membaca video tersebut (biasanya format HEVC/codec khusus). Coba: buka admin lewat Safari/Chrome terbaru, atau kirim ulang videonya lewat WhatsApp lalu unggah hasilnya.')); setTimeout(() => rej(new Error('Video terlalu lama dibaca — coba video yang lebih pendek.')), 20000); });
+      const okType = /\.(mp4|webm)$/i.test(file.name) && /^video\/(mp4|webm)$/.test(file.type);
+      if (okType && file.size <= VID_SKIP_MB * 1e6) return file; // sudah aman
+      if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
+        if (okType && file.size <= 48e6) return file;
+        throw new Error('Browser ini belum bisa mengonversi video. Pakai Chrome/Safari terbaru.');
+      }
+      const W0 = v.videoWidth, H0 = v.videoHeight;
+      if (!W0 || !H0) throw new Error('Video tidak terbaca (ukuran 0). Coba format lain.');
+      const sc = Math.min(1, 1280 / Math.max(W0, H0)), W = Math.round(W0 * sc / 2) * 2, H = Math.round(H0 * sc / 2) * 2;
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      const mime = ['video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find((m) => MediaRecorder.isTypeSupported(m));
+      if (!mime) throw new Error('Browser ini tidak punya perekam video. Pakai Chrome/Safari terbaru.');
+      const rec = new MediaRecorder(cv.captureStream(30), { mimeType: mime, videoBitsPerSecond: 2500000 });
+      const chunks = []; rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+      const stopped = new Promise((r) => { rec.onstop = r; });
+      const dur = Math.min(isFinite(v.duration) ? v.duration : VID_MAX_SEC, VID_MAX_SEC);
+      let live = true;
+      const draw = () => { if (!live) return; try { ctx.drawImage(v, 0, 0, W, H); } catch (e) { /* frame belum siap */ }
+        const pct = Math.min(99, Math.round(v.currentTime / dur * 100)); if (pct !== draw.p) { draw.p = pct; toast('Mengonversi video… ' + pct + '% (jangan tutup halaman)'); }
+        if (v.ended || v.currentTime >= dur) { live = false; rec.stop(); return; } requestAnimationFrame(draw); };
+      rec.start(500);
+      await v.play().catch(() => { throw new Error('Video tidak bisa diputar untuk dikonversi. Coba klik Unggah lagi atau pakai format lain.'); });
+      requestAnimationFrame(draw);
+      await stopped;
+      const blob = new Blob(chunks, { type: mime.split(';')[0] });
+      if (!blob.size) throw new Error('Hasil konversi kosong. Coba video lain.');
+      const ext = /mp4/.test(mime) ? '.mp4' : '.webm';
+      return new File([blob], file.name.replace(/\.[^.]+$/, '') .replace(/[^\w.-]+/g, '_') + ext, { type: blob.type });
+    } finally { URL.revokeObjectURL(url); v.removeAttribute('src'); v.load(); }
+  }
   async function upload(file) {
+    if (isVideoFile(file)) file = await prepareVideo(file);
+    if (file.size > 50e6) throw new Error('Video masih ' + (file.size / 1e6).toFixed(0) + 'MB — batas Supabase gratis 50MB. Pakai video yang lebih pendek.');
     const f = await shrink(file);
     if (f.size <= 3.8e6) { // file kecil: lewat server (paling andal)
       const r = await fetch('/api/admin/upload?name=' + encodeURIComponent(f.name), { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: f, credentials: 'same-origin' });
@@ -154,7 +197,7 @@
   }
   async function openLibrary(filter) {
     const m = $('#lib'), g = $('#libGrid'); g.textContent = 'Memuat…'; m.hidden = false;
-    const items = (await api('/api/admin/uploads')).filter((u) => filter === 'audio' ? /\.(mp3|m4a|ogg|wav)$/i.test(u.url) : filter === 'video' ? /\.(mp4|webm)$/i.test(u.url) : filter === 'media' ? /\.(png|jpe?g|webp|gif|mp4|webm)$/i.test(u.url) : /\.(png|jpe?g|webp|gif|svg)$/i.test(u.url));
+    const items = (await api('/api/admin/uploads')).filter((u) => filter === 'audio' ? /\.(mp3|m4a|ogg|wav)$/i.test(u.url) : filter === 'video' ? /\.(mp4|webm|mov|m4v)$/i.test(u.url) : filter === 'media' ? /\.(png|jpe?g|webp|gif|mp4|webm|mov|m4v)$/i.test(u.url) : /\.(png|jpe?g|webp|gif|svg)$/i.test(u.url));
     return new Promise((res) => {
       const close = (v) => { m.hidden = true; res(v); };
       m.querySelector('[data-close]').onclick = () => close(null); m.onclick = (e) => { if (e.target === m) close(null); };
@@ -256,7 +299,7 @@
     } else if (f.t === 'image' || f.t === 'audio' || f.t === 'video' || f.t === 'media') {
       const isMed = f.t === 'media', isImg = f.t === 'image' || isMed, isAud = f.t === 'audio';
       const th = isImg ? h('div', { class: 'thumb' + (f.deco ? ' contain' : '') + (f.round ? ' round' : ''), title: f.deco ? '' : 'Klik untuk atur posisi', onclick: () => { if (!f.deco) openAdjust(f, obj, key, () => { (onChange || changed)(true); if (wrap._paint) wrap._paint(); }); } }) : null;
-      const tx = h('input', { type: 'text', placeholder: isMed ? 'URL foto/video (.mp4), link YouTube, atau unggah…' : isImg ? 'URL gambar atau unggah…' : isAud ? 'URL mp3 atau unggah…' : 'Link YouTube, URL .mp4, atau unggah video…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
+      const tx = h('input', { type: 'text', placeholder: isMed ? 'URL foto/video, link YouTube, atau unggah (video format apa saja)…' : isImg ? 'URL gambar atau unggah…' : isAud ? 'URL mp3 atau unggah…' : 'Link YouTube, URL .mp4, atau unggah video…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
       const au = isAud ? h('audio', { controls: true, style: 'width:100%;margin-top:6px;height:34px' }) : null;
       const paint = () => {
         if (th) { th.style.backgroundImage = get() ? `url("${String(get()).replace(/"/g, '')}")` : 'none'; const a = obj[key + 'Adj']; if (!f.deco) th.style.backgroundPosition = a ? `${a.x ?? 50}% ${a.y ?? 50}%` : ''; }
@@ -267,7 +310,7 @@
       const btns = h('div', { class: 'acts' },
         h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isMed ? 'image/*,video/*' : isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
         h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isMed ? 'media' : isImg ? 'image' : isAud ? 'audio' : 'video'); if (u) apply(u); } }, 'Pustaka'),
-        isImg && !f.deco ? h('button', { class: 'btn sm pri', type: 'button', onclick: () => /\.(mp4|webm|mov)(\?|$)|youtu/i.test(get() || '') ? toast('Video tidak perlu diatur posisinya', true) : openAdjust(f, obj, key, () => { (onChange || changed)(true); paint(); }) }, '✥ Atur posisi') : null,
+        isImg && !f.deco ? h('button', { class: 'btn sm pri', type: 'button', onclick: () => /\.(mp4|webm|mov|m4v)(\?|$)|youtu/i.test(get() || '') ? toast('Video tidak perlu diatur posisinya', true) : openAdjust(f, obj, key, () => { (onChange || changed)(true); paint(); }) }, '✥ Atur posisi') : null,
         defVal !== undefined ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply(defVal) }, 'Default') : null,
         !isImg || isMed ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();

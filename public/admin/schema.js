@@ -98,7 +98,7 @@ const SCHEMA = [
     { k: 'scene.butterflyColor1', l: 'Warna sayap kupu-kupu 1', t: 'color' },
     { k: 'scene.butterflyColor2', l: 'Warna sayap kupu-kupu 2', t: 'color' },
   ] },
-  { id: 'mono', title: 'Tema 12 — Foto/Video Monokrom', hint: 'Dipakai bila "Tema undangan" = Tema 12. Cover & bingkai bisa diisi FOTO atau VIDEO (unggah .mp4/.webm, atau tempel link YouTube/URL .mp4). Teks cover diisi di menu Cover & Pembuka.', fields: [
+  { id: 'mono', title: 'Tema 12 — Foto/Video Monokrom', hint: 'Dipakai bila "Tema undangan" = Tema 12. Cover & bingkai bisa diisi FOTO atau VIDEO (unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube/URL .mp4). Teks cover diisi di menu Cover & Pembuka.', fields: [
     { k: 'mono.coverMedia', l: 'Foto / video cover (layar penuh)', t: 'media', ar: '9/19' },
     { k: 'mono.frameMedia', l: 'Foto / video di dalam bingkai (halaman setelah undangan dibuka)', t: 'media', ar: '636/1007' },
     { k: 'mono.frameStyle', l: 'Bentuk bingkai halaman setelah undangan dibuka', t: 'select', o: [['rect', 'Kotak — mawar di keempat sudut (bisa foto atau video)'], ['oval', 'Oval — bunga atas & bawah']] },
@@ -120,7 +120,8 @@ const SCHEMA = [
     { k: 'scene2.butterflyColor2', l: 'Warna sayap kupu-kupu 2', t: 'color' },
   ] },
   { id: 'cover', title: 'Cover (Sampul Undangan)', fields: [
-    { k: 'mono.coverMedia', l: 'VIDEO / foto cover layar penuh (khusus Tema 12) — unggah .mp4/.webm, atau tempel link YouTube', t: 'media', ar: '9/19' },
+    { k: 'mono.coverMedia', l: 'VIDEO / foto cover layar penuh (khusus Tema 12) — unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube', t: 'media', ar: '9/19' },
+    { k: 'cover.loaderMedia', l: 'Pembuka layar penuh (semua tema) — foto / VIDEO yang tampil saat undangan dimuat, menggantikan lingkaran. Kosongkan = polos (Tema 12 otomatis pakai media cover)', t: 'media', ar: '9/19' },
     { k: 'cover.photo', l: 'Foto cover — klik "Atur posisi" agar wajah pas di bingkai', t: 'image', arKey: 'cover.photoRatio' },
     { k: 'cover.photoRatio', l: 'Bentuk bingkai foto cover', t: 'select', o: [['16/9', 'Lanskap lebar 16:9'], ['3/2', 'Lanskap 3:2'], ['4/3', 'Lanskap 4:3'], ['1/1', 'Persegi 1:1'], ['4/5', 'Potret 4:5'], ['3/4', 'Potret 3:4']] },
     { k: 'cover.bg', l: 'Latar cover satu gambar penuh (opsional — kosongkan untuk pakai adegan rumah & bunga)', t: 'image', ar: '9/19' }, { k: 'cover.kicker', l: 'Teks kecil atas', t: 'text' },
@@ -129,7 +130,7 @@ const SCHEMA = [
     { k: 'cover.button', l: 'Teks tombol buka', t: 'text' },
   ] },
   { id: 'hero', title: 'Pembuka', fields: [
-    { k: 'mono.frameMedia', l: 'VIDEO / foto di dalam bingkai (khusus Tema 12) — unggah .mp4/.webm, atau tempel link YouTube', t: 'media', ar: '636/1007' },
+    { k: 'mono.frameMedia', l: 'VIDEO / foto di dalam bingkai (khusus Tema 12) — unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube', t: 'media', ar: '636/1007' },
     { k: 'hero.kicker', l: 'Teks kecil', t: 'text' }, { k: 'hero.groom', l: 'Nama pria', t: 'text' }, { k: 'hero.bride', l: 'Nama wanita', t: 'text' },
     { k: 'hero.dateText', l: 'Tanggal (teks)', t: 'text' }, { k: 'hero.hashtag', l: 'Hashtag', t: 'text' },
   ] },

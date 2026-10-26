@@ -44,8 +44,8 @@
     }
     if (MN) { // Tema 12 Monokrom: hitam putih, bersih — tanpa kupu-kupu, kelopak, awan, burung, gerak dedaunan
       out.effects = Object.assign({}, out.effects, { butterflies: false, petals: false, javaFx: false, clouds: false, birds: false, particles: false, sway: false, glow: false, parallax: false, bgParallax: false, skyShift: false, nightMode: false });
-      if ((!cfg.theme.palette || cfg.theme.palette === 'auto') && ['#A00818', '#B4536D'].includes(String(cfg.theme.primary || '').toUpperCase())) out.theme = Object.assign({}, cfg.theme, window.MONO.colors);
-      else if (!cfg.theme.palette || cfg.theme.palette === 'auto') { // warna sisa tema lain (marun, pink, krem, emas) -> ganti ke warna hitam putih Tema 12
+      if (['#A00818', '#B4536D'].includes(String(cfg.theme.primary || '').toUpperCase())) out.theme = Object.assign({}, cfg.theme, window.MONO.colors);
+      else { // warna sisa tema lain (marun, pink, krem, emas) -> ganti ke warna hitam putih Tema 12
         const gr = (h) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '').trim()); if (!m) return false; const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return Math.max(r, g, b) - Math.min(r, g, b) <= 8; };
         const fix = {}; ['primary', 'accent', 'rose', 'gold', 'paper', 'ink', 'body', 'sideBg'].forEach((k) => { if (!gr(out.theme[k])) fix[k] = window.MONO.colors[k]; });
         if (Object.keys(fix).length) out.theme = Object.assign({}, out.theme, fix);
@@ -144,13 +144,27 @@
     intro();
   }
 
+  // ---------- pembuka layar penuh: foto / video (cover.loaderMedia; Tema 12 otomatis memakai media cover) ----------
+  function loaderMedia(c) {
+    const m = c.mono || {};
+    const u = safeUrl(c.cover.loaderMedia) || (MN ? (safeUrl(m.coverMedia) || (safeUrl(c.cover.photo) && !/\/assets\/default\//.test(c.cover.photo) ? safeUrl(c.cover.photo) : '')) : '');
+    if (!u) return '';
+    const yt = (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
+    let el;
+    if (yt) el = `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0&playsinline=1&modestbranding=1&rel=0" allow="autoplay; encrypted-media" tabindex="-1" title=""></iframe>`;
+    else if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u)) el = `<video src="${esc(u)}" muted loop playsinline autoplay preload="auto" disablepictureinpicture onerror="this.remove()"></video>`;
+    else el = `<img src="${esc(u)}" alt="" decoding="async">`;
+    return `<div class="ld-bg">${el}</div>`;
+  }
+
   // ---------- intro: monogram + muat gambar dulu supaya animasi mulus ----------
   function intro() {
     const ld = $('#loader'), c = C;
     const names = String(c.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean);
     const mono = names.length >= 2 ? `${esc(names[0][0])}<i>&amp;</i>${esc(names[1][0])}` : esc((names[0] || '♥')[0]);
-    if (c.effects.intro !== false) ld.innerHTML = `<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
-    ld.classList.add('ready');
+    const lm = loaderMedia(c);
+    if (c.effects.intro !== false) ld.innerHTML = `${lm}<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
+    ld.classList.toggle('has-media', !!lm); ld.classList.add('ready');
     const s = c.scene;
     const urls = PT && PT.live ? [PT.bg, ...(PT.preload || ['bf_rajah', 'feather', 'leafj', 'orchid', 'cloudw1']).map((n) => /\//.test(n) ? n : PT.spr + n + '.webp')] : PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     let done = 0; const bar = $('#ldBar');
@@ -187,6 +201,9 @@
     const href = 'https://fonts.googleapis.com/css2?' + fams.join('&') + '&display=swap'; if (l.href !== href) l.href = href;
     r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide)); r.setProperty('--div', PT ? cssUrl(PT.divider) : 'none'); r.setProperty('--motif', PT && PT.motif ? cssUrl(PT.motif) : 'none');
     document.title = c.general.title || document.title;
+    { // warna bilah browser (iOS/Android) mengikuti tema, bukan krem bawaan
+      let m = document.querySelector('meta[name="theme-color"]'); if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); }
+      m.content = MN ? (t.paper || '#ffffff') : (t.primary || m.content); }
     const b = document.body.classList;
     { // putaran warna gambar tema bergambar: relatif terhadap palet asli tema itu (0 = tidak diputar)
       const nat = PT ? PT.pal : THEME === 'rose' ? 'pink' : 'maroon';

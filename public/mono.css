@@ -16,11 +16,11 @@
 .mono .mn-sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,.12) 30%,rgba(0,0,0,.08) 55%,rgba(0,0,0,.78) 100%)}
 .mono .mn-top{position:absolute;left:0;right:0;top:7.5cqh;text-align:center}
 .mono .mn-k{font-size:clamp(11px,3.3cqw,14px);letter-spacing:.32em;text-transform:uppercase;font-weight:500;padding-left:.32em}
-.mono .mn-nm{position:absolute;left:0;right:0;top:15cqh;text-align:center;font-family:var(--fScript);line-height:1;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.mono .mn-nm{position:absolute;left:0;right:0;top:15cqh;text-align:center;font-family:var(--fScript);line-height:1.12;text-shadow:0 2px 24px rgba(0,0,0,.45)}
 .mono .mn-n{display:block;font-size:clamp(48px,17cqw,82px)}
-.mono .mn-n.a{text-align:left;padding-left:22%}
-.mono .mn-n.b{text-align:right;padding-right:22%;margin-top:-.08em}
-.mono .mn-amp{display:block;font-style:normal;font-size:clamp(30px,10cqw,48px);opacity:0;margin:-.12em 0 -.1em;transform:scale(.6)}
+.mono .mn-n.a{text-align:left;padding-left:16%}
+.mono .mn-n.b{text-align:right;padding-right:16%;margin-top:0}
+.mono .mn-amp{display:block;font-style:normal;font-size:clamp(28px,9cqw,44px);line-height:1;opacity:0;margin:.14em 0 .1em;padding-left:.1em;transform:scale(.6)}
 .mono .mn-bot{position:absolute;left:0;right:0;bottom:calc(5.5cqh + env(safe-area-inset-bottom,0px));text-align:center;padding:0 8%}
 .mono .mn-date{font-size:clamp(12px,3.6cqw,15px);letter-spacing:.3em;font-weight:500;padding-left:.3em}
 .mono .mn-to{margin-top:14px;font-size:clamp(11px,3.2cqw,13px);line-height:1.5}
@@ -66,9 +66,9 @@
 .mh-fl{position:absolute;z-index:3;pointer-events:none;transform-origin:50% 100%}
 .mh-fl.a{left:-17%;top:-7%;height:64%;width:auto}
 .mh-fl.b{right:-17%;bottom:-5%;width:44%;height:auto;transform-origin:20% 90%}
-.mh-names{font-family:var(--fScript);font-weight:400;font-size:clamp(40px,13.5vw,64px);line-height:1.02;color:#111;margin:.4svh 0 0}
-.mh-n{display:block}
-.mh-amp{display:block;font-style:normal;font-size:.5em;line-height:1;color:#666;margin:-.04em 0 -.02em}
+.mh-names{font-family:var(--fScript);font-weight:400;font-size:clamp(40px,13.5vw,64px);line-height:1.18;color:#111;margin:.8svh 0 0;display:flex;flex-direction:column;align-items:center}
+.mh-n{display:block;padding:0 .1em}
+.mh-amp{display:block;font-style:normal;font-size:.5em;line-height:1;color:#666;margin:.16em 0 .12em;padding-left:.08em}
 .mh-orn{width:min(52%,230px);height:auto;margin:1.6svh 0 1.2svh}
 .mh-date{font-size:13px;letter-spacing:.3em;font-weight:500;padding-left:.3em;color:#222}
 .mh-tag{font-size:12px;letter-spacing:.12em;color:#777;margin-top:6px}
@@ -220,3 +220,10 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 .mh-frame.rect .mh-ph video,.mh-frame.rect .mh-ph .mn-m{object-fit:cover}
 @keyframes mnCr{from{opacity:0;scale:.86}to{opacity:1;scale:1}}
 @media (prefers-reduced-motion:reduce){.mh-cr{animation:none!important;opacity:1!important}}
+
+
+/* =====================================================================
+   PERBAIKAN v3 — warna bilah browser/loader sesuai tema, & rapi
+   ===================================================================== */
+body.t-mono{background:var(--sideBg,#e6e6e6)}
+.t-mono #loader{background:#fff}
