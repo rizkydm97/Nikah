@@ -45,8 +45,13 @@
     if (MN) { // Tema 12 Monokrom: hitam putih, bersih — tanpa kupu-kupu, kelopak, awan, burung, gerak dedaunan
       out.effects = Object.assign({}, out.effects, { butterflies: false, petals: false, javaFx: false, clouds: false, birds: false, particles: false, sway: false, glow: false, parallax: false, bgParallax: false, skyShift: false, nightMode: false });
       if ((!cfg.theme.palette || cfg.theme.palette === 'auto') && ['#A00818', '#B4536D'].includes(String(cfg.theme.primary || '').toUpperCase())) out.theme = Object.assign({}, cfg.theme, window.MONO.colors);
+      else if (!cfg.theme.palette || cfg.theme.palette === 'auto') { // warna sisa tema lain (marun, pink, krem, emas) -> ganti ke warna hitam putih Tema 12
+        const gr = (h) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '').trim()); if (!m) return false; const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return Math.max(r, g, b) - Math.min(r, g, b) <= 8; };
+        const fix = {}; ['primary', 'accent', 'rose', 'gold', 'paper', 'ink', 'body', 'sideBg'].forEach((k) => { if (!gr(out.theme[k])) fix[k] = window.MONO.colors[k]; });
+        if (Object.keys(fix).length) out.theme = Object.assign({}, out.theme, fix);
+      }
       const MD = window.MONO.deco, D0 = Object.assign({}, DEF_FL.jawa, { ornament: '/assets/default/ornament.svg' }), D1 = DEF_FL.rose;
-      for (const k in MD) { const v = out.scene[k]; if (!v || v === D0[k] || v === D1[k] || /\/assets\/(pal|default|scene|rose)\//.test(v)) out.scene[k] = MD[k]; }
+      for (const k in MD) { const v = out.scene[k]; if (!v || v === D0[k] || v === D1[k] || /\/assets\/(pal|default|scene|rose)\//.test(v) || /\/assets\/mono\/(rose-a|rose-b|sprig-tall)\.webp/.test(v)) out.scene[k] = MD[k]; }
       if (out.couple && (!out.couple.flower || out.couple.flower === DEF_FL.jawa.flowers || out.couple.flower === DEF_FL.rose.flowers)) out.couple = Object.assign({}, out.couple, { flower: MD.flowers });
     }
     if (!PT && !MN && PAL !== 'auto' && PAL !== NATIVE[THEME]) {
@@ -188,7 +193,7 @@
       let d = PAL === 'auto' || PAL === nat || PAL_HUE[PAL] === undefined ? 0 : (PAL_HUE[PAL] - PAL_HUE[nat]) * 360; d = ((d + 540) % 360) - 180;
       r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', d !== 0 && PAL === 'champagne' ? '.5' : '1');
       document.body.classList.toggle('hued', !!PT && d !== 0); }
-    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-mono', MN); b.toggle('mono-color', MN && c.mono && c.mono.gray === false); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
+    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-mono', MN); b.toggle('mono-gray', MN && !!(c.mono && c.mono.grayPhoto === true)); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
     // saklar animasi (admin → Animasi & Efek); kosong/true = menyala
     ['birds', 'particles', 'lights'].forEach((k) => b.toggle('no' + k, c.effects[k] === false));

@@ -369,6 +369,6 @@
     "coverMedia": "",
     "frameMedia": "",
     "frameShape": "oval",
-    "gray": true
+    "grayPhoto": false
   }
 }

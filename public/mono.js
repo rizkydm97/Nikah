@@ -9,7 +9,7 @@
   const ytId = (u) => (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
 
   // gambar hiasan tema (menggantikan gambar bawaan Tema 1/2 pada section lain)
-  const deco = { floralTop: A + 'rose-b.webp', floralBottom: A + 'rose-a.webp', frameArc: A + 'orn-top.webp', frameSide: A + 'orn-bottom.webp', flowers: A + 'sprig-tall.webp', ornament: A + 'orn-bottom.webp', column: '' };
+  const deco = { floralTop: A + 'corner-top.webp', floralBottom: A + 'corner-bottom.webp', frameArc: A + 'orn-top.webp', frameSide: A + 'orn-bottom.webp', flowers: A + 'flower-tall.webp', ornament: A + 'orn-bottom.webp', column: '' };
   const colors = { primary: '#111111', accent: '#111111', rose: '#222222', gold: '#8c8c8c', paper: '#ffffff', ink: '#111111', body: '#3d3d3d', sideBg: '#e6e6e6',
     fontDisplay: 'Cormorant Garamond', fontHeading: 'Cormorant Garamond', fontBody: 'Poppins', fontScript: 'Great Vibes' };
 
@@ -40,7 +40,7 @@
     const src = m.coverMedia ? m : (H.safeUrl(o.photo) && !/\/assets\/default\//.test(o.photo) ? o : null);
     const key = src === m ? 'coverMedia' : 'photo';
     const md = src ? media(H, src, key, 'mn-cv') : '';
-    return `<div class="cover mono${m.gray === false ? '' : ' gray'}" id="cover">
+    return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover">
       <div class="mn-bg${md ? '' : ' none'}"><div class="mn-kb">${md}</div></div><i class="mn-sh"></i>
       <div class="mn-top"><div class="mn-k">${chars(H, o.kicker, 38, 250)}</div></div>
       <div class="mn-nm"><span class="mn-n a">${chars(H, g, 70, 650)}</span><i class="mn-amp">&amp;</i><span class="mn-n b">${chars(H, b, 70, 1250)}</span></div>
@@ -57,7 +57,7 @@
     const src = m.frameMedia ? m : (H.safeUrl(C.cover.photo) && !/\/assets\/default\//.test(C.cover.photo) ? C.cover : null);
     const md = src ? media(H, src, src === m ? 'frameMedia' : 'photo', 'mn-fm') : '';
     const mono = `<div class="mh-mono"><span>${H.esc((h.groom || '♥')[0])}</span><i>&amp;</i><span>${H.esc((h.bride || '')[0] || '')}</span></div>`;
-    return `<section class="sec hero mono-hero pre${m.gray === false ? '' : ' gray'}" id="s-hero"><div class="mh-in">
+    return `<section class="sec hero mono-hero pre${m.grayPhoto === true ? ' gray' : ''}" id="s-hero"><div class="mh-in">
       <div class="mh-k">${chars(H, h.kicker, 40, 500)}</div>
       <div class="mh-frame ${shape}">
         <div class="mh-ph">${md || mono}</div>
