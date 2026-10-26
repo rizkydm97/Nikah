@@ -9,6 +9,29 @@
   const q = new URLSearchParams(location.search);
   const guest = (q.get('to') || '').trim().slice(0, 80);
   const SPEED = { slow: 1.5, normal: 1, fast: 0.65 };
+  // kecepatan animasi teks masuk per bagian (cover / pembuka / penutup); kosong = ikut pengaturan umum
+  const TSPD = { vslow: 2.2, slow: 1.5, normal: 1, fast: 0.65, vfast: 0.4 };
+  const MEDIA_SEL = 'img,svg,canvas,video,picture,iframe';
+  function textSpeedFor(root, v) {
+    if (!root) return;
+    $$('[data-ts]', root).forEach((e) => { e.style.removeProperty('--dur'); e.style.removeProperty('--tk'); e.removeAttribute('data-ts'); });
+    root.style.removeProperty('--tk'); root.removeAttribute('data-ts');
+    const m = TSPD[v]; if (!m || reduce) return;
+    const mark = (e) => { if (e.dataset.ts) return; e.dataset.ts = '1'; e.style.setProperty('--dur', m + 's'); e.style.setProperty('--tk', String(m)); };
+    if (root.classList.contains('mono') || root.classList.contains('mono-hero')) { mark(root); return; } // Tema 12: seluruh teks diatur lewat --tk
+    const own = (e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+    $$('*', root).forEach((e) => {
+      if (/^(SCRIPT|STYLE)$/.test(e.tagName) || !own(e)) return;
+      mark(e);
+      for (let p = e.parentElement; p && p !== root; p = p.parentElement) { if (p.querySelector(MEDIA_SEL)) break; mark(p); } // pembungkus teks murni ikut
+    });
+  }
+  function applyTextSpeed() {
+    if (!C) return;
+    textSpeedFor($('#cover'), C.cover && C.cover.textSpeed);
+    textSpeedFor($('#s-hero'), C.hero && C.hero.textSpeed);
+    textSpeedFor($('#s-closing'), C.closing && C.closing.textSpeed);
+  }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // font -> [bobot, punya-italic]. Hanya yang punya italic asli diminta italic (hindari italic palsu).
   const FONTS = { 'Cormorant Infant': ['400;500;600;700', 1], 'Cormorant Garamond': ['400;500;600;700', 1], 'Playfair Display': ['400;500;600;700', 1], 'Lora': ['400;500;600;700', 1], 'Poppins': ['400;500;600;700', 0], 'Libre Baskerville': ['400;700', 1], 'EB Garamond': ['400;500;600;700', 1], 'Marcellus': ['', 0], 'Cinzel': ['400;500;600;700', 0], 'Great Vibes': ['', 0], 'Allura': ['', 0], 'Parisienne': ['', 0], 'Pinyon Script': ['', 0], 'Dancing Script': ['400;500;600;700', 0], 'Alice': ['', 0], 'Abhaya Libre': ['400;500;600;700', 0], 'Montserrat': ['400;500;600;700', 1], 'Amiri': ['400;700', 0], 'Josefin Sans': ['400;500;600;700', 1] };
@@ -174,7 +197,7 @@
     Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), minShow]).then(() => {
       ld.classList.add('off');
       const cv = $('#cover');
-      if (cv) { later(() => cv.classList.add('play'), 250); later(() => cv.classList.add('shown'), 250 + 1500 * sp); }
+      if (cv) { later(() => cv.classList.add('play'), 250); later(() => cv.classList.add('shown'), 250 + 1500 * (TSPD[C.cover.textSpeed] || sp)); }
     });
   }
 
@@ -189,7 +212,7 @@
     r.setProperty('--fScript', ff(t.fontScript, 'cursive'));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
-    r.setProperty('--dur', sp + 's');
+    r.setProperty('--dur', sp + 's'); r.setProperty('--tk', String(sp));
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
     const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, 'Poppins', 'Lora', 'Amiri'])].filter(Boolean).map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
@@ -199,14 +222,6 @@
     });
     let l = $('#gfonts'); if (!l) { l = document.createElement('link'); l.id = 'gfonts'; l.rel = 'stylesheet'; document.head.appendChild(l); }
     const href = 'https://fonts.googleapis.com/css2?' + fams.join('&') + '&display=swap'; if (l.href !== href) l.href = href;
-    { // Tema 12: warna teks bisa diatur per bagian atau sekaligus (mono.textAll)
-      const m = (MN && c.mono) || {}, all = MN ? (m.textAll || '') : '';
-      const sv = (k, v) => { if (v) r.setProperty(k, v); else r.removeProperty(k); };
-      sv('--mn-cv', MN ? (m.textCover || all) : ''); sv('--mn-nm', MN ? (m.textNames || all) : ''); sv('--mn-sm', MN ? (m.textSmall || all) : '');
-      sv('--mn-hd', MN ? (m.textHeading || all) : ''); sv('--mn-bd', MN ? (m.textBody || all) : ''); sv('--mn-ph', MN ? (m.textOnPhoto || all) : '');
-      sv('--mn-btn', MN ? m.btnBg : ''); sv('--mn-btnt', MN ? m.btnText : ''); sv('--mn-cbtn', MN ? m.coverBtnBg : ''); sv('--mn-cbtnt', MN ? m.coverBtnText : '');
-      document.body.classList.toggle('mn-ph-on', !!(MN && (m.textOnPhoto || all)));
-      if (MN) { const hd = m.textHeading || all, bd = m.textBody || all; if (hd) { r.setProperty('--primary', hd); r.setProperty('--ink', hd); } if (bd) r.setProperty('--body', bd); } }
     r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide)); r.setProperty('--div', PT ? cssUrl(PT.divider) : 'none'); r.setProperty('--motif', PT && PT.motif ? cssUrl(PT.motif) : 'none');
     document.title = c.general.title || document.title;
     { // warna bilah browser (iOS/Android) mengikuti tema, bukan krem bawaan
@@ -1067,8 +1082,11 @@
   // galeri: slider berjalan sendiri (foto utuh, landscape/portrait sesuai aslinya) + galeri bergaya majalah
   function galleryBody(o) {
     const items = (o.items || []).map((g) => ({ u: safeUrl(g.image), g })).filter((x) => x.u).map((x, i) => Object.assign(x, { i }));
-    if (!items.length) return '';
-    const lay = o.layout || 'masonry', slider = o.slider !== false && items.length > 1;
+    // slider punya foto sendiri (terpisah dari galeri); bila kosong memakai foto galeri
+    const own = (o.sliderItems || []).map((g) => ({ u: safeUrl(g.image), g })).filter((x) => x.u).map((x, i) => Object.assign(x, { i: items.length + i }));
+    const sl = own.length ? own : items;
+    if (!items.length && !sl.length) return '';
+    const lay = o.layout || 'masonry', slider = o.slider !== false && sl.length > 1;
     // bentuk foto (mis. 3/4 potret, 4/3 lanskap, 21/9 panjang) & jumlah kolom — kosong = bawaan
     const okS = (v) => (/^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(String(v || '')) ? String(v) : '');
     const shape = okS(o.shape);
@@ -1077,8 +1095,9 @@
     const uniform = lay === 'grid' || (lay === 'masonry' && !!shape); // bentuk dipilih = semua foto seragam
     const size = ['small', 'large'].includes(o.sliderSize) ? o.sliderSize : 'normal';
     const slide = (x) => `<figure class="sl" data-lb="${x.i}"><img src="${esc(x.u)}" alt="" decoding="async" draggable="false"></figure>`;
-    const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}" data-size="${size}"><div class="gtrack">${items.map(slide).join('')}</div></div>` : '';
+    const strip = slider ? `<div class="rv gslider" data-a="soft" data-dir="${o.sliderDir === 'left' ? 'left' : 'right'}" data-speed="${esc(o.sliderSpeed || 'normal')}" data-size="${size}"><div class="gtrack">${sl.map(slide).join('')}</div></div>` : '';
     let rest = '';
+    if (!items.length) return strip;
     if (items.some((x) => x.sh) && lay !== 'none') { // ada foto dengan bentuk sendiri: susun kolom, tinggi mengikuti bentuk tiap foto
       rest = `<div class="mixg" style="--gcols:${cols || 2}">${items.map((x, k) => {
         const sh = x.sh || shape || (lay === 'grid' ? '3/4.3' : ''), p = sh.split('/'), wide = x.sh && +p[0] / +p[1] >= 1.7;
@@ -1186,6 +1205,7 @@
       if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else if (!MN) setupButterflies($('#cover .flyers'));
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
     }
+    applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
     if (PT && PT.live && liveW()) liveW().start($('#s-hero .pstage'));
@@ -1199,6 +1219,7 @@
     if (opened) return; opened = true;
     if (!instant && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(() => { /* ditolak */ });
     const cover = $('#cover'), hero = $('#s-hero');
+    applyTextSpeed(); setTimeout(applyTextSpeed, 900);
     startMusic();
     const unlock = () => { document.documentElement.classList.remove('locked'); document.body.classList.remove('locked'); window.scrollTo(0, 0); };
     const heroIn = () => { if (hero) { hero.classList.remove('pre'); hero.classList.add('play'); setupButterflies($('.flyers', hero), { sweep: true }); } };
@@ -1500,7 +1521,7 @@
       sd.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(c.general.calendarTitle)}&dates=${s}/${e}&location=${encodeURIComponent(c.general.eventLocation)}&details=${encodeURIComponent(c.general.description)}`;
     }
     // lightbox
-    lbItems = (c.gallery.items || []).map((g) => safeUrl(g.image)).filter(Boolean);
+    lbItems = (c.gallery.items || []).concat(c.gallery.sliderItems || []).map((g) => safeUrl(g.image)).filter(Boolean);
     $$('#app .gallery .gi[data-lb], #app .gallery .mi[data-lb]').forEach((g) => g.addEventListener('click', () => lbShow(+g.dataset.lb), sig));
     startSliders();
 

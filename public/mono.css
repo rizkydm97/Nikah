@@ -7,7 +7,7 @@
 .mn-c{display:inline-block;opacity:0;transform:translateY(.55em);filter:blur(6px)}
 
 /* ---------- sampul ---------- */
-.cover.mono{background:#0d0d0d;color:var(--mn-cv,#fff);font-family:var(--fBody)}
+.cover.mono{background:#0d0d0d;color:#fff;font-family:var(--fBody)}
 .mono .mn-bg{position:absolute;inset:0;overflow:hidden;background:linear-gradient(160deg,#2a2a2a,#0c0c0c)}
 .mono .mn-kb{position:absolute;inset:0;animation:mnKb 22s ease-in-out infinite alternate;will-change:transform}
 .mono.gray .mn-m{filter:grayscale(1) contrast(1.06) brightness(.92)}
@@ -26,17 +26,17 @@
 .mono .mn-to{margin-top:14px;font-size:clamp(11px,3.2cqw,13px);line-height:1.5}
 .mono .mn-to span{display:block;opacity:.85}
 .mono .mn-to b{display:block;font-size:clamp(15px,4.6cqw,19px);font-weight:600;margin-top:2px;overflow-wrap:anywhere}
-.mono .mn-btn{margin-top:18px;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:var(--mn-cbtn,#fff);color:var(--mn-cbtnt,#111);font:500 12.5px/1 var(--fBody);letter-spacing:.04em;padding:12px 22px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s ease,background .25s}
+.mono .mn-btn{margin-top:18px;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:#fff;color:#111;font:500 12.5px/1 var(--fBody);letter-spacing:.04em;padding:12px 22px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s ease,background .25s}
 .mono .mn-btn svg{width:14px;height:14px;fill:currentColor}
 .mono .mn-btn:active{transform:scale(.96)}
-.mono .mn-btn:hover{filter:brightness(.93)}
+.mono .mn-btn:hover{background:#ececec}
 
 /* animasi masuk sampul */
-.mono .mn-c{animation:mnIn calc(.9s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0ms)}
-.mono .mn-amp{animation:mnAmp calc(.9s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) calc(1.05s * var(--mk,1.8)) both}
-.mono .mn-date,.mono .mn-to,.mono .mn-btn{animation:mnUp calc(.9s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) both}
-.mono .mn-date{animation-delay:calc(1.9s * var(--mk,1.8))}.mono .mn-to{animation-delay:calc(2.1s * var(--mk,1.8))}.mono .mn-btn{animation-delay:calc(2.3s * var(--mk,1.8))}
-.mono .mn-btn{animation-name:mnUp,mnPulse;animation-duration:calc(.9s * var(--mk,1.8)),2.8s;animation-delay:calc(2.3s * var(--mk,1.8)),calc(3.5s * var(--mk,1.8));animation-iteration-count:1,infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1),ease-in-out}
+.mono .mn-c{animation:mnIn calc(.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
+.mono .mn-amp{animation:mnAmp calc(.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(1.05s*var(--tk,1)) both}
+.mono .mn-date,.mono .mn-to,.mono .mn-btn{animation:mnUp calc(.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both}
+.mono .mn-date{animation-delay:calc(1.9s*var(--tk,1))}.mono .mn-to{animation-delay:calc(2.1s*var(--tk,1))}.mono .mn-btn{animation-delay:calc(2.3s*var(--tk,1))}
+.mono .mn-btn{animation-name:mnUp,mnPulse;animation-duration:calc(.9s*var(--tk,1)),2.8s;animation-delay:calc(2.3s*var(--tk,1)),calc(3.5s*var(--tk,1));animation-iteration-count:1,infinite;animation-timing-function:cubic-bezier(.2,.7,.2,1),ease-in-out}
 
 /* sampul naik saat dibuka */
 .cover.mono.mn-out{transform:translateY(-102%);transition:transform var(--mo,1.25s) cubic-bezier(.7,0,.2,1);pointer-events:none;box-shadow:0 30px 60px rgba(0,0,0,.35)}
@@ -46,7 +46,7 @@
 .mono-hero{min-height:100svh;display:flex;align-items:center;justify-content:center;background:var(--paper);color:var(--ink);overflow:hidden;padding:0}
 .mono-hero::before{content:"";position:absolute;inset:14px;border:1px solid rgba(0,0,0,.16);pointer-events:none}
 .mh-in{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:5svh 0 4svh}
-.mh-k{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;padding-left:.34em;color:var(--mn-sm,#555)}
+.mh-k{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;padding-left:.34em;color:#555}
 .mh-frame{position:relative;width:min(68%,calc(44svh * .636));aspect-ratio:640/1007;margin:2.4svh 0 2svh}
 .mh-ph{position:absolute;overflow:hidden;background:#eee;display:grid;place-items:center}
 .mh-frame.oval .mh-ph{left:7.6%;right:3.2%;top:8.6%;bottom:2.4%;border-radius:50%}
@@ -54,7 +54,7 @@
 .mono-hero.gray .mn-m{filter:grayscale(1) contrast(1.05)}
 .mh-ph .mn-m{position:absolute;inset:0}
 .mh-ph .mn-yt{inset:auto;top:50%;left:50%;width:max(100%,177.78%);height:max(100%,100%);aspect-ratio:16/9;transform:translate(-50%,-50%);min-width:178%;min-height:100%}
-.mh-mono{font-family:var(--fScript);color:var(--mn-nm,#222);font-size:clamp(46px,16vw,70px);line-height:1;display:flex;align-items:center;gap:.08em}
+.mh-mono{font-family:var(--fScript);color:#222;font-size:clamp(46px,16vw,70px);line-height:1;display:flex;align-items:center;gap:.08em}
 .mh-mono i{font-size:.5em;font-style:normal;color:#777}
 /* bingkai kotak */
 .mh-frame.rect{aspect-ratio:4/5;width:min(74%,calc(42svh * .8))}
@@ -66,28 +66,28 @@
 .mh-fl{position:absolute;z-index:3;pointer-events:none;transform-origin:50% 100%}
 .mh-fl.a{left:-17%;top:-7%;height:64%;width:auto}
 .mh-fl.b{right:-17%;bottom:-5%;width:44%;height:auto;transform-origin:20% 90%}
-.mh-names{font-family:var(--fScript);font-weight:400;font-size:clamp(40px,13.5vw,64px);line-height:1.18;color:var(--mn-nm,#111);margin:.8svh 0 0;display:flex;flex-direction:column;align-items:center}
+.mh-names{font-family:var(--fScript);font-weight:400;font-size:clamp(40px,13.5vw,64px);line-height:1.18;color:#111;margin:.8svh 0 0;display:flex;flex-direction:column;align-items:center}
 .mh-n{display:block;padding:0 .1em}
-.mh-amp{display:block;font-style:normal;font-size:.5em;line-height:1;color:var(--mn-nm,#666);margin:.16em 0 .12em;padding-left:.08em}
+.mh-amp{display:block;font-style:normal;font-size:.5em;line-height:1;color:#666;margin:.16em 0 .12em;padding-left:.08em}
 .mh-orn{width:min(52%,230px);height:auto;margin:1.6svh 0 1.2svh}
-.mh-date{font-size:13px;letter-spacing:.3em;font-weight:500;padding-left:.3em;color:var(--mn-sm,#222)}
-.mh-tag{font-size:12px;letter-spacing:.12em;color:var(--mn-sm,#777);margin-top:6px}
+.mh-date{font-size:13px;letter-spacing:.3em;font-weight:500;padding-left:.3em;color:#222}
+.mh-tag{font-size:12px;letter-spacing:.12em;color:#777;margin-top:6px}
 .mh-scroll{margin-top:2.4svh;width:1px;height:34px;background:rgba(0,0,0,.18);position:relative;overflow:hidden}
 .mh-scroll i{position:absolute;left:0;top:0;width:1px;height:12px;background:#111;animation:mnScroll 2s ease-in-out infinite}
 
 /* keadaan awal (sebelum dibuka) & animasi saat .play */
 .mono-hero.pre .mn-c{animation:none;opacity:0}
 .mono-hero .mn-c{animation:none}
-.mono-hero.play .mn-c{animation:mnIn calc(.9s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0ms)}
+.mono-hero.play .mn-c{animation:mnIn calc(.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
 .mono-hero .mh-frame,.mono-hero .mh-amp,.mono-hero .mh-orn,.mono-hero .mh-date,.mono-hero .mh-tag,.mono-hero .mh-scroll{opacity:0}
-.mono-hero.play .mh-frame{animation:mnFrame calc(1.4s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) calc(.35s * var(--mk,1.8)) both}
-.mono-hero.play .mh-fl.a{animation:mnSprA calc(1.5s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) calc(.9s * var(--mk,1.8)) both,mnSway 7s ease-in-out 2.6s infinite alternate}
-.mono-hero.play .mh-fl.b{animation:mnSprB calc(1.5s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) calc(1.1s * var(--mk,1.8)) both,mnSway 8s ease-in-out 2.8s infinite alternate-reverse}
-.mono-hero.play .mh-amp{animation:mnAmp calc(.9s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) calc(1.35s * var(--mk,1.8)) both}
-.mono-hero.play .mh-orn{animation:mnOrn calc(1.3s * var(--mk,1.8)) cubic-bezier(.2,.7,.2,1) calc(1.8s * var(--mk,1.8)) both}
-.mono-hero.play .mh-date{animation:mnUp calc(.9s * var(--mk,1.8)) ease calc(2.1s * var(--mk,1.8)) both}
-.mono-hero.play .mh-tag{animation:mnUp calc(.9s * var(--mk,1.8)) ease calc(2.3s * var(--mk,1.8)) both}
-.mono-hero.play .mh-scroll{animation:mnUp calc(.9s * var(--mk,1.8)) ease calc(2.6s * var(--mk,1.8)) both}
+.mono-hero.play .mh-frame{animation:mnFrame 1.4s cubic-bezier(.2,.7,.2,1) .35s both}
+.mono-hero.play .mh-fl.a{animation:mnSprA 1.5s cubic-bezier(.2,.7,.2,1) .9s both,mnSway 7s ease-in-out 2.6s infinite alternate}
+.mono-hero.play .mh-fl.b{animation:mnSprB 1.5s cubic-bezier(.2,.7,.2,1) 1.1s both,mnSway 8s ease-in-out 2.8s infinite alternate-reverse}
+.mono-hero.play .mh-amp{animation:mnAmp calc(.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(1.35s*var(--tk,1)) both}
+.mono-hero.play .mh-orn{animation:mnOrn 1.3s cubic-bezier(.2,.7,.2,1) 1.8s both}
+.mono-hero.play .mh-date{animation:mnUp calc(.9s*var(--tk,1)) ease calc(2.1s*var(--tk,1)) both}
+.mono-hero.play .mh-tag{animation:mnUp calc(.9s*var(--tk,1)) ease calc(2.3s*var(--tk,1)) both}
+.mono-hero.play .mh-scroll{animation:mnUp .9s ease 2.6s both}
 .mono-hero.instant .mn-c,.mono-hero.instant .mh-frame,.mono-hero.instant .mh-fl,.mono-hero.instant .mh-amp,.mono-hero.instant .mh-orn,.mono-hero.instant .mh-date,.mono-hero.instant .mh-tag,.mono-hero.instant .mh-scroll{animation-duration:.01s!important;animation-delay:0s!important}
 
 @keyframes mnKb{from{transform:scale(1)}to{transform:scale(1.09)}}
@@ -108,7 +108,7 @@
 /* foto tamu tampil BERWARNA; hitam putih hanya bila diaktifkan di admin (Tema 12 → foto hitam putih) */
 .t-mono.mono-gray .bgl img,.t-mono.mono-gray .bgl .pimg{filter:grayscale(1)}
 .t-mono.mono-gray .phb img,.t-mono.mono-gray .pimg,.t-mono.mono-gray .pf img,.t-mono.mono-gray .gal img,.t-mono.mono-gray .lb img{filter:grayscale(1) contrast(1.04)}
-.t-mono .btn{border-radius:999px;background:var(--mn-btn,#111);color:var(--mn-btnt,#fff);box-shadow:none}
+.t-mono .btn{border-radius:999px;background:#111;color:#fff;box-shadow:none}
 .t-mono .btn.sq{border-radius:999px}
 .t-mono h2,.t-mono h3{letter-spacing:.04em}
 /* kartu kapsul → kartu garis tipis dengan ornamen */
@@ -118,7 +118,7 @@
 .t-mono .cap::before{top:-34px;background-image:url(/assets/mono/orn-top.webp)}
 .t-mono .cap::after{bottom:-24px;height:24px;background-image:url(/assets/mono/orn-bottom.webp)}
 .t-mono .cap-in{margin:0;border-radius:0;background:#fff;box-shadow:inset 0 0 0 1px #111,inset 0 0 0 6px #fff,inset 0 0 0 7px rgba(0,0,0,.3);padding:46px 9% 40px}
-.t-mono .cap-in h3{color:var(--mn-hd,#111)}
+.t-mono .cap-in h3{color:#111}
 .t-mono .cap-in h3.gt{color:#333}
 .t-mono .fr-arc,.t-mono .fr-side{opacity:0!important}
 .t-mono .music{background:#111;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.3)}
@@ -134,7 +134,7 @@
 .t-mono .gpanel,.t-mono .cpanel{background:rgba(255,255,255,.96);border-color:#111}
 .t-mono .cap-in{background:#fff}
 .t-mono .h-display,.t-mono .script-h,.t-mono .h-head,.t-mono .closing .names,.t-mono .couple .script,.t-mono .rsvp .big{background:none;-webkit-background-clip:border-box;background-clip:border-box;-webkit-text-fill-color:currentColor;color:var(--primary);animation:none}
-.t-mono .bgi .h-display,.t-mono .bgi .script-h,.t-mono .bgi .h-head,.t-mono .bgi .rsvp .big{color:var(--mn-ph,#fff)}
+.t-mono .bgi .h-display,.t-mono .bgi .script-h,.t-mono .bgi .h-head,.t-mono .bgi .rsvp .big{color:#fff}
 .t-mono .gtrack .sl{background:#f2f2f2;border-color:#bbb}
 .t-mono .sparkles,.t-mono .ff{display:none}
 .t-mono .fm input,.t-mono .fm select,.t-mono .fm textarea{border-color:#111;color:#111}
@@ -151,7 +151,7 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 /* gambar hiasan bawaan (langit krem, awan peach, istana) → abu netral; foto unggahan tamu tidak disentuh */
 .t-mono .bgl img[src*="/assets/scene/"],.t-mono .bgl img[src*="/assets/rose/"],.t-mono .bgl img[src*="/assets/pal/"],.t-mono .bgl img[src*="/assets/default/"],.t-mono .cv-bg img[src*="/assets/"]{filter:grayscale(1)}
 .t-mono .closing .stage{background:#efefef}
-.t-mono .closing{background:#fff;color:var(--mn-bd,#111)}
+.t-mono .closing{background:#fff;color:#111}
 
 /* ---------- bingkai mempelai: lingkaran oval + bunga atas & bawah ---------- */
 .t-mono .pho-w{width:min(86%,330px);aspect-ratio:1155/1745;margin:0 auto}
@@ -165,7 +165,7 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 .t-mono .col{box-shadow:0 0 50px rgba(0,0,0,.14)}
 .t-mono .ld{border-color:rgba(0,0,0,.15);border-top-color:#111}
 .t-mono .ld-k{color:#666}.t-mono .ld-ring::after,.t-mono .ld-bar{border-color:rgba(0,0,0,.2);background:rgba(0,0,0,.12)}
-.t-mono .btn.dark{background:var(--mn-btn,#111)}
+.t-mono .btn.dark{background:#111}
 .t-mono .wishes::before{background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.72))!important}
 .t-mono .story::before{background:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.1) 55%,rgba(0,0,0,.34))}
 .t-mono .wpanel{background:rgba(18,18,18,.45);border-color:rgba(255,255,255,.4)}
@@ -242,7 +242,7 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mh-frame.circle .mh-fl.a{left:-20%;top:-10%;height:70%}
 .mh-frame.circle .mh-fl.b{right:-20%;bottom:-8%;width:46%}
 /* layar penuh tanpa bingkai */
-.mono-hero.full{color:var(--mn-cv,#fff);background:#0d0d0d}
+.mono-hero.full{color:#fff;background:#0d0d0d}
 .mono-hero.full::before{display:none}
 .mono-hero.full .mh-in{position:absolute;inset:0;width:100%;padding:6svh 0 5svh;justify-content:flex-end}
 .mono-hero.full .mh-in>*:not(.mh-frame){position:relative;z-index:3}
@@ -251,20 +251,17 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mono-hero.full .mh-ph{inset:0;border-radius:0;background:#111}
 .mono-hero.full .mh-ph::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%)}
 .mono-hero.full .mh-ph .mn-yt{width:max(100%,177.78svh);height:max(100%,56.25vw);min-width:0;min-height:0;aspect-ratio:auto}
-.mono-hero.full .mh-mono{color:var(--mn-cv,#fff)}
-.mono-hero.full .mh-k{position:absolute;top:6svh;left:0;right:0;color:var(--mn-cv,#fff)}
-.mono-hero.full .mh-names{color:var(--mn-cv,#fff);text-shadow:0 2px 24px rgba(0,0,0,.5);margin-top:0}
-.mono-hero.full .mh-amp{color:var(--mn-cv,rgba(255,255,255,.85))}
+.mono-hero.full .mh-mono{color:#fff}
+.mono-hero.full .mh-k{position:absolute;top:6svh;left:0;right:0;color:#fff}
+.mono-hero.full .mh-names{color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.5);margin-top:0}
+.mono-hero.full .mh-amp{color:rgba(255,255,255,.85)}
 .mono-hero.full .mh-orn{filter:invert(1) brightness(1.2);opacity:.9}
-.mono-hero.full .mh-date{color:var(--mn-cv,#fff)}
-.mono-hero.full .mh-tag{color:var(--mn-cv,rgba(255,255,255,.8))}
+.mono-hero.full .mh-date{color:#fff}
+.mono-hero.full .mh-tag{color:rgba(255,255,255,.8)}
 .mono-hero.full .mh-scroll{background:rgba(255,255,255,.25)}.mono-hero.full .mh-scroll i{background:#fff}
-.mono-hero.full.play .mh-frame{animation:mnFade calc(1.4s * var(--mk,1.8)) ease .1s both}
+.mono-hero.full.play .mh-frame{animation:mnFade 1.4s ease .1s both}
 @keyframes mnFade{from{opacity:0}to{opacity:1}}
 .mono-hero.full .mh-in>.mh-k{position:absolute;top:6svh;left:0;right:0}
 .mono-hero.full .mh-ph::after{background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 24%,rgba(0,0,0,.05) 38%,rgba(0,0,0,.88) 100%)}
 .mh-frame.circle .mh-fl.a{left:-9%;top:-8%;height:62%}
 .mh-frame.circle .mh-fl.b{right:-12%;bottom:-6%;width:42%}
-
-/* teks di atas foto (section berlatar foto) — hanya aktif bila warnanya diatur di admin */
-.t-mono.mn-ph-on .bgi,.t-mono.mn-ph-on .bgi p,.t-mono.mn-ph-on .bgi .lead,.t-mono.mn-ph-on .bgi small{color:var(--mn-ph)}

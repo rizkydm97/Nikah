@@ -94,14 +94,16 @@
     "defaultGuest": "Tamu Undangan",
     "placeText": "Di Tempat",
     "button": "Buka Undangan",
-    "photoRatio": "16/9"
+    "photoRatio": "16/9",
+    "textSpeed": ""
   },
   "hero": {
     "kicker": "The Wedding Of",
     "groom": "Robert",
     "bride": "Cristina",
     "dateText": "11.04.2027",
-    "hashtag": "#HastAgKamUDanDia"
+    "hashtag": "#HastAgKamUDanDia",
+    "textSpeed": ""
   },
   "quote": {
     "bg": "/assets/default/couple-wide.svg",
@@ -210,6 +212,7 @@
     "sliderDir": "right",
     "sliderSpeed": "normal",
     "sliderSize": "normal",
+    "sliderItems": [],
     "cols": "",
     "shape": "",
     "layout": "masonry"
@@ -285,7 +288,8 @@
     "names": "Robert & Cristine",
     "text": "Merupakan suatu kebahagiaan dan kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.",
     "footer": "Dibuat dengan cinta",
-    "footerUrl": ""
+    "footerUrl": "",
+    "textSpeed": ""
   },
   "sections": [
     {
