@@ -141,10 +141,10 @@ async function route(req, res, url) {
   }
   // Hapus file dari Pustaka (Supabase Storage)
   if (m === 'POST' && p === '/api/admin/upload-delete') {
-    const b = await readJson(req), name = String(b.name || '').split('?')[0];
-    if (!/^[a-zA-Z0-9._-]{1,200}$/.test(name)) return send(res, 400, { error: 'Nama file tidak valid' });
-    must(await sb().storage.from(BUCKET).remove([name]));
-    return send(res, 200, { ok: true });
+    const b = await readJson(req), list = (Array.isArray(b.names) ? b.names : [b.name]).map((x) => String(x || '').split('?')[0]).slice(0, 200);
+    if (!list.length || list.some((n) => !/^[a-zA-Z0-9._-]{1,200}$/.test(n))) return send(res, 400, { error: 'Nama file tidak valid' });
+    must(await sb().storage.from(BUCKET).remove(list));
+    return send(res, 200, { ok: true, deleted: list.length });
   }
   if (m === 'GET' && p === '/api/admin/uploads') {
     const files = must(await sb().storage.from(BUCKET).list('', { limit: 1000, sortBy: { column: 'created_at', order: 'desc' } }));

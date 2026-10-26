@@ -252,3 +252,9 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .libitem>button:first-child{width:100%}
 .libitem .libdel{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:14px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0}
 .libitem .libdel:hover{background:#c0392b}
+.libbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.libbar .danger{color:#c0392b;border-color:#c0392b}
+.libbar .danger:disabled{opacity:.4;cursor:default}
+.libgrid.selmode .libdel{display:none}
+.libitem.sel>button:first-child{outline:3px solid #c0392b;outline-offset:-3px}
+.libitem.sel::after{content:"✓";position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:#c0392b;color:#fff;font-size:13px;display:grid;place-items:center;pointer-events:none}

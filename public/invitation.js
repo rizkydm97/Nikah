@@ -199,6 +199,13 @@
     });
     let l = $('#gfonts'); if (!l) { l = document.createElement('link'); l.id = 'gfonts'; l.rel = 'stylesheet'; document.head.appendChild(l); }
     const href = 'https://fonts.googleapis.com/css2?' + fams.join('&') + '&display=swap'; if (l.href !== href) l.href = href;
+    { // Tema 12: warna teks bisa diatur per bagian atau sekaligus (mono.textAll)
+      const m = (MN && c.mono) || {}, all = MN ? (m.textAll || '') : '';
+      const sv = (k, v) => { if (v) r.setProperty(k, v); else r.removeProperty(k); };
+      sv('--mn-cv', MN ? (m.textCover || all) : ''); sv('--mn-nm', MN ? (m.textNames || all) : ''); sv('--mn-sm', MN ? (m.textSmall || all) : '');
+      sv('--mn-hd', MN ? (m.textHeading || all) : ''); sv('--mn-bd', MN ? (m.textBody || all) : ''); sv('--mn-ph', MN ? (m.textOnPhoto || all) : '');
+      sv('--mn-btn', MN ? m.btnBg : ''); sv('--mn-btnt', MN ? m.btnText : ''); sv('--mn-cbtn', MN ? m.coverBtnBg : ''); sv('--mn-cbtnt', MN ? m.coverBtnText : '');
+      if (MN) { const hd = m.textHeading || all, bd = m.textBody || all; if (hd) { r.setProperty('--primary', hd); r.setProperty('--ink', hd); } if (bd) r.setProperty('--body', bd); } }
     r.setProperty('--arc', cssUrl(c.scene.frameArc)); r.setProperty('--side', cssUrl(c.scene.frameSide)); r.setProperty('--div', PT ? cssUrl(PT.divider) : 'none'); r.setProperty('--motif', PT && PT.motif ? cssUrl(PT.motif) : 'none');
     document.title = c.general.title || document.title;
     { // warna bilah browser (iOS/Android) mengikuti tema, bukan krem bawaan

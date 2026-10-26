@@ -224,17 +224,37 @@
       m.querySelector('[data-close]').onclick = () => close(null); m.onclick = (e) => { if (e.target === m) close(null); };
       g.textContent = '';
       if (!items.length) g.textContent = 'Belum ada file yang diunggah.';
+      const sel = new Set(); let selMode = false; const cards = new Map();
+      const nameOf = (u) => u.url.split('/').pop().split('?')[0];
+      const bar = h('div', { class: 'libbar' });
+      const bPick = h('button', { class: 'btn sm', type: 'button' }, '☑ Pilih cepat');
+      const bAll = h('button', { class: 'btn sm', type: 'button' }, 'Pilih semua');
+      const bDel = h('button', { class: 'btn sm danger', type: 'button' }, '🗑 Hapus terpilih (0)');
+      const bWipe = h('button', { class: 'btn sm danger', type: 'button' }, '🗑 Hapus semua (' + items.length + ')');
+      bar.append(bPick, bAll, bDel, bWipe);
+      const old = m.querySelector('.libbar'); if (old) old.remove(); g.before(bar);
+      const refresh = () => { bAll.hidden = bDel.hidden = !selMode; bDel.textContent = '🗑 Hapus terpilih (' + sel.size + ')'; bDel.disabled = !sel.size; bPick.textContent = selMode ? '✕ Selesai pilih' : '☑ Pilih cepat'; bWipe.textContent = '🗑 Hapus semua (' + cards.size + ')'; bWipe.hidden = !cards.size; g.classList.toggle('selmode', selMode); cards.forEach((c, n) => c.classList.toggle('sel', sel.has(n))); };
+      const wipe = async (names, msg) => {
+        if (!names.length || !confirm(msg)) return;
+        try {
+          for (let k = 0; k < names.length; k += 100) await api('/api/admin/upload-delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ names: names.slice(k, k + 100) }), timeout: 60000 });
+          names.forEach((n) => { const c = cards.get(n); if (c) c.remove(); cards.delete(n); sel.delete(n); });
+          if (!cards.size) g.textContent = 'Belum ada file yang diunggah.';
+          toast(names.length + ' file dihapus ✓'); refresh();
+        } catch (er) { toast(er.message || 'Gagal menghapus', true); }
+      };
+      bPick.onclick = () => { selMode = !selMode; if (!selMode) sel.clear(); refresh(); };
+      bAll.onclick = () => { if (sel.size === cards.size) sel.clear(); else cards.forEach((c, n) => sel.add(n)); refresh(); };
+      bDel.onclick = () => wipe([...sel], 'Hapus ' + sel.size + ' file terpilih dari Pustaka?\n\nBila masih dipakai di undangan, gambar/video-nya akan hilang. Tidak bisa dibatalkan.');
+      bWipe.onclick = () => wipe([...cards.keys()], 'HAPUS SEMUA ' + cards.size + ' file di daftar ini?\n\nFile yang masih dipakai di undangan akan hilang. Tidak bisa dibatalkan.');
       items.forEach((u) => {
-        const fname = u.url.split('/').pop().split('?')[0], isV = /\.(mp4|webm|mov|m4v)$/i.test(fname), isA = /\.(mp3|m4a|ogg|wav)$/i.test(fname);
+        const fname = nameOf(u), isV = /\.(mp4|webm|mov|m4v)$/i.test(fname), isA = /\.(mp3|m4a|ogg|wav)$/i.test(fname);
         const card = h('div', { class: 'libitem' },
-          h('button', { onclick: () => close(u.url) }, isA ? h('div', { class: 'im' }, '♪') : isV ? h('div', { class: 'im' }, '▶') : h('div', { class: 'im', style: `background-image:url("${u.url}")` }), h('small', {}, fname)),
-          h('button', { class: 'libdel', title: 'Hapus file ini', onclick: async (e) => {
-            e.stopPropagation();
-            if (!confirm('Hapus file ini dari Pustaka?\n' + fname + '\n\nBila masih dipakai di undangan, gambar/video-nya akan hilang.')) return;
-            try { await api('/api/admin/upload-delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: fname }) }); card.remove(); toast('File dihapus ✓'); } catch (er) { toast(er.message || 'Gagal menghapus', true); }
-          } }, '🗑'));
-        g.append(card);
+          h('button', { onclick: () => { if (selMode) { sel.has(fname) ? sel.delete(fname) : sel.add(fname); refresh(); } else close(u.url); } }, isA ? h('div', { class: 'im' }, '♪') : isV ? h('div', { class: 'im' }, '▶') : h('div', { class: 'im', style: `background-image:url("${u.url}")` }), h('small', {}, fname)),
+          h('button', { class: 'libdel', title: 'Hapus file ini', onclick: (e) => { e.stopPropagation(); wipe([fname], 'Hapus file ini dari Pustaka?\n' + fname + '\n\nBila masih dipakai di undangan, gambar/video-nya akan hilang.'); } }, '🗑'));
+        cards.set(fname, card); g.append(card);
       });
+      refresh();
     });
   }
 

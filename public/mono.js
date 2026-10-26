@@ -13,9 +13,12 @@
   const colors = { primary: '#111111', accent: '#111111', rose: '#222222', gold: '#8c8c8c', paper: '#ffffff', ink: '#111111', body: '#3d3d3d', sideBg: '#e6e6e6',
     fontDisplay: 'Cormorant Garamond', fontHeading: 'Cormorant Garamond', fontBody: 'Poppins', fontScript: 'Great Vibes' };
 
+  // kecepatan animasi teks (admin → mono.textSpeed): cepat 1 · normal 1.8 · pelan 2.6 · sangat pelan 3.6
+  const SPD = { cepat: 1, normal: 1.8, pelan: 2.6, sangat: 3.6 };
+  const spd = (m) => SPD[(m && m.textSpeed) || 'normal'] || 1.8;
   // teks dipecah per huruf (kata tidak terputus) agar bisa dianimasikan satu per satu
   function chars(H, s, step, start) {
-    let n = 0; step = step || 45; start = start || 0;
+    const K = spd(H.C.mono); let n = 0; step = (step || 45) * K; start = (start || 0) * K;
     return String(s == null ? '' : s).split(/(\s+)/).map((w) => /^\s+$/.test(w) || !w ? ' '
       : `<span class="mn-w">${[...w].map((c) => `<span class="mn-c" style="--d:${start + (n++) * step}ms">${H.esc(c)}</span>`).join('')}</span>`).join('');
   }
@@ -40,7 +43,7 @@
     const src = m.coverMedia ? m : (H.safeUrl(o.photo) && !/\/assets\/default\//.test(o.photo) ? o : null);
     const key = src === m ? 'coverMedia' : 'photo';
     const md = src ? media(H, src, key, 'mn-cv') : '';
-    return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover">
+    return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover" style="--mk:${spd(m)}">
       <div class="mn-bg${md ? '' : ' none'}"><div class="mn-kb">${md}</div></div><i class="mn-sh"></i>
       <div class="mn-top"><div class="mn-k">${chars(H, o.kicker, 38, 250)}</div></div>
       <div class="mn-nm"><span class="mn-n a">${chars(H, g, 70, 650)}</span><i class="mn-amp">&amp;</i><span class="mn-n b">${chars(H, b, 70, 1250)}</span></div>
@@ -57,7 +60,7 @@
     const src = m.frameMedia ? m : (H.safeUrl(C.cover.photo) && !/\/assets\/default\//.test(C.cover.photo) ? C.cover : null);
     const md = src ? media(H, src, src === m ? 'frameMedia' : 'photo', 'mn-fm') : '';
     const mono = `<div class="mh-mono"><span>${H.esc((h.groom || '♥')[0])}</span><i>&amp;</i><span>${H.esc((h.bride || '')[0] || '')}</span></div>`;
-    return `<section class="sec hero mono-hero pre${shape === 'full' ? ' full' : ''}${m.grayPhoto === true ? ' gray' : ''}" id="s-hero"><div class="mh-in">
+    return `<section class="sec hero mono-hero pre${shape === 'full' ? ' full' : ''}${m.grayPhoto === true ? ' gray' : ''}" id="s-hero" style="--mk:${spd(m)}"><div class="mh-in">
       <div class="mh-k">${chars(H, h.kicker, 40, 500)}</div>
       <div class="mh-frame ${shape}">
         <div class="mh-ph">${md || mono}</div>
