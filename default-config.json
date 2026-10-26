@@ -368,7 +368,7 @@
   "mono": {
     "coverMedia": "",
     "frameMedia": "",
-    "frameShape": "oval",
+    "frameStyle": "rect",
     "grayPhoto": false
   }
 }

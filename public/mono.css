@@ -154,8 +154,8 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 .t-mono .closing{background:#fff;color:#111}
 
 /* ---------- bingkai mempelai: lingkaran oval + bunga atas & bawah ---------- */
-.t-mono .pho-w{width:min(84%,320px);aspect-ratio:710/992;margin:0 auto}
-.t-mono .pho-w .pho{position:absolute;left:13.2%;right:19%;top:12.4%;bottom:9.4%;aspect-ratio:auto;border:0;border-radius:50%;background:#e9e9e9;box-shadow:none}
+.t-mono .pho-w{width:min(86%,330px);aspect-ratio:1155/1745;margin:0 auto}
+.t-mono .pho-w .pho{position:absolute;left:19.3%;right:10.1%;top:14.8%;bottom:10.7%;aspect-ratio:auto;border:0;border-radius:50%;background:#e9e9e9;box-shadow:none}
 .t-mono .pho-w::after{content:"";position:absolute;inset:0;background:url(/assets/mono/oval-flower.webp) center/100% 100% no-repeat;z-index:4;pointer-events:none}
 .t-mono .pho-w .fl-acc{display:none}
 .t-mono .couple .script{margin-top:2px;font-size:clamp(44px,13vw,58px)}
@@ -203,5 +203,20 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 .t-mono .bgi .wpanel .btn,.t-mono .wishes .btn{background:#fff;color:#111}
 .t-mono .bgi .wpanel .btn svg,.t-mono .wishes .btn svg{fill:#111}
 
-/* penutup: bunga bawah dihilangkan (tampak aneh di bawah bingkai); bunga atas tetap */
-.t-mono .closing .fb{display:none}
+/* penutup: bunga atas & bawah tampil DI DEPAN bingkai lengkung (tidak tertutup panel putih) */
+.t-mono .closing .ft,.t-mono .closing .fb{z-index:1}
+.t-mono .closing .fb{bottom:8%}
+.t-mono .closing .cl-in{z-index:2}
+
+/* ---------- bingkai kotak: mawar di empat sudut, foto / video di tengah ---------- */
+.mh-frame.rect{width:min(78%,calc(46svh * .8),340px)}
+.mh-cr{position:absolute;z-index:3;width:38%;height:auto;pointer-events:none;opacity:0}
+.mh-cr.cq-br{right:-7%;bottom:-6%}
+.mh-cr.cq-tl{left:-7%;top:-6%;transform:rotate(180deg)}
+.mh-cr.cq-tr{right:-7%;top:-6%;transform:scaleY(-1)}
+.mh-cr.cq-bl{left:-7%;bottom:-6%;transform:scaleX(-1)}
+.mono-hero.play .mh-cr{animation:mnCr 1.5s cubic-bezier(.2,.7,.2,1) var(--cd,1s) both}
+.mono-hero.instant .mh-cr{animation-duration:.01s!important;animation-delay:0s!important}
+.mh-frame.rect .mh-ph video,.mh-frame.rect .mh-ph .mn-m{object-fit:cover}
+@keyframes mnCr{from{opacity:0;scale:.86}to{opacity:1;scale:1}}
+@media (prefers-reduced-motion:reduce){.mh-cr{animation:none!important;opacity:1!important}}
