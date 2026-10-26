@@ -244,3 +244,11 @@ Panel nama dikelilingi lingkaran bunga (public/assets/t/ungu/wreath.webp, dibuat
 - Tamu bisa menambah **foto profil** (dipotong persegi & dikecilkan otomatis; tampil sebagai avatar bulat di samping nama). Tiap ucapan menampilkan tanggal dan jam (WIB).
 - **PENTING (sekali saja):** jalankan ulang `supabase/schema.sql` di Supabase → SQL Editor agar kolom `photo` pada tabel `wishes` dibuat. Tanpa itu ucapan tetap terkirim, tetapi foto tidak tersimpan.
 - HP/tablet: halaman menampilkan 5 ucapan terbaru + tombol "Lihat Semua Ucapan"; daftar lengkap dibuka di lembar layar-penuh yang bisa di-scroll (efek latar dimatikan selama terbuka; tombol Kembali HP menutup lembar). Desktop: kotak scroll biasa.
+
+## v13 — Tema 12 Monokrom (hitam putih, bersih & ringan)
+Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu, kelopak jatuh, awan, atau burung; animasi hanya teks per huruf, fade, dan geser halus (hanya transform/opacity, ringan di HP).
+- **Cover**: foto **atau video** layar penuh (otomatis hitam putih) + judul, nama (huruf muncul satu per satu), tanggal, nama tamu, tombol "Buka Undangan".
+- **Setelah dibuka**: sampul naik, lalu halaman **bingkai oval** (aset bunga & garis ganda dari Anda) berisi foto/video, nama, ornamen, tanggal. Bisa diganti bingkai **kotak**.
+- **Section lain**: normal, bernuansa hitam putih (kartu acara/gift bergaris tipis + ornamen).
+- Isi lewat Admin → **Tema 12 Hitam Putih** (foto/video cover, foto/video bingkai, bentuk bingkai, hitam-putih otomatis). Video: unggah .mp4/.webm, tempel URL .mp4, atau link YouTube.
+- File: `public/mono.js`, `public/mono.css`, aset `public/assets/mono/`.

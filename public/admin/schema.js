@@ -24,7 +24,7 @@ const SCHEMA = [
     { k: 'general.blockRightClick', l: 'Matikan klik kanan', t: 'bool' },
   ] },
   { id: 'theme', title: 'Tema, Warna & Font', hint: 'Pilih tema tampilan. Isi undangan (nama, acara, foto, rekening, RSVP) tetap sama — hanya desain, animasi & dekorasi yang berganti.', fields: [
-    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan'], ['dayak', 'Tema 9 — Dayak: Kerajaan Malinau (tameng 3D, penari, enggang)'], ['airterjun', 'Tema 10 — Ungu Adat Jawa (joglo, air terjun berkabut, gunungan, melati, penjor)'], ['istana', 'Tema 11 — Adat Jawa (joglo, gunungan, gong, mega mendung)']], preset: 1 },
+    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan'], ['dayak', 'Tema 9 — Dayak: Kerajaan Malinau (tameng 3D, penari, enggang)'], ['airterjun', 'Tema 10 — Ungu Adat Jawa (joglo, air terjun berkabut, gunungan, melati, penjor)'], ['istana', 'Tema 11 — Adat Jawa (joglo, gunungan, gong, mega mendung)'], ['mono', 'Tema 12 — Monokrom: hitam putih, bersih & ringan (foto/video, bingkai oval)']], preset: 1 },
     { k: 'theme.palette', l: 'Tema warna — klik salah satu; warna tulisan, tombol, latar & bunga ikut berganti', t: 'palette' },
     { k: 'theme.primary', l: 'Warna utama (judul)', t: 'color' }, { k: 'theme.accent', l: 'Warna tombol', t: 'color' }, { k: 'theme.rose', l: 'Warna merah muda (kartu Wedding Gift)', t: 'color' },
     { k: 'theme.gold', l: 'Warna emas (garis lengkung cover & penutup)', t: 'color' }, { k: 'theme.paper', l: 'Warna latar kertas', t: 'color' },
@@ -97,6 +97,12 @@ const SCHEMA = [
     { k: 'scene.ornament', l: 'Ikon emas di atas kartu acara (gunungan)', t: 'image', deco: 1 },
     { k: 'scene.butterflyColor1', l: 'Warna sayap kupu-kupu 1', t: 'color' },
     { k: 'scene.butterflyColor2', l: 'Warna sayap kupu-kupu 2', t: 'color' },
+  ] },
+  { id: 'mono', title: 'Tema 12 — Foto/Video Monokrom', hint: 'Dipakai bila "Tema undangan" = Tema 12. Cover & bingkai bisa diisi FOTO atau VIDEO (unggah .mp4/.webm, atau tempel link YouTube/URL .mp4). Teks cover diisi di menu Cover & Pembuka.', fields: [
+    { k: 'mono.coverMedia', l: 'Foto / video cover (layar penuh)', t: 'media', ar: '9/19' },
+    { k: 'mono.frameMedia', l: 'Foto / video di dalam bingkai (halaman setelah undangan dibuka)', t: 'media', ar: '636/1007' },
+    { k: 'mono.frameShape', l: 'Bentuk bingkai', t: 'select', o: [['oval', 'Oval (bunga & garis ganda)'], ['rect', 'Kotak (garis ganda)']] },
+    { k: 'mono.gray', l: 'Ubah foto/video otomatis jadi hitam putih', t: 'bool' },
   ] },
   { id: 'scene2', title: 'Dekorasi Tema 2 (Rose Garden)', hint: 'Gambar khusus Tema 2. Dipakai bila "Tema undangan" = Tema 2. Ganti dengan PNG/WebP/SVG transparan bila ingin.', fields: [
     { k: 'scene2.sky', l: 'Latar langit pink', t: 'image', deco: 1 },
@@ -196,6 +202,7 @@ const THEME_PRESETS = {
   klasik: { palette: 'auto', primary: '#6B3E16', accent: '#8A5422', rose: '#8A5422', gold: '#B88A3E', paper: '#F8F1E6', ink: '#2C1A0B', body: '#47321F', sideBg: '#EBDFCC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   dayak: { palette: 'auto', primary: '#9A2A1E', accent: '#B8341F', rose: '#B8341F', gold: '#C99A3C', paper: '#FBF4E8', ink: '#1E120C', body: '#3E2A1E', sideBg: '#EFE2CC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   airterjun: { palette: 'auto', primary: '#6B4A8A', accent: '#8E6BB0', rose: '#B4503E', gold: '#C9A27A', paper: '#F7F1FB', ink: '#2E2140', body: '#4A3B5C', sideBg: '#E6DDF0', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  mono: { palette: 'auto', primary: '#111111', accent: '#111111', rose: '#222222', gold: '#8c8c8c', paper: '#ffffff', ink: '#111111', body: '#3d3d3d', sideBg: '#e6e6e6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cormorant Garamond', fontBody: 'Poppins', fontScript: 'Great Vibes' },
   istana: { palette: 'auto', primary: '#8A3A12', accent: '#B8561E', rose: '#B8561E', gold: '#C99A3C', paper: '#FFF6E4', ink: '#3A1D0C', body: '#5A3A22', sideBg: '#F1DDB4', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
 };
 

@@ -23,15 +23,16 @@
     rose: { floralTop: '/assets/rose/rose-top.webp', floralBottom: '/assets/rose/rose-bottom.webp', column: '/assets/rose/rose-column.webp', frameArc: '/assets/rose/rose-frame-arc.webp', frameSide: '/assets/rose/rose-frame-side.webp', flowers: '/assets/rose/rose-bouquet.webp' },
   };
   const FL_FILE = { floralTop: 'top', floralBottom: 'bottom', column: 'column', frameArc: 'frame-arc', frameSide: 'frame-side', flowers: 'bouquet' };
-  let PAL = 'auto', PT = null, PICT = null; // PT = data tema bergambar (Tema 3-8)
+  let PAL = 'auto', PT = null, PICT = null, MN = false; // PT = data tema bergambar (Tema 3-8)
   function effective(cfg) {
     const pre = cfg.theme && cfg.theme.preset;
-    PT = (window.PIC_THEMES && window.PIC_THEMES[pre]) || null; PICT = PT ? pre : null;
+    PT = (window.PIC_THEMES && window.PIC_THEMES[pre]) || null; PICT = PT ? pre : null; MN = !!(window.MONO && pre === 'mono');
     THEME = PT ? PT.base : pre === 'rose' ? 'rose' : 'jawa';
     CLOUDS = CLOUD_SETS[THEME];
     const out = THEME === 'rose' ? Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene, cfg.scene2 || {}) }) : Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene) });
     PAL = PAL_HUE[cfg.theme && cfg.theme.palette] !== undefined ? cfg.theme.palette : 'auto';
     if (PT && PAL === 'auto') PAL = PT.pal;
+    if (MN) PAL = 'auto';
     // konfigurasi lama yang masih memakai warna bawaan Tema 1/2 pada tema bergambar -> pakai warna bawaan tema itu
     if (PT && PT.colors && (!cfg.theme.palette || cfg.theme.palette === 'auto') && ['#A00818', '#B4536D'].includes(String(cfg.theme.primary || '').toUpperCase())) out.theme = Object.assign({}, cfg.theme, PT.colors);
     if (PT) {
@@ -41,7 +42,14 @@
       for (const k in PT.deco) { const v = out.scene[k]; if (!v || v === D0[k] || v === D1[k] || /\/assets\/(pal|default)\//.test(v)) out.scene[k] = PT.deco[k]; }
       if (out.couple && (!out.couple.flower || out.couple.flower === DEF_FL.jawa.flowers || out.couple.flower === DEF_FL.rose.flowers)) out.couple = Object.assign({}, out.couple, { flower: PT.deco.flowers });
     }
-    if (!PT && PAL !== 'auto' && PAL !== NATIVE[THEME]) {
+    if (MN) { // Tema 12 Monokrom: hitam putih, bersih — tanpa kupu-kupu, kelopak, awan, burung, gerak dedaunan
+      out.effects = Object.assign({}, out.effects, { butterflies: false, petals: false, javaFx: false, clouds: false, birds: false, particles: false, sway: false, glow: false, parallax: false, bgParallax: false, skyShift: false, nightMode: false });
+      if ((!cfg.theme.palette || cfg.theme.palette === 'auto') && ['#A00818', '#B4536D'].includes(String(cfg.theme.primary || '').toUpperCase())) out.theme = Object.assign({}, cfg.theme, window.MONO.colors);
+      const MD = window.MONO.deco, D0 = Object.assign({}, DEF_FL.jawa, { ornament: '/assets/default/ornament.svg' }), D1 = DEF_FL.rose;
+      for (const k in MD) { const v = out.scene[k]; if (!v || v === D0[k] || v === D1[k] || /\/assets\/(pal|default|scene|rose)\//.test(v)) out.scene[k] = MD[k]; }
+      if (out.couple && (!out.couple.flower || out.couple.flower === DEF_FL.jawa.flowers || out.couple.flower === DEF_FL.rose.flowers)) out.couple = Object.assign({}, out.couple, { flower: MD.flowers });
+    }
+    if (!PT && !MN && PAL !== 'auto' && PAL !== NATIVE[THEME]) {
       for (const k in FL_FILE) if (out.scene[k] === DEF_FL[THEME][k]) out.scene[k] = `/assets/pal/${PAL}/${THEME}-${FL_FILE[k]}.webp`;
       if (THEME === 'rose') {
         const RS = { sky: 'rose-sky.jpg', treeline: 'rose-trees.webp', house: 'rose-pavilion.webp', curtain: 'rose-curtain.webp', palace: 'rose-palace.jpg' };
@@ -180,7 +188,7 @@
       let d = PAL === 'auto' || PAL === nat || PAL_HUE[PAL] === undefined ? 0 : (PAL_HUE[PAL] - PAL_HUE[nat]) * 360; d = ((d + 540) % 360) - 180;
       r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', d !== 0 && PAL === 'champagne' ? '.5' : '1');
       document.body.classList.toggle('hued', !!PT && d !== 0); }
-    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
+    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-mono', MN); b.toggle('mono-color', MN && c.mono && c.mono.gray === false); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
     // saklar animasi (admin → Animasi & Efek); kosong/true = menyala
     ['birds', 'particles', 'lights'].forEach((k) => b.toggle('no' + k, c.effects[k] === false));
@@ -928,6 +936,7 @@
 
   const R = {
     hero(c) {
+      if (MN) return window.MONO.hero(mh());
       if (PT) return picHero(c);
       const h = c.hero;
       return `<section class="sec hero pre" id="s-hero">${scene(c)}
@@ -1098,7 +1107,9 @@
     return '';
   }
 
+  const mh = () => ({ C, esc, safeUrl, guest, icon: ICON.mail, alt: C.cover.names, adj: (o, k) => adjStyle(adj(o, k)) });
   function coverHtml(c) {
+    if (MN) return window.MONO.cover(mh());
     if (PT) return picCover(c);
     const o = c.cover, ratio = /^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(o.photoRatio || '') ? o.photoRatio : '16/9';
     return `<div class="cover" id="cover">
@@ -1142,7 +1153,7 @@
         $('#openBtn').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvitation(false); } }, { signal: AC.signal });
         window.SAMPUL.idle(cv, spH());
       }
-      if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else setupButterflies($('#cover .flyers'));
+      if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else if (!MN) setupButterflies($('#cover .flyers'));
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
     }
     bind(cfg);
@@ -1162,6 +1173,7 @@
     const unlock = () => { document.documentElement.classList.remove('locked'); document.body.classList.remove('locked'); window.scrollTo(0, 0); };
     const heroIn = () => { if (hero) { hero.classList.remove('pre'); hero.classList.add('play'); setupButterflies($('.flyers', hero), { sweep: true }); } };
     const finish = () => { startObserver(); parallax(); petals(); };
+    if (MN && hero) { window.MONO.open({ cover, hero, D: sp, instant: instant || !C.effects.openZoom || reduce, unlock, finish, later }); return; }
     if (PT && hero) { picOpen(instant || !C.effects.openZoom || reduce, cover, hero, unlock, finish); return; }
     if (instant || !C.effects.openZoom || reduce || !hero) {
       unlock(); if (cover) { cover.classList.add('gone'); later(() => cover.remove(), 900); }
@@ -1256,7 +1268,7 @@
   }
 
   function gotoSection(id) {
-    const map = { scene: 'hero', scene2: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
+    const map = { scene: 'hero', scene2: 'hero', mono: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
     const el = $('#s-' + (map[id] || id)); if (!el) return;
     const y = el.getBoundingClientRect().top + scrollY;
     scrollTo({ top: Math.max(0, y - 6), behavior: 'smooth' });

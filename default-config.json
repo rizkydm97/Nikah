@@ -364,5 +364,11 @@
     "butterflyColor1": "#FFFFFF",
     "butterflyColor2": "#F6D3DA",
     "palace": "/assets/rose/rose-palace.jpg"
+  },
+  "mono": {
+    "coverMedia": "",
+    "frameMedia": "",
+    "frameShape": "oval",
+    "gray": true
   }
 }

@@ -154,7 +154,7 @@
   }
   async function openLibrary(filter) {
     const m = $('#lib'), g = $('#libGrid'); g.textContent = 'Memuat…'; m.hidden = false;
-    const items = (await api('/api/admin/uploads')).filter((u) => filter === 'audio' ? /\.(mp3|m4a|ogg|wav)$/i.test(u.url) : filter === 'video' ? /\.(mp4|webm)$/i.test(u.url) : /\.(png|jpe?g|webp|gif|svg)$/i.test(u.url));
+    const items = (await api('/api/admin/uploads')).filter((u) => filter === 'audio' ? /\.(mp3|m4a|ogg|wav)$/i.test(u.url) : filter === 'video' ? /\.(mp4|webm)$/i.test(u.url) : filter === 'media' ? /\.(png|jpe?g|webp|gif|mp4|webm)$/i.test(u.url) : /\.(png|jpe?g|webp|gif|svg)$/i.test(u.url));
     return new Promise((res) => {
       const close = (v) => { m.hidden = true; res(v); };
       m.querySelector('[data-close]').onclick = () => close(null); m.onclick = (e) => { if (e.target === m) close(null); };
@@ -253,10 +253,10 @@
       wrap.append(label, h('input', { type: 'number', min: f.min, max: f.max, value: get(), oninput: (e) => set(e.target.value === '' ? '' : +e.target.value) }));
     } else if (f.t === 'datetime') {
       wrap.append(label, h('input', { type: 'datetime-local', value: (get() || '').slice(0, 16), oninput: (e) => set(e.target.value) }));
-    } else if (f.t === 'image' || f.t === 'audio' || f.t === 'video') {
-      const isImg = f.t === 'image', isAud = f.t === 'audio';
+    } else if (f.t === 'image' || f.t === 'audio' || f.t === 'video' || f.t === 'media') {
+      const isMed = f.t === 'media', isImg = f.t === 'image' || isMed, isAud = f.t === 'audio';
       const th = isImg ? h('div', { class: 'thumb' + (f.deco ? ' contain' : '') + (f.round ? ' round' : ''), title: f.deco ? '' : 'Klik untuk atur posisi', onclick: () => { if (!f.deco) openAdjust(f, obj, key, () => { (onChange || changed)(true); if (wrap._paint) wrap._paint(); }); } }) : null;
-      const tx = h('input', { type: 'text', placeholder: isImg ? 'URL gambar atau unggah…' : isAud ? 'URL mp3 atau unggah…' : 'Link YouTube, URL .mp4, atau unggah video…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
+      const tx = h('input', { type: 'text', placeholder: isMed ? 'URL foto/video (.mp4), link YouTube, atau unggah…' : isImg ? 'URL gambar atau unggah…' : isAud ? 'URL mp3 atau unggah…' : 'Link YouTube, URL .mp4, atau unggah video…', value: get() || '', oninput: (e) => { set(e.target.value); paint(); } });
       const au = isAud ? h('audio', { controls: true, style: 'width:100%;margin-top:6px;height:34px' }) : null;
       const paint = () => {
         if (th) { th.style.backgroundImage = get() ? `url("${String(get()).replace(/"/g, '')}")` : 'none'; const a = obj[key + 'Adj']; if (!f.deco) th.style.backgroundPosition = a ? `${a.x ?? 50}% ${a.y ?? 50}%` : ''; }
@@ -265,11 +265,11 @@
       wrap._paint = paint;
       const apply = (u) => { tx.value = u; set(u); paint(); };
       const btns = h('div', { class: 'acts' },
-        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
-        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isImg ? 'image' : isAud ? 'audio' : 'video'); if (u) apply(u); } }, 'Pustaka'),
-        isImg && !f.deco ? h('button', { class: 'btn sm pri', type: 'button', onclick: () => openAdjust(f, obj, key, () => { (onChange || changed)(true); paint(); }) }, '✥ Atur posisi') : null,
+        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isMed ? 'image/*,video/*' : isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
+        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isMed ? 'media' : isImg ? 'image' : isAud ? 'audio' : 'video'); if (u) apply(u); } }, 'Pustaka'),
+        isImg && !f.deco ? h('button', { class: 'btn sm pri', type: 'button', onclick: () => /\.(mp4|webm|mov)(\?|$)|youtu/i.test(get() || '') ? toast('Video tidak perlu diatur posisinya', true) : openAdjust(f, obj, key, () => { (onChange || changed)(true); paint(); }) }, '✥ Atur posisi') : null,
         defVal !== undefined ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply(defVal) }, 'Default') : null,
-        !isImg ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
+        !isImg || isMed ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();
       wrap.append(label, h('div', { class: 'imgf' }, th, h('div', { style: 'flex:1;min-width:0' }, tx, btns, au)));
     } else if (f.t === 'animmode') {
