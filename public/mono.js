@@ -61,8 +61,10 @@
       <div class="mh-k">${chars(H, h.kicker, 40, 500)}</div>
       <div class="mh-frame ${shape}">
         <div class="mh-ph">${md || mono}</div>
-        ${shape === 'oval' ? `<img class="mh-ov" src="${A}oval.webp" alt="" decoding="async">` : ''}
-        ${shape === 'full' ? '' : shape === 'rect' ? ['tl', 'tr', 'bl', 'br'].map((q, i) => `<img class="mh-cr cq-${q}" style="--cd:${(0.9 + i * 0.18).toFixed(2)}s" src="${A}rose-corner.webp" alt="" decoding="async">`).join('') : `<img class="mh-fl a" src="${A}sprig-tall.webp" alt="" decoding="async"><img class="mh-fl b" src="${A}sprig-arc.webp" alt="" decoding="async">`}
+        ${shape === 'full' ? '' : `<div class="mh-ring">
+          ${shape === 'oval' ? `<img class="mh-ov" src="${A}oval.webp" alt="" decoding="async">` : ''}
+          ${shape === 'rect' ? ['tl', 'tr', 'bl', 'br'].map((q, i) => `<img class="mh-cr cq-${q}" style="--cd:${(1 + i * 0.14).toFixed(2)}s" src="${A}rose-corner.webp" alt="" decoding="async">`).join('') : `<img class="mh-fl a" src="${A}sprig-tall.webp" alt="" decoding="async"><img class="mh-fl b" src="${A}sprig-arc.webp" alt="" decoding="async">`}
+        </div>`}
       </div>
       <h1 class="mh-names"><span class="mh-n">${chars(H, h.groom, 60, 1100)}</span><i class="mh-amp">&amp;</i><span class="mh-n">${chars(H, h.bride, 60, 1500)}</span></h1>
       <img class="mh-orn" src="${A}orn-bottom.webp" alt="" decoding="async">

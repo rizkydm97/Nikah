@@ -464,6 +464,9 @@
           h('button', { class: 'btn sm', type: 'button', disabled: idx <= 1 || null, onclick: () => { moveSection(g.id, -1); render(); gotoPreviewSoon(g.id); } }, '↑ Naikkan'),
           h('button', { class: 'btn sm', type: 'button', disabled: idx >= tot || null, onclick: () => { moveSection(g.id, 1); render(); gotoPreviewSoon(g.id); } }, '↓ Turunkan'),
           h('button', { class: 'btn sm', type: 'button', onclick: () => show('sections') }, 'Atur semua urutan →')),
+        h('div', { class: 'secanim' }, h('b', {}, 'Animasi muncul bagian ini'),
+          (() => { const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { sec.anim = e.target.value; changed(true); gotoPreviewSoon(g.id); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = ANIMS.some((a) => a[0] === sec.anim) ? sec.anim : 'soft'; return sel; })(),
+          h('small', { class: 'fh' }, 'Cara bagian ini muncul saat tamu men-scroll. Hanya berlaku untuk bagian ini.')),
         ...(sec.enabled ? [] : [h('small', { class: 'fh' }, 'Bagian ini tidak tampil di undangan. Isinya tetap tersimpan, jadi bisa diaktifkan lagi kapan saja.')]));
     };
     render(); return bar;
@@ -493,19 +496,18 @@
   }
 
   function sectionsView() {
-    const m = h('div', {}, h('h2', {}, 'Urutan & Tampil Section'), h('p', { class: 'hint' }, 'Seret ⠿ (atau pakai ↑ ↓) untuk memindah posisi, mis. Galeri ke paling atas. Hilangkan centang untuk menyembunyikan bagian dari undangan. "Animasi" = cara bagian itu muncul saat tamu men-scroll.'));
+    const m = h('div', {}, h('h2', {}, 'Urutan & Tampil Section'), h('p', { class: 'hint' }, 'Seret ⠿ (atau pakai ↑ ↓) untuk memindah posisi, mis. Galeri ke paling atas. Hilangkan centang untuk menyembunyikan bagian dari undangan. Animasi muncul tiap bagian diatur di halaman bagian itu masing-masing (klik "Edit isi & animasi →").'));
     const wrap = h('div');
     const render = () => {
       wrap.textContent = '';
       cfg.sections.forEach((s, i) => {
         const mv = (d) => () => { const j = i + d; if (j < 0 || j >= cfg.sections.length) return; [cfg.sections[j], cfg.sections[i]] = [cfg.sections[i], cfg.sections[j]]; changed(true); render(); gotoPreviewSoon(s.id); };
-        const sel = h('select', { title: 'Animasi muncul', onchange: (e) => { s.anim = e.target.value; changed(true); gotoPreviewSoon(s.id); } }, ANIMS.map(([v, t]) => h('option', { value: v }, t))); sel.value = ANIMS.some((a) => a[0] === s.anim) ? s.anim : 'soft';
         const row = h('div', { class: 'secrow' + (s.enabled ? '' : ' off'), draggable: 'true' },
           h('span', { class: 'grip', title: 'Seret untuk memindah' }, '⠿'),
           h('label', { class: 'sw', title: 'Tampilkan di undangan' }, h('input', { type: 'checkbox', checked: s.enabled, onchange: (e) => { s.enabled = e.target.checked; row.classList.toggle('off', !s.enabled); changed(true); if (s.enabled) gotoPreviewSoon(s.id); } })),
           h('span', { class: 'nm' }, (i + 1) + '. ' + (SECTION_NAMES[s.id] || s.id), s.enabled ? null : h('small', { class: 'offtag' }, ' disembunyikan')),
-          SCHEMA.some((g) => g.id === s.id) ? h('button', { class: 'btn sm', onclick: () => show(s.id) }, 'Edit isi →') : null,
-          sel, h('button', { class: 'ghost sm btn', title: 'Naik', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm btn', title: 'Turun', onclick: mv(1) }, '↓'));
+          SCHEMA.some((g) => g.id === s.id) ? h('button', { class: 'btn sm', onclick: () => show(s.id) }, 'Edit isi & animasi →') : null,
+          h('button', { class: 'ghost sm btn', title: 'Naik', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm btn', title: 'Turun', onclick: mv(1) }, '↓'));
         row.addEventListener('dragstart', (e) => { dragI = i; row.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(i)); } catch { /* */ } });
         row.addEventListener('dragend', () => { row.classList.remove('drag'); wrap.querySelectorAll('.over').forEach((x) => x.classList.remove('over')); });
         row.addEventListener('dragover', (e) => { if (dragI < 0) return; e.preventDefault(); wrap.querySelectorAll('.over').forEach((x) => x.classList.remove('over')); row.classList.add('over'); });

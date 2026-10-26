@@ -258,3 +258,6 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .libgrid.selmode .libdel{display:none}
 .libitem.sel>button:first-child{outline:3px solid #c0392b;outline-offset:-3px}
 .libitem.sel::after{content:"✓";position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:#c0392b;color:#fff;font-size:13px;display:grid;place-items:center;pointer-events:none}
+
+.secanim{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-basis:100%;border-top:1px dashed var(--line);padding-top:10px}
+.secanim select{min-width:220px;max-width:100%}

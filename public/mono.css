@@ -59,9 +59,9 @@
 /* bingkai kotak */
 .mh-frame.rect{aspect-ratio:4/5;width:min(74%,calc(42svh * .8))}
 .mh-frame.rect .mh-ph{inset:14px}
-.mh-frame.rect::before,.mh-frame.rect::after{content:"";position:absolute;pointer-events:none;z-index:2}
-.mh-frame.rect::before{inset:0;border:1px solid #1a1a1a}
-.mh-frame.rect::after{inset:6px;border:1px solid rgba(0,0,0,.35)}
+.mh-frame.rect .mh-ring::before,.mh-frame.rect .mh-ring::after{content:"";position:absolute;pointer-events:none;z-index:2}
+.mh-frame.rect .mh-ring::before{inset:0;border:1px solid #1a1a1a}
+.mh-frame.rect .mh-ring::after{inset:6px;border:1px solid rgba(0,0,0,.35)}
 /* ranting bunga */
 .mh-fl{position:absolute;z-index:3;pointer-events:none;transform-origin:50% 100%}
 .mh-fl.a{left:-17%;top:-7%;height:64%;width:auto}
@@ -236,9 +236,9 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 /* bulat */
 .mh-frame.circle{aspect-ratio:1;width:min(78%,calc(46svh))}
 .mh-frame.circle .mh-ph{inset:5.5%;border-radius:50%}
-.mh-frame.circle::before,.mh-frame.circle::after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:2}
-.mh-frame.circle::before{inset:0;border:1px solid #1a1a1a}
-.mh-frame.circle::after{inset:3%;border:1px solid rgba(0,0,0,.35)}
+.mh-frame.circle .mh-ring::before,.mh-frame.circle .mh-ring::after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:2}
+.mh-frame.circle .mh-ring::before{inset:0;border:1px solid #1a1a1a}
+.mh-frame.circle .mh-ring::after{inset:3%;border:1px solid rgba(0,0,0,.35)}
 .mh-frame.circle .mh-fl.a{left:-20%;top:-10%;height:70%}
 .mh-frame.circle .mh-fl.b{right:-20%;bottom:-8%;width:46%}
 /* layar penuh tanpa bingkai */
@@ -295,15 +295,37 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
    v15 — animasi mempelai: bingkai masuk dulu → foto → nama → orang tua → tombol
    ===================================================================== */
 @supports selector(:has(a)){
-  .t-mono .couple .pho-w::after{opacity:0;transform:scale(.9);transition:opacity calc(var(--dur)*1.1) ease,transform calc(var(--dur)*1.4) var(--lux)}
+  .t-mono .couple .pho-w::after{opacity:0;transform:scale(.08);transition:opacity calc(var(--dur)*.7) ease,transform calc(var(--dur)*1.6) var(--lux)}
   .t-mono .couple .pho-w:has(.pho.in)::after{opacity:1;transform:none}
 }
-.t-mono .couple .pho-w .rv.pho{transition-delay:calc(var(--dur)*.9)}
-.t-mono .couple .rv.script{transition-delay:calc(var(--dur)*1.7)}
-.t-mono .couple .rv.fn{transition-delay:calc(var(--dur)*2)}
-.t-mono .couple .rv.par{transition-delay:calc(var(--dur)*2.3)}
-.t-mono .couple .person .rv.btn{transition-delay:calc(var(--dur)*2.6)}
-.t-mono .couple .person .rv.btn{opacity:0;transform:translateY(14px);transition:opacity calc(var(--dur)*1.2) ease,transform calc(var(--dur)*1.4) var(--lux),filter .2s,background .2s;transition-delay:calc(var(--dur)*2.6)}
+.t-mono .couple .pho-w .rv.pho{transition-delay:calc(var(--dur)*1.55);clip-path:circle(0% at 50% 50%);transition-property:opacity,transform,filter,clip-path}
+.t-mono .couple .pho-w .rv.pho.in{clip-path:circle(85% at 50% 50%)}
+.t-mono .couple .rv.script{transition-delay:calc(var(--dur)*2.3)}
+.t-mono .couple .rv.fn{transition-delay:calc(var(--dur)*2.6)}
+.t-mono .couple .rv.par{transition-delay:calc(var(--dur)*2.9)}
+.t-mono .couple .person .rv.btn{transition-delay:calc(var(--dur)*3.2)}
+.t-mono .couple .person .rv.btn{opacity:0;transform:translateY(14px);transition:opacity calc(var(--dur)*1.2) ease,transform calc(var(--dur)*1.4) var(--lux),filter .2s,background .2s;transition-delay:calc(var(--dur)*3.2)}
 .t-mono .couple .person .rv.btn.in{opacity:1;transform:none}
 /* RSVP dengan foto latar buatan admin: judul putih agar terbaca */
 .t-mono .rsvp.bgi .big{color:var(--mn-ph,#fff)}
+
+
+/* =====================================================================
+   PERBAIKAN v17 — bingkai TUMBUH dari kecil di tengah → melebar penuh → baru foto/video masuk
+   (sebelumnya bingkai hanya fade tipis dari 94% ukuran sehingga terasa sudah ada)
+   ===================================================================== */
+.mh-ring{position:absolute;inset:0;z-index:3;pointer-events:none;transform-origin:50% 50%}
+.mono-hero:not(.full) .mh-frame{opacity:1}
+.mono-hero:not(.full).play .mh-frame{animation:none}
+.mono-hero:not(.full) .mh-ring{opacity:0;transform:scale(.08)}
+.mono-hero:not(.full) .mh-ph{opacity:0}
+.mono-hero:not(.full).play .mh-ring{animation:mnRingGrow 1.4s cubic-bezier(.22,.8,.2,1) .3s both}
+.mono-hero:not(.full).play .mh-ph{animation:mnPhIn 1.3s cubic-bezier(.3,.7,.2,1) 1.7s both}
+.mono-hero:not(.full).play .mh-fl.a{animation:mnSprA 1.5s cubic-bezier(.2,.7,.2,1) 1.2s both,mnSway 7s ease-in-out 2.9s infinite alternate}
+.mono-hero:not(.full).play .mh-fl.b{animation:mnSprB 1.5s cubic-bezier(.2,.7,.2,1) 1.4s both,mnSway 8s ease-in-out 3.1s infinite alternate-reverse}
+.mono-hero.instant .mh-ring,.mono-hero.instant .mh-ph{animation-duration:.01s!important;animation-delay:0s!important}
+@keyframes mnRingGrow{0%{opacity:0;transform:scale(.08)}30%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes mnPhIn{from{opacity:0;clip-path:circle(0% at 50% 50%)}to{opacity:1;clip-path:circle(85% at 50% 50%)}}
+@media (prefers-reduced-motion:reduce){.mh-ring,.mh-ph{animation:none!important;opacity:1!important;transform:none!important;clip-path:none!important}}
+
+@media (prefers-reduced-motion:reduce){.t-mono .couple .pho-w .rv.pho{clip-path:none!important}.t-mono .couple .pho-w::after{transform:none!important}}
