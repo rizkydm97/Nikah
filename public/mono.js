@@ -21,11 +21,11 @@
   }
 
   // foto / video / YouTube; foto memakai posisi & zoom dari admin ("Atur posisi")
-  function media(H, o, k, cls) {
+  function media(H, o, k, cls, lazy) {
     const u = H.safeUrl(o && o[k]); if (!u) return '';
     const id = ytId(u);
-    if (id) return `<iframe class="mn-m mn-yt ${cls}" src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&rel=0&disablekb=1" allow="autoplay; encrypted-media" tabindex="-1" title="" loading="lazy"></iframe>`;
-    if (VID.test(u)) return `<video class="mn-m ${cls}" src="${H.esc(u)}" muted loop playsinline autoplay preload="auto" disablepictureinpicture disableremoteplayback onerror="this.remove()"></video>`;
+    if (id) { const yu = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&rel=0&disablekb=1`; return `<iframe class="mn-m mn-yt ${cls}" ${lazy ? `data-src="${yu}"` : `src="${yu}"`} allow="autoplay; encrypted-media" tabindex="-1" title="" loading="lazy"></iframe>`; }
+    if (VID.test(u)) return `<video class="mn-m ${cls}" src="${H.esc(u)}" muted loop playsinline ${lazy ? 'data-lp="1"' : 'autoplay'} preload="auto" disablepictureinpicture disableremoteplayback onerror="this.remove()"></video>`;
     return `<img class="mn-m ${cls}" src="${H.esc(u)}" alt="${H.esc(H.alt || '')}" decoding="async" style="${H.adj(o, k)}">`;
   }
 
@@ -55,7 +55,7 @@
   function hero(H) {
     const C = H.C, h = C.hero, m = C.mono || {}, shape = ['oval', 'circle', 'full'].includes(m.frameStyle) ? m.frameStyle : 'rect';
     const src = m.frameMedia ? m : (H.safeUrl(C.cover.photo) && !/\/assets\/default\//.test(C.cover.photo) ? C.cover : null);
-    const md = src ? media(H, src, src === m ? 'frameMedia' : 'photo', 'mn-fm') : '';
+    const md = src ? media(H, src, src === m ? 'frameMedia' : 'photo', 'mn-fm', true) : '';
     const mono = `<div class="mh-mono"><span>${H.esc((h.groom || '♥')[0])}</span><i>&amp;</i><span>${H.esc((h.bride || '')[0] || '')}</span></div>`;
     const ha = ((C.sections || []).find((x) => x.id === 'hero') || {}).anim || 'soft';
     return `<section class="sec hero mono-hero pre${shape === 'full' ? ' full' : ''}${m.grayPhoto === true ? ' gray' : ''}" id="s-hero" data-ha="${H.esc(ha)}"><div class="mh-in">
@@ -82,6 +82,28 @@
     later(play, 350 * D);
     unlock();
     later(() => { cv.remove(); hr.classList.add('done', 'shown'); finish(); }, 1350 * D);
+  }
+
+  // video / YouTube di bingkai pembuka baru diputar SETELAH undangan dibuka (saat foto mulai muncul), dari awal — bukan sejak halaman dimuat
+  function startMedia(hero) {
+    const tk = parseFloat(getComputedStyle(hero).getPropertyValue('--tk')) || 1;
+    const wait = hero.classList.contains('instant') || hero.classList.contains('full') ? 0 : 1700 * tk;
+    clearTimeout(hero._mt);
+    const go = () => {
+      if (!hero.classList.contains('play')) return;
+      hero.querySelectorAll('video[data-lp]').forEach((v) => { try { v.currentTime = 0; } catch (e) { /* belum siap */ } const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); });
+      hero.querySelectorAll('iframe[data-src]').forEach((f) => { if (f.getAttribute('src') !== f.dataset.src) f.setAttribute('src', f.dataset.src); });
+    };
+    if (wait) hero._mt = setTimeout(go, wait); else go();
+  }
+  function stopMedia(hero) { clearTimeout(hero._mt); hero.querySelectorAll('video[data-lp]').forEach((v) => { try { v.pause(); } catch (e) { /* abaikan */ } }); }
+  if (window.MutationObserver && document.body) {
+    new MutationObserver((ms) => ms.forEach((m) => {
+      const t = m.target;
+      if (!t || t.id !== 's-hero' || !t.classList || !t.classList.contains('mono-hero')) return;
+      const on = t.classList.contains('play');
+      if (on && !t._pl) { t._pl = true; startMedia(t); } else if (!on && t._pl) { t._pl = false; stopMedia(t); }
+    })).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
   window.MONO = { cover, hero, open, deco, colors };
