@@ -130,6 +130,7 @@ const SCHEMA = [
     { k: 'cover.button', l: 'Teks tombol buka', t: 'text' },
   ] },
   { id: 'hero', title: 'Pembuka', fields: [
+    { k: 'mono.frameStyle', l: 'BENTUK PEMBUKA (khusus Tema 12): Kotak / Oval / Bulat / Layar penuh', t: 'select', o: [['rect', 'Kotak — mawar di keempat sudut (bisa foto atau video)'], ['oval', 'Oval — bunga atas & bawah'], ['circle', 'Bulat — lingkaran penuh dengan bunga'], ['full', 'Layar penuh — foto/VIDEO tanpa bingkai, nama di bawah']] },
     { k: 'mono.frameMedia', l: 'VIDEO / foto di dalam bingkai (khusus Tema 12) — unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube', t: 'media', ar: '636/1007' },
     { k: 'hero.kicker', l: 'Teks kecil', t: 'text' }, { k: 'hero.groom', l: 'Nama pria', t: 'text' }, { k: 'hero.bride', l: 'Nama wanita', t: 'text' },
     { k: 'hero.dateText', l: 'Tanggal (teks)', t: 'text' }, { k: 'hero.hashtag', l: 'Hashtag', t: 'text' },
