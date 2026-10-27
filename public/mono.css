@@ -518,3 +518,7 @@ video.mn-m{background:#111}
 .cover.mn-edit .mn-n,.cover.mn-edit .mn-amp,.cover.mn-edit .mn-top,.cover.mn-edit .mn-bot{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;outline:1px dashed rgba(255,255,255,.55);outline-offset:2px}
 .cover.mn-edit .mn-dragging{cursor:grabbing;outline:1px solid #fff;background:rgba(255,255,255,.08)}
 .cover.mn-edit .mn-btn{cursor:pointer}
+
+/* foto latar loader muncul halus (sudah utuh diunduh sebelum tampil) */
+#loader .ld-bg>img{animation:ldFade .6s ease both}
+@keyframes ldFade{from{opacity:0}to{opacity:1}}

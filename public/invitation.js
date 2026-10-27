@@ -177,7 +177,7 @@
     const yt = (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
     let el;
     if (yt) el = `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0&playsinline=1&modestbranding=1&rel=0" allow="autoplay; encrypted-media" tabindex="-1" title=""></iframe>`;
-    else if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u)) el = ''; // video TIDAK diputar di loader: sampul sudah memuat video yang sama -> cukup diunduh sekali (dulu 2x, bikin lambat & patah-patah)
+    else if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u)) el = MN && safeUrl(m.coverPoster) ? `<img src="${esc(safeUrl(m.coverPoster))}" alt="" decoding="async">` : ''; // video TIDAK diputar di loader: sampul sudah memuat video yang sama -> cukup diunduh sekali (dulu 2x, bikin lambat & patah-patah)
     else el = `<img src="${esc(u)}" alt="" decoding="async">`;
     return `<div class="ld-bg">${el}</div>`;
   }
@@ -211,7 +211,17 @@
   }
 
   // ---------- intro: monogram + muat gambar dulu supaya animasi mulus ----------
+  // tahap 1: lingkaran putar tetap tampil sampai foto latar loader SELESAI diunduh & di-decode (tidak tampil setengah / rusak); tahap 2: introGo()
   function intro() {
+    let lu = '';
+    try { const t = document.createElement('div'); t.innerHTML = loaderMedia(C); const im = t.querySelector('img'); lu = im ? im.getAttribute('src') || '' : ''; } catch (e) { /* abaikan */ }
+    if (!lu) { introGo(); return; }
+    let go = false; const start = () => { if (go) return; go = true; introGo(); };
+    const im = new Image(); (window.__pre = window.__pre || []).push(im);
+    im.onload = im.onerror = () => { (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(start); };
+    im.src = lu; setTimeout(start, 8000); // jaringan sangat lambat: jangan menahan selamanya
+  }
+  function introGo() {
     const ld = $('#loader'), c = C;
     const names = String(c.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean);
     const mono = names.length >= 2 ? `${esc(names[0][0])}<i>&amp;</i>${esc(names[1][0])}` : esc((names[0] || '♥')[0]);
@@ -229,9 +239,9 @@
       const iv = setInterval(chk, 250); ['canplay', 'canplaythrough', 'loadeddata', 'error', 'progress'].forEach((e) => v.addEventListener(e, chk)); chk();
     });
     let done = 0; const bar = $('#ldBar');
-    if (MN && bar) { bar.style.transition = 'width 2s ease'; requestAnimationFrame(() => { bar.style.width = '88%'; }); } // bilah berjalan mulus selama loader tampil
+    if (MN && bar) { bar.style.transition = 'width 3.2s cubic-bezier(.4,0,.2,1)'; requestAnimationFrame(() => { bar.style.width = '96%'; }); } // bilah berjalan mulus selama loader tampil
     const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); /* simpan referensi agar tidak dibuang dari memori */ im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.max(parseFloat(bar.style.width) || 0, Math.round(done / urls.length * 100)) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
-    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? (MN ? 2300 : 1400) : 0));
+    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? (MN ? 3600 : 1400) : 0));
     const cap = new Promise((r) => setTimeout(r, 15000)); // batas tunggu untuk jaringan sangat lambat (dulu 7 dtk -> gambar menyusul setelah dibuka)
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
@@ -252,7 +262,8 @@
       ld.classList.add('off');
       const cv = $('#cover');
       if (MN && rest.length) holdOpen(rest);
-      if (cv) { later(() => cv.classList.add('play'), 250); later(() => cv.classList.add('shown'), 250 + 1500 * (TSPD[C.cover.textSpeed] || sp)); }
+      const d0 = MN ? 1000 : 250; // Tema 12: tunggu loader selesai memudar penuh, baru teks cover mulai
+      if (cv) { later(() => cv.classList.add('play'), d0); later(() => cv.classList.add('shown'), d0 + 1500 * (TSPD[C.cover.textSpeed] || sp)); }
     });
   }
 
