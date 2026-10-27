@@ -18,7 +18,7 @@
     root.style.removeProperty('--tk'); root.removeAttribute('data-ts');
     const m = TSPD[v]; if (!m || reduce) return;
     const mark = (e) => { if (e.dataset.ts) return; e.dataset.ts = '1'; e.style.setProperty('--dur', m + 's'); e.style.setProperty('--tk', String(m)); };
-    if (root.classList.contains('mono') || root.classList.contains('mono-hero')) { mark(root); return; } // Tema 12: seluruh teks diatur lewat --tk
+    if (root.classList.contains('mono') || root.classList.contains('mono-hero') || root.classList.contains('mn-closing')) { mark(root); return; } // Tema 12: seluruh teks diatur lewat --tk
     const own = (e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
     $$('*', root).forEach((e) => {
       if (/^(SCRIPT|STYLE)$/.test(e.tagName) || !own(e)) return;
@@ -1088,6 +1088,20 @@
     closing(c) {
       const o = c.closing, s = c.scene;
       const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${fimg(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${fimg(src)}</div>`;
+      if (MN) { // Tema 12: penutup berkesan tapi tetap elegan (hitam putih, hanya transform/opacity)
+        const M = window.MONO, hh = { esc };
+        const stars = [[15, 21], [85, 17], [9, 47], [91, 55], [21, 73], [80, 78], [50, 9]].map((p, i) => `<i class="mc-st" style="left:${p[0]}%;top:${p[1]}%;--sd:${(i * 0.9).toFixed(1)}s"></i>`).join('');
+        return `<section class="sec closing mn-closing"><div class="stage">${safeUrl(o.bg) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
+        <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
+        <div class="panel mc-panel"></div><div class="mc-stars" aria-hidden="true">${stars}</div>
+        <div class="cl-in"><div class="mc-pw"><div class="cpho mc-pho"><div class="phb">${photo(o, 'photo')}</div></div><i class="mc-halo"></i></div>
+        <div class="kick mc-k">${M.chars(hh, o.kicker, 42, 1500)}</div>
+        <div class="names mc-nm">${M.chars(hh, o.names, 80, 2000)}</div>
+        <img class="mc-orn" src="/assets/mono/orn-bottom.webp" alt="" decoding="async">
+        <p class="txt mc-tx">${M.words(hh, o.text, 36, 3300)}</p>
+        <div class="mc-hr" aria-hidden="true"><i></i>${ICON.heart}<i></i></div></div></div>
+        <div class="footer">${safeUrl(o.footerUrl) ? `<a href="${link(o.footerUrl)}" target="_blank" rel="noopener">${esc(o.footer)}</a>` : esc(o.footer)}</div></section>`;
+      }
       return `<section class="sec closing"><div class="stage">${safeUrl(o.bg) || (THEME === 'rose' && safeUrl(s.palace)) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
         <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
         <div class="rv panel" data-a="soft" style="--i:5"></div>${sparkles(10)}
@@ -1203,6 +1217,7 @@
     applyTheme(cfg);
     const order = (cfg.sections || []).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
+    if (MN && window.MONO.fx) { window.MONO.fx($('#app')); window.MONO.closingFx($('#app')); }
     if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
     $$('#app section').forEach((sec, idx) => {
       if (!sec.id) sec.id = 's-' + order[idx].id;

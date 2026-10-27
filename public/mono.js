@@ -106,5 +106,63 @@
     })).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
-  window.MONO = { cover, hero, open, deco, colors };
+
+  // teks dipecah per kata (baris baru dipertahankan) -> naik halus satu per satu
+  function words(H, s, step, start) {
+    let n = 0; step = step || 34; start = start || 0;
+    return String(s == null ? '' : s).split('\n').map((ln) => ln.split(/\s+/).filter(Boolean)
+      .map((w) => `<span class="mn-wd" style="--d:${start + (n++) * step}ms">${H.esc(w)}</span>`).join(' ')).join('<br>');
+  }
+
+  // ---------- animasi teks section lain (Wedding Gift, RSVP, Our Gallery, dst.) ----------
+  // judul -> per huruf · paragraf -> per kata · nama mempelai -> per huruf. Memakai IntersectionObserver sendiri,
+  // jadi tidak bergantung pada kelas .rv (judul kapsul "Wedding Gift" memang bukan .rv).
+  const TITLE = '.sec:not(.hero):not(.closing) h2, .sec:not(.hero):not(.closing) h3.gt, .couple .rv.script';
+  const BODY = '.cap-in p.gi, .lead, .sub, .qt, .src, .wtxt, .live-in > p, .gpanel > p, .couple .rv.fn, .couple .rv.par, .cap-in .place, .cap-in .addr';
+  let fxIO = null;
+  function splitText(el, mode) {
+    if (!el || el.dataset.mnx) return; el.dataset.mnx = mode;
+    const rev = (el.closest('.rv') || el) !== el || el.classList.contains('rv');
+    let n = 0;
+    const step = mode === 'c' ? 52 : Math.max(16, Math.min(38, 1100 / Math.max(1, (el.textContent || '').trim().split(/\s+/).length)));
+    const walk = (node) => {
+      [...node.childNodes].forEach((ch) => {
+        if (ch.nodeType === 3) {
+          const t = ch.textContent; if (!t.trim()) return;
+          const f = document.createDocumentFragment(), tmp = document.createElement('span');
+          tmp.innerHTML = t.split(/(\s+)/).map((w) => /^\s+$/.test(w) || !w ? ' ' : mode === 'c'
+            ? `<span class="mn-w">${[...w].map((c) => `<span class="mn-c" style="--d:${(n++) * step}ms">${c.replace(/[<>&]/g, (x) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[x]))}</span>`).join('')}</span>`
+            : `<span class="mn-wd" style="--d:${(n++) * step}ms">${w.replace(/[<>&]/g, (x) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[x]))}</span>`).join('');
+          while (tmp.firstChild) f.appendChild(tmp.firstChild); ch.replaceWith(f);
+        } else if (ch.nodeType === 1 && !/^(BR|SVG|IMG|SCRIPT|STYLE|INPUT|BUTTON)$/i.test(ch.tagName)) walk(ch);
+      });
+    };
+    walk(el); el.classList.add(mode === 'c' ? 'mn-tx' : 'mn-tw'); if (rev) el.classList.add('mn-in-rv');
+  }
+  function fx(root) {
+    root = root || document.getElementById('app'); if (!root) return;
+    if (fxIO) { fxIO.disconnect(); fxIO = null; }
+    const arabic = /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    root.querySelectorAll(TITLE).forEach((e) => { if (!arabic.test(e.textContent)) splitText(e, 'c'); });
+    root.querySelectorAll(BODY).forEach((e) => { if (!arabic.test(e.textContent) && !e.classList.contains('qar')) splitText(e, 'w'); });
+    const els = root.querySelectorAll('.mn-tx, .mn-tw');
+    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches) { els.forEach((e) => e.classList.add('mn-go')); return; }
+    fxIO = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('mn-go'); fxIO.unobserve(e.target); } }), { threshold: 0.35, rootMargin: '0px 0px -10% 0px' });
+    els.forEach((e) => fxIO.observe(e));
+  }
+
+  // ---------- penutup "Terima Kasih": diputar ulang tiap kali bagian ini masuk layar ----------
+  let clIO = null;
+  function closingFx(root) {
+    root = root || document.getElementById('app'); if (!root) return;
+    if (clIO) { clIO.disconnect(); clIO = null; }
+    const cl = root.querySelector('.mn-closing'); if (!cl) return;
+    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches) { cl.classList.add('mc-go'); return; }
+    clIO = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.intersectionRatio >= 0.3) e.target.classList.add('mc-go'); else if (e.intersectionRatio === 0) e.target.classList.remove('mc-go');
+    }), { threshold: [0, 0.3] });
+    clIO.observe(cl);
+  }
+
+  window.MONO = { cover, hero, open, deco, colors, chars, words, fx, closingFx };
 })();
