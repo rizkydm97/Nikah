@@ -177,7 +177,7 @@
     const yt = (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
     let el;
     if (yt) el = `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0&playsinline=1&modestbranding=1&rel=0" allow="autoplay; encrypted-media" tabindex="-1" title=""></iframe>`;
-    else if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u)) el = `<video src="${esc(u)}" muted loop playsinline autoplay preload="auto" disablepictureinpicture onerror="this.remove()"></video>`;
+    else if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u)) el = ''; // video TIDAK diputar di loader: sampul sudah memuat video yang sama -> cukup diunduh sekali (dulu 2x, bikin lambat & patah-patah)
     else el = `<img src="${esc(u)}" alt="" decoding="async">`;
     return `<div class="ld-bg">${el}</div>`;
   }
@@ -192,11 +192,23 @@
     ld.classList.toggle('has-media', !!lm); ld.classList.add('ready');
     const s = c.scene;
     const urls = PT && PT.live ? [PT.bg, ...(PT.preload || ['bf_rajah', 'feather', 'leafj', 'orchid', 'cloudw1']).map((n) => /\//.test(n) ? n : PT.spr + n + '.webp')] : PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
+    // video sampul (+ video bingkai) ikut ditunggu: loader baru hilang setelah video punya cukup data untuk diputar mulus
+    const vids = [...$$('#cover video'), ...$$('#s-hero video')];
+    const vidReady = (v, need) => new Promise((res) => {
+      let fin = false; const end = () => { if (fin) return; fin = true; clearInterval(iv); ['canplay', 'canplaythrough', 'loadeddata', 'error', 'progress'].forEach((e) => v.removeEventListener(e, chk)); res(); };
+      const ahead = () => { try { const b = v.buffered, t = v.currentTime || 0; for (let i = 0; i < b.length; i++) if (b.start(i) <= t + 0.5 && b.end(i) >= t) return b.end(i) - t; } catch (e) { /* abaikan */ } return 0; };
+      const chk = () => { if (v.error || !v.isConnected) return end(); const dur = isFinite(v.duration) && v.duration > 0 ? v.duration : need; if (v.readyState >= 3 && (ahead() >= Math.min(need, dur * 0.9) || v.readyState >= 4)) end(); };
+      const iv = setInterval(chk, 250); ['canplay', 'canplaythrough', 'loadeddata', 'error', 'progress'].forEach((e) => v.addEventListener(e, chk)); chk();
+    });
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
     const cap = new Promise((r) => setTimeout(r, 7000)); // jangan menunggu selamanya di jaringan lambat
-    Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), minShow]).then(() => {
+    // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
+    const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
+    const vcap = new Promise((r) => setTimeout(r, 12000));
+    const vwork = coverV.length ? Promise.all(coverV.map((v) => vidReady(v, 3))).then(() => { frameV.forEach((v) => { try { v.preload = 'auto'; v.load(); } catch (e) { /* abaikan */ } }); return Promise.race([Promise.all(frameV.map((v) => vidReady(v, 2))), new Promise((r) => setTimeout(r, 3500))]); }) : Promise.resolve();
+    Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), Promise.race([vwork, vcap]), minShow]).then(() => {
       ld.classList.add('off');
       const cv = $('#cover');
       if (cv) { later(() => cv.classList.add('play'), 250); later(() => cv.classList.add('shown'), 250 + 1500 * (TSPD[C.cover.textSpeed] || sp)); }
@@ -1556,20 +1568,26 @@
     const target = new Date(c.general.eventDate).getTime();
     const box = $('#cds'); cdsRun = null;
     if (box && !isNaN(target)) {
-      const last = {}; let counting = false;
+      const last = {}; let counting = false, played = false;
       const calc = () => { const d = Math.max(0, target - Date.now()); return { d: Math.floor(d / 864e5), h: Math.floor(d / 36e5) % 24, m: Math.floor(d / 6e4) % 60, s: Math.floor(d / 1e3) % 60 }; };
       const put = (k, n, tick) => { const el = $(`[data-k=${k}]`, box); const t = k === 'd' ? String(n) : pad(n); if (last[k] !== t) { el.textContent = t; if (tick && last[k] !== undefined) { el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); } last[k] = t; } };
-      const upd = () => { if (counting) return; const v = calc(); for (const k in v) put(k, v[k], true); };
-      cdsRun = () => { // hitung naik cepat dari 0 sampai nilai sebenarnya
-        counting = true; const t0 = performance.now(), D = 1700;
+      // detik SELALU mengikuti jam asli (tidak pernah ikut dihitung naik) -> tidak ada lonjakan aneh di awal
+      const upd = () => { const v = calc(); put('s', v.s, true); if (counting) return; put('d', v.d, false); put('h', v.h, true); put('m', v.m, true); };
+      // hari/jam/menit naik halus dari 0 ke nilai asli, SEKALI SAJA saat pertama terlihat (dulu terulang tiap kali discroll & detik ikut berlari 0→59)
+      cdsRun = () => {
+        if (played) return; played = true;
+        if (reduce) return;
+        counting = true; const t0 = performance.now(), D = 1100;
         const step = (now) => {
           const p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - p, 3), v = calc();
-          for (const k in v) put(k, Math.round(v[k] * e), false);
+          ['d', 'h', 'm'].forEach((k) => put(k, Math.round(v[k] * e), false));
           if (p < 1) requestAnimationFrame(step); else { counting = false; upd(); }
         };
         requestAnimationFrame(step);
       };
-      upd(); cdsTimer = setInterval(upd, 1000);
+      // ketukan selaras batas detik asli (setInterval 1000 ms melenceng -> detik kadang terlewat / dobel)
+      const loop = () => { upd(); cdsTimer = setTimeout(loop, 1000 - (Date.now() % 1000) + 15); };
+      loop();
     }
     // save the date
     const sd = $('#saveDate');

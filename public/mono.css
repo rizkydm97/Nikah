@@ -475,3 +475,27 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .t-mono .mn-closing .stage{min-height:calc(min(100vw,var(--col))*2.15 + 30px)}
 .t-mono .mn-closing .cl-in{top:15%}
 .t-mono .mn-closing .ft img,.t-mono .mn-closing .fb img{opacity:1}
+
+/* ============================================================
+   AYAT + HITUNG MUNDUR (Tema 12) — lebih terbaca & rapi
+   ============================================================ */
+/* penutup gelap dimulai tinggi di bagian teks, bagian atas foto tetap terlihat */
+.t-mono .quote::before{background:linear-gradient(180deg,rgba(0,0,0,0) 0,rgba(0,0,0,.30) 22%,rgba(0,0,0,.80) 46%,rgba(0,0,0,.90) 100%)!important}
+.t-mono .quote .q-in{padding:64px 26px 36px;text-align:center}
+/* teks Arab: ukuran mengikuti lebar kolom (bukan lebar layar PC), baris lega agar harakat tidak bertumpuk */
+.t-mono .quote .qar{font-size:clamp(22px,calc(min(100vw,var(--col,480px))*.062*var(--ars,1.25)),36px);line-height:2.25;word-spacing:.12em;margin:0;color:#fff;text-wrap:balance;text-shadow:0 2px 14px rgba(0,0,0,.65)}
+/* garis pemisah tipis antara teks Arab dan terjemahan */
+.t-mono .quote .qar::after{content:"";display:block;width:64px;height:1px;margin:18px auto 20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent)}
+/* terjemahan: tidak tebal, baris lega, mudah dibaca */
+.t-mono .quote .qt{font-weight:400;font-size:14.5px;line-height:1.85;letter-spacing:.012em;color:rgba(255,255,255,.93);text-wrap:pretty;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+.t-mono .quote .src{font-family:var(--fDisplay);font-style:italic;font-weight:500;font-size:18px;letter-spacing:.05em;margin-top:16px;color:#fff;opacity:.95}
+/* hitung mundur: angka lurus & lebar tetap (angka bawaan Cormorant "naik-turun" dan lebarnya berubah tiap detik) */
+.t-mono .cd b{font-variant-numeric:lining-nums tabular-nums;font-feature-settings:"lnum" 1,"tnum" 1;min-width:2ch}
+.t-mono .cd{min-width:58px}
+.t-mono .cd b.tick{animation-duration:.45s}
+
+/* video sampul: Ken Burns (zoom pelan 22 dtk) pada wadah video memaksa HP menggambar ulang tiap frame -> patah-patah.
+   Bila isinya video, zoom dimatikan & video diberi layer GPU sendiri. */
+.mono .mn-kb:has(video){animation:none;will-change:auto}
+.mn-m{transform:translateZ(0);backface-visibility:hidden}
+video.mn-m{background:#111}

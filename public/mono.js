@@ -27,7 +27,7 @@
     const u = H.safeUrl(o && o[k]); if (!u) return '';
     const id = ytId(u);
     if (id) { const yu = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&rel=0&disablekb=1`; return `<iframe class="mn-m mn-yt ${cls}" ${lazy ? `data-src="${yu}"` : `src="${yu}"`} allow="autoplay; encrypted-media" tabindex="-1" title="" loading="lazy"></iframe>`; }
-    if (VID.test(u)) return `<video class="mn-m ${cls}" src="${H.esc(u)}" muted loop playsinline ${lazy ? 'data-lp="1"' : 'autoplay'} preload="auto" disablepictureinpicture disableremoteplayback onerror="this.remove()"></video>`;
+    if (VID.test(u)) return `<video class="mn-m ${cls}" src="${H.esc(u)}" muted loop playsinline ${lazy ? 'data-lp="1" preload="metadata"' : 'autoplay preload="auto"'} disablepictureinpicture disableremoteplayback onerror="this.remove()"></video>`;
     return `<img class="mn-m ${cls}" src="${H.esc(u)}" alt="${H.esc(H.alt || '')}" decoding="async" style="${H.adj(o, k)}">`;
   }
 
