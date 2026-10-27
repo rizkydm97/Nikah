@@ -182,6 +182,18 @@
     return `<div class="ld-bg">${el}</div>`;
   }
 
+  // ---------- Tema 12: tombol "Buka Undangan" menunggu semua gambar siap (tampil persen), supaya setelah dibuka tidak ada yang menyusul ----------
+  function holdOpen(list) {
+    const btn = $('#openBtn'); if (!btn) return;
+    const html = btn.innerHTML; let n = 0, ended = false;
+    btn.disabled = true; btn.classList.add('mn-wait');
+    const upd = () => { if (!ended) btn.innerHTML = `<i class="mn-sp"></i>Memuat ${Math.min(99, Math.round(n / list.length * 100))}%`; };
+    const end = () => { if (ended) return; ended = true; btn.innerHTML = html; btn.disabled = false; btn.classList.remove('mn-wait'); };
+    upd();
+    const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); const fin = () => { n++; upd(); (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.onload = im.onerror = fin; im.src = u; });
+    Promise.race([Promise.all(list.map(one)), new Promise((r) => setTimeout(r, 25000))]).then(end);
+  }
+
   // ---------- kumpulkan semua alamat gambar yang dipakai undangan ----------
   function allImages(c) {
     const IMG = /\.(png|jpe?g|webp|gif|avif|svg|bmp)(\?|#|$)/i, NOT = /\.(mp4|webm|mov|m4v|mkv|mp3|m4a|ogg|wav|aac)(\?|#|$)|youtu/i;
@@ -218,7 +230,7 @@
     });
     let done = 0; const bar = $('#ldBar');
     const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); /* simpan referensi agar tidak dibuang dari memori */ im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
-    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
+    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? (MN ? 600 : 1400) : 0));
     const cap = new Promise((r) => setTimeout(r, 15000)); // batas tunggu untuk jaringan sangat lambat (dulu 7 dtk -> gambar menyusul setelah dibuka)
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
@@ -226,14 +238,18 @@
     if (poster) urls.push(poster);
     // SEMUA gambar undangan (galeri, cerita, mempelai, penutup, latar, bingkai, hiasan tema) dimuat & di-decode DI SINI,
     // sehingga begitu tamu menekan "Buka Undangan" tidak ada gambar yang menyusul/telat muncul.
-    allImages(c).forEach((u) => urls.push(u));
-    const uniq = [...new Set(urls.filter(Boolean))]; urls.length = 0; uniq.forEach((u) => urls.push(u));
+    let rest = [];
+    if (MN) { // Tema 12: layar loader HANYA menunggu foto cover (cepat tampil); gambar lain dimuat sambil tamu melihat cover — tombol \"Buka\" aktif setelah semuanya siap
+      const crit = new Set([...$$('#cover img')].map((im) => safeUrl(im.getAttribute('src'))).filter(Boolean)); if (poster) crit.add(poster);
+      urls.length = 0; crit.forEach((u) => urls.push(u)); rest = allImages(c).filter((u) => !crit.has(u));
+    } else { allImages(c).forEach((u) => urls.push(u)); const uniq = [...new Set(urls.filter(Boolean))]; urls.length = 0; uniq.forEach((u) => urls.push(u)); }
     // ada poster -> cukup tunggu video ≤2,5 dtk (poster sudah tampil bagus); tanpa poster tunggu ≤8 dtk agar sampul tidak hitam
     const vcap = new Promise((r) => setTimeout(r, poster ? 2500 : 8000));
     const vwork = coverV.length ? Promise.all(coverV.map((v) => vidReady(v, 3))).then(() => { frameV.forEach((v) => { try { v.preload = 'auto'; v.load(); } catch (e) { /* abaikan */ } }); return Promise.race([Promise.all(frameV.map((v) => vidReady(v, 2))), new Promise((r) => setTimeout(r, 3500))]); }) : Promise.resolve();
     Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), Promise.race([vwork, vcap]), minShow]).then(() => {
       ld.classList.add('off');
       const cv = $('#cover');
+      if (MN && rest.length) holdOpen(rest);
       if (cv) { later(() => cv.classList.add('play'), 250); later(() => cv.classList.add('shown'), 250 + 1500 * (TSPD[C.cover.textSpeed] || sp)); }
     });
   }
@@ -1276,6 +1292,7 @@
       }
       if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else if (!MN) setupButterflies($('#cover .flyers'));
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
+      if (PREVIEW && MN && window.MONO.drag) window.MONO.drag($('#cover'), (cfg.mono || {}).pos, (pos) => { try { parent.postMessage({ type: 'mnpos', pos }, location.origin); } catch (e) { /* abaikan */ } });
     }
     applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
     bind(cfg);

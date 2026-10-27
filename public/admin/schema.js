@@ -131,6 +131,8 @@ const SCHEMA = [
     { k: 'mono.coverPoster', l: 'Poster video cover (khusus Tema 12) — FOTO yang langsung tampil sambil video diunduh. Sangat disarankan bila cover berupa video', t: 'image' },
     { k: 'cover.loaderMedia', l: 'Pembuka layar penuh (semua tema) — foto / VIDEO yang tampil saat undangan dimuat, menggantikan lingkaran. Kosongkan = polos (Tema 12 otomatis pakai media cover)', t: 'media', ar: '9/19' },
     { k: 'mono.nameAlign', l: 'Posisi teks cover (Tema 12) — susunan nama mempelai', t: 'select', o: [['stagger', 'Bertingkat — nama pria kiri, nama wanita kanan (bawaan)'], ['center', 'Rata tengah'], ['left', 'Rata kiri'], ['right', 'Rata kanan'], ['one', 'Satu baris — Adi & Debby']] },
+    { k: 'mono.pos', l: 'GESER LANGSUNG: tarik tulisan (nama, &, teks atas, tanggal/tamu) di pratinjau kanan ke posisi yang diinginkan. Tombol ini mengembalikan semua posisi hasil geser ke bawaan', t: 'resetpos' },
+    { k: 'mono.nameGap', l: 'Jarak antar nama (Adi — & — Debby): geser ke kiri = lebih rapat, ke kanan = lebih renggang', t: 'range', min: -60, max: 100, step: 1, unit: '', def: 0 },
     { k: 'mono.nameY', l: 'Posisi nama mempelai — naik/turun (0 = paling atas, 80 = dekat bawah). Geser agar tidak menutupi wajah', t: 'range', min: 0, max: 80, step: 0.5, unit: '%', def: 15 },
     { k: 'mono.nameSize', l: 'Ukuran nama mempelai', t: 'range', min: 40, max: 140, step: 1, unit: '%', def: 100 },
     { k: 'mono.kickerY', l: 'Posisi teks kecil atas (\"THE WEDDING OF\") — naik/turun', t: 'range', min: 1, max: 85, step: 0.5, unit: '%', def: 7.5 },

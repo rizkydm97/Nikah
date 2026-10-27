@@ -87,6 +87,13 @@
   let gotoT, replayT;
   function replayPreviewSoon(id, ms) { clearTimeout(replayT); replayT = setTimeout(() => post({ type: 'replay', id }), ms || 1600); }
   function loadPreview() { const g = $('#pvGuest').value; $('#pvFrame').src = '/?preview=1' + ($('#pvMode').value ? '&cover=1' : '') + (g ? '&to=' + encodeURIComponent(g) : ''); }
+  // hasil menggeser teks cover langsung di pratinjau (Tema 12) -> simpan ke konfigurasi
+  addEventListener('message', (e) => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'mnpos' || !cfg) return;
+    const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
+    cfg.mono = cfg.mono || {}; cfg.mono.pos = e.data.pos; changed(true);
+    if (current === 'cover') { const sc = document.querySelector('.main, #main, main'); const y = sc ? sc.scrollTop : 0; show(current); if (sc) sc.scrollTop = y; }
+  });
   $('#pvFrame').addEventListener('load', () => { sendPreview(); setTimeout(gotoPreview, 700); });
   $('#pvReload').onclick = () => { try { sessionStorage.removeItem('pvCfg'); } catch { /* */ } loadPreview(); };
   $('#pvGuest').onchange = loadPreview; $('#pvMode').onchange = loadPreview;
@@ -347,6 +354,9 @@
       const tx = h('input', { type: 'text', value: get() || '', oninput: (e) => { set(e.target.value); if (/^#[0-9a-f]{6}$/i.test(e.target.value)) cp.value = e.target.value; } });
       const cp = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(get() || '') ? get() : '#000000', oninput: (e) => { tx.value = e.target.value; set(e.target.value); } });
       wrap.append(label, h('div', { class: 'row' }, cp, tx));
+    } else if (f.t === 'resetpos') {
+      const n = () => Object.keys(get() || {}).length;
+      wrap.append(label, h('button', { class: 'btn sm', type: 'button', onclick: () => { set({}); show(current); toast('Posisi geser dikembalikan ke bawaan'); } }, n() ? 'Reset posisi geser (' + n() + ' elemen digeser)' : 'Belum ada yang digeser'));
     } else if (f.t === 'range') {
       const dv = f.def !== undefined ? f.def : f.min, cur = () => (get() === undefined || get() === '' || get() === null ? dv : +get());
       const out = h('b', { class: 'rv-out' }, cur() + (f.unit || ''));

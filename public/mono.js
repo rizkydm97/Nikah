@@ -47,7 +47,9 @@
     // posisi teks cover diatur dari admin (Cover → Posisi teks); nilai di luar batas dipaksa masuk agar teks tidak hilang
     const num = (v, d, lo, hi) => { const n = (v === '' || v == null) ? NaN : +v; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
     const al = ['center', 'left', 'right', 'one'].includes(m.nameAlign) ? m.nameAlign : 'stagger';
-    const vars = `--nmY:${num(m.nameY, 15, 0, 80)}cqh;--nmS:${num(m.nameSize, 100, 40, 140) / 100};--kY:${num(m.kickerY, 7.5, 1, 85)}cqh;--bY:${num(m.bottomY, 5.5, 1, 60)}cqh;--shd:${num(m.shade, 100, 0, 200) / 100}`;
+    const P = m.pos && typeof m.pos === 'object' ? m.pos : {};
+    const pv = ['a', 'm', 'b', 'k', 'o'].map((id) => { const p = P[id] || {}, x = num(p.x, 0, -100, 100), y = num(p.y, 0, -100, 100); return x || y ? `--${id}x:${x}cqw;--${id}y:${y}cqh` : ''; }).filter(Boolean).join(';');
+    const vars = `--ng:${num(m.nameGap, 0, -60, 100) / 100}em;${pv ? pv + ';' : ''}--nmY:${num(m.nameY, 15, 0, 80)}cqh;--nmS:${num(m.nameSize, 100, 40, 140) / 100};--kY:${num(m.kickerY, 7.5, 1, 85)}cqh;--bY:${num(m.bottomY, 5.5, 1, 60)}cqh;--shd:${num(m.shade, 100, 0, 200) / 100}`;
     return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover" style="${vars}">
       <div class="mn-bg${md ? '' : ' none'}"><div class="mn-kb">${md}</div></div><i class="mn-sh"></i>
       <div class="mn-top"><div class="mn-k">${chars(H, o.kicker, 38, 250)}</div></div>
@@ -175,5 +177,25 @@
   // hiasan Tema 12 yang dipakai section lain (sebagian dipanggil lewat CSS, tidak terlihat di DOM saat loader) — ikut dimuat sebelum undangan dibuka
   const assets = ['corner-top', 'corner-bottom', 'flower-tall', 'lux-cl-bot', 'lux-cl-top', 'lux-gal-bot', 'lux-gal-top', 'lux-story-bot', 'orn-bottom', 'orn-top', 'oval', 'rose-corner', 'sprig-arc', 'sprig-tall'].map((n) => A + n + '.webp');
 
-  window.MONO = { cover, hero, open, deco, colors, chars, words, fx, closingFx, assets };
+  // ---------- pratinjau admin: teks cover bisa digeser (drag) langsung; hasil dikirim ke admin sebagai mono.pos ----------
+  // a = nama pria, m = tanda &, b = nama wanita, k = teks kecil atas, o = blok bawah (tanggal, tamu, tombol). Satuan: % lebar (x) & % tinggi (y).
+  function drag(cv, pos0, done) {
+    if (!cv || cv._mnDrag) return; cv._mnDrag = true;
+    const K = { a: '.mn-n.a', m: '.mn-amp', b: '.mn-n.b', k: '.mn-top', o: '.mn-bot' };
+    const pos = JSON.parse(JSON.stringify(pos0 && typeof pos0 === 'object' ? pos0 : {}));
+    const put = (id) => { const p = pos[id] || { x: 0, y: 0 }; cv.style.setProperty(`--${id}x`, p.x + 'cqw'); cv.style.setProperty(`--${id}y`, p.y + 'cqh'); };
+    cv.classList.add('mn-edit');
+    cv.addEventListener('pointerdown', (e) => {
+      if (e.button > 0 || e.target.closest('button')) return;
+      const el = e.target.closest(Object.values(K).join(',')); if (!el) return;
+      const id = Object.keys(K).find((k) => el.matches(K[k])), r = cv.getBoundingClientRect(), p0 = pos[id] || { x: 0, y: 0 }, x0 = e.clientX, y0 = e.clientY;
+      e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch (er) { /* abaikan */ }
+      el.classList.add('mn-dragging');
+      const mv = (ev) => { pos[id] = { x: +(p0.x + (ev.clientX - x0) / r.width * 100).toFixed(2), y: +(p0.y + (ev.clientY - y0) / r.height * 100).toFixed(2) }; put(id); };
+      const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); el.classList.remove('mn-dragging'); done(JSON.parse(JSON.stringify(pos))); };
+      el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+    });
+  }
+
+  window.MONO = { cover, hero, open, deco, colors, chars, words, fx, closingFx, assets, drag };
 })();

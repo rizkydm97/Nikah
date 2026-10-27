@@ -382,6 +382,8 @@
     "nameAlign": "stagger",
     "kickerY": 7.5,
     "bottomY": 5.5,
-    "shade": 100
+    "shade": 100,
+    "nameGap": 0,
+    "pos": {}
   }
 }

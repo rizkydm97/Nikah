@@ -21,6 +21,8 @@
 .mono .mn-n{display:block;font-size:calc(clamp(48px,17cqw,82px)*var(--nmS,1))}
 .mono .mn-n.a{text-align:left;padding-left:16%}
 .mono .mn-n.b{text-align:right;padding-right:16%;margin-top:0}
+.mono .mn-n.a{translate:var(--ax,0) var(--ay,0)}.mono .mn-n.b{translate:var(--bx,0) var(--by,0)}
+.mono .mn-top{translate:var(--kx,0) var(--ky,0)}.mono .mn-bot{translate:var(--ox,0) var(--oy,0)}
 .mono .mn-nm.al-center .mn-n,.mono .mn-nm.al-left .mn-n,.mono .mn-nm.al-right .mn-n{padding-left:8%;padding-right:8%}
 .mono .mn-nm.al-center .mn-n,.mono .mn-nm.al-center .mn-amp{text-align:center}
 .mono .mn-nm.al-left .mn-n{text-align:left}.mono .mn-nm.al-left .mn-amp{text-align:left;padding-left:calc(8% + .1em)}
@@ -28,7 +30,7 @@
 .mono .mn-nm.al-one{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 .3em;padding:0 6%}
 .mono .mn-nm.al-one .mn-n,.mono .mn-nm.al-one .mn-n.a,.mono .mn-nm.al-one .mn-n.b{display:inline-block;padding:0;text-align:center;font-size:calc(clamp(38px,13cqw,64px)*var(--nmS,1))}
 .mono .mn-nm.al-one .mn-amp{display:inline-block;margin:0;padding:0;font-size:calc(clamp(24px,8cqw,38px)*var(--nmS,1))}
-.mono .mn-amp{display:block;font-style:normal;font-size:calc(clamp(28px,9cqw,44px)*var(--nmS,1));line-height:1;opacity:0;margin:.14em 0 .1em;padding-left:.1em;transform:scale(.6)}
+.mono .mn-amp{translate:var(--mx,0) var(--my,0);display:block;font-style:normal;font-size:calc(clamp(28px,9cqw,44px)*var(--nmS,1));line-height:1;opacity:0;margin:calc(.14em + var(--ng,0em)) 0 calc(.1em + var(--ng,0em));padding-left:.1em;transform:scale(.6)}
 .mono .mn-bot{position:absolute;left:0;right:0;bottom:calc(var(--bY,5.5cqh) + env(safe-area-inset-bottom,0px));text-align:center;padding:0 8%}
 .mono .mn-date{font-size:clamp(12px,3.6cqw,15px);letter-spacing:.3em;font-weight:500;padding-left:.3em}
 .mono .mn-to{margin-top:14px;font-size:clamp(11px,3.2cqw,13px);line-height:1.5}
@@ -507,3 +509,12 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mono .mn-kb:has(video){animation:none;will-change:auto}
 .mn-m{transform:translateZ(0);backface-visibility:hidden}
 video.mn-m{background:#111}
+
+/* tombol buka menunggu semua gambar siap */
+.mono .mn-btn.mn-wait{cursor:progress;opacity:.88;animation-name:mnUp;animation-duration:calc(.9s*var(--tk,1));animation-delay:calc(2.3s*var(--tk,1));animation-iteration-count:1;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+.mono .mn-btn .mn-sp{width:12px;height:12px;border-radius:50%;border:2px solid #ccc;border-top-color:#111;animation:mnSpin .8s linear infinite}
+@keyframes mnSpin{to{transform:rotate(360deg)}}
+/* mode geser di pratinjau admin */
+.cover.mn-edit .mn-n,.cover.mn-edit .mn-amp,.cover.mn-edit .mn-top,.cover.mn-edit .mn-bot{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;outline:1px dashed rgba(255,255,255,.55);outline-offset:2px}
+.cover.mn-edit .mn-dragging{cursor:grabbing;outline:1px solid #fff;background:rgba(255,255,255,.08)}
+.cover.mn-edit .mn-btn{cursor:pointer}
