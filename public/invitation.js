@@ -206,7 +206,10 @@
     const cap = new Promise((r) => setTimeout(r, 7000)); // jangan menunggu selamanya di jaringan lambat
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
-    const vcap = new Promise((r) => setTimeout(r, 12000));
+    const poster = safeUrl((c.mono || {}).coverPoster);
+    if (poster) urls.push(poster);
+    // ada poster -> cukup tunggu video ≤2,5 dtk (poster sudah tampil bagus); tanpa poster tunggu ≤8 dtk agar sampul tidak hitam
+    const vcap = new Promise((r) => setTimeout(r, poster ? 2500 : 8000));
     const vwork = coverV.length ? Promise.all(coverV.map((v) => vidReady(v, 3))).then(() => { frameV.forEach((v) => { try { v.preload = 'auto'; v.load(); } catch (e) { /* abaikan */ } }); return Promise.race([Promise.all(frameV.map((v) => vidReady(v, 2))), new Promise((r) => setTimeout(r, 3500))]); }) : Promise.resolve();
     Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), Promise.race([vwork, vcap]), minShow]).then(() => {
       ld.classList.add('off');

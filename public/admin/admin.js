@@ -162,7 +162,7 @@
   // ---------- video: terima format apa saja, otomatis dikonversi ke MP4/WebM yang bisa diputar semua HP ----------
   const VID_EXT = /\.(mp4|mov|m4v|webm|mkv|avi|3gp|3gpp|wmv|flv|mpg|mpeg|mts|m2ts|ts|ogv)$/i;
   const isVideoFile = (f) => /^video\//.test(f.type) || VID_EXT.test(f.name);
-  const VID_MAX_SEC = 30, VID_SKIP_MB = 20; // cukup 30 detik (diputar berulang); video ≤20MB berformat mp4/webm tidak diubah
+  const VID_MAX_SEC = 600, VID_SKIP_MB = 4; // durasi TIDAK dipotong (batas 600 dtk hanya pengaman); hanya mp4/webm ≤4MB yang dibiarkan — sisanya dikompres agar cepat dimuat di HP
   async function prepareVideo(file) {
     const url = URL.createObjectURL(file);
     const v = document.createElement('video');
@@ -177,12 +177,15 @@
       }
       const W0 = v.videoWidth, H0 = v.videoHeight;
       if (!W0 || !H0) throw new Error('Video tidak terbaca (ukuran 0). Coba format lain.');
-      const sc = Math.min(1, 1280 / Math.max(W0, H0)), W = Math.round(W0 * sc / 2) * 2, H = Math.round(H0 * sc / 2) * 2;
+      const sc = Math.min(1, 960 / Math.max(W0, H0)), W = Math.round(W0 * sc / 2) * 2, H = Math.round(H0 * sc / 2) * 2;
       const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
       const ctx = cv.getContext('2d');
       const mime = ['video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find((m) => MediaRecorder.isTypeSupported(m));
       if (!mime) throw new Error('Browser ini tidak punya perekam video. Pakai Chrome/Safari terbaru.');
-      const rec = new MediaRecorder(cv.captureStream(30), { mimeType: mime, videoBitsPerSecond: 2500000 });
+      const dur0 = isFinite(v.duration) && v.duration > 0 ? v.duration : 15;
+      // bitrate menyesuaikan durasi agar hasil ±5MB: video pendek lebih tajam, video panjang lebih hemat (min 0,5 / maks 1,8 Mbps)
+      const bps = Math.round(Math.min(1800000, Math.max(500000, 5e6 * 8 / dur0)));
+      const rec = new MediaRecorder(cv.captureStream(30), { mimeType: mime, videoBitsPerSecond: bps });
       const chunks = []; rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
       const stopped = new Promise((r) => { rec.onstop = r; });
       const dur = Math.min(isFinite(v.duration) ? v.duration : VID_MAX_SEC, VID_MAX_SEC);

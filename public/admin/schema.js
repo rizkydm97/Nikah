@@ -101,6 +101,7 @@ const SCHEMA = [
   ] },
   { id: 'mono', title: 'Tema 12 — Foto/Video Monokrom', hint: 'Dipakai bila "Tema undangan" = Tema 12. Cover & bingkai bisa diisi FOTO atau VIDEO (unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube/URL .mp4). Teks cover diisi di menu Cover & Pembuka.', fields: [
     { k: 'mono.coverMedia', l: 'Foto / video cover (layar penuh)', t: 'media', ar: '9/19' },
+    { k: 'mono.coverPoster', l: 'Poster video cover — FOTO yang langsung tampil sambil video diunduh (pakai satu frame dari video / foto mempelai; kecil saja, <300KB)', t: 'image' },
     { k: 'mono.frameMedia', l: 'Foto / video di dalam bingkai (halaman setelah undangan dibuka)', t: 'media', ar: '636/1007' },
     { k: 'mono.frameStyle', l: 'Bentuk bingkai halaman setelah undangan dibuka', t: 'select', o: [['rect', 'Kotak — mawar di keempat sudut (bisa foto atau video)'], ['oval', 'Oval — bunga atas & bawah'], ['circle', 'Bulat — lingkaran penuh dengan bunga'], ['full', 'Layar penuh — foto/VIDEO tanpa bingkai, nama di bawah']] },
     { k: 'cover.textSpeed', l: 'Kecepatan animasi teks masuk di cover (Tema 12)', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
@@ -127,6 +128,7 @@ const SCHEMA = [
   ] },
   { id: 'cover', title: 'Cover (Sampul Undangan)', fields: [
     { k: 'mono.coverMedia', l: 'VIDEO / foto cover layar penuh (khusus Tema 12) — unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube', t: 'media', ar: '9/19' },
+    { k: 'mono.coverPoster', l: 'Poster video cover (khusus Tema 12) — FOTO yang langsung tampil sambil video diunduh. Sangat disarankan bila cover berupa video', t: 'image' },
     { k: 'cover.loaderMedia', l: 'Pembuka layar penuh (semua tema) — foto / VIDEO yang tampil saat undangan dimuat, menggantikan lingkaran. Kosongkan = polos (Tema 12 otomatis pakai media cover)', t: 'media', ar: '9/19' },
     { k: 'cover.photo', l: 'Foto cover — klik "Atur posisi" agar wajah pas di bingkai', t: 'image', arKey: 'cover.photoRatio' },
     { k: 'cover.photoRatio', l: 'Bentuk bingkai foto cover', t: 'select', o: [['16/9', 'Lanskap lebar 16:9'], ['3/2', 'Lanskap 3:2'], ['4/3', 'Lanskap 4:3'], ['1/1', 'Persegi 1:1'], ['4/5', 'Potret 4:5'], ['3/4', 'Potret 3:4']] },

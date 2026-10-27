@@ -41,7 +41,9 @@
     const C = H.C, o = C.cover, m = C.mono || {}, [g, b] = split(o.names);
     const src = m.coverMedia ? m : (H.safeUrl(o.photo) && !/\/assets\/default\//.test(o.photo) ? o : null);
     const key = src === m ? 'coverMedia' : 'photo';
-    const md = src ? media(H, src, key, 'mn-cv') : '';
+    let md = src ? media(H, src, key, 'mn-cv') : '';
+    const poster = H.safeUrl(m.coverPoster);
+    if (poster && /^<video /.test(md)) md = md.replace('<video ', `<video poster="${H.esc(poster)}" `); // foto tampil seketika, video menyusul
     return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover">
       <div class="mn-bg${md ? '' : ' none'}"><div class="mn-kb">${md}</div></div><i class="mn-sh"></i>
       <div class="mn-top"><div class="mn-k">${chars(H, o.kicker, 38, 250)}</div></div>

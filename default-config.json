@@ -371,6 +371,7 @@
   },
   "mono": {
     "coverMedia": "",
+    "coverPoster": "",
     "frameMedia": "",
     "frameStyle": "rect",
     "giftBg": "",
