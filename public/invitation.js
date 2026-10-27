@@ -992,6 +992,8 @@
     if (!u || /\/assets\/default\//.test(u)) return null;
     return own ? { html: bgl(m, key), style: ov(m, key) } : { html: bgl(o, 'bg'), style: ov(o, 'bg') };
   }
+  // Tema 12: tiap bagian memakai rangkaian bunga berbeda; gambar yang diunggah admin sendiri tidak diganti
+  const mnSlot = (k, cur) => (MN && C && C.scene && C.scene[k] && /\/assets\/mono\/corner-(top|bottom)\.webp$/.test(cur || '')) ? C.scene[k] : cur;
   const capsule = (cls, inner) => `<div class="rv cap ${cls}"><div class="fr-side"></div><img class="fr-arc t" src="${link(C.scene.frameArc)}" alt=""><img class="fr-arc b" src="${link(C.scene.frameArc)}" alt=""><div class="cap-in ${cls === 'rosecap' ? 'gf' : 'ev'}">${inner}</div></div>`;
 
   const R = {
@@ -1043,14 +1045,14 @@
     gallery(c) {
       const o = c.gallery, s = c.scene;
       const edge = (pos, src) => `<div class="edge ${pos} ${pos === 'top' ? 'sway-t' : 'sway-b'}"><div class="half l rv" data-a="${pos === 'top' ? 'bloom-l' : 'bloom-ul'}" style="--i:0">${fimg(src)}</div><div class="half r rv" data-a="${pos === 'top' ? 'bloom-r' : 'bloom-ur'}" style="--i:1">${fimg(src)}</div></div>`;
-      return `<section class="sec paperbg gallery">${bgl(o, 'bg', pick(o.bg, s.paper))}${edge('top', s.floralTop)}${edge('bottom', s.floralBottom)}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
+      return `<section class="sec paperbg gallery">${bgl(o, 'bg', pick(o.bg, s.paper))}${edge('top', mnSlot('galTop', s.floralTop))}${edge('bottom', mnSlot('galBot', s.floralBottom))}<h2 class="rv h-display" data-a="soft">${esc(o.title)}</h2>
         ${videoEmbed(o.video)}${galleryBody(o)}</section>`;
     },
     story(c) {
       const o = c.story;
       return `<section class="sec story" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.scene.sky))}<h2 class="rv script-h">${esc(o.title)}</h2>
         <div class="tl">${(o.items || []).map((s) => `<div class="rv card" data-a="soft"><span class="mk">${ICON.heart}</span><div class="im"><div class="phb">${photo(s, 'image', s.title)}</div></div><div class="tx"><h4>${esc(s.title)}</h4><p>${br(s.text)}</p></div></div>`).join('')}</div>
-        <div class="fl sway-b"><div class="half l rv" data-a="bloom-ul" style="--i:0">${fimg(c.scene.floralBottom)}</div><div class="half r rv" data-a="bloom-ur" style="--i:1">${fimg(c.scene.floralBottom)}</div></div>${sparkles(10)}</section>`;
+        <div class="fl sway-b"><div class="half l rv" data-a="bloom-ul" style="--i:0">${fimg(mnSlot('storyBot', c.scene.floralBottom))}</div><div class="half r rv" data-a="bloom-ur" style="--i:1">${fimg(mnSlot('storyBot', c.scene.floralBottom))}</div></div>${sparkles(10)}</section>`;
     },
     gift(c) {
       const o = c.gift, wa = hasWA(c) && o.sendWhatsapp;
@@ -1092,7 +1094,7 @@
         const M = window.MONO, hh = { esc };
         const stars = [[15, 21], [85, 17], [9, 47], [91, 55], [21, 73], [80, 78], [50, 9]].map((p, i) => `<i class="mc-st" style="left:${p[0]}%;top:${p[1]}%;--sd:${(i * 0.9).toFixed(1)}s"></i>`).join('');
         return `<section class="sec closing mn-closing"><div class="stage">${safeUrl(o.bg) ? bgl(o, 'bg') : `<div class="sk" style="background-image:${cssUrl(s.sky)}"></div>`}
-        <div class="ft sway-t">${half(s.floralTop, 0)}</div><div class="fb sway-b">${half(s.floralBottom, 2)}</div>
+        <div class="ft sway-t">${half(mnSlot('clTop', s.floralTop), 0)}</div><div class="fb sway-b">${half(mnSlot('clBot', s.floralBottom), 2)}</div>
         <div class="panel mc-panel"></div><div class="mc-stars" aria-hidden="true">${stars}</div>
         <div class="cl-in"><div class="mc-pw"><div class="cpho mc-pho"><div class="phb">${photo(o, 'photo')}</div></div><i class="mc-halo"></i></div>
         <div class="kick mc-k">${M.chars(hh, o.kicker, 42, 1500)}</div>

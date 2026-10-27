@@ -9,7 +9,9 @@
   const ytId = (u) => (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
 
   // gambar hiasan tema (menggantikan gambar bawaan Tema 1/2 pada section lain)
-  const deco = { floralTop: A + 'corner-top.webp', floralBottom: A + 'corner-bottom.webp', frameArc: A + 'orn-top.webp', frameSide: A + 'orn-bottom.webp', flowers: A + 'flower-tall.webp', ornament: A + 'orn-bottom.webp', column: '' };
+  const deco = { floralTop: A + 'corner-top.webp', floralBottom: A + 'corner-bottom.webp', frameArc: A + 'orn-top.webp', frameSide: A + 'orn-bottom.webp', flowers: A + 'flower-tall.webp', ornament: A + 'orn-bottom.webp', column: '',
+    // bunga hitam putih mewah per bagian (gambar sudut/garis tinta bertransparansi) — dipilih otomatis bila gambar bagian itu masih bawaan tema
+    galTop: A + 'lux-gal-top.webp', galBot: A + 'lux-gal-bot.webp', storyBot: A + 'lux-story-bot.webp', clTop: A + 'lux-cl-top.webp', clBot: A + 'lux-cl-bot.webp' };
   const colors = { primary: '#111111', accent: '#111111', rose: '#222222', gold: '#8c8c8c', paper: '#ffffff', ink: '#111111', body: '#3d3d3d', sideBg: '#e6e6e6',
     fontDisplay: 'Cormorant Garamond', fontHeading: 'Cormorant Garamond', fontBody: 'Poppins', fontScript: 'Great Vibes' };
 

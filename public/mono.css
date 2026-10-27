@@ -465,3 +465,13 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
   .t-mono .mn-closing .mc-halo,.t-mono .mn-closing .mc-st{display:none}
   .mono-hero .mh-date::before,.mono-hero .mh-date::after{transform:none!important;animation:none!important}
 }
+
+
+/* =====================================================================
+   v21 — bunga hitam putih mewah (gambar tinta bertransparansi) per bagian
+   penutup: peony+anemon di atas, mawar di bawah · galeri: sudut halus di atas, cosmos di bawah · Love Story: peony + lily
+   ===================================================================== */
+/* penutup lebih tinggi supaya bunga bawah tidak menimpa teks & garis hati */
+.t-mono .mn-closing .stage{min-height:calc(min(100vw,var(--col))*2.15 + 30px)}
+.t-mono .mn-closing .cl-in{top:15%}
+.t-mono .mn-closing .ft img,.t-mono .mn-closing .fb img{opacity:1}
