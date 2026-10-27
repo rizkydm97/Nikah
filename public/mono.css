@@ -522,3 +522,6 @@ video.mn-m{background:#111}
 /* foto latar loader muncul halus (sudah utuh diunduh sebelum tampil) */
 #loader .ld-bg>img{animation:ldFade .6s ease both}
 @keyframes ldFade{from{opacity:0}to{opacity:1}}
+
+/* animasi teks cover baru berjalan setelah loader selesai (kelas .play ditambahkan introGo); sebelumnya sudah habis di belakang loader */
+.cover.mono:not(.play) :is(.mn-k,.mn-c,.mn-amp,.mn-date,.mn-to,.mn-btn){animation-play-state:paused!important}
