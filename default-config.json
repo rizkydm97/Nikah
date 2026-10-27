@@ -376,6 +376,12 @@
     "frameStyle": "rect",
     "giftBg": "",
     "rsvpBg": "",
-    "grayPhoto": false
+    "grayPhoto": false,
+    "nameY": 15,
+    "nameSize": 100,
+    "nameAlign": "stagger",
+    "kickerY": 7.5,
+    "bottomY": 5.5,
+    "shade": 100
   }
 }

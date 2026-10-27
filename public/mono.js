@@ -44,10 +44,14 @@
     let md = src ? media(H, src, key, 'mn-cv') : '';
     const poster = H.safeUrl(m.coverPoster);
     if (poster && /^<video /.test(md)) md = md.replace('<video ', `<video poster="${H.esc(poster)}" `); // foto tampil seketika, video menyusul
-    return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover">
+    // posisi teks cover diatur dari admin (Cover → Posisi teks); nilai di luar batas dipaksa masuk agar teks tidak hilang
+    const num = (v, d, lo, hi) => { const n = (v === '' || v == null) ? NaN : +v; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
+    const al = ['center', 'left', 'right', 'one'].includes(m.nameAlign) ? m.nameAlign : 'stagger';
+    const vars = `--nmY:${num(m.nameY, 15, 0, 80)}cqh;--nmS:${num(m.nameSize, 100, 40, 140) / 100};--kY:${num(m.kickerY, 7.5, 1, 85)}cqh;--bY:${num(m.bottomY, 5.5, 1, 60)}cqh;--shd:${num(m.shade, 100, 0, 200) / 100}`;
+    return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover" style="${vars}">
       <div class="mn-bg${md ? '' : ' none'}"><div class="mn-kb">${md}</div></div><i class="mn-sh"></i>
       <div class="mn-top"><div class="mn-k">${chars(H, o.kicker, 38, 250)}</div></div>
-      <div class="mn-nm"><span class="mn-n a">${chars(H, g, 70, 650)}</span><i class="mn-amp">&amp;</i><span class="mn-n b">${chars(H, b, 70, 1250)}</span></div>
+      <div class="mn-nm al-${al}"><span class="mn-n a">${chars(H, g, 70, 650)}</span><i class="mn-amp">&amp;</i><span class="mn-n b">${chars(H, b, 70, 1250)}</span></div>
       <div class="mn-bot">
         <div class="mn-date">${H.esc(C.hero.dateText)}</div>
         <div class="mn-to"><span>${H.esc(o.toLabel)}</span><b>${H.esc(H.guest || o.defaultGuest)}</b></div>
@@ -168,5 +172,8 @@
     clIO.observe(cl);
   }
 
-  window.MONO = { cover, hero, open, deco, colors, chars, words, fx, closingFx };
+  // hiasan Tema 12 yang dipakai section lain (sebagian dipanggil lewat CSS, tidak terlihat di DOM saat loader) — ikut dimuat sebelum undangan dibuka
+  const assets = ['corner-top', 'corner-bottom', 'flower-tall', 'lux-cl-bot', 'lux-cl-top', 'lux-gal-bot', 'lux-gal-top', 'lux-story-bot', 'orn-bottom', 'orn-top', 'oval', 'rose-corner', 'sprig-arc', 'sprig-tall'].map((n) => A + n + '.webp');
+
+  window.MONO = { cover, hero, open, deco, colors, chars, words, fx, closingFx, assets };
 })();

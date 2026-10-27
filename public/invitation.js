@@ -182,6 +182,22 @@
     return `<div class="ld-bg">${el}</div>`;
   }
 
+  // ---------- kumpulkan semua alamat gambar yang dipakai undangan ----------
+  function allImages(c) {
+    const IMG = /\.(png|jpe?g|webp|gif|avif|svg|bmp)(\?|#|$)/i, NOT = /\.(mp4|webm|mov|m4v|mkv|mp3|m4a|ogg|wav|aac)(\?|#|$)|youtu/i;
+    const set = new Set(), add = (u) => { u = safeUrl(u); if (u && !NOT.test(u) && (IMG.test(u) || /\/storage\/v1\/object\/public\//.test(u))) set.add(u); };
+    // 1) yang benar-benar tampil di halaman (gambar lazy dipaksa langsung dimuat)
+    $$('#cover img, #app img').forEach((im) => { try { im.loading = 'eager'; } catch (e) { /* abaikan */ } add(im.getAttribute('src')); add(im.getAttribute('data-src')); });
+    $$('#cover [style*="url("], #app [style*="url("]').forEach((el) => { String(el.getAttribute('style')).replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g, (_, u) => { add(u); return _; }); });
+    // 2) foto buatan sendiri di konfigurasi (unggahan / link luar) milik bagian yang aktif — termasuk yang baru dipasang saat undangan dibuka (galeri, lightbox, dst.)
+    const off = new Set((c.sections || []).filter((s) => !s.enabled).map((s) => s.id)), skip = new Set(['general', 'theme', 'effects', 'scene', 'scene2', 'sections']);
+    const walk = (v, d) => { if (v == null || d > 7) return; if (typeof v === 'string') { if (!/^\/assets\//.test(v)) add(v); } else if (Array.isArray(v)) v.forEach((x) => walk(x, d + 1)); else if (typeof v === 'object') Object.keys(v).forEach((k) => walk(v[k], d + 1)); };
+    Object.keys(c).forEach((k) => { if (!skip.has(k) && !off.has(k)) walk(c[k], 0); });
+    // 3) hiasan Tema 12 yang dipanggil lewat CSS
+    if (MN && window.MONO && window.MONO.assets) window.MONO.assets.forEach(add);
+    return [...set];
+  }
+
   // ---------- intro: monogram + muat gambar dulu supaya animasi mulus ----------
   function intro() {
     const ld = $('#loader'), c = C;
@@ -201,13 +217,17 @@
       const iv = setInterval(chk, 250); ['canplay', 'canplaythrough', 'loadeddata', 'error', 'progress'].forEach((e) => v.addEventListener(e, chk)); chk();
     });
     let done = 0; const bar = $('#ldBar');
-    const one = (u) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
+    const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); /* simpan referensi agar tidak dibuang dari memori */ im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
     const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? 1400 : 0));
-    const cap = new Promise((r) => setTimeout(r, 7000)); // jangan menunggu selamanya di jaringan lambat
+    const cap = new Promise((r) => setTimeout(r, 15000)); // batas tunggu untuk jaringan sangat lambat (dulu 7 dtk -> gambar menyusul setelah dibuka)
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
     const poster = safeUrl((c.mono || {}).coverPoster);
     if (poster) urls.push(poster);
+    // SEMUA gambar undangan (galeri, cerita, mempelai, penutup, latar, bingkai, hiasan tema) dimuat & di-decode DI SINI,
+    // sehingga begitu tamu menekan "Buka Undangan" tidak ada gambar yang menyusul/telat muncul.
+    allImages(c).forEach((u) => urls.push(u));
+    const uniq = [...new Set(urls.filter(Boolean))]; urls.length = 0; uniq.forEach((u) => urls.push(u));
     // ada poster -> cukup tunggu video ≤2,5 dtk (poster sudah tampil bagus); tanpa poster tunggu ≤8 dtk agar sampul tidak hitam
     const vcap = new Promise((r) => setTimeout(r, poster ? 2500 : 8000));
     const vwork = coverV.length ? Promise.all(coverV.map((v) => vidReady(v, 3))).then(() => { frameV.forEach((v) => { try { v.preload = 'auto'; v.load(); } catch (e) { /* abaikan */ } }); return Promise.race([Promise.all(frameV.map((v) => vidReady(v, 2))), new Promise((r) => setTimeout(r, 3500))]); }) : Promise.resolve();

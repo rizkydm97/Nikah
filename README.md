@@ -252,3 +252,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Section lain**: normal, bernuansa hitam putih (kartu acara/gift bergaris tipis + ornamen).
 - Isi lewat Admin → **Tema 12 Hitam Putih** (foto/video cover, foto/video bingkai, bentuk bingkai, hitam-putih otomatis). Video: unggah .mp4/.webm, tempel URL .mp4, atau link YouTube.
 - File: `public/mono.js`, `public/mono.css`, aset `public/assets/mono/`.
+
+## Update v90/92 — Posisi teks cover Tema 12 & preload semua gambar
+- **Admin → Cover → "Posisi teks cover"**: susunan nama (bertingkat / tengah / kiri / kanan / satu baris), posisi naik-turun nama, ukuran nama, posisi teks kecil atas, posisi blok bawah (tanggal, tamu, tombol), dan kekuatan bayangan gelap di atas foto. Pratinjau langsung ikut berubah; tombol **Reset** mengembalikan ke bawaan.
+- **Loader memuat SEMUA gambar** (galeri, cerita, mempelai, penutup, latar, bingkai, hiasan Tema 12) + `decode()` sebelum tombol "Buka Undangan" muncul, sehingga tidak ada gambar yang menyusul setelah undangan dibuka. Batas tunggu loader 7 dtk → 15 dtk.
+- File berubah: `public/mono.js`, `public/mono.css`, `public/invitation.js`, `public/admin/{admin,schema}.js`, `public/admin/index.html`, `default-config.json`, `lib/index.template.html`.

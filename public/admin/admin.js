@@ -347,6 +347,13 @@
       const tx = h('input', { type: 'text', value: get() || '', oninput: (e) => { set(e.target.value); if (/^#[0-9a-f]{6}$/i.test(e.target.value)) cp.value = e.target.value; } });
       const cp = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(get() || '') ? get() : '#000000', oninput: (e) => { tx.value = e.target.value; set(e.target.value); } });
       wrap.append(label, h('div', { class: 'row' }, cp, tx));
+    } else if (f.t === 'range') {
+      const dv = f.def !== undefined ? f.def : f.min, cur = () => (get() === undefined || get() === '' || get() === null ? dv : +get());
+      const out = h('b', { class: 'rv-out' }, cur() + (f.unit || ''));
+      const rg = h('input', { type: 'range', min: f.min, max: f.max, step: f.step || 1, value: cur(), oninput: (e) => { out.textContent = e.target.value + (f.unit || ''); set(+e.target.value); } });
+      const rs = h('button', { class: 'btn sm', type: 'button', onclick: () => { rg.value = dv; out.textContent = dv + (f.unit || ''); set(dv); } }, 'Reset');
+      wrap.append(label, h('div', { class: 'row', style: 'align-items:center;gap:10px' }, rg, out, rs));
+      rg.style.flex = '1';
     } else if (f.t === 'number') {
       wrap.append(label, h('input', { type: 'number', min: f.min, max: f.max, value: get(), oninput: (e) => set(e.target.value === '' ? '' : +e.target.value) }));
     } else if (f.t === 'datetime') {
