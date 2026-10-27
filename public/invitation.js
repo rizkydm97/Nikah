@@ -229,8 +229,9 @@
       const iv = setInterval(chk, 250); ['canplay', 'canplaythrough', 'loadeddata', 'error', 'progress'].forEach((e) => v.addEventListener(e, chk)); chk();
     });
     let done = 0; const bar = $('#ldBar');
-    const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); /* simpan referensi agar tidak dibuang dari memori */ im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.round(done / urls.length * 100) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
-    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? (MN ? 600 : 1400) : 0));
+    if (MN && bar) { bar.style.transition = 'width 2s ease'; requestAnimationFrame(() => { bar.style.width = '88%'; }); } // bilah berjalan mulus selama loader tampil
+    const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); /* simpan referensi agar tidak dibuang dari memori */ im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.max(parseFloat(bar.style.width) || 0, Math.round(done / urls.length * 100)) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
+    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? (MN ? 2300 : 1400) : 0));
     const cap = new Promise((r) => setTimeout(r, 15000)); // batas tunggu untuk jaringan sangat lambat (dulu 7 dtk -> gambar menyusul setelah dibuka)
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
@@ -247,6 +248,7 @@
     const vcap = new Promise((r) => setTimeout(r, poster ? 2500 : 8000));
     const vwork = coverV.length ? Promise.all(coverV.map((v) => vidReady(v, 3))).then(() => { frameV.forEach((v) => { try { v.preload = 'auto'; v.load(); } catch (e) { /* abaikan */ } }); return Promise.race([Promise.all(frameV.map((v) => vidReady(v, 2))), new Promise((r) => setTimeout(r, 3500))]); }) : Promise.resolve();
     Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), Promise.race([vwork, vcap]), minShow]).then(() => {
+      if (bar) bar.style.width = '100%';
       ld.classList.add('off');
       const cv = $('#cover');
       if (MN && rest.length) holdOpen(rest);
