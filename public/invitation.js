@@ -226,7 +226,7 @@
     const names = String(c.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean);
     const mono = names.length >= 2 ? `${esc(names[0][0])}<i>&amp;</i>${esc(names[1][0])}` : esc((names[0] || '♥')[0]);
     const lm = loaderMedia(c);
-    const logo = safeUrl(c.cover.loaderLogo), lgs = c.cover.loaderLogoSize === '' || c.cover.loaderLogoSize == null ? 100 : num(c.cover.loaderLogoSize, 100, 40, 120);
+    const logo = safeUrl(c.cover.loaderLogo), lgs = c.cover.loaderLogoSize === '' || c.cover.loaderLogoSize == null ? 100 : num(c.cover.loaderLogoSize, 100, 30, 160);
     // logo (mis. monogram 3D) menggantikan singkatan huruf + lingkaran bila diisi di admin → Cover → "Logo di layar loading"
     const mid = logo ? `<div class="ld-logo" style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>` : `<div class="ld-ring"></div><div class="ld-mono">${mono}</div>`;
     if (c.effects.intro !== false) ld.innerHTML = `${lm}<div class="ld-in${logo ? ' has-logo' : ''}">${mid}<div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
@@ -241,10 +241,13 @@
       const chk = () => { if (v.error || !v.isConnected) return end(); const dur = isFinite(v.duration) && v.duration > 0 ? v.duration : need; if (v.readyState >= 3 && (ahead() >= Math.min(need, dur * 0.9) || v.readyState >= 4)) end(); };
       const iv = setInterval(chk, 250); ['canplay', 'canplaythrough', 'loadeddata', 'error', 'progress'].forEach((e) => v.addEventListener(e, chk)); chk();
     });
+    // lama loader tampil: dengan logo = pengaturan admin (bawaan 6 dtk, cukup untuk animasi muncul + kilau); tanpa logo Tema 12 = 3,6 dtk
+    const lt = c.cover.loaderLogoTime === '' || c.cover.loaderLogoTime == null ? 6 : num(c.cover.loaderLogoTime, 6, 2, 15);
+    const holdMs = c.effects.intro === false ? 0 : safeUrl(c.cover.loaderLogo) ? Math.round(lt * 1000) : MN ? 3600 : 1400;
     let done = 0; const bar = $('#ldBar');
-    if (MN && bar) { bar.style.transition = 'width 3.2s cubic-bezier(.4,0,.2,1)'; requestAnimationFrame(() => { bar.style.width = '96%'; }); } // bilah berjalan mulus selama loader tampil
+    if ((MN || safeUrl(c.cover.loaderLogo)) && bar) { bar.style.transition = `width ${Math.max(1, holdMs - 400)}ms cubic-bezier(.4,0,.2,1)`; requestAnimationFrame(() => { bar.style.width = '96%'; }); } // bilah berjalan mulus selama loader tampil
     const one = (u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); /* simpan referensi agar tidak dibuang dari memori */ im.onload = im.onerror = () => { done++; if (bar) bar.style.width = Math.max(parseFloat(bar.style.width) || 0, Math.round(done / urls.length * 100)) + '%'; (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); }; im.src = u; });
-    const minShow = new Promise((r) => setTimeout(r, c.effects.intro !== false ? (MN ? 3600 : 1400) : 0));
+    const minShow = new Promise((r) => setTimeout(r, holdMs));
     const cap = new Promise((r) => setTimeout(r, 15000)); // batas tunggu untuk jaringan sangat lambat (dulu 7 dtk -> gambar menyusul setelah dibuka)
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));

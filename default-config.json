@@ -97,7 +97,8 @@
     "photoRatio": "16/9",
     "textSpeed": "",
     "loaderLogo": "/assets/mono/logo-ad.webp",
-    "loaderLogoSize": 100
+    "loaderLogoSize": 100,
+    "loaderLogoTime": 6
   },
   "hero": {
     "kicker": "The Wedding Of",
