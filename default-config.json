@@ -95,7 +95,9 @@
     "placeText": "Di Tempat",
     "button": "Buka Undangan",
     "photoRatio": "16/9",
-    "textSpeed": ""
+    "textSpeed": "",
+    "loaderLogo": "/assets/mono/logo-ad.webp",
+    "loaderLogoSize": 100
   },
   "hero": {
     "kicker": "The Wedding Of",

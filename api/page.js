@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
     // foto cover mulai diunduh sejak byte pertama (paralel dengan skrip & konfigurasi), bukan menunggu JS jalan
     const m = config.mono || {}, c = config.cover || {};
     const ok = (u) => /^(https?:\/\/|\/(?!\/))/i.test(String(u || '')) && !/\.(mp4|webm|mov|m4v|mkv)(\?|#|$)|youtu/i.test(String(u));
-    const pre = [m.coverMedia, m.coverPoster, m.coverMedia ? '' : (/\/assets\/default\//.test(c.photo || '') ? '' : c.photo)].filter(ok);
-    if (pre.length) out = out.replace('</head>', [...new Set(pre)].slice(0, 2).map((u) => `<link rel="preload" as="image" href="${attr(u)}" fetchpriority="high">`).join('') + '</head>');
+    const pre = [m.coverMedia, m.coverPoster, m.coverMedia ? '' : (/\/assets\/default\//.test(c.photo || '') ? '' : c.photo), c.loaderLogo].filter(ok);
+    if (pre.length) out = out.replace('</head>', [...new Set(pre)].slice(0, 3).map((u) => `<link rel="preload" as="image" href="${attr(u)}" fetchpriority="high">`).join('') + '</head>');
   }
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');

@@ -138,6 +138,8 @@ const SCHEMA = [
     { k: 'mono.kickerY', l: 'Posisi teks kecil atas (\"THE WEDDING OF\") — naik/turun', t: 'range', min: 1, max: 85, step: 0.5, unit: '%', def: 7.5 },
     { k: 'mono.bottomY', l: 'Posisi blok bawah (tanggal, nama tamu, tombol) — jarak dari bawah layar', t: 'range', min: 1, max: 60, step: 0.5, unit: '%', def: 5.5 },
     { k: 'mono.shade', l: 'Gelap-terang lapisan bayangan di atas foto cover (0 = tanpa bayangan, 100 = bawaan, 200 = lebih gelap)', t: 'range', min: 0, max: 200, step: 5, unit: '%', def: 100 },
+    { k: 'cover.loaderLogo', l: 'Logo di layar loading awal (monogram 3D / logo PNG transparan) — menggantikan singkatan huruf. Kosongkan kolom link bila ingin kembali ke singkatan huruf. Efek: muncul mewah, kilau berjalan, melayang halus', t: 'image', deco: 1 },
+    { k: 'cover.loaderLogoSize', l: 'Ukuran logo loading', t: 'range', min: 40, max: 120, step: 1, unit: '%', def: 100 },
     { k: 'cover.photo', l: 'Foto cover — klik "Atur posisi" agar wajah pas di bingkai', t: 'image', arKey: 'cover.photoRatio' },
     { k: 'cover.photoRatio', l: 'Bentuk bingkai foto cover', t: 'select', o: [['16/9', 'Lanskap lebar 16:9'], ['3/2', 'Lanskap 3:2'], ['4/3', 'Lanskap 4:3'], ['1/1', 'Persegi 1:1'], ['4/5', 'Potret 4:5'], ['3/4', 'Potret 3:4']] },
     { k: 'cover.bg', l: 'Latar cover satu gambar penuh (opsional — kosongkan untuk pakai adegan rumah & bunga)', t: 'image', ar: '9/19' }, { k: 'cover.kicker', l: 'Teks kecil atas', t: 'text' },

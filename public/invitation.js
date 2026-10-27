@@ -215,18 +215,21 @@
   function intro() {
     let lu = '';
     try { const t = document.createElement('div'); t.innerHTML = loaderMedia(C); const im = t.querySelector('img'); lu = im ? im.getAttribute('src') || '' : ''; } catch (e) { /* abaikan */ }
-    if (!lu) { introGo(); return; }
+    const list = [lu, safeUrl(C.cover.loaderLogo)].filter(Boolean); // foto latar loader + logo harus utuh dulu
+    if (!list.length) { introGo(); return; }
     let go = false; const start = () => { if (go) return; go = true; introGo(); };
-    const im = new Image(); (window.__pre = window.__pre || []).push(im);
-    im.onload = im.onerror = () => { (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(start); };
-    im.src = lu; setTimeout(start, 8000); // jaringan sangat lambat: jangan menahan selamanya
+    Promise.all(list.map((u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); im.onload = im.onerror = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); im.src = u; }))).then(start);
+    setTimeout(start, 8000); // jaringan sangat lambat: jangan menahan selamanya
   }
   function introGo() {
     const ld = $('#loader'), c = C;
     const names = String(c.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean);
     const mono = names.length >= 2 ? `${esc(names[0][0])}<i>&amp;</i>${esc(names[1][0])}` : esc((names[0] || '♥')[0]);
     const lm = loaderMedia(c);
-    if (c.effects.intro !== false) ld.innerHTML = `${lm}<div class="ld-in"><div class="ld-ring"></div><div class="ld-mono">${mono}</div><div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
+    const logo = safeUrl(c.cover.loaderLogo), lgs = c.cover.loaderLogoSize === '' || c.cover.loaderLogoSize == null ? 100 : num(c.cover.loaderLogoSize, 100, 40, 120);
+    // logo (mis. monogram 3D) menggantikan singkatan huruf + lingkaran bila diisi di admin → Cover → "Logo di layar loading"
+    const mid = logo ? `<div class="ld-logo" style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>` : `<div class="ld-ring"></div><div class="ld-mono">${mono}</div>`;
+    if (c.effects.intro !== false) ld.innerHTML = `${lm}<div class="ld-in${logo ? ' has-logo' : ''}">${mid}<div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
     ld.classList.toggle('has-media', !!lm); ld.classList.add('ready');
     const s = c.scene;
     const urls = PT && PT.live ? [PT.bg, ...(PT.preload || ['bf_rajah', 'feather', 'leafj', 'orchid', 'cloudw1']).map((n) => /\//.test(n) ? n : PT.spr + n + '.webp')] : PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
