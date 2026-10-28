@@ -63,6 +63,22 @@
   const pos = (v, d) => (v === 'top' || v === 'bottom' || v === 'middle' ? v : d);
   const ali = (v, d) => (v === 'left' || v === 'center' || v === 'right' ? v : d);
 
+
+  // ---------- nama mempelai = 3 bagian terpisah (nama 1, "&", nama 2), masing-masing bisa digeser/diperbesar sendiri di admin ----------
+  // key = awalan kunci data-ad (mis. "cv" -> cv.n1, cv.n2, cv.n3); start = jeda animasi bagian pertama (ms); legacy = kunci lama satu blok nama
+  function nameParts(H, a, b, key, start, legacy) {
+    const out = [];
+    const add = (txt, i, d) => out.push(`<span class="sl-np n${i}" data-ad="${key}.n${i}">${wipe(H, txt, d)}</span>`);
+    a = String(a == null ? '' : a).trim(); b = String(b == null ? '' : b).trim();
+    if (a && b) { add(a, 1, start); add('&', 2, start + 380); add(b, 3, start + 700); }
+    else if (a || b) add(a || b, 1, start);
+    return `<span class="sl-nm3" data-adg="${legacy}">${out.join('')}</span>`;
+  }
+  const splitNames = (v) => { // "Adi & Debby" -> ['Adi', 'Debby'] (hanya & pertama yang memisah)
+    const t = String(v == null ? '' : v), i = t.indexOf('&');
+    return i < 0 ? [t.trim(), ''] : [t.slice(0, i).trim(), t.slice(i + 1).trim()];
+  };
+
   // ---------- 1. sampul ----------
   function cover(H) {
     const C = H.C, o = C.cover, s = sl(H), src = coverSrc(H);
@@ -70,20 +86,20 @@
     const poster = H.safeUrl(s.coverPoster) || H.safeUrl((C.mono || {}).coverPoster);
     if (poster && /^<video /.test(md)) md = md.replace('<video ', `<video poster="${H.esc(poster)}" `);
     const lab = s.coverLabel == null ? 'Wedding Invitation' : s.coverLabel, loc = s.coverLoc == null ? '' : s.coverLoc;
-    const txt = s.coverText == null ? '' : s.coverText;
+    const txt = s.coverText == null ? '' : s.coverText, nm = splitNames(o.names);
     return `<div class="cover slcv${tone(H)}" id="cover" style="--shd:${shade(H)}">
       <div class="sl-cv-bg${md ? '' : ' none'}"><div class="sl-cv-kb">${md}</div></div><i class="sl-cv-sh"></i>
       <div class="sl-cv-in">
         <div class="sl-cv-hd sl-fade" style="--d:300ms" data-ad="cv.hd"><span>${E(H, C.hero.dateText)}</span><b>${E(H, lab)}</b><span class="loc">${loc ? `${H.ICON.pin}${E(H, loc)}` : ''}</span></div>
-        <div class="sl-cv-k" data-ad="cv.k">${chars(H, o.kicker, 40, 450)}</div>
+        <div class="sl-cv-k" data-ad="cv.k">${words(H, o.kicker, 90, 450)}</div>
         <div class="sl-cv-sp"></div>
-        <div class="sl-cv-nm" data-ad="cv.nm">${wipe(H, o.names, 900)}</div>
+        <div class="sl-cv-nm">${nameParts(H, nm[0], nm[1], 'cv', 900, 'cv.nm')}</div>
         <div class="sl-cv-to">
-          ${up('sl-cv-dear', 1700, E(H, o.toLabel), null, 'cv.dear')}
-          ${up('sl-cv-g', 1900, E(H, H.guest || o.defaultGuest), null, 'cv.g')}
-          ${txt ? `<p class="sl-cv-tx" data-ad="cv.tx">${words(H, txt, 28, 2300)}</p>` : ''}
+          ${up('sl-cv-dear', 2000, E(H, o.toLabel), null, 'cv.dear')}
+          ${up('sl-cv-g', 2200, E(H, H.guest || o.defaultGuest), null, 'cv.g')}
+          ${txt ? `<p class="sl-cv-tx" data-ad="cv.tx">${words(H, txt, 28, 2600)}</p>` : ''}
         </div>
-        <button class="sl-cv-btn sl-pop" id="openBtn" type="button" style="--d:2900ms" data-ad="cv.btn">${H.icon}${E(H, o.button)}</button>
+        <button class="sl-cv-btn sl-pop" id="openBtn" type="button" style="--d:3200ms" data-ad="cv.btn">${H.icon}${E(H, o.button)}</button>
       </div></div>`;
   }
 
@@ -91,17 +107,23 @@
   function hero(H) {
     const C = H.C, h = C.hero, s = sl(H);
     const a = pick(H, [[s, 'openMedia'], [C.cover, 'photo'], [s, 'coverMedia'], [C.mono || {}, 'coverMedia']]);
-    const b = s.openMedia2 && H.safeUrl(s.openMedia2) ? [s, 'openMedia2'] : null;
-    const nm = [h.groom, h.bride].filter(Boolean).join(' & ');
-    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}svh" data-two="${b ? 1 : 0}">
-      <div class="sl-ph"><div class="sl-pan"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div>${b ? `<div class="sl-pk b">${ph(H, b, 'sl-pm')}</div>` : ''}</div></div>
+    // foto ke-2: isian "Foto pembuka 2"; bila kosong dicarikan foto lain (cover / mempelai) yang berbeda dari foto 1
+    const b = pick(H, [[s, 'openMedia2'], [s, 'coverMedia'], [C.mono || {}, 'coverMedia'], [s, 'groomMedia'], [s, 'brideMedia'], [C.cover, 'photo']].filter((x) => !a || H.safeUrl(x[0][x[1]]) !== H.safeUrl(a[0][a[1]])));
+    const two = !!(a && b && !DEF.test(b[0][b[1]] || ''));
+    const dir = s.openDir === 'left' ? 'l' : 'r';
+    // deretan 2 foto bersisian; seluruh deretan bergeser pelan ke kanan (kamera menyapu dari foto 1 ke foto 2)
+    const strip = two
+      ? `<div class="sl-strip dir-${dir}"><div class="sl-tile"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div><div class="sl-tile"><div class="sl-pk b">${ph(H, b, 'sl-pm')}</div></div></div>`
+      : `<div class="sl-pan"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div>`;
+    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}svh" data-two="${two ? 1 : 0}">
+      <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
         <div class="sl-op-k" data-ad="op.k">${chars(H, h.kicker, 38, 700)}</div>
-        <h1 class="sl-op-n" data-ad="op.n">${wipe(H, nm, 1100)}</h1>
-        <i class="sl-line sl-draw" style="--d:2000ms"></i>
-        ${up('sl-op-d', 2300, E(H, h.dateText), null, 'op.d')}
-        ${h.hashtag ? up('sl-op-t', 2600, E(H, h.hashtag), null, 'op.t') : ''}
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1100, 'op.n')}</h1>
+        <i class="sl-line sl-draw" style="--d:2300ms"></i>
+        ${up('sl-op-d', 2600, E(H, h.dateText), null, 'op.d')}
+        ${h.hashtag ? up('sl-op-t', 2900, E(H, h.hashtag), null, 'op.t') : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true"><i></i></div></section>`;
   }
@@ -256,29 +278,14 @@
     els.forEach((e) => io.observe(e));
   }
 
-  // pembuka dengan 2 foto: bergantian otomatis (hanya saat slide tampil)
-  let tm = null;
-  function two(hero) {
-    clearInterval(tm);
-    if (!hero || hero.dataset.two !== '1') return;
-    let k = 0; const a = hero.querySelector('.sl-pk.a'), b = hero.querySelector('.sl-pk.b'); if (!a || !b) return;
-    tm = setInterval(() => { if (!hero.classList.contains('play')) return; k ^= 1; hero.classList.toggle('alt', !!k); }, 5200);
-  }
-  if (window.MutationObserver && document.body) {
-    new MutationObserver((ms) => ms.forEach((m) => {
-      const t = m.target; if (!t || t.id !== 's-hero' || !t.classList || !t.classList.contains('sl-open')) return;
-      const on = t.classList.contains('play');
-      if (on && !t._pl) { t._pl = true; two(t); } else if (!on && t._pl) { t._pl = false; clearInterval(tm); t.classList.remove('alt'); }
-    })).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
-  }
-
   // ---------- posisi & ukuran tulisan (diatur di admin: slide.adj = { "cv.nm": {x, y, s} }) ----------
   // x, y = geser dalam % lebar layar (satuan cqw, jadi sama persis di HP kecil maupun besar); s = ukuran dalam % (100 = bawaan).
   // Memakai properti `translate` & `scale` (terpisah dari `transform`) agar tidak bentrok dengan animasi teks masuk.
   function adjust(cfg) {
     const adj = (cfg && cfg.slide && cfg.slide.adj) || {};
-    document.querySelectorAll('[data-ad]').forEach((el) => {
-      const a = adj[el.dataset.ad] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
+    // [data-adg] = pengaturan lama satu blok nama (cv.nm / op.n): tetap berlaku bagi yang sudah pernah menggeser nama
+    document.querySelectorAll('[data-ad],[data-adg]').forEach((el) => {
+      const a = adj[el.dataset.ad || el.dataset.adg] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
       el.style.translate = x || y ? `${x}cqw ${y}cqw` : '';
       el.style.scale = sc !== 1 ? String(sc) : '';
     });

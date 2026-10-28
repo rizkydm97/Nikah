@@ -294,13 +294,17 @@
     const slF = c.theme.preset === 'slide' && c.slide && c.slide.scriptFont ? c.slide.scriptFont : '';
     const SCF = { 'Vivaldi': 1.05, 'Mrs Saint Delafield': 1.4, 'Herr Von Muellerhoff': 1.35, 'Monsieur La Doulaise': 1.2, 'Allison': 1.2, 'La Belle Aurore': 1.1, 'Whisper': 1.15 };
     r.setProperty('--fScript', ff(slF || t.fontScript, (slF || t.fontScript) === 'Vivaldi' ? "'Great Vibes','Monsieur La Doulaise',cursive" : 'cursive'));
-    vivaldiFace(c, slF || t.fontScript);
+    const isSl = c.theme.preset === 'slide';
+    // Tema 13: seluruh teks cover & pembuka SELALU Vivaldi (file font unggahan → Vivaldi terpasang → Great Vibes yang mirip), terlepas dari font tulisan tangan slide lain
+    r.setProperty('--fViv', "'Vivaldi','Great Vibes','Monsieur La Doulaise',cursive");
+    r.setProperty('--scv', String((1.05 * (isSl ? (parseFloat(c.slide && c.slide.scriptSize) || 100) / 100 : 1)).toFixed(3)));
+    vivaldiFace(c, isSl ? 'Vivaldi' : (slF || t.fontScript));
     r.setProperty('--sc', String(((SCF[slF || t.fontScript] || 1) * (c.theme.preset === 'slide' ? (parseFloat(c.slide && c.slide.scriptSize) || 100) / 100 : 1)).toFixed(3)));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's'); r.setProperty('--tk', String(sp));
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
-    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri'])].filter((n) => n && n !== 'Vivaldi').map((n) => {
+    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' || isSl ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri'])].filter((n) => n && n !== 'Vivaldi').map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
       if (!w) return 'family=' + nm;
       const ws = w.split(';');

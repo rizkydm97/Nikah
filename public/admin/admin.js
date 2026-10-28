@@ -55,8 +55,8 @@
   // ---------- Tema 13: posisi & ukuran tulisan (disimpan di slide.adj; kunci sama dengan data-ad di slide.js) ----------
   const SLADJ_TITLE = { cover: 'Cover', open: 'Pembuka', couple: 'Mempelai', quote: 'Ayat & Hitung Mundur', events: 'Akad / Resepsi', story: 'Love Story', closing: 'Penutup' };
   const SLADJ = {
-    cover: () => [['cv.hd', 'Baris atas (tanggal · label · lokasi)'], ['cv.k', 'Teks kecil atas'], ['cv.nm', 'Nama mempelai'], ['cv.dear', 'Tulisan "Kepada Bapak/Ibu…"'], ['cv.g', 'Nama tamu'], ['cv.tx', 'Kalimat undangan'], ['cv.btn', 'Tombol Buka Undangan']],
-    open: () => [['op.k', 'Teks kecil'], ['op.n', 'Nama mempelai'], ['op.d', 'Tanggal'], ['op.t', 'Hashtag']],
+    cover: () => [['cv.hd', 'Baris atas (tanggal · label · lokasi)'], ['cv.k', 'Teks kecil atas'], ['cv.n1', 'Nama 1 (mis. Adi)'], ['cv.n2', 'Tanda & di antara nama'], ['cv.n3', 'Nama 2 (mis. Debby)'], ['cv.dear', 'Tulisan "Kepada Bapak/Ibu…"'], ['cv.g', 'Nama tamu'], ['cv.tx', 'Kalimat undangan'], ['cv.btn', 'Tombol Buka Undangan']],
+    open: () => [['op.k', 'Teks kecil'], ['op.n1', 'Nama 1 (mis. Adi)'], ['op.n2', 'Tanda & di antara nama'], ['op.n3', 'Nama 2 (mis. Debby)'], ['op.d', 'Tanggal'], ['op.t', 'Hashtag']],
     couple: () => [['g.l', 'Pria — label'], ['g.n', 'Pria — nama'], ['g.p', 'Pria — orang tua'], ['g.ig', 'Pria — tombol Instagram'], ['b.l', 'Wanita — label'], ['b.n', 'Wanita — nama'], ['b.p', 'Wanita — orang tua'], ['b.ig', 'Wanita — tombol Instagram']],
     quote: () => [['q.ar', 'Ayat Arab'], ['q.t', 'Terjemahan ayat'], ['q.src', 'Sumber ayat'], ['q.cd', 'Hitung mundur'], ['q.btn', 'Tombol Save The Date']],
     events: () => ((cfg.events && cfg.events.items) || []).flatMap((e, i) => { const n = (e && e.title) || 'Acara ' + (i + 1); return [['e' + i + '.t', n + ' — judul'], ['e' + i + '.d', n + ' — tanggal'], ['e' + i + '.h', n + ' — jam'], ['e' + i + '.pl', n + ' — nama tempat'], ['e' + i + '.ad', n + ' — alamat'], ['e' + i + '.map', n + ' — tombol peta']]; }),
