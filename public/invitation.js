@@ -1342,7 +1342,9 @@
     applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
     if (SL) {
       window.SLIDE.adjust(cfg); window.SLIDE.toTop(true);
-      if (PREVIEW) window.SLIDE.edit(() => { const s = (C.slide = C.slide || {}); return (s.adj = s.adj && typeof s.adj === 'object' ? s.adj : {}); }, (adj) => { try { parent.postMessage({ type: 'sladj', adj }, location.origin); } catch (e) { /* abaikan */ } });
+      if (PREVIEW) window.SLIDE.edit(() => { const s = (C.slide = C.slide || {}); return (s.adj = s.adj && typeof s.adj === 'object' ? s.adj : {}); }, (adj) => { try { parent.postMessage({ type: 'sladj', adj }, location.origin); } catch (e) { /* abaikan */ } },
+        (path, value) => { try { parent.postMessage({ type: 'sltext', path, value }, location.origin); } catch (e) { /* abaikan */ } },
+        (path) => { const pr = String(path).split('#'), v = pr[0].split('.').reduce((o, k) => (o == null ? undefined : o[k]), C), tx = v == null ? '' : String(v); if (pr[1] == null) return tx; const i = tx.indexOf('&'), ps = i < 0 ? [tx.trim(), ''] : [tx.slice(0, i).trim(), tx.slice(i + 1).trim()]; return ps[+pr[1]] || ''; });
     } else if (window.SLIDE) window.SLIDE.toTop(false);
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));

@@ -30,7 +30,9 @@
       .map((w) => `<span class="sl-wd" style="--d:${start + (n++) * step}ms">${E(H, w)}</span>`).join(' ')).join('<br>');
   }
   const wipe = (H, s, start) => `<span class="sl-wipe" style="--d:${start || 0}ms"><span>${E(H, s)}</span></span>`;
-  const up = (cls, d, inner, tag, ad) => `<${tag || 'div'} class="${cls} sl-up" style="--d:${d}ms"${ad ? ` data-ad="${ad}"` : ''}>${inner}</${tag || 'div'}>`;
+  const up = (cls, d, inner, tag, ad, extra) => `<${tag || 'div'} class="${cls} sl-up" style="--d:${d}ms"${ad ? ` data-ad="${ad}"` : ''}${extra || ''}>${inner}</${tag || 'div'}>`;
+  // data-tx = alamat teks di konfigurasi (dipakai pratinjau admin: klik 2× pada tulisan untuk mengubah teksnya langsung)
+  const tx = (path, ml) => ` data-tx="${path}"${ml ? ' data-ml="1"' : ''}`;
 
   // ---------- foto / video / YouTube ----------
   function media(H, o, k, cls) {
@@ -66,9 +68,9 @@
 
   // ---------- nama mempelai = 3 bagian terpisah (nama 1, "&", nama 2), masing-masing bisa digeser/diperbesar sendiri di admin ----------
   // key = awalan kunci data-ad (mis. "cv" -> cv.n1, cv.n2, cv.n3); start = jeda animasi bagian pertama (ms); legacy = kunci lama satu blok nama
-  function nameParts(H, a, b, key, start, legacy) {
+  function nameParts(H, a, b, key, start, legacy, txs) {
     const out = [];
-    const add = (txt, i, d) => out.push(`<span class="sl-np n${i}" data-ad="${key}.n${i}">${wipe(H, txt, d)}</span>`);
+    const add = (txt, i, d) => out.push(`<span class="sl-np n${i}" data-ad="${key}.n${i}"${txs && i !== 2 && txs[i === 3 ? 1 : 0] ? tx(txs[i === 3 ? 1 : 0]) : ''}>${wipe(H, txt, d)}</span>`);
     a = String(a == null ? '' : a).trim(); b = String(b == null ? '' : b).trim();
     if (a && b) { add(a, 1, start); add('&', 2, start + 380); add(b, 3, start + 700); }
     else if (a || b) add(a || b, 1, start);
@@ -91,13 +93,13 @@
       <div class="sl-cv-bg${md ? '' : ' none'}"><div class="sl-cv-kb">${md}</div></div><i class="sl-cv-sh"></i>
       <div class="sl-cv-in">
         <div class="sl-cv-hd sl-fade" style="--d:300ms" data-ad="cv.hd"><span>${E(H, C.hero.dateText)}</span><b>${E(H, lab)}</b><span class="loc">${loc ? `${H.ICON.pin}${E(H, loc)}` : ''}</span></div>
-        <div class="sl-cv-k" data-ad="cv.k">${words(H, o.kicker, 90, 450)}</div>
+        <div class="sl-cv-k" data-ad="cv.k"${tx('cover.kicker')}>${words(H, o.kicker, 90, 450)}</div>
         <div class="sl-cv-sp"></div>
-        <div class="sl-cv-nm">${nameParts(H, nm[0], nm[1], 'cv', 900, 'cv.nm')}</div>
+        <div class="sl-cv-nm">${nameParts(H, nm[0], nm[1], 'cv', 900, 'cv.nm', ['cover.names#0', 'cover.names#1'])}</div>
         <div class="sl-cv-to">
-          ${up('sl-cv-dear', 2000, E(H, o.toLabel), null, 'cv.dear')}
+          ${up('sl-cv-dear', 2000, E(H, o.toLabel), null, 'cv.dear', tx('cover.toLabel'))}
           ${up('sl-cv-g', 2200, E(H, H.guest || o.defaultGuest), null, 'cv.g')}
-          ${txt ? `<p class="sl-cv-tx" data-ad="cv.tx">${words(H, txt, 28, 2600)}</p>` : ''}
+          ${txt ? `<p class="sl-cv-tx" data-ad="cv.tx"${tx('slide.coverText', true)}>${words(H, txt, 28, 2600)}</p>` : ''}
         </div>
         <button class="sl-cv-btn sl-pop" id="openBtn" type="button" style="--d:3200ms" data-ad="cv.btn">${H.icon}${E(H, o.button)}</button>
       </div></div>`;
@@ -119,11 +121,11 @@
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
-        <div class="sl-op-k" data-ad="op.k">${chars(H, h.kicker, 38, 1500)}</div>
-        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1900, 'op.n')}</h1>
+        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1500)}</div>
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1900, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
         <i class="sl-line sl-draw" style="--d:3200ms"></i>
-        ${up('sl-op-d', 3500, E(H, h.dateText), null, 'op.d')}
-        ${h.hashtag ? up('sl-op-t', 3800, E(H, h.hashtag), null, 'op.t') : ''}
+        ${up('sl-op-d', 3500, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
+        ${h.hashtag ? up('sl-op-t', 3800, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true"><i></i></div></section>`;
   }
@@ -139,9 +141,9 @@
     const lab = side === 'g' ? (s.groomLabel == null ? 'Mempelai Pria' : s.groomLabel) : (s.brideLabel == null ? 'Mempelai Wanita' : s.brideLabel);
     const ig = H.safeUrl(x.instagram) ? `<a class="sl-ig sl-pop" style="--d:2300ms" data-ad="${side}.ig" href="${H.link(x.instagram)}" target="_blank" rel="noopener">${H.ICON.ig}<span>${E(H, o.instagramLabel)}</span></a>` : '';
     const txt = `<div class="sl-pp-in al-${al}">
-        ${lab ? up('sl-pp-l', 250, E(H, lab), null, side + '.l') : ''}
-        <div class="sl-pp-n" data-ad="${side}.n">${wipe(H, x.fullName || x.script, 500)}</div>
-        <div class="sl-pp-p" data-ad="${side}.p">${words(H, x.parents, 36, 1300)}</div>
+        ${lab ? up('sl-pp-l', 250, E(H, lab), null, side + '.l', tx(side === 'g' ? 'slide.groomLabel' : 'slide.brideLabel')) : ''}
+        <div class="sl-pp-n" data-ad="${side}.n"${tx('couple.' + (side === 'g' ? 'groom' : 'bride') + '.fullName')}>${wipe(H, x.fullName || x.script, 500)}</div>
+        <div class="sl-pp-p" data-ad="${side}.p"${tx('couple.' + (side === 'g' ? 'groom' : 'bride') + '.parents', true)}>${words(H, x.parents, 36, 1300)}</div>
         ${ig}
       </div>`;
     if (shape) { // foto berbingkai rasio tetap di atas, teks di bawah (tidak menutupi wajah)
@@ -163,12 +165,15 @@
     const lines = String(o.text || '').split('\n'), own = String(o.arabic || '').trim(), arabic = own || lines.filter(isAr).join('\n'), text = own ? o.text : lines.filter((t) => !isAr(t)).join('\n').trim();
     const ars = { normal: 1, large: 1.25, xl: 1.5 }[o.arabicSize] || 1.25;
     const src = pick(H, [[s, 'quoteMedia'], [o, 'bg'], [C.cover, 'photo'], [s, 'coverMedia']]);
+    const cd0 = (arabic ? 1100 : 500) + Math.min(60, String(text).split(/\s+/).filter(Boolean).length) * 30 + 700;
     return `<section class="sec sl-quote" id="s-quote"><div class="sl-s sl-q${tone(H)}">
       <div class="sl-q-in">
-        ${arabic ? `<p class="rv qar" dir="rtl" lang="ar" style="--ars:${ars}" data-ad="q.ar">${H.br(arabic)}</p>` : ''}
-        <p class="rv qt" data-ad="q.t">${H.br(text)}</p><div class="rv src" data-ad="q.src">${E(H, o.source)}</div>
-        <div class="rv cds" id="cds" data-ad="q.cd"><div class="cd"><b data-k="d">00</b><span>${E(H, l.days)}</span></div><div class="sep">:</div><div class="cd"><b data-k="h">00</b><span>${E(H, l.hours)}</span></div><div class="sep">:</div><div class="cd"><b data-k="m">00</b><span>${E(H, l.minutes)}</span></div><div class="sep">:</div><div class="cd"><b data-k="s">00</b><span>${E(H, l.seconds)}</span></div></div>
-        <a class="rv btn sq up sl-save" id="saveDate" data-ad="q.btn" target="_blank" rel="noopener">${H.ICON.cal}${E(H, o.saveButton)}</a>
+        <div class="sl-sorn sl-q-orn" aria-hidden="true"><i></i><em></em><i></i></div>
+        ${arabic ? `<p class="qar sl-ar" dir="rtl" lang="ar" style="--ars:${ars}" data-ad="q.ar"${own ? tx('quote.arabic', true) : ''}>${H.br(arabic)}</p>` : ''}
+        <p class="qt" data-mnx="x" data-ad="q.t"${own ? tx('quote.text', true) : ''}>${words(H, text, 30, arabic ? 1100 : 500)}</p>
+        <div class="src sl-up" data-mnx="x" style="--d:${(arabic ? 1100 : 500) + Math.min(60, String(text).split(/\s+/).filter(Boolean).length) * 30 + 250}ms" data-ad="q.src"${tx('quote.source')}>${E(H, o.source)}</div>
+        <div class="cds" id="cds" data-ad="q.cd">${[['d', l.days], ['h', l.hours], ['m', l.minutes], ['s', l.seconds]].map((c, k) => `${k ? `<div class="sep sl-fade" style="--d:${cd0 + k * 170 - 60}ms">:</div>` : ''}<div class="cd sl-pop" style="--d:${cd0 + k * 170}ms"><b data-k="${c[0]}">00</b><span>${E(H, c[1])}</span></div>`).join('')}</div>
+        <a class="btn sq up sl-save sl-pop" id="saveDate" data-ad="q.btn" style="--d:${cd0 + 800}ms" target="_blank" rel="noopener">${H.ICON.cal}${E(H, o.saveButton)}</a>
       </div>
       <div class="sl-q-ph"><div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div></div></div></section>`;
   }
@@ -184,11 +189,11 @@
       const shape = shapeOf(e.shape, shapeOf(s.eventShape)), tp = pos(s.eventPos, 'bottom') === 'top' ? 'top' : 'bottom';
       const al = ali(s.eventAlign, side === 'r' ? 'right' : 'left');
       const inner = `<div class="sl-ev-in al-${al}">
-          <div class="sl-ev-t" data-ad="e${i}.t">${wipe(H, e.title, 700)}</div>
-          ${up('sl-ev-d', 1300, E(H, e.date), null, 'e' + i + '.d')}
-          ${up('sl-ev-h', 1500, E(H, e.time), null, 'e' + i + '.h')}
-          <div class="sl-ev-pl sl-up" style="--d:1750ms" data-ad="e${i}.pl"><b>${E(H, e.place)}</b></div>
-          <p class="sl-ev-ad" data-ad="e${i}.ad">${words(H, e.address, 26, 1950)}</p>
+          <div class="sl-ev-t" data-ad="e${i}.t"${tx('events.items.' + i + '.title')}>${wipe(H, e.title, 700)}</div>
+          ${up('sl-ev-d', 1300, E(H, e.date), null, 'e' + i + '.d', tx('events.items.' + i + '.date'))}
+          ${up('sl-ev-h', 1500, E(H, e.time), null, 'e' + i + '.h', tx('events.items.' + i + '.time'))}
+          <div class="sl-ev-pl sl-up" style="--d:1750ms" data-ad="e${i}.pl"${tx('events.items.' + i + '.place')}><b>${E(H, e.place)}</b></div>
+          <p class="sl-ev-ad" data-ad="e${i}.ad"${tx('events.items.' + i + '.address', true)}>${words(H, e.address, 26, 1950)}</p>
           ${H.safeUrl(e.mapUrl) ? `<a class="sl-map sl-pop" style="--d:2500ms" data-ad="e${i}.map" href="${H.link(e.mapUrl)}" target="_blank" rel="noopener">${H.ICON.map}<span>${E(H, o.mapLabel)}</span></a>` : ''}
         </div>`;
       if (shape) return `<div class="sl-s sl-ev split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.eventNudge)}px">
@@ -199,32 +204,43 @@
     return `<section class="sec sl-events" id="s-events">${slides}</section>`;
   }
 
-  // ---------- 6. penutup berfoto ----------
+  // ---------- 6. penutup berfoto (mewah): tirai iris terbuka → bingkai garis menggambar diri → nama berkilau → kilau melayang ----------
   function closing(H) {
     const C = H.C, o = C.closing, s = sl(H);
     const src = pick(H, [[s, 'closingMedia'], [o, 'bg'], [o, 'photo'], [C.cover, 'photo'], [s, 'coverMedia']]);
+    const spark = [[8, 12, 0, 7], [19, 38, 1.4, 9], [31, 6, 2.8, 8], [44, 52, 0.7, 10], [57, 20, 3.6, 7.5], [68, 44, 2.1, 9.5], [79, 10, 4.4, 8], [90, 34, 1.1, 10], [14, 64, 3.1, 11], [36, 72, 4.8, 8.5], [62, 68, 0.3, 10.5], [85, 60, 2.6, 9], [50, 30, 5.2, 12], [25, 24, 3.9, 11], [74, 26, 1.8, 12]]
+      .map((q) => `<b style="left:${q[0]}%;bottom:${q[1]}%;--sd:${q[2]}s;--sp:${q[3]}s"></b>`).join('');
+    const ft = String(o.footer == null ? '' : o.footer).trim();
+    const m = /^(.*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
+    const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
+    const fin = `<div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 4300)}</div>`
+      + (fy ? `<div class="sl-ft-y sl-up" style="--d:5000ms"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
+    const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
-      <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i>
+      <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>
+      <div class="sl-cl-fx" aria-hidden="true">${spark}<u></u></div>
+      <div class="sl-cl-fr" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><em class="a"></em><em class="b"></em><em class="c"></em><em class="d"></em></div>
       <div class="sl-cl-in">
-        <div class="sl-cl-k" data-ad="cl.k">${chars(H, o.kicker, 44, 500)}</div>
-        <div class="sl-cl-n" data-ad="cl.n">${wipe(H, o.names, 1100)}</div>
-        <div class="sl-cl-hr sl-up" style="--d:1900ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
-        <p class="sl-cl-tx" data-ad="cl.tx">${words(H, o.text, 30, 2200)}</p>
+        <div class="sl-cl-orn sl-draw" style="--d:1500ms" aria-hidden="true"><i></i><em></em><i></i></div>
+        <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, 44, 1700)}</div>
+        <div class="sl-cl-n" data-ad="cl.n"${tx('closing.names')}>${wipe(H, o.names, 2500)}</div>
+        <div class="sl-cl-hr sl-up" style="--d:3500ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
+        <p class="sl-cl-tx" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, 30, 3800)}</p>
       </div>
-      <div class="footer sl-cl-ft">${H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${E(H, o.footer)}</a>` : E(H, o.footer)}</div></div></section>`;
+      <div class="footer sl-cl-ft">${ftHtml}</div></div></section>`;
   }
 
   // ---------- 7. love story: judul → foto lebar penuh (kabut di tepi) → cerita + tahun, dipisah garis vertikal tipis ----------
   function story(H) {
     const o = H.C.story || {}, s = sl(H), items = o.items || [], dflt = shapeOf(s.storyShape, '4/5') || '4/5';
-    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht" data-ad="st.h">${chars(H, o.title, 38, 100)}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
+    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht" data-ad="st.h"${tx('story.title')}>${chars(H, o.title, 38, 100)}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
     const chs = items.map((e, i) => {
       const sh = shapeOf(e.shape, dflt) || dflt, side = i % 2 ? 'r' : 'l';
       const src = e.image && H.safeUrl(e.image) ? [e, 'image'] : null;
       return `<div class="sl-s sl-ch${tone(H)}" style="${rv(sh)}">
-        <div class="sl-ch-t" data-ad="ch.t">${wipe(H, e.title, 150)}</div>
+        <div class="sl-ch-t" data-ad="ch.t"${tx('story.items.' + i + '.title')}>${wipe(H, e.title, 150)}</div>
         <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f2"></i><i class="sl-sh f"></i></div>
-        <div class="sl-ch-b"><p class="sl-ch-tx" data-ad="ch.tx">${words(H, e.text, 22, 700)}</p>${e.year ? up('sl-ch-y', 1500, E(H, e.year), null, 'ch.y') : ''}</div>
+        <div class="sl-ch-b"><p class="sl-ch-tx" data-ad="ch.tx"${tx('story.items.' + i + '.text', true)}>${words(H, e.text, 22, 700)}</p>${e.year ? up('sl-ch-y', 1500, E(H, e.year), null, 'ch.y', tx('story.items.' + i + '.year')) : ''}</div>
         ${i < items.length - 1 ? '<i class="sl-vl sl-draw sl-vl-e" style="--d:1900ms"></i>' : ''}</div>`;
     }).join('');
     return `<section class="sec sl-story" id="s-story">${head}${chs}</section>`;
@@ -244,7 +260,7 @@
   }
 
   // ---------- teks & foto tiap slide diputar ulang setiap kali slide masuk layar ----------
-  let io = null, parOff = null;
+  let io = null, io2 = null, parOff = null;
   function parallax(on) {
     if (parOff) { parOff(); parOff = null; }
     if (!on) return;
@@ -271,6 +287,18 @@
     parallax(par);
     if (io) { io.disconnect(); io = null; }
     const els = root.querySelectorAll('.sl-s');
+    // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar
+    root.querySelectorAll('[data-sid="gallery"],[data-sid="live"],[data-sid="gift"],[data-sid="rsvp"],[data-sid="wishes"]').forEach((sec) => {
+      sec.querySelectorAll('h2, h3.gt').forEach((t) => {
+        if (!t.parentNode || (t.previousElementSibling && t.previousElementSibling.classList.contains('sl-sorn'))) return;
+        const o = document.createElement('div'); o.className = 'sl-sorn'; o.setAttribute('aria-hidden', 'true'); o.innerHTML = '<i></i><em></em><i></i>';
+        t.parentNode.insertBefore(o, t);
+      });
+    });
+    const orns = root.querySelectorAll('.sl-sorn:not(.sl-q-orn)');
+    if (io2) { io2.disconnect(); io2 = null; }
+    if (!('IntersectionObserver' in window) || rm) orns.forEach((e) => e.classList.add('on'));
+    else { io2 = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('on', e.isIntersecting && e.intersectionRatio >= 0.6)), { threshold: [0, 0.6, 1] }); orns.forEach((e) => io2.observe(e)); }
     if (!('IntersectionObserver' in window) || rm) { els.forEach((e) => e.classList.add('sl-go')); return; }
     io = new IntersectionObserver((es) => es.forEach((e) => {
       const r = e.intersectionRatio, vh = innerHeight;
@@ -294,13 +322,46 @@
   }
   // pratinjau admin: tulisan bisa ditarik langsung (geser) dan Shift + roda mouse = besar/kecil; hasil dikirim ke admin lewat done(adj)
   let editOn = false, lastDrag = 0;
-  function edit(getAdj, done) {
+  function edit(getAdj, done, onText, getText) {
     if (editOn) return; editOn = true;
     document.documentElement.classList.add('sl-edit');
+    // klik 2× pada tulisan = ubah teksnya langsung (Enter / klik di luar = simpan, Esc = batal; teks panjang: Enter = baris baru, Ctrl+Enter = simpan)
+    if (onText && getText) {
+      const begin = (el) => {
+        const path = el.dataset.tx, ml = el.dataset.ml === '1', old = String(getText(path) == null ? '' : getText(path)), html = el.innerHTML;
+        el.classList.add('sl-typing'); el.textContent = old;
+        try { el.contentEditable = 'plaintext-only'; } catch (er) { /* abaikan */ }
+        if (el.contentEditable !== 'plaintext-only') el.contentEditable = 'true';
+        el.focus();
+        try { const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } catch (er) { /* abaikan */ }
+        let cancel = false;
+        const key = (ev) => {
+          if (ev.key === 'Escape') { cancel = true; el.blur(); }
+          else if (ev.key === 'Enter' && (!ml || ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); el.blur(); }
+        };
+        const end = () => {
+          el.removeEventListener('blur', end); el.removeEventListener('keydown', key);
+          let v = String(el.innerText || '').replace(/\u00a0/g, ' ').replace(/\r/g, '');
+          v = ml ? v.replace(/\n{3,}/g, '\n\n').trim() : v.replace(/\s*\n+\s*/g, ' ').trim();
+          el.removeAttribute('contenteditable'); el.classList.remove('sl-typing');
+          if (cancel || v === old.trim()) { el.innerHTML = html; return; }
+          onText(path, v);
+        };
+        el.addEventListener('blur', end); el.addEventListener('keydown', key);
+      };
+      document.addEventListener('dblclick', (e) => {
+        const el = e.target.closest && e.target.closest('[data-tx]'); if (!el || el.classList.contains('sl-typing')) return;
+        e.preventDefault(); begin(el);
+      }, true);
+      document.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('[data-tx]') && e.target.closest('a')) e.preventDefault(); }, true);
+      const hint = document.createElement('div'); hint.className = 'sl-hint'; hint.textContent = 'Tarik = geser · Klik 2× = ubah teks · Shift + roda = ukuran';
+      document.body.appendChild(hint); setTimeout(() => hint.classList.add('off'), 7000);
+    }
     const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open');
     document.addEventListener('pointerdown', (e) => {
       if (e.button > 0) return;
       const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;
+      if (e.target.closest('.sl-typing')) return; // sedang mengetik: biarkan kursor bekerja, jangan memulai geser
       const cont = wrapOf(el); if (!cont) return;
       const key = el.dataset.ad, w = cont.getBoundingClientRect().width || 1, adj = getAdj();
       const a0 = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}), x0 = e.clientX, y0 = e.clientY; let moved = false;

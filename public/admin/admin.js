@@ -61,7 +61,7 @@
     quote: () => [['q.ar', 'Ayat Arab'], ['q.t', 'Terjemahan ayat'], ['q.src', 'Sumber ayat'], ['q.cd', 'Hitung mundur'], ['q.btn', 'Tombol Save The Date']],
     events: () => ((cfg.events && cfg.events.items) || []).flatMap((e, i) => { const n = (e && e.title) || 'Acara ' + (i + 1); return [['e' + i + '.t', n + ' — judul'], ['e' + i + '.d', n + ' — tanggal'], ['e' + i + '.h', n + ' — jam'], ['e' + i + '.pl', n + ' — nama tempat'], ['e' + i + '.ad', n + ' — alamat'], ['e' + i + '.map', n + ' — tombol peta']]; }),
     story: () => [['st.h', 'Judul Love Story'], ['ch.t', 'Judul tiap cerita'], ['ch.tx', 'Isi tiap cerita'], ['ch.y', 'Tahun tiap cerita']],
-    closing: () => [['cl.k', 'Teks kecil'], ['cl.n', 'Nama mempelai'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup']],
+    closing: () => [['cl.k', 'Teks kecil'], ['cl.n', 'Nama mempelai'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.ft', 'Nama bawah']],
   };
   const sladjKeys = (set) => (set === 'all' ? Object.keys(SLADJ) : [set]).flatMap((n) => SLADJ[n]());
 
@@ -122,6 +122,25 @@
     const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
     cfg.slide = cfg.slide || {}; cfg.slide.adj = e.data.adj && typeof e.data.adj === 'object' ? e.data.adj : {}; changed(true);
     if (document.querySelector('#main .sladj')) { const sc = document.querySelector('.main, #main, main'); const y = sc ? sc.scrollTop : 0, wy = scrollY; show(current); if (sc) sc.scrollTop = y; scrollTo(0, wy); }
+  });
+  // hasil mengubah teks langsung di pratinjau (klik 2× pada tulisan, Tema 13) -> simpan ke isian yang sama di admin
+  addEventListener('message', (e) => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'sltext' || !cfg) return;
+    const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
+    let path = String(e.data.path || ''), val = String(e.data.value == null ? '' : e.data.value).slice(0, 3000), idx = null;
+    const hi = path.indexOf('#'); if (hi >= 0) { idx = +path.slice(hi + 1); path = path.slice(0, hi); }
+    const ks = path.split('.');
+    if (!/^(cover|hero|couple|quote|events|story|closing|slide)$/.test(ks[0]) || ks.some((k) => !/^[A-Za-z0-9_]+$/.test(k) || k === '__proto__' || k === 'constructor' || k === 'prototype')) return;
+    if (idx !== null) { // "Adi & Debby": ubah satu sisi saja, sisi lain tetap
+      const cur = String(getPath(cfg, path) == null ? '' : getPath(cfg, path)), i = cur.indexOf('&');
+      let n1 = i < 0 ? cur.trim() : cur.slice(0, i).trim(), n2 = i < 0 ? '' : cur.slice(i + 1).trim();
+      if (idx === 0) n1 = val; else n2 = val;
+      val = n2 ? (n1 ? n1 + ' & ' + n2 : n2) : n1;
+    }
+    const [o, k] = parentOf(cfg, path); o[k] = val; changed(true);
+    const sc = document.querySelector('.main, #main, main'), y = sc ? sc.scrollTop : 0, wy = scrollY;
+    show(current); if (sc) sc.scrollTop = y; scrollTo(0, wy);
+    toast('Teks diubah — jangan lupa Simpan');
   });
   $('#pvFrame').addEventListener('load', () => { sendPreview(); setTimeout(gotoPreview, 700); });
   $('#pvReload').onclick = () => { try { sessionStorage.removeItem('pvCfg'); } catch { /* */ } loadPreview(); };
@@ -480,7 +499,7 @@
     };
     const draw = () => {
       box.textContent = '';
-      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan (Shift + roda mouse = besar/kecil). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
+      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan (Shift + roda mouse = besar/kecil). Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = simpan, Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
       sets.forEach((sn) => {
         const items = SLADJ[sn]();
         const body = h('div', {}, items.length ? items.map(([k, l]) => row(k, l)) : h('p', { class: 'hint' }, 'Belum ada isi untuk diatur di bagian ini.'));

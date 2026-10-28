@@ -270,3 +270,89 @@ html.sl-edit [data-ad].sl-dragging{cursor:grabbing;outline-style:solid;backgroun
 .sl-top.on{opacity:1;pointer-events:auto;transform:none}
 .sl-top:active{transform:scale(.93)}
 .sl-top svg{display:block}
+
+/* ---------- penutup mewah (Tema 13) ---------- */
+.sl-cl .sl-ph{clip-path:circle(0% at 50% 60%)}
+.sl-cl.sl-go .sl-ph{animation:slIris calc(2.2s*var(--tk,1)) cubic-bezier(.3,.6,.2,1) both}
+@keyframes slIris{from{clip-path:circle(0% at 50% 60%)}to{clip-path:circle(150% at 50% 60%)}}
+.sl-vg{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 45%,rgba(0,0,0,.55) 100%)}
+.sl-cl-in{padding:0 11% calc(env(safe-area-inset-bottom,0px) + 118px)}
+/* bingkai garis tipis menggambar diri */
+.sl-cl-fr{position:absolute;inset:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);z-index:3;pointer-events:none}
+.sl-cl-fr i{position:absolute;background:rgba(255,255,255,.7);opacity:0}
+.sl-cl-fr i.t,.sl-cl-fr i.b{left:0;right:0;height:1px;transform:scaleX(0)}
+.sl-cl-fr i.l,.sl-cl-fr i.r{top:0;bottom:0;width:1px;transform:scaleY(0)}
+.sl-cl-fr i.t{top:0}.sl-cl-fr i.b{bottom:0}.sl-cl-fr i.l{left:0}.sl-cl-fr i.r{right:0}
+.sl-cl-fr em{position:absolute;width:7px;height:7px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.18);transform:rotate(45deg) scale(0);opacity:0}
+.sl-cl-fr em.a{left:-4px;top:-4px}.sl-cl-fr em.b{right:-4px;top:-4px}.sl-cl-fr em.c{left:-4px;bottom:-4px}.sl-cl-fr em.d{right:-4px;bottom:-4px}
+.sl-cl.sl-go .sl-cl-fr i{animation:slFrT 1.6s var(--sl-ease) 1.1s both}
+.sl-cl.sl-go .sl-cl-fr i.l,.sl-cl.sl-go .sl-cl-fr i.r{animation-name:slFrL}
+.sl-cl.sl-go .sl-cl-fr em{animation:slDia .8s cubic-bezier(.2,1.3,.4,1) 2.4s both}
+@keyframes slFrT{from{opacity:1;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+@keyframes slFrL{from{opacity:1;transform:scaleY(0)}to{opacity:1;transform:scaleY(1)}}
+@keyframes slDia{from{opacity:0;transform:rotate(45deg) scale(0)}to{opacity:1;transform:rotate(45deg) scale(1)}}
+/* ornamen atas: garis – berlian – garis */
+.sl-cl-orn{display:flex;align-items:center;justify-content:center;gap:10px;width:46%;margin:0 auto 16px}
+.sl-cl-orn i{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85))}.sl-cl-orn i:last-child{transform:scaleX(-1)}
+.sl-cl-orn em{width:6px;height:6px;border:1px solid #fff;transform:rotate(45deg);flex:none}
+.sl-cl-k{font-family:var(--fDisplay);font-style:italic;font-weight:500;font-size:calc(clamp(18px,5.6cqw,26px)*var(--sc,1));letter-spacing:.2em;text-transform:uppercase;line-height:1.4}
+/* nama berkilau (champagne) */
+.sl-cl-n{text-shadow:none;margin-top:10px;filter:drop-shadow(0 3px 16px rgba(0,0,0,.55))}
+.sl-cl-n .sl-wipe>span{padding:.05em .14em .16em;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(105deg,#fff 0%,#fff 38%,#f6e7c4 47%,#fffdf6 50%,#f6e7c4 53%,#fff 62%,#fff 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
+.sl-cl.sl-go .sl-cl-n .sl-wipe>span{animation:slShine 5.5s ease-in-out 4.2s infinite}
+@keyframes slShine{0%{background-position:100% 0}45%,100%{background-position:0 0}}
+.sl-cl-tx{font-family:var(--fBody);font-size:14px;font-weight:500;letter-spacing:.02em}
+/* kilau melayang + sapuan cahaya */
+.sl-cl-fx{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.sl-cl-fx b{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px rgba(255,244,214,.85);opacity:0}
+.sl-cl.sl-go .sl-cl-fx b{animation:slSpark var(--sp,9s) ease-in-out calc(2.4s + var(--sd,0s)) infinite}
+@keyframes slSpark{0%{opacity:0;transform:translateY(0) scale(.4)}20%{opacity:.95}55%{opacity:.5;transform:translateY(-70px) scale(1)}100%{opacity:0;transform:translateY(-150px) scale(.5)}}
+.sl-cl-fx u{position:absolute;top:-10%;bottom:-10%;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent);transform:skewX(-14deg);opacity:0}
+.sl-cl.sl-go .sl-cl-fx u{animation:slSweep 2.6s ease-in-out 2.2s 1 both,slSweep 2.6s ease-in-out 9s infinite}
+@keyframes slSweep{0%{opacity:0;left:-60%}15%{opacity:1}100%{opacity:0;left:130%}}
+/* footer: nama berjarak lebar huruf kapital + tahun diapit garis */
+.sl-cl-ft.footer{padding:0 20px calc(env(safe-area-inset-bottom,0px) + 34px);font-family:var(--fDisplay);text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.sl-cl-ft a{display:block;text-decoration:none}
+.sl-ft-n{font-family:var(--fDisplay);font-weight:600;font-size:calc(clamp(12px,3.7cqw,16px)*var(--sc,1));letter-spacing:.46em;padding-left:.46em;text-transform:uppercase;color:#fff;line-height:1.5}
+.sl-ft-y{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px;font-family:var(--fDisplay);font-style:italic;font-weight:500;font-size:14px;letter-spacing:.34em;color:rgba(255,255,255,.82)}
+.sl-ft-y span{padding-left:.34em}
+.sl-ft-y i{width:34px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75))}.sl-ft-y i:last-child{transform:scaleX(-1)}
+@media (prefers-reduced-motion:reduce){
+  .sl-cl .sl-ph{clip-path:none!important;animation:none!important}
+  .sl-cl-fr i{opacity:1!important;transform:none!important;animation:none!important}.sl-cl-fr em{opacity:1!important;transform:rotate(45deg)!important;animation:none!important}
+  .sl-cl-fx{display:none}.sl-cl-n .sl-wipe>span{animation:none!important;background-position:0 0}
+}
+
+/* ---------- v8: ayat + hitung mundur, hiasan judul bagian lain, kilau nama, ubah teks langsung ---------- */
+.sl-sorn{display:flex;align-items:center;justify-content:center;gap:10px;width:46%;max-width:220px;margin:0 auto 14px;color:var(--ink,#111)}
+.sl-sorn i{flex:1;height:1px;background:linear-gradient(90deg,transparent,currentColor);opacity:.65;transform:scaleX(0);transform-origin:right}
+.sl-sorn i:last-child{background:linear-gradient(270deg,transparent,currentColor);transform-origin:left}
+.sl-sorn em{flex:none;width:6px;height:6px;border:1px solid currentColor;transform:rotate(45deg) scale(0)}
+.sl-sorn.on i,.sl-go .sl-sorn i{animation:slOrnL 1.1s var(--sl-ease) both}
+.sl-sorn.on em,.sl-go .sl-sorn em{animation:slOrnD .7s cubic-bezier(.2,1.3,.4,1) .5s both}
+@keyframes slOrnL{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes slOrnD{from{transform:rotate(45deg) scale(0)}to{transform:rotate(45deg) scale(1)}}
+.sl-q-in .sl-q-orn{margin-bottom:12px}
+.sl-ar{opacity:0}
+.sl-go .sl-ar{animation:slAr 1.9s var(--sl-ease) .45s both}
+@keyframes slAr{from{opacity:0;transform:translateY(16px) scale(.95);filter:blur(9px)}to{opacity:1;transform:none;filter:blur(0)}}
+.sl-q .src{display:flex;align-items:center;justify-content:center;gap:12px}
+.sl-q .src::before,.sl-q .src::after{content:"";width:26px;height:1px;background:currentColor;opacity:.4}
+.sl-q .cd b{display:block}
+/* nama mempelai & judul acara: kilau logam halus */
+.sl-pp{--sh0:#fff;--sh1:#f3dfae}
+.sl-pp.split,.sl-ev{--sh0:var(--ink,#111);--sh1:#b08d57}
+.sl-pp-n,.sl-ev-t{text-shadow:none}
+.sl-pp:not(.split) .sl-pp-n{filter:drop-shadow(0 2px 12px rgba(0,0,0,.55))}
+.sl-pp-n .sl-wipe>span,.sl-ev-t .sl-wipe>span{padding:.05em .14em .16em;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(105deg,var(--sh0) 0%,var(--sh0) 40%,var(--sh1) 49%,var(--sh0) 58%,var(--sh0) 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
+.sl-go .sl-pp-n .sl-wipe>span,.sl-go .sl-ev-t .sl-wipe>span{animation:slShine 6.5s ease-in-out 2.8s infinite}
+@media (prefers-reduced-motion:reduce){
+  .sl-sorn i{transform:none!important;animation:none!important}.sl-sorn em{transform:rotate(45deg)!important;animation:none!important}
+  .sl-ar{opacity:1!important;animation:none!important;filter:none!important;transform:none!important}
+  .sl-pp-n .sl-wipe>span,.sl-ev-t .sl-wipe>span{animation:none!important;background-position:0 0}
+}
+/* pratinjau admin: ubah teks langsung */
+html.sl-edit [data-tx]:hover{outline:1px dashed rgba(90,130,255,.95);outline-offset:3px}
+html.sl-edit [data-tx].sl-typing{cursor:text;touch-action:auto;-webkit-user-select:text;user-select:text;outline:2px solid #3b82f6;outline-offset:3px;background:rgba(59,130,246,.18);text-transform:none!important;letter-spacing:normal!important;white-space:pre-wrap;min-width:2ch;opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important;-webkit-text-fill-color:currentColor;color:inherit}
+.sl-hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translateX(-50%);z-index:99;padding:8px 14px;border-radius:999px;background:rgba(20,20,24,.88);color:#fff;font:500 12px/1.3 system-ui,sans-serif;white-space:nowrap;pointer-events:none;transition:opacity .6s}
+.sl-hint.off{opacity:0}
