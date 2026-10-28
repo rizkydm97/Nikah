@@ -21,16 +21,16 @@
   const E = (H, s) => H.esc(s);
   function chars(H, s, step, start) {
     let n = 0; step = step || 42; start = start || 0;
-    return String(s == null ? '' : s).split(/(\s+)/).map((w) => (!w || /^\s+$/.test(w)) ? ' '
-      : `<span class="sl-w">${[...w].map((c) => `<span class="sl-c" style="--d:${start + (n++) * step}ms">${E(H, c)}</span>`).join('')}</span>`).join('');
+    return String(s == null ? '' : s).split(/\r?\n/).map((ln) => ln.split(/(\s+)/).map((w) => (!w || /^\s+$/.test(w)) ? ' '
+      : `<span class="sl-w">${[...w].map((c) => `<span class="sl-c" style="--d:${start + (n++) * step}ms">${E(H, c)}</span>`).join('')}</span>`).join('')).join('<br>');
   }
   function words(H, s, step, start) {
     let n = 0; step = step || 32; start = start || 0;
     return String(s == null ? '' : s).split('\n').map((ln) => ln.split(/\s+/).filter(Boolean)
       .map((w) => `<span class="sl-wd" style="--d:${start + (n++) * step}ms">${E(H, w)}</span>`).join(' ')).join('<br>');
   }
-  const wipe = (H, s, start) => `<span class="sl-wipe" style="--d:${start || 0}ms"><span>${E(H, s)}</span></span>`;
-  const up = (cls, d, inner, tag, ad, extra) => `<${tag || 'div'} class="${cls} sl-up" style="--d:${d}ms"${ad ? ` data-ad="${ad}"` : ''}${extra || ''}>${inner}</${tag || 'div'}>`;
+  const wipe = (H, s, start) => `<span class="sl-wipe" style="--d:${start || 0}ms"><span>${E(H, s).replace(/\r?\n/g, '<br>')}</span></span>`;
+  const up = (cls, d, inner, tag, ad, extra) => `<${tag || 'div'} class="${cls} sl-up" style="--d:${d}ms"${ad ? ` data-ad="${ad}"` : ''}${extra || ''}>${String(inner).replace(/\r?\n/g, '<br>')}</${tag || 'div'}>`;
   // data-tx = alamat teks di konfigurasi (dipakai pratinjau admin: klik 2× pada tulisan untuk mengubah teksnya langsung)
   const tx = (path, ml) => ` data-tx="${path}"${ml ? ' data-ml="1"' : ''}`;
 
@@ -171,7 +171,7 @@
         <div class="sl-sorn sl-q-orn" aria-hidden="true"><i></i><em></em><i></i></div>
         ${arabic ? `<p class="qar sl-ar" dir="rtl" lang="ar" style="--ars:${ars}" data-ad="q.ar"${own ? tx('quote.arabic', true) : ''}>${H.br(arabic)}</p>` : ''}
         <p class="qt" data-mnx="x" data-ad="q.t"${own ? tx('quote.text', true) : ''}>${words(H, text, 30, arabic ? 1100 : 500)}</p>
-        <div class="src sl-up" data-mnx="x" style="--d:${(arabic ? 1100 : 500) + Math.min(60, String(text).split(/\s+/).filter(Boolean).length) * 30 + 250}ms" data-ad="q.src"${tx('quote.source')}>${E(H, o.source)}</div>
+        <div class="src sl-up" data-mnx="x" style="--d:${(arabic ? 1100 : 500) + Math.min(60, String(text).split(/\s+/).filter(Boolean).length) * 30 + 250}ms" data-ad="q.src"${tx('quote.source')}>${E(H, o.source).replace(/\r?\n/g, '<br>')}</div>
         <div class="cds" id="cds" data-ad="q.cd">${[['d', l.days], ['h', l.hours], ['m', l.minutes], ['s', l.seconds]].map((c, k) => `${k ? `<div class="sep sl-fade" style="--d:${cd0 + k * 170 - 60}ms">:</div>` : ''}<div class="cd sl-pop" style="--d:${cd0 + k * 170}ms"><b data-k="${c[0]}">00</b><span>${E(H, c[1])}</span></div>`).join('')}</div>
         <a class="btn sq up sl-save sl-pop" id="saveDate" data-ad="q.btn" style="--d:${cd0 + 800}ms" target="_blank" rel="noopener">${H.ICON.cal}${E(H, o.saveButton)}</a>
       </div>
@@ -192,7 +192,7 @@
           <div class="sl-ev-t" data-ad="e${i}.t"${tx('events.items.' + i + '.title')}>${wipe(H, e.title, 700)}</div>
           ${up('sl-ev-d', 1300, E(H, e.date), null, 'e' + i + '.d', tx('events.items.' + i + '.date'))}
           ${up('sl-ev-h', 1500, E(H, e.time), null, 'e' + i + '.h', tx('events.items.' + i + '.time'))}
-          <div class="sl-ev-pl sl-up" style="--d:1750ms" data-ad="e${i}.pl"${tx('events.items.' + i + '.place')}><b>${E(H, e.place)}</b></div>
+          <div class="sl-ev-pl sl-up" style="--d:1750ms" data-ad="e${i}.pl"${tx('events.items.' + i + '.place')}><b>${E(H, e.place).replace(/\r?\n/g, '<br>')}</b></div>
           <p class="sl-ev-ad" data-ad="e${i}.ad"${tx('events.items.' + i + '.address', true)}>${words(H, e.address, 26, 1950)}</p>
           ${H.safeUrl(e.mapUrl) ? `<a class="sl-map sl-pop" style="--d:2500ms" data-ad="e${i}.map" href="${H.link(e.mapUrl)}" target="_blank" rel="noopener">${H.ICON.map}<span>${E(H, o.mapLabel)}</span></a>` : ''}
         </div>`;
@@ -212,7 +212,7 @@
       .map((q) => `<b style="left:${q[0]}%;bottom:${q[1]}%;--sd:${q[2]}s;--sp:${q[3]}s"></b>`).join('');
     const nmc = splitNames(o.names);
     const ft = String(o.footer == null ? '' : o.footer).trim();
-    const m = /^(.*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
+    const m = /^([\s\S]*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
     const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 350)}</div>`
       + (fy ? `<div class="sl-ft-y sl-up" style="--d:1100ms" data-ad="cl.fy"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
@@ -327,10 +327,12 @@
     if (editOn) return; editOn = true;
     document.documentElement.classList.add('sl-edit');
     // klik 2× pada tulisan = ubah teksnya langsung (Enter / klik di luar = simpan, Esc = batal; teks panjang: Enter = baris baru, Ctrl+Enter = simpan)
+    const HINT0 = 'Tarik = geser · Klik 2× = ubah teks · Enter = baris baru · Shift + roda = ukuran';
+    let showHint = () => {};
     if (onText && getText) {
       const begin = (el) => {
         const path = el.dataset.tx, ml = el.dataset.ml === '1', old = String(getText(path) == null ? '' : getText(path)), html = el.innerHTML;
-        el.classList.add('sl-typing'); el.textContent = old;
+        el.classList.add('sl-typing'); el.textContent = old; showHint('Enter = baris baru · Ctrl+Enter / klik di luar = simpan · Esc = batal', true);
         try { el.contentEditable = 'plaintext-only'; } catch (er) { /* abaikan */ }
         if (el.contentEditable !== 'plaintext-only') el.contentEditable = 'true';
         el.focus();
@@ -338,13 +340,13 @@
         let cancel = false;
         const key = (ev) => {
           if (ev.key === 'Escape') { cancel = true; el.blur(); }
-          else if (ev.key === 'Enter' && (!ml || ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); el.blur(); }
+          else if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); el.blur(); }
         };
         const end = () => {
           el.removeEventListener('blur', end); el.removeEventListener('keydown', key);
           let v = String(el.innerText || '').replace(/\u00a0/g, ' ').replace(/\r/g, '');
-          v = ml ? v.replace(/\n{3,}/g, '\n\n').trim() : v.replace(/\s*\n+\s*/g, ' ').trim();
-          el.removeAttribute('contenteditable'); el.classList.remove('sl-typing');
+          v = v.replace(/[ \t]*\n[ \t]*/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+          el.removeAttribute('contenteditable'); el.classList.remove('sl-typing'); showHint(HINT0, false);
           if (cancel || v === old.trim()) { el.innerHTML = html; return; }
           onText(path, v);
         };
@@ -355,8 +357,9 @@
         e.preventDefault(); begin(el);
       }, true);
       document.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('[data-tx]') && e.target.closest('a')) e.preventDefault(); }, true);
-      const hint = document.createElement('div'); hint.className = 'sl-hint'; hint.textContent = 'Tarik = geser · Klik 2× = ubah teks · Shift + roda = ukuran';
-      document.body.appendChild(hint); setTimeout(() => hint.classList.add('off'), 7000);
+      const hint = document.createElement('div'); hint.className = 'sl-hint'; hint.textContent = HINT0;
+      document.body.appendChild(hint); let hT = setTimeout(() => hint.classList.add('off'), 7000);
+      showHint = (t, on) => { hint.textContent = t; hint.classList.remove('off'); clearTimeout(hT); if (!on) hT = setTimeout(() => hint.classList.add('off'), 3500); };
     }
     const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open,.sl-foot');
     document.addEventListener('pointerdown', (e) => {

@@ -499,7 +499,7 @@
     };
     const draw = () => {
       box.textContent = '';
-      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan (Shift + roda mouse = besar/kecil). Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = simpan, Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
+      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan (Shift + roda mouse = besar/kecil). Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
       sets.forEach((sn) => {
         const items = SLADJ[sn]();
         const body = h('div', {}, items.length ? items.map(([k, l]) => row(k, l)) : h('p', { class: 'hint' }, 'Belum ada isi untuk diatur di bagian ini.'));
