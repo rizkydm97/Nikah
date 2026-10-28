@@ -88,8 +88,10 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-cv-btn svg{width:15px;height:15px;fill:currentColor}
 .sl-cv-btn:active{transform:scale(.97)}
 .slcv.instant :is(.sl-c,.sl-wd,.sl-up,.sl-fade,.sl-pop,.sl-wipe){animation-duration:.01s;animation-delay:0s}
-.cover.slcv.sl-out{transform:translateY(-102%);transition:transform var(--mo,1.2s) cubic-bezier(.7,0,.2,1);pointer-events:none;box-shadow:0 30px 60px rgba(0,0,0,.35)}
-.cover.slcv.sl-out .sl-cv-in{opacity:0;transition:opacity .5s ease}
+.cover.slcv.sl-out{pointer-events:none}
+.cover.slcv.sl-out .sl-cv-in{opacity:0;transform:translateY(-3%);transition:opacity .6s ease,transform .9s ease}
+.cover.slcv.sl-out :is(.sl-cv-bg,.sl-cv-sh){opacity:0;transition:opacity var(--mo,.9s) ease .1s}
+.cover.slcv.sl-out2{opacity:0;transition:opacity .45s ease}
 
 .sl-nm3{display:flex;justify-content:center;align-items:baseline;flex-wrap:wrap;column-gap:.2em;width:100%}
 .sl-np{display:inline-block;max-width:100%}
@@ -100,12 +102,17 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-strip{position:absolute;top:0;bottom:0;left:0;width:200%;display:flex;will-change:transform;transform:translate3d(0,0,0)}
 .sl-strip.dir-l{flex-direction:row-reverse;transform:translate3d(-50%,0,0)}
 .sl-tile{position:relative;flex:0 0 50%;height:100%;overflow:hidden}
-.sl-open.play .sl-strip.dir-r{animation:slStripR calc(11s*var(--tk,1)) cubic-bezier(.45,.05,.2,1) both}
-.sl-open.play .sl-strip.dir-l{animation:slStripL calc(11s*var(--tk,1)) cubic-bezier(.45,.05,.2,1) both}
+.sl-open.play .sl-strip.dir-r{animation:slStripR calc(8s*var(--tk,1)) linear both}
+.sl-open.play .sl-strip.dir-l{animation:slStripL calc(8s*var(--tk,1)) linear both}
 .sl-open.instant .sl-strip.dir-r{animation:none;transform:translate3d(-50%,0,0)}
 .sl-open.instant .sl-strip.dir-l{animation:none;transform:translate3d(0,0,0)}
-@keyframes slStripR{0%,10%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}
-@keyframes slStripL{0%,10%{transform:translate3d(-50%,0,0)}100%{transform:translate3d(0,0,0)}}
+@keyframes slStripR{0%,22%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.55,0,.2,1)}62%,100%{transform:translate3d(-50%,0,0)}}
+@keyframes slStripL{0%,22%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.55,0,.2,1)}62%,100%{transform:translate3d(0,0,0)}}
+/* foto pembuka muncul dari bawah: kecil → membesar ke posisinya (seperti referensi) */
+.sl-open>.sl-ph{transform-origin:50% 100%;background:#0d0d0d}
+.sl-open.play>.sl-ph{animation:slRise calc(1.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both}
+.sl-open.instant>.sl-ph{animation:none}
+@keyframes slRise{0%{opacity:0;transform:translateY(16%) scale(.6)}30%{opacity:1}100%{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.sl-strip,.sl-open.play .sl-strip{animation:none!important}}
 .sl-open .sl-sh.t{height:52%}
 .sl-op-in{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 9svh + var(--ty,0svh));z-index:3;padding:0 8%;text-shadow:0 2px 18px rgba(0,0,0,.55)}

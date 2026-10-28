@@ -119,11 +119,11 @@
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
-        <div class="sl-op-k" data-ad="op.k">${chars(H, h.kicker, 38, 700)}</div>
-        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1100, 'op.n')}</h1>
-        <i class="sl-line sl-draw" style="--d:2300ms"></i>
-        ${up('sl-op-d', 2600, E(H, h.dateText), null, 'op.d')}
-        ${h.hashtag ? up('sl-op-t', 2900, E(H, h.hashtag), null, 'op.t') : ''}
+        <div class="sl-op-k" data-ad="op.k">${chars(H, h.kicker, 38, 1500)}</div>
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1900, 'op.n')}</h1>
+        <i class="sl-line sl-draw" style="--d:3200ms"></i>
+        ${up('sl-op-d', 3500, E(H, h.dateText), null, 'op.d')}
+        ${h.hashtag ? up('sl-op-t', 3800, E(H, h.hashtag), null, 'op.t') : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true"><i></i></div></section>`;
   }
@@ -235,10 +235,12 @@
     const { cover: cv, hero: hr, D, instant, unlock, finish, later } = X;
     const play = () => { hr.classList.remove('pre'); hr.classList.add('play'); };
     if (instant || !cv) { if (cv) cv.remove(); hr.classList.add('instant'); play(); hr.classList.add('done', 'shown'); unlock(); finish(); return; }
-    cv.classList.add('sl-out'); cv.style.setProperty('--mo', (1.2 * D).toFixed(2) + 's');
-    later(play, 380 * D);
+    // seperti referensi: teks cover memudar naik → layar gelap sejenak → foto pembuka muncul dari bawah (kecil → membesar) → deretan foto bergeser
+    cv.classList.add('sl-out'); cv.style.setProperty('--mo', (0.9 * D).toFixed(2) + 's');
     unlock();
-    later(() => { cv.remove(); hr.classList.add('done', 'shown'); finish(); }, 1300 * D);
+    later(() => cv.classList.add('sl-out2'), 750 * D);
+    later(play, 1050 * D);
+    later(() => { cv.remove(); hr.classList.add('done', 'shown'); finish(); }, 2100 * D);
   }
 
   // ---------- teks & foto tiap slide diputar ulang setiap kali slide masuk layar ----------
