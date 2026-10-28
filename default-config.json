@@ -404,6 +404,20 @@
     "resepsiMedia": "",
     "closingMedia": "",
     "shade": 100,
-    "grayPhoto": false
+    "grayPhoto": false,
+    "groomMedia": "",
+    "brideMedia": "",
+    "openPos": "top",
+    "openNudge": 0,
+    "coupleShape": "9/19",
+    "groomPos": "top",
+    "bridePos": "top",
+    "coupleAlign": "",
+    "coupleNudge": 0,
+    "eventShape": "9/19",
+    "eventPos": "bottom",
+    "eventFade": 74,
+    "eventAlign": "",
+    "eventNudge": 0
   }
 }

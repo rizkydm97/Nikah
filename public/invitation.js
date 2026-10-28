@@ -1264,7 +1264,7 @@
     return '';
   }
 
-  const mh = () => ({ C, esc, safeUrl, guest, icon: ICON.mail, alt: C.cover.names, adj: (o, k) => adjStyle(adj(o, k)), ICON, br, link });
+  const mh = () => ({ C, esc, safeUrl, guest, icon: ICON.mail, alt: C.cover.names, adj: (o, k) => adjStyle(adj(o, k)), A: adj, ICON, br, link });
   function coverHtml(c) {
     if (SL) return window.SLIDE.cover(mh());
     if (MN) return window.MONO.cover(mh());

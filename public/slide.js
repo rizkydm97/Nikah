@@ -38,7 +38,8 @@
     const id = ytId(u);
     if (id) return `<iframe class="sl-m sl-yt ${cls || ''}" src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&modestbranding=1&rel=0&disablekb=1" allow="autoplay; encrypted-media" tabindex="-1" title="" loading="lazy"></iframe>`;
     if (VID.test(u)) return `<video class="sl-m ${cls || ''}" src="${H.esc(u)}" muted loop playsinline autoplay preload="auto" disablepictureinpicture disableremoteplayback onerror="this.remove()"></video>`;
-    return `<img class="sl-m ${cls || ''}" src="${H.esc(u)}" alt="${E(H, H.alt || '')}" decoding="async" style="${H.adj(o, k)}">`;
+    const a = H.A ? H.A(o, k) : {}, x = Math.min(100, Math.max(0, +a.x >= 0 ? +a.x : 50)), y = Math.min(100, Math.max(0, +a.y >= 0 ? +a.y : 50)), z = Math.min(4, Math.max(1, +a.z || 1));
+    return `<span class="sl-zm" style="transform-origin:${x}% ${y}%;transform:scale(${z})"><img class="sl-m ${cls || ''}" src="${H.esc(u)}" alt="${E(H, H.alt || '')}" decoding="async" style="object-position:${x}% ${y}%"></span>`;
   }
   // pilih sumber foto pertama yang terisi (foto buatan sendiri didahulukan dari gambar bawaan /assets/default/)
   function pick(H, list) {
@@ -50,6 +51,17 @@
   const ph = (H, src, cls) => src ? media(H, src[0], src[1], cls) : '';
   const tone = (H) => (sl(H).grayPhoto === true ? ' gray' : '');
   const shade = (H) => { const v = parseFloat(sl(H).shade); return isFinite(v) ? Math.min(2, Math.max(0, v / 100)) : 1; };
+
+
+  // ---------- tata letak: "Layar penuh" (teks menimpa foto) atau foto berbingkai rasio tetap di atas + teks di bawah ----------
+  // Nilai bentuk = rasio lebar/tinggi foto (mis. 3/4). '9/19' / kosong = layar penuh. Rasio yang sama dipakai pratinjau "Atur posisi" di admin,
+  // jadi yang terlihat saat menggeser foto = yang tampil di undangan (tidak ada lagi bagian yang tiba-tiba terpotong).
+  const RATIO = /^\d+(\.\d+)?\/\d+(\.\d+)?$/;
+  const shapeOf = (v, d) => { v = String(v == null ? '' : v); return v === 'full' || v === '9/19' ? '' : RATIO.test(v) ? v : (d || ''); };
+  const rv = (sh) => { const [w, h] = sh.split('/').map(Number); return `--ratio:${w} / ${h};--rh:${(h / w).toFixed(4)}`; };
+  const nudge = (v) => { v = parseFloat(v); return isFinite(v) ? Math.min(60, Math.max(-20, v)) : 0; };
+  const pos = (v, d) => (v === 'top' || v === 'bottom' || v === 'middle' ? v : d);
+  const ali = (v, d) => (v === 'left' || v === 'center' || v === 'right' ? v : d);
 
   // ---------- 1. sampul ----------
   function cover(H) {
@@ -81,7 +93,7 @@
     const a = pick(H, [[s, 'openMedia'], [C.cover, 'photo'], [s, 'coverMedia'], [C.mono || {}, 'coverMedia']]);
     const b = s.openMedia2 && H.safeUrl(s.openMedia2) ? [s, 'openMedia2'] : null;
     const nm = [h.groom, h.bride].filter(Boolean).join(' & ');
-    return `<section class="sec hero sl-open pre${tone(H)}" id="s-hero" style="--shd:${shade(H)}" data-two="${b ? 1 : 0}">
+    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}svh" data-two="${b ? 1 : 0}">
       <div class="sl-ph"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div>${b ? `<div class="sl-pk b">${ph(H, b, 'sl-pm')}</div>` : ''}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
@@ -96,17 +108,26 @@
 
   // ---------- 3. mempelai: satu slide per orang ----------
   function person(H, o, x, side) {
-    const md = x.photo && H.safeUrl(x.photo) ? media(H, x, 'photo', 'sl-pm') : '';
-    const lab = side === 'g' ? (sl(H).groomLabel == null ? 'Mempelai Pria' : sl(H).groomLabel) : (sl(H).brideLabel == null ? 'Mempelai Wanita' : sl(H).brideLabel);
+    const s = sl(H), own = side === 'g' ? s.groomMedia : s.brideMedia;
+    // foto khusus Tema 13 didahulukan; bila kosong memakai foto di menu Mempelai
+    const src = H.safeUrl(own) ? [s, side === 'g' ? 'groomMedia' : 'brideMedia'] : (x.photo && H.safeUrl(x.photo) ? [x, 'photo'] : null);
+    const md = src ? media(H, src[0], src[1], 'sl-pm') : '';
+    const shape = shapeOf(s.coupleShape), tp = pos(side === 'g' ? s.groomPos : s.bridePos, 'top');
+    const al = ali(s.coupleAlign, side === 'g' ? 'left' : 'right');
+    const lab = side === 'g' ? (s.groomLabel == null ? 'Mempelai Pria' : s.groomLabel) : (s.brideLabel == null ? 'Mempelai Wanita' : s.brideLabel);
     const ig = H.safeUrl(x.instagram) ? `<a class="sl-ig sl-pop" style="--d:2300ms" href="${H.link(x.instagram)}" target="_blank" rel="noopener">${H.ICON.ig}<span>${E(H, o.instagramLabel)}</span></a>` : '';
-    return `<div class="sl-s sl-pp ${side}${tone(H)}">
-      <div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh t"></i><i class="sl-sh w"></i>
-      <div class="sl-pp-in">
+    const txt = `<div class="sl-pp-in al-${al}">
         ${lab ? up('sl-pp-l', 250, E(H, lab)) : ''}
         <div class="sl-pp-n">${wipe(H, x.fullName || x.script, 500)}</div>
         <div class="sl-pp-p">${words(H, x.parents, 36, 1300)}</div>
         ${ig}
-      </div></div>`;
+      </div>`;
+    if (shape) { // foto berbingkai rasio tetap di atas, teks di bawah (tidak menutupi wajah)
+      return `<div class="sl-s sl-pp split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.coupleNudge)}px">
+      <div class="sl-fr"><div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh f"></i></div>${txt}</div>`;
+    }
+    return `<div class="sl-s sl-pp ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.coupleNudge)}svh">
+      <div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh ${tp === 'bottom' ? 'b' : 't'}"></i>${tp === 'bottom' ? '' : '<i class="sl-sh w"></i>'}${txt}</div>`;
   }
   function couple(H) {
     const o = H.C.couple;
@@ -130,24 +151,28 @@
       <div class="sl-q-ph"><div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div></div></div></section>`;
   }
 
-  // ---------- 5. akad / resepsi: foto penuh + gradasi putih di bawah ----------
+  // ---------- 5. akad / resepsi ----------
   function events(H) {
     const C = H.C, o = C.events, s = sl(H), items = o.items || [];
     const slides = items.map((e, i) => {
       const own = e && e.photo && H.safeUrl(e.photo) ? [e, 'photo'] : null;
-      const alt = i === 0 ? [s, 'akadMedia'] : i === 1 ? [s, 'resepsiMedia'] : [s, 'resepsiMedia'];
+      const alt = i === 0 ? [s, 'akadMedia'] : [s, 'resepsiMedia'];
       const src = own || pick(H, [alt, [o, 'bg'], [C.cover, 'photo'], [s, 'coverMedia']]);
       const side = i % 2 ? 'r' : 'l';
-      return `<div class="sl-s sl-ev ${side}${tone(H)}">
-        <div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh w"></i>
-        <div class="sl-ev-in">
+      const shape = shapeOf(e.shape, shapeOf(s.eventShape)), tp = pos(s.eventPos, 'bottom') === 'top' ? 'top' : 'bottom';
+      const al = ali(s.eventAlign, side === 'r' ? 'right' : 'left');
+      const inner = `<div class="sl-ev-in al-${al}">
           <div class="sl-ev-t">${wipe(H, e.title, 700)}</div>
           ${up('sl-ev-d', 1300, E(H, e.date))}
           ${up('sl-ev-h', 1500, E(H, e.time))}
           <div class="sl-ev-pl sl-up" style="--d:1750ms"><b>${E(H, e.place)}</b></div>
           <p class="sl-ev-ad">${words(H, e.address, 26, 1950)}</p>
           ${H.safeUrl(e.mapUrl) ? `<a class="sl-map sl-pop" style="--d:2500ms" href="${H.link(e.mapUrl)}" target="_blank" rel="noopener">${H.ICON.map}<span>${E(H, o.mapLabel)}</span></a>` : ''}
-        </div></div>`;
+        </div>`;
+      if (shape) return `<div class="sl-s sl-ev split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.eventNudge)}px">
+        <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f"></i></div>${inner}</div>`;
+      return `<div class="sl-s sl-ev ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.eventNudge)}svh;--fade:${Math.min(90, Math.max(20, parseFloat(s.eventFade) || 74))}%">
+        <div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh w"></i>${inner}</div>`;
     }).join('');
     return `<section class="sec sl-events" id="s-events">${slides}</section>`;
   }
