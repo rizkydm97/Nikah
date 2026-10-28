@@ -269,11 +269,21 @@
       const cv = $('#cover');
       if (MN && rest.length) holdOpen(rest);
       const d0 = MN ? 1000 : 250; // Tema 12: tunggu loader selesai memudar penuh, baru teks cover mulai
-      if (cv) { later(() => cv.classList.add('play'), d0); later(() => cv.classList.add('shown'), d0 + 1500 * (TSPD[C.cover.textSpeed] || sp)); }
+      if (cv) { later(() => cv.classList.add('play'), d0); later(() => cv.classList.add('shown'), d0 + 1500 * (TSPD[C.cover.textSpeed] || sp)); if (SL) later(() => cv.classList.add('fin'), d0 + 4800 * (TSPD[C.cover.textSpeed] || sp)); }
     });
   }
 
   // ---------- tema & font ----------
+  // Vivaldi bukan font Google (berlisensi Monotype): dipakai dari file font yang diunggah di admin (Tema 13 → File font Vivaldi);
+  // bila belum ada file, dipakai Vivaldi yang terpasang di perangkat tamu, lalu Great Vibes sebagai cadangan yang mirip.
+  function vivaldiFace(c, fam) {
+    let st = $('#vivFace'); const u = safeUrl(c.slide && c.slide.fontFile);
+    if (fam !== 'Vivaldi') { if (st) st.textContent = ''; return; }
+    if (!st) { st = document.createElement('style'); st.id = 'vivFace'; document.head.appendChild(st); }
+    const ext = ((u || '').split('?')[0].match(/\.(woff2|woff|ttf|otf)$/i) || [])[1], fmt = { woff2: 'woff2', woff: 'woff', ttf: 'truetype', otf: 'opentype' }[(ext || '').toLowerCase()];
+    const src = ["local('Vivaldi')", "local('Vivaldi Italic')", "local('Vivaldi-Italic')"].concat(u && fmt ? [`url('${u.replace(/['"\\\n\r]/g, '')}') format('${fmt}')`] : []).join(',');
+    st.textContent = `@font-face{font-family:'Vivaldi';font-style:normal;font-weight:400;font-display:swap;src:${src}}`;
+  }
   function applyTheme(c) {
     const t = c.theme, r = document.documentElement.style;
     ['primary', 'accent', 'rose', 'gold', 'paper', 'ink', 'body', 'sideBg'].forEach((k) => { if (t[k]) r.setProperty('--' + k, t[k]); });
@@ -282,14 +292,15 @@
     r.setProperty('--fHeading', ff(t.fontHeading, 'Georgia,serif'));
     r.setProperty('--fBody', ff(t.fontBody, 'Georgia,serif'));
     const slF = c.theme.preset === 'slide' && c.slide && c.slide.scriptFont ? c.slide.scriptFont : '';
-    const SCF = { 'Mrs Saint Delafield': 1.4, 'Herr Von Muellerhoff': 1.35, 'Monsieur La Doulaise': 1.2, 'Allison': 1.2, 'La Belle Aurore': 1.1, 'Whisper': 1.15 };
-    r.setProperty('--fScript', ff(slF || t.fontScript, 'cursive'));
+    const SCF = { 'Vivaldi': 1.05, 'Mrs Saint Delafield': 1.4, 'Herr Von Muellerhoff': 1.35, 'Monsieur La Doulaise': 1.2, 'Allison': 1.2, 'La Belle Aurore': 1.1, 'Whisper': 1.15 };
+    r.setProperty('--fScript', ff(slF || t.fontScript, (slF || t.fontScript) === 'Vivaldi' ? "'Great Vibes','Monsieur La Doulaise',cursive" : 'cursive'));
+    vivaldiFace(c, slF || t.fontScript);
     r.setProperty('--sc', String(((SCF[slF || t.fontScript] || 1) * (c.theme.preset === 'slide' ? (parseFloat(c.slide && c.slide.scriptSize) || 100) / 100 : 1)).toFixed(3)));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's'); r.setProperty('--tk', String(sp));
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
-    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', 'Poppins', 'Lora', 'Amiri'])].filter(Boolean).map((n) => {
+    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri'])].filter((n) => n && n !== 'Vivaldi').map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
       if (!w) return 'family=' + nm;
       const ws = w.split(';');
@@ -1325,6 +1336,10 @@
       if (PREVIEW && MN && !SL && window.MONO.drag) window.MONO.drag($('#cover'), (cfg.mono || {}).pos, (pos) => { try { parent.postMessage({ type: 'mnpos', pos }, location.origin); } catch (e) { /* abaikan */ } });
     }
     applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
+    if (SL) {
+      window.SLIDE.adjust(cfg); window.SLIDE.toTop(true);
+      if (PREVIEW) window.SLIDE.edit(() => { const s = (C.slide = C.slide || {}); return (s.adj = s.adj && typeof s.adj === 'object' ? s.adj : {}); }, (adj) => { try { parent.postMessage({ type: 'sladj', adj }, location.origin); } catch (e) { /* abaikan */ } });
+    } else if (window.SLIDE) window.SLIDE.toTop(false);
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
     if (PT && PT.live && liveW()) liveW().start($('#s-hero .pstage'));

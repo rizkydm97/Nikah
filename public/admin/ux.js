@@ -84,11 +84,14 @@ const LAYOUT = {
     ['Tema & warna', ['theme.preset', 'theme.palette']],
     ['Atur warna satu per satu (opsional)', ['theme.primary', 'theme.accent', 'theme.rose', 'theme.gold', 'theme.paper', 'theme.ink', 'theme.body', 'theme.sideBg'], true],
     ['Font (opsional)', ['theme.fontDisplay', 'theme.fontHeading', 'theme.fontBody', 'theme.fontScript', 'theme.colWidth'], true],
+    ['Font Tema 13 (Vivaldi)', ['slide.scriptFont', 'slide.fontFile', 'slide.scriptSize']],
   ],
   couple: [
     ['Mempelai Pria', ['couple.groom.photo', 'couple.groom.script', 'couple.groom.fullName', 'couple.groom.parents', 'couple.groom.instagram']],
     ['Mempelai Wanita', ['couple.bride.photo', 'couple.bride.script', 'couple.bride.fullName', 'couple.bride.parents', 'couple.bride.instagram']],
     ['Tampilan section (opsional)', ['couple.bg', 'couple.flower', 'couple.connector', 'couple.instagramLabel'], true],
+    ['Tema 13 — foto & tata letak mempelai', ['slide.groomMedia', 'slide.brideMedia', 'slide.coupleShape', 'slide.groomPos', 'slide.bridePos', 'slide.coupleAlign', 'slide.coupleNudge']],
+    ['Tema 13 — posisi & ukuran tulisan', ['slide.adj']],
   ],
   gallery: [
     ['Foto', ['gallery.title', 'gallery.items']],
@@ -129,8 +132,8 @@ const NAV = [
   ['Tampilan', [['theme', '🎨', 'Tema, Warna & Font'], ['effects', '🎬', 'Animasi & Efek'], ['sections', '↕️', 'Urutan & Tampil Section']]],
   ['Data Tamu', [['d-rsvp', '📋', 'Kehadiran (RSVP)'], ['d-wishes', '📝', 'Ucapan Tamu'], ['d-gifts', '💳', 'Konfirmasi Gift'], ['links', '🔗', 'Buat Link Tamu']]],
   ['Pengaturan Lanjutan (opsional)', [
-    ['livingfx', '🌿', 'Sampul & Suasana Hidup'], ['scrollfx', '🖱️', 'Efek Scroll'], ['soundfx', '🔊', 'Suara & Sentuhan'],
-    ['scene', '🏡', 'Gambar Tema 1'], ['scene2', '🌹', 'Gambar Tema 2'], ['mono', '◐', 'Tema 12 Hitam Putih'], ['slide', '🎞️', 'Tema 13 Slide Foto'],
+    ['livingfx', '🌿', 'Sampul & Suasana Hidup', TH_PIC], ['scrollfx', '🖱️', 'Efek Scroll', TH_PIC], ['soundfx', '🔊', 'Suara & Sentuhan', TH_PIC],
+    ['scene', '🏡', 'Gambar Tema 1', 'jawa'], ['scene2', '🌹', 'Gambar Tema 2', 'rose'], ['mono', '◐', 'Tema 12 Hitam Putih', 'mono'], ['slide', '🎞️', 'Tema 13 Slide Foto', 'slide'],
   ], true],
   ['Lainnya', [['security', '🔒', 'Keamanan & Cadangan']]],
 ];

@@ -43,6 +43,28 @@
   }
   const getPath = (root, path) => path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), root);
 
+  // ---------- menu & kolom admin mengikuti tema yang dipilih (Tema 12 hanya muncul di Tema 12, Tema 13 hanya di Tema 13, dst.) ----------
+  const presetNow = () => (cfg && cfg.theme && cfg.theme.preset) || 'jawa';
+  function thOk(th) {
+    if (!th) return true;
+    const neg = th[0] === '!', list = (neg ? th.slice(1) : th).split(',').map((x) => x.trim()), hit = list.includes(presetNow());
+    return neg ? !hit : hit;
+  }
+  const vis = (f) => thOk(f.th);
+
+  // ---------- Tema 13: posisi & ukuran tulisan (disimpan di slide.adj; kunci sama dengan data-ad di slide.js) ----------
+  const SLADJ_TITLE = { cover: 'Cover', open: 'Pembuka', couple: 'Mempelai', quote: 'Ayat & Hitung Mundur', events: 'Akad / Resepsi', story: 'Love Story', closing: 'Penutup' };
+  const SLADJ = {
+    cover: () => [['cv.hd', 'Baris atas (tanggal · label · lokasi)'], ['cv.k', 'Teks kecil atas'], ['cv.nm', 'Nama mempelai'], ['cv.dear', 'Tulisan "Kepada Bapak/Ibu…"'], ['cv.g', 'Nama tamu'], ['cv.tx', 'Kalimat undangan'], ['cv.btn', 'Tombol Buka Undangan']],
+    open: () => [['op.k', 'Teks kecil'], ['op.n', 'Nama mempelai'], ['op.d', 'Tanggal'], ['op.t', 'Hashtag']],
+    couple: () => [['g.l', 'Pria — label'], ['g.n', 'Pria — nama'], ['g.p', 'Pria — orang tua'], ['g.ig', 'Pria — tombol Instagram'], ['b.l', 'Wanita — label'], ['b.n', 'Wanita — nama'], ['b.p', 'Wanita — orang tua'], ['b.ig', 'Wanita — tombol Instagram']],
+    quote: () => [['q.ar', 'Ayat Arab'], ['q.t', 'Terjemahan ayat'], ['q.src', 'Sumber ayat'], ['q.cd', 'Hitung mundur'], ['q.btn', 'Tombol Save The Date']],
+    events: () => ((cfg.events && cfg.events.items) || []).flatMap((e, i) => { const n = (e && e.title) || 'Acara ' + (i + 1); return [['e' + i + '.t', n + ' — judul'], ['e' + i + '.d', n + ' — tanggal'], ['e' + i + '.h', n + ' — jam'], ['e' + i + '.pl', n + ' — nama tempat'], ['e' + i + '.ad', n + ' — alamat'], ['e' + i + '.map', n + ' — tombol peta']]; }),
+    story: () => [['st.h', 'Judul Love Story'], ['ch.t', 'Judul tiap cerita'], ['ch.tx', 'Isi tiap cerita'], ['ch.y', 'Tahun tiap cerita']],
+    closing: () => [['cl.k', 'Teks kecil'], ['cl.n', 'Nama mempelai'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup']],
+  };
+  const sladjKeys = (set) => (set === 'all' ? Object.keys(SLADJ) : [set]).flatMap((n) => SLADJ[n]());
+
   // ---------- dirty & preview ----------
   let pvT;
   function changed(fast) {
@@ -93,6 +115,13 @@
     const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
     cfg.mono = cfg.mono || {}; cfg.mono.pos = e.data.pos; changed(true);
     if (current === 'cover') { const sc = document.querySelector('.main, #main, main'); const y = sc ? sc.scrollTop : 0; show(current); if (sc) sc.scrollTop = y; }
+  });
+  // hasil menarik / membesarkan tulisan langsung di pratinjau (Tema 13) -> simpan ke slide.adj
+  addEventListener('message', (e) => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'sladj' || !cfg) return;
+    const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
+    cfg.slide = cfg.slide || {}; cfg.slide.adj = e.data.adj && typeof e.data.adj === 'object' ? e.data.adj : {}; changed(true);
+    if (document.querySelector('#main .sladj')) { const sc = document.querySelector('.main, #main, main'); const y = sc ? sc.scrollTop : 0, wy = scrollY; show(current); if (sc) sc.scrollTop = y; scrollTo(0, wy); }
   });
   $('#pvFrame').addEventListener('load', () => { sendPreview(); setTimeout(gotoPreview, 700); });
   $('#pvReload').onclick = () => { try { sessionStorage.removeItem('pvCfg'); } catch { /* */ } loadPreview(); };
@@ -348,6 +377,7 @@
         set(e.target.value); if (f.rr) { changed(true); show(current); return; }
         const pr = f.preset && typeof THEME_PRESETS !== 'undefined' && THEME_PRESETS[e.target.value];
         if (pr && confirm('Terapkan juga warna & font bawaan tema ini? (bisa diubah lagi setelahnya)')) { Object.assign(cfg.theme, pr); changed(true); show(current); }
+        if (f.k === 'theme.preset') { buildNav(); changed(true); show(current); toast('Menu admin disesuaikan dengan tema yang dipilih'); }
       } }, opts.map(([v, t]) => h('option', { value: v }, t)));
       sel.value = get(); wrap.append(label, sel);
     } else if (f.t === 'color') {
@@ -387,6 +417,16 @@
         !isImg || isMed ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply('') }, 'Hapus') : null);
       paint();
       wrap.append(label, h('div', { class: 'imgf' }, th, h('div', { style: 'flex:1;min-width:0' }, tx, btns, au)));
+    } else if (f.t === 'fontfile') {
+      const tx = h('input', { type: 'text', placeholder: 'URL file font (.ttf / .otf / .woff / .woff2) atau unggah…', value: get() || '', oninput: (e) => set(e.target.value) });
+      const up = h('button', { class: 'btn sm', type: 'button', onclick: async () => {
+        const [fl] = await pickFile('.ttf,.otf,.woff,.woff2'); if (!fl) return;
+        if (!/\.(ttf|otf|woff2?)$/i.test(fl.name)) { toast('Pilih file font .ttf, .otf, .woff atau .woff2', true); return; }
+        try { toast('Mengunggah font…'); const u = await upload(fl); tx.value = u; set(u); toast('Font terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); }
+      } }, 'Unggah file font');
+      wrap.append(label, h('div', { class: 'imgf' }, h('div', { style: 'flex:1;min-width:0' }, tx, h('div', { class: 'acts' }, up, h('button', { class: 'btn sm', type: 'button', onclick: () => { tx.value = ''; set(''); } }, 'Hapus')))));
+    } else if (f.t === 'sladj') {
+      wrap.append(label, sladjField(f));
     } else if (f.t === 'animmode') {
       const eff = cfg.effects || (cfg.effects = {}), on = (k) => eff[k] !== false;
       const same = (m) => Object.keys(m.v).every((k) => on(k) === m.v[k]);
@@ -422,6 +462,35 @@
     return wrap;
   }
 
+  function sladjField(f) {
+    const box = h('div', { class: 'sladj' });
+    const store = () => { const sl = (cfg.slide = cfg.slide || {}); if (!sl.adj || typeof sl.adj !== 'object') sl.adj = {}; return sl.adj; };
+    const sets = f.set === 'all' ? Object.keys(SLADJ) : [f.set];
+    const row = (k, l) => {
+      const cur = () => Object.assign({ x: 0, y: 0, s: 100 }, store()[k] || {});
+      const put = (p, v) => { const c = cur(); c[p] = v; if (!(+c.x) && !(+c.y) && +c.s === 100) delete store()[k]; else store()[k] = c; changed(true); };
+      const mk = (lab, p, min, max, step, unit) => {
+        const out = h('b', { class: 'rv-out' }, cur()[p] + unit);
+        const rg = h('input', { type: 'range', min, max, step, value: cur()[p], oninput: (e) => { out.textContent = e.target.value + unit; put(p, +e.target.value); } });
+        return h('label', { class: 'sa-c' }, h('span', {}, lab), rg, out);
+      };
+      const r = h('div', { class: 'sa-r' }, h('div', { class: 'sa-h' }, h('b', {}, l), h('button', { class: 'btn sm', type: 'button', onclick: () => { delete store()[k]; changed(true); draw(); } }, 'Reset')),
+        h('div', { class: 'sa-g' }, mk('Kiri ↔ Kanan', 'x', -60, 60, 0.5, ''), mk('Atas ↕ Bawah', 'y', -80, 80, 0.5, ''), mk('Ukuran', 's', 30, 300, 1, '%')));
+      return r;
+    };
+    const draw = () => {
+      box.textContent = '';
+      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan (Shift + roda mouse = besar/kecil). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
+      sets.forEach((sn) => {
+        const items = SLADJ[sn]();
+        const body = h('div', {}, items.length ? items.map(([k, l]) => row(k, l)) : h('p', { class: 'hint' }, 'Belum ada isi untuk diatur di bagian ini.'));
+        if (f.set === 'all') box.append(h('details', { class: 'cardx adv' }, h('summary', {}, SLADJ_TITLE[sn]), h('div', { class: 'card' }, body)));
+        else box.append(body);
+      });
+      if (f.set !== 'all') box.append(h('button', { class: 'btn danger sm', type: 'button', style: 'margin-top:10px', onclick: () => { const a = store(); sladjKeys(f.set).forEach(([k]) => { delete a[k]; }); changed(true); draw(); } }, 'Reset semua posisi & ukuran bagian ini'));
+    };
+    draw(); return box;
+  }
   function blank(fields) { const o = {}; fields.forEach((f) => { o[f.k] = f.t === 'bool' ? false : f.t === 'list' ? [] : ''; }); return o; }
   function listField(f, obj, key, onChange) {
     if (!Array.isArray(obj[key])) obj[key] = [];
@@ -453,7 +522,7 @@
           h('button', { class: 'ghost sm', type: 'button', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm', type: 'button', onclick: mv(1) }, '↓'),
           h('button', { class: 'ghost sm btn danger', type: 'button', onclick: (e) => { e.stopPropagation(); if (confirm('Hapus item ini?')) { arr.splice(i, 1); ch(); render(); } } }, 'Hapus')));
         const body = h('div', { class: 'ib' });
-        f.fields.forEach((sf) => body.append(field(sf, it, sf.k, () => { if (f.itemTitle) title.textContent = it[f.itemTitle] || title.textContent; ch(); })));
+        f.fields.filter(vis).forEach((sf) => body.append(field(sf, it, sf.k, () => { if (f.itemTitle) title.textContent = it[f.itemTitle] || title.textContent; ch(); })));
         item.append(body); box.append(item);
       });
       box.append(h('div', {}, h('button', { class: 'btn', type: 'button', onclick: () => { const n = blank(f.fields); arr.push(n); ch(); render(); box.querySelector('.item:last-of-type')?.classList.remove('closed'); } }, '+ ' + (f.addLabel || 'Tambah'))));
@@ -469,6 +538,7 @@
 
   function resetFields(fields) {
     fields.forEach((f) => {
+      if (f.t === 'sladj') { const a = cfg.slide && cfg.slide.adj; if (a) sladjKeys(f.set).forEach(([k]) => { delete a[k]; }); return; }
       const dv = getPath(defaults, f.k), [o, k] = parentOf(cfg, f.k);
       if (dv === undefined) delete o[k]; else o[k] = clone(dv);
       if (f.t === 'image') delete o[k + 'Adj'];
@@ -492,6 +562,7 @@
           h('button', { class: 'btn sm', type: 'button', onclick: () => { gotoPreview(g.id); replayPreviewSoon(g.id, 900); } }, '▶ Putar ulang di pratinjau'),
           h('small', { class: 'fh' }, g.id === 'hero' ? 'Cara bagian ini muncul. Di Tema 12, \"Lembut mewah\" = animasi bawaan pembuka (bingkai tumbuh + teks per huruf), \"Tanpa animasi\" = langsung tampil, pilihan lain = gerak masuk seluruh isi pembuka.' : 'Cara bagian ini muncul saat tamu men-scroll. Hanya berlaku untuk bagian ini.')),
         ...(sec.enabled ? [] : [h('small', { class: 'fh' }, 'Bagian ini tidak tampil di undangan. Isinya tetap tersimpan, jadi bisa diaktifkan lagi kapan saja.')]));
+      if (presetNow() === 'slide') { const sp = bar.querySelector('.secpos'); if (sp) sp.remove(); }
     };
     render(); return bar;
   }
@@ -500,7 +571,8 @@
     const m = h('div', {}, h('h2', {}, g.title), hint ? h('p', { class: 'hint' }, hint) : null);
     const sec = secOf(g.id), cards = [];
     if (sec) m.append(sectionBar(g, sec, () => cards.forEach((c) => c.classList.toggle('dim', !sec.enabled))));
-    const byKey = {}; g.fields.forEach((f) => { byKey[f.k] = f; });
+    const fl = g.fields.filter(vis);
+    const byKey = {}; fl.forEach((f) => { byKey[f.k] = f; });
     const addCard = (title, fields, fold) => {
       const card = h('div', { class: 'card' });
       fields.forEach((f) => { const [o, k] = parentOf(cfg, f.k); card.append(field(f, o, k)); });
@@ -512,26 +584,28 @@
     if (lay) {
       const used = new Set();
       lay.forEach(([t, keys, fold]) => { const fs = keys.map((k) => byKey[k]).filter(Boolean); fs.forEach((f) => used.add(f.k)); if (fs.length) addCard(t, fs, fold); });
-      const rest = g.fields.filter((f) => !used.has(f.k)); if (rest.length) addCard('Lainnya', rest, true);
-    } else addCard(null, g.fields);
+      const rest = fl.filter((f) => !used.has(f.k)); if (rest.length) addCard('Lainnya', rest, true);
+    } else addCard(null, fl);
     cards.forEach((c) => c.classList.toggle('dim', !!sec && !sec.enabled));
-    m.append(h('button', { class: 'btn danger sm', onclick: () => { if (confirm(`Kembalikan seluruh pengaturan "${g.title}" ke bawaan? (belum tersimpan sampai Anda klik Simpan)`)) { resetFields(g.fields); changed(true); show(g.id); } } }, 'Kembalikan halaman ini ke bawaan'));
+    m.append(h('button', { class: 'btn danger sm', onclick: () => { if (confirm(`Kembalikan seluruh pengaturan "${g.title}" ke bawaan? (belum tersimpan sampai Anda klik Simpan)`)) { resetFields(fl); changed(true); show(g.id); } } }, 'Kembalikan halaman ini ke bawaan'));
     return m;
   }
 
   function sectionsView() {
     const m = h('div', {}, h('h2', {}, 'Urutan & Tampil Section'), h('p', { class: 'hint' }, 'Seret ⠿ (atau pakai ↑ ↓) untuk memindah posisi, mis. Galeri ke paling atas. Hilangkan centang untuk menyembunyikan bagian dari undangan. Animasi muncul tiap bagian diatur di halaman bagian itu masing-masing (klik "Edit isi & animasi →").'));
     const wrap = h('div');
+    const fixed = presetNow() === 'slide';
+    if (fixed) m.append(h('div', { class: 'card tips' }, h('b', {}, 'Tema 13: urutan bagian tetap'), h('p', { class: 'hint', style: 'margin:6px 0 0' }, 'Alur Tema 13 sudah diatur (sampul → pembuka → mempelai → ayat → acara → love story → galeri → live → gift → RSVP → ucapan → penutup). Di sini Anda hanya bisa menampilkan / menyembunyikan bagian dan mengatur animasinya.')));
     const render = () => {
       wrap.textContent = '';
       cfg.sections.forEach((s, i) => {
         const mv = (d) => () => { const j = i + d; if (j < 0 || j >= cfg.sections.length) return; [cfg.sections[j], cfg.sections[i]] = [cfg.sections[i], cfg.sections[j]]; changed(true); render(); gotoPreviewSoon(s.id); };
-        const row = h('div', { class: 'secrow' + (s.enabled ? '' : ' off'), draggable: 'true' },
-          h('span', { class: 'grip', title: 'Seret untuk memindah' }, '⠿'),
+        const row = h('div', { class: 'secrow' + (s.enabled ? '' : ' off'), draggable: fixed ? null : 'true' },
+          fixed ? null : h('span', { class: 'grip', title: 'Seret untuk memindah' }, '⠿'),
           h('label', { class: 'sw', title: 'Tampilkan di undangan' }, h('input', { type: 'checkbox', checked: s.enabled, onchange: (e) => { s.enabled = e.target.checked; row.classList.toggle('off', !s.enabled); changed(true); if (s.enabled) gotoPreviewSoon(s.id); } })),
           h('span', { class: 'nm' }, (i + 1) + '. ' + (SECTION_NAMES[s.id] || s.id), s.enabled ? null : h('small', { class: 'offtag' }, ' disembunyikan')),
           SCHEMA.some((g) => g.id === s.id) ? h('button', { class: 'btn sm', onclick: () => show(s.id) }, 'Edit isi & animasi →') : null,
-          h('button', { class: 'ghost sm btn', title: 'Naik', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm btn', title: 'Turun', onclick: mv(1) }, '↓'));
+          fixed ? null : [h('button', { class: 'ghost sm btn', title: 'Naik', onclick: mv(-1) }, '↑'), h('button', { class: 'ghost sm btn', title: 'Turun', onclick: mv(1) }, '↓')]);
         row.addEventListener('dragstart', (e) => { dragI = i; row.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(i)); } catch { /* */ } });
         row.addEventListener('dragend', () => { row.classList.remove('drag'); wrap.querySelectorAll('.over').forEach((x) => x.classList.remove('over')); });
         row.addEventListener('dragover', (e) => { if (dragI < 0) return; e.preventDefault(); wrap.querySelectorAll('.over').forEach((x) => x.classList.remove('over')); row.classList.add('over'); });
@@ -669,6 +743,8 @@
     const n = $('#nav'); n.textContent = '';
     const btn = (id, ico, t) => h('button', { 'data-id': id, onclick: () => { show(id); n.classList.remove('open'); $('#navBack').classList.remove('show'); } }, h('span', { class: 'ni' }, ico), h('span', { class: 'nt' }, t), h('i', { class: 'ndot', title: 'Belum disimpan' }));
     NAV.forEach(([title, items, fold]) => {
+      items = items.filter((it) => thOk(it[3]));
+      if (!items.length) return;
       if (fold) n.append(h('details', { class: 'ngrp' }, h('summary', {}, title), items.map(([id, ico, t]) => btn(id, ico, t))));
       else n.append(h('h6', {}, title), ...items.map(([id, ico, t]) => btn(id, ico, t)));
     });

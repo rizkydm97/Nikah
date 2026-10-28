@@ -30,7 +30,7 @@
       .map((w) => `<span class="sl-wd" style="--d:${start + (n++) * step}ms">${E(H, w)}</span>`).join(' ')).join('<br>');
   }
   const wipe = (H, s, start) => `<span class="sl-wipe" style="--d:${start || 0}ms"><span>${E(H, s)}</span></span>`;
-  const up = (cls, d, inner, tag) => `<${tag || 'div'} class="${cls} sl-up" style="--d:${d}ms">${inner}</${tag || 'div'}>`;
+  const up = (cls, d, inner, tag, ad) => `<${tag || 'div'} class="${cls} sl-up" style="--d:${d}ms"${ad ? ` data-ad="${ad}"` : ''}>${inner}</${tag || 'div'}>`;
 
   // ---------- foto / video / YouTube ----------
   function media(H, o, k, cls) {
@@ -74,16 +74,16 @@
     return `<div class="cover slcv${tone(H)}" id="cover" style="--shd:${shade(H)}">
       <div class="sl-cv-bg${md ? '' : ' none'}"><div class="sl-cv-kb">${md}</div></div><i class="sl-cv-sh"></i>
       <div class="sl-cv-in">
-        <div class="sl-cv-hd sl-fade" style="--d:300ms"><span>${E(H, C.hero.dateText)}</span><b>${E(H, lab)}</b><span class="loc">${loc ? `${H.ICON.pin}${E(H, loc)}` : ''}</span></div>
-        <div class="sl-cv-k">${chars(H, o.kicker, 40, 450)}</div>
+        <div class="sl-cv-hd sl-fade" style="--d:300ms" data-ad="cv.hd"><span>${E(H, C.hero.dateText)}</span><b>${E(H, lab)}</b><span class="loc">${loc ? `${H.ICON.pin}${E(H, loc)}` : ''}</span></div>
+        <div class="sl-cv-k" data-ad="cv.k">${chars(H, o.kicker, 40, 450)}</div>
         <div class="sl-cv-sp"></div>
-        <div class="sl-cv-nm">${wipe(H, o.names, 900)}</div>
+        <div class="sl-cv-nm" data-ad="cv.nm">${wipe(H, o.names, 900)}</div>
         <div class="sl-cv-to">
-          ${up('sl-cv-dear', 1700, E(H, o.toLabel))}
-          ${up('sl-cv-g', 1900, E(H, H.guest || o.defaultGuest))}
-          ${txt ? `<p class="sl-cv-tx">${words(H, txt, 28, 2300)}</p>` : ''}
+          ${up('sl-cv-dear', 1700, E(H, o.toLabel), null, 'cv.dear')}
+          ${up('sl-cv-g', 1900, E(H, H.guest || o.defaultGuest), null, 'cv.g')}
+          ${txt ? `<p class="sl-cv-tx" data-ad="cv.tx">${words(H, txt, 28, 2300)}</p>` : ''}
         </div>
-        <button class="sl-cv-btn sl-pop" id="openBtn" type="button" style="--d:2900ms">${H.icon}${E(H, o.button)}</button>
+        <button class="sl-cv-btn sl-pop" id="openBtn" type="button" style="--d:2900ms" data-ad="cv.btn">${H.icon}${E(H, o.button)}</button>
       </div></div>`;
   }
 
@@ -94,14 +94,14 @@
     const b = s.openMedia2 && H.safeUrl(s.openMedia2) ? [s, 'openMedia2'] : null;
     const nm = [h.groom, h.bride].filter(Boolean).join(' & ');
     return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}svh" data-two="${b ? 1 : 0}">
-      <div class="sl-ph"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div>${b ? `<div class="sl-pk b">${ph(H, b, 'sl-pm')}</div>` : ''}</div>
+      <div class="sl-ph"><div class="sl-pan"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div>${b ? `<div class="sl-pk b">${ph(H, b, 'sl-pm')}</div>` : ''}</div></div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
-        <div class="sl-op-k">${chars(H, h.kicker, 38, 700)}</div>
-        <h1 class="sl-op-n">${wipe(H, nm, 1100)}</h1>
+        <div class="sl-op-k" data-ad="op.k">${chars(H, h.kicker, 38, 700)}</div>
+        <h1 class="sl-op-n" data-ad="op.n">${wipe(H, nm, 1100)}</h1>
         <i class="sl-line sl-draw" style="--d:2000ms"></i>
-        ${up('sl-op-d', 2300, E(H, h.dateText))}
-        ${h.hashtag ? up('sl-op-t', 2600, E(H, h.hashtag)) : ''}
+        ${up('sl-op-d', 2300, E(H, h.dateText), null, 'op.d')}
+        ${h.hashtag ? up('sl-op-t', 2600, E(H, h.hashtag), null, 'op.t') : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true"><i></i></div></section>`;
   }
@@ -115,11 +115,11 @@
     const shape = shapeOf(s.coupleShape), tp = pos(side === 'g' ? s.groomPos : s.bridePos, 'top');
     const al = ali(s.coupleAlign, side === 'g' ? 'left' : 'right');
     const lab = side === 'g' ? (s.groomLabel == null ? 'Mempelai Pria' : s.groomLabel) : (s.brideLabel == null ? 'Mempelai Wanita' : s.brideLabel);
-    const ig = H.safeUrl(x.instagram) ? `<a class="sl-ig sl-pop" style="--d:2300ms" href="${H.link(x.instagram)}" target="_blank" rel="noopener">${H.ICON.ig}<span>${E(H, o.instagramLabel)}</span></a>` : '';
+    const ig = H.safeUrl(x.instagram) ? `<a class="sl-ig sl-pop" style="--d:2300ms" data-ad="${side}.ig" href="${H.link(x.instagram)}" target="_blank" rel="noopener">${H.ICON.ig}<span>${E(H, o.instagramLabel)}</span></a>` : '';
     const txt = `<div class="sl-pp-in al-${al}">
-        ${lab ? up('sl-pp-l', 250, E(H, lab)) : ''}
-        <div class="sl-pp-n">${wipe(H, x.fullName || x.script, 500)}</div>
-        <div class="sl-pp-p">${words(H, x.parents, 36, 1300)}</div>
+        ${lab ? up('sl-pp-l', 250, E(H, lab), null, side + '.l') : ''}
+        <div class="sl-pp-n" data-ad="${side}.n">${wipe(H, x.fullName || x.script, 500)}</div>
+        <div class="sl-pp-p" data-ad="${side}.p">${words(H, x.parents, 36, 1300)}</div>
         ${ig}
       </div>`;
     if (shape) { // foto berbingkai rasio tetap di atas, teks di bawah (tidak menutupi wajah)
@@ -143,10 +143,10 @@
     const src = pick(H, [[s, 'quoteMedia'], [o, 'bg'], [C.cover, 'photo'], [s, 'coverMedia']]);
     return `<section class="sec sl-quote" id="s-quote"><div class="sl-s sl-q${tone(H)}">
       <div class="sl-q-in">
-        ${arabic ? `<p class="rv qar" dir="rtl" lang="ar" style="--ars:${ars}">${H.br(arabic)}</p>` : ''}
-        <p class="rv qt">${H.br(text)}</p><div class="rv src">${E(H, o.source)}</div>
-        <div class="rv cds" id="cds"><div class="cd"><b data-k="d">00</b><span>${E(H, l.days)}</span></div><div class="sep">:</div><div class="cd"><b data-k="h">00</b><span>${E(H, l.hours)}</span></div><div class="sep">:</div><div class="cd"><b data-k="m">00</b><span>${E(H, l.minutes)}</span></div><div class="sep">:</div><div class="cd"><b data-k="s">00</b><span>${E(H, l.seconds)}</span></div></div>
-        <a class="rv btn sq up sl-save" id="saveDate" target="_blank" rel="noopener">${H.ICON.cal}${E(H, o.saveButton)}</a>
+        ${arabic ? `<p class="rv qar" dir="rtl" lang="ar" style="--ars:${ars}" data-ad="q.ar">${H.br(arabic)}</p>` : ''}
+        <p class="rv qt" data-ad="q.t">${H.br(text)}</p><div class="rv src" data-ad="q.src">${E(H, o.source)}</div>
+        <div class="rv cds" id="cds" data-ad="q.cd"><div class="cd"><b data-k="d">00</b><span>${E(H, l.days)}</span></div><div class="sep">:</div><div class="cd"><b data-k="h">00</b><span>${E(H, l.hours)}</span></div><div class="sep">:</div><div class="cd"><b data-k="m">00</b><span>${E(H, l.minutes)}</span></div><div class="sep">:</div><div class="cd"><b data-k="s">00</b><span>${E(H, l.seconds)}</span></div></div>
+        <a class="rv btn sq up sl-save" id="saveDate" data-ad="q.btn" target="_blank" rel="noopener">${H.ICON.cal}${E(H, o.saveButton)}</a>
       </div>
       <div class="sl-q-ph"><div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div></div></div></section>`;
   }
@@ -162,12 +162,12 @@
       const shape = shapeOf(e.shape, shapeOf(s.eventShape)), tp = pos(s.eventPos, 'bottom') === 'top' ? 'top' : 'bottom';
       const al = ali(s.eventAlign, side === 'r' ? 'right' : 'left');
       const inner = `<div class="sl-ev-in al-${al}">
-          <div class="sl-ev-t">${wipe(H, e.title, 700)}</div>
-          ${up('sl-ev-d', 1300, E(H, e.date))}
-          ${up('sl-ev-h', 1500, E(H, e.time))}
-          <div class="sl-ev-pl sl-up" style="--d:1750ms"><b>${E(H, e.place)}</b></div>
-          <p class="sl-ev-ad">${words(H, e.address, 26, 1950)}</p>
-          ${H.safeUrl(e.mapUrl) ? `<a class="sl-map sl-pop" style="--d:2500ms" href="${H.link(e.mapUrl)}" target="_blank" rel="noopener">${H.ICON.map}<span>${E(H, o.mapLabel)}</span></a>` : ''}
+          <div class="sl-ev-t" data-ad="e${i}.t">${wipe(H, e.title, 700)}</div>
+          ${up('sl-ev-d', 1300, E(H, e.date), null, 'e' + i + '.d')}
+          ${up('sl-ev-h', 1500, E(H, e.time), null, 'e' + i + '.h')}
+          <div class="sl-ev-pl sl-up" style="--d:1750ms" data-ad="e${i}.pl"><b>${E(H, e.place)}</b></div>
+          <p class="sl-ev-ad" data-ad="e${i}.ad">${words(H, e.address, 26, 1950)}</p>
+          ${H.safeUrl(e.mapUrl) ? `<a class="sl-map sl-pop" style="--d:2500ms" data-ad="e${i}.map" href="${H.link(e.mapUrl)}" target="_blank" rel="noopener">${H.ICON.map}<span>${E(H, o.mapLabel)}</span></a>` : ''}
         </div>`;
       if (shape) return `<div class="sl-s sl-ev split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.eventNudge)}px">
         <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f"></i></div>${inner}</div>`;
@@ -184,10 +184,10 @@
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i>
       <div class="sl-cl-in">
-        <div class="sl-cl-k">${chars(H, o.kicker, 44, 500)}</div>
-        <div class="sl-cl-n">${wipe(H, o.names, 1100)}</div>
-        <div class="sl-cl-hr sl-up" style="--d:1900ms" aria-hidden="true"><i></i>${H.ICON.heart}<i></i></div>
-        <p class="sl-cl-tx">${words(H, o.text, 30, 2200)}</p>
+        <div class="sl-cl-k" data-ad="cl.k">${chars(H, o.kicker, 44, 500)}</div>
+        <div class="sl-cl-n" data-ad="cl.n">${wipe(H, o.names, 1100)}</div>
+        <div class="sl-cl-hr sl-up" style="--d:1900ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
+        <p class="sl-cl-tx" data-ad="cl.tx">${words(H, o.text, 30, 2200)}</p>
       </div>
       <div class="footer sl-cl-ft">${H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${E(H, o.footer)}</a>` : E(H, o.footer)}</div></div></section>`;
   }
@@ -195,14 +195,14 @@
   // ---------- 7. love story: judul → foto lebar penuh (kabut di tepi) → cerita + tahun, dipisah garis vertikal tipis ----------
   function story(H) {
     const o = H.C.story || {}, s = sl(H), items = o.items || [], dflt = shapeOf(s.storyShape, '4/5') || '4/5';
-    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht">${chars(H, o.title, 38, 100)}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
+    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht" data-ad="st.h">${chars(H, o.title, 38, 100)}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
     const chs = items.map((e, i) => {
       const sh = shapeOf(e.shape, dflt) || dflt, side = i % 2 ? 'r' : 'l';
       const src = e.image && H.safeUrl(e.image) ? [e, 'image'] : null;
       return `<div class="sl-s sl-ch${tone(H)}" style="${rv(sh)}">
-        <div class="sl-ch-t">${wipe(H, e.title, 150)}</div>
+        <div class="sl-ch-t" data-ad="ch.t">${wipe(H, e.title, 150)}</div>
         <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f2"></i><i class="sl-sh f"></i></div>
-        <div class="sl-ch-b"><p class="sl-ch-tx">${words(H, e.text, 22, 700)}</p>${e.year ? up('sl-ch-y', 1500, E(H, e.year)) : ''}</div>
+        <div class="sl-ch-b"><p class="sl-ch-tx" data-ad="ch.tx">${words(H, e.text, 22, 700)}</p>${e.year ? up('sl-ch-y', 1500, E(H, e.year), null, 'ch.y') : ''}</div>
         ${i < items.length - 1 ? '<i class="sl-vl sl-draw sl-vl-e" style="--d:1900ms"></i>' : ''}</div>`;
     }).join('');
     return `<section class="sec sl-story" id="s-story">${head}${chs}</section>`;
@@ -272,8 +272,75 @@
     })).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
+  // ---------- posisi & ukuran tulisan (diatur di admin: slide.adj = { "cv.nm": {x, y, s} }) ----------
+  // x, y = geser dalam % lebar layar (satuan cqw, jadi sama persis di HP kecil maupun besar); s = ukuran dalam % (100 = bawaan).
+  // Memakai properti `translate` & `scale` (terpisah dari `transform`) agar tidak bentrok dengan animasi teks masuk.
+  function adjust(cfg) {
+    const adj = (cfg && cfg.slide && cfg.slide.adj) || {};
+    document.querySelectorAll('[data-ad]').forEach((el) => {
+      const a = adj[el.dataset.ad] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
+      el.style.translate = x || y ? `${x}cqw ${y}cqw` : '';
+      el.style.scale = sc !== 1 ? String(sc) : '';
+    });
+  }
+  // pratinjau admin: tulisan bisa ditarik langsung (geser) dan Shift + roda mouse = besar/kecil; hasil dikirim ke admin lewat done(adj)
+  let editOn = false, lastDrag = 0;
+  function edit(getAdj, done) {
+    if (editOn) return; editOn = true;
+    document.documentElement.classList.add('sl-edit');
+    const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open');
+    document.addEventListener('pointerdown', (e) => {
+      if (e.button > 0) return;
+      const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;
+      const cont = wrapOf(el); if (!cont) return;
+      const key = el.dataset.ad, w = cont.getBoundingClientRect().width || 1, adj = getAdj();
+      const a0 = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}), x0 = e.clientX, y0 = e.clientY; let moved = false;
+      e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch (er) { /* abaikan */ }
+      el.classList.add('sl-dragging');
+      const mv = (ev) => {
+        const dx = ev.clientX - x0, dy = ev.clientY - y0; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+        if (!moved) return;
+        const n = { x: +((parseFloat(a0.x) || 0) + dx / w * 100).toFixed(2), y: +((parseFloat(a0.y) || 0) + dy / w * 100).toFixed(2), s: a0.s };
+        adj[key] = n; el.style.translate = `${n.x}cqw ${n.y}cqw`;
+      };
+      const up = () => {
+        el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
+        el.classList.remove('sl-dragging');
+        if (moved) { lastDrag = Date.now(); done(JSON.parse(JSON.stringify(adj))); }
+      };
+      el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+    }, true);
+    // klik setelah menggeser jangan ikut menekan tombol (mis. Buka Undangan)
+    document.addEventListener('click', (e) => { if (Date.now() - lastDrag < 400 && e.target.closest('[data-ad]')) { e.preventDefault(); e.stopPropagation(); } }, true);
+    let wt = 0;
+    document.addEventListener('wheel', (e) => {
+      if (!e.shiftKey) return;
+      const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;
+      e.preventDefault();
+      const key = el.dataset.ad, adj = getAdj(), a = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {});
+      a.s = Math.round(Math.min(300, Math.max(30, (parseFloat(a.s) || 100) + (e.deltaY < 0 ? 4 : -4))));
+      adj[key] = a; el.style.scale = a.s === 100 ? '' : String(a.s / 100);
+      clearTimeout(wt); wt = setTimeout(() => done(JSON.parse(JSON.stringify(adj))), 350);
+    }, { passive: false });
+  }
+
+  // ---------- tombol ke atas (muncul setelah menggulir ke bawah) ----------
+  function toTop(on) {
+    let b = document.getElementById('slTop');
+    if (!on) { if (b) b.remove(); return; }
+    if (b) return;
+    const host = document.getElementById('fixwrap') || document.body;
+    b = document.createElement('button'); b.id = 'slTop'; b.type = 'button'; b.className = 'sl-top'; b.setAttribute('aria-label', 'Kembali ke atas');
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 6.5l-7 7 1.4 1.4L12 9.3l5.6 5.6L19 13.5z" fill="currentColor"/></svg>';
+    b.addEventListener('click', () => { scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' }); });
+    host.appendChild(b);
+    let raf = 0;
+    const chk = () => { raf = 0; b.classList.toggle('on', scrollY > innerHeight * 1.1 && !document.body.classList.contains('locked')); };
+    addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(chk); }, { passive: true }); chk();
+  }
+
   window.SLIDE = {
-    cover, hero, couple, quote, events, story, closing, open, fx, order, chars, words,
+    cover, hero, couple, quote, events, story, closing, open, fx, order, chars, words, adjust, edit, toTop,
     deco: M.deco || {}, colors: M.colors || {}, assets: M.assets || [],
   };
 })();

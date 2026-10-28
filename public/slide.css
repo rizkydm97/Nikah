@@ -221,3 +221,32 @@ html[data-sl-anim="fade"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-pm,html[data-
 @media (prefers-reduced-motion:reduce){
   :is(.sl-c,.sl-wd,.sl-up,.sl-fade,.sl-pop,.sl-wipe,.sl-draw,.sl-vl,.sl-pm){animation:none!important;opacity:1!important;transform:none!important;filter:none!important;clip-path:none!important}
 }
+
+/* ---------- pembuka: foto bergeser ke KANAN perlahan sementara teks masuk ---------- */
+.sl-pan{position:absolute;inset:0;transform:translate3d(-5.5%,0,0) scale(1.15);will-change:transform}
+.sl-open.play .sl-pan{animation:slPanR calc(18s*var(--tk,1)) cubic-bezier(.2,.55,.25,1) both}
+.sl-open.instant .sl-pan{animation:none;transform:translate3d(4%,0,0) scale(1.15)}
+@keyframes slPanR{from{transform:translate3d(-5.5%,0,0) scale(1.15)}to{transform:translate3d(4%,0,0) scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.sl-pan,.sl-open.play .sl-pan{animation:none;transform:scale(1.1)}}
+
+/* ---------- sampul: teks tanpa blur per huruf (iOS sering gagal menggambarnya) + keadaan akhir dipaksa ---------- */
+.slcv .sl-c,.slcv .sl-wd{filter:none}
+@keyframes slCn{from{opacity:0;transform:translateY(.6em)}to{opacity:1;transform:none}}
+@keyframes slWn{from{opacity:0;transform:translateY(.8em)}to{opacity:1;transform:none}}
+.slcv.play .sl-c{animation-name:slCn}
+.slcv.play .sl-wd{animation-name:slWn}
+/* setelah semua animasi sampul seharusnya selesai (kelas .fin dari invitation.js): semua teks pasti tampil penuh, walau animasi dijatuhkan peramban */
+.slcv.fin :is(.sl-c,.sl-wd,.sl-up,.sl-fade,.sl-pop){animation:none!important;opacity:1;transform:none;filter:none}
+.slcv.fin .sl-wipe{animation:none!important;opacity:1;clip-path:none}
+.slcv.fin .sl-draw{animation:none!important;transform:none}
+
+/* ---------- posisi & ukuran tulisan diatur dari admin (data-ad) ---------- */
+[data-ad]{transform-origin:50% 50%}
+html.sl-edit [data-ad]{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;outline:1px dashed rgba(90,130,255,.95);outline-offset:3px}
+html.sl-edit [data-ad].sl-dragging{cursor:grabbing;outline-style:solid;background:rgba(90,130,255,.14)}
+
+/* ---------- tombol ke atas ---------- */
+.sl-top{position:absolute;right:14px;bottom:72px;width:44px;height:44px;padding:0;border-radius:50%;border:2px solid #fff;background:var(--primary,#111);color:#fff;display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(10px) scale(.9);transition:opacity .3s ease,transform .3s ease;box-shadow:0 6px 16px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent}
+.sl-top.on{opacity:1;pointer-events:auto;transform:none}
+.sl-top:active{transform:scale(.93)}
+.sl-top svg{display:block}

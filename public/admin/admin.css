@@ -261,3 +261,11 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 
 .secanim{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-basis:100%;border-top:1px dashed var(--line);padding-top:10px}
 .secanim select{min-width:220px;max-width:100%}
+
+/* Tema 13: pengatur posisi & ukuran tulisan */
+.sladj .sa-r{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fff}
+.sladj .sa-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.sladj .sa-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 14px}
+.sladj .sa-c{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--mu)}
+.sladj .sa-c input[type=range]{width:100%}
+.sladj .sa-c .rv-out{align-self:flex-end;font-size:12px}

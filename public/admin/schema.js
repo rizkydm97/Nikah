@@ -140,7 +140,8 @@ const SCHEMA = [
     { k: 'slide.eventNudge', l: 'AKAD & RESEPSI — Geser tulisan menjauhi tepi (layar penuh: dalam % tinggi layar; foto di atas: dalam px)', t: 'range', min: -20, max: 60, step: 1, unit: '', def: 0 },
     { k: 'slide.closingMedia', l: 'PENUTUP — Foto slide penutup (kosong = foto latar / foto penutup di menu Penutup)', t: 'media', ar: '9/19' },
     { k: 'closing.textSpeed', l: 'Kecepatan animasi teks masuk di penutup', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
-    { k: 'slide.scriptFont', l: 'FONT tulisan tangan Tema 13 (nama, judul acara, judul love story). "Mrs Saint Delafield" = gaya tanda tangan tipis seperti referensi', t: 'select', o: [['', 'Ikuti font di menu Tema, Warna & Font'], ['Mrs Saint Delafield', 'Mrs Saint Delafield — tanda tangan tipis (referensi)'], ['Herr Von Muellerhoff', 'Herr Von Muellerhoff — tanda tangan elegan'], ['Monsieur La Doulaise', 'Monsieur La Doulaise — kaligrafi klasik'], ['Allison', 'Allison — tulisan tangan ramping'], ['La Belle Aurore', 'La Belle Aurore — tulisan tangan natural'], ['Great Vibes', 'Great Vibes'], ['Allura', 'Allura'], ['Pinyon Script', 'Pinyon Script'], ['Parisienne', 'Parisienne']] },
+    { k: 'slide.scriptFont', l: 'FONT tulisan tangan Tema 13 (nama, judul acara, judul love story). "Mrs Saint Delafield" = gaya tanda tangan tipis seperti referensi', t: 'select', o: [['', 'Ikuti font di menu Tema, Warna & Font'], ['Vivaldi', 'Vivaldi — kaligrafi miring (unggah file font di kolom bawahnya agar tampil di semua HP)'], ['Mrs Saint Delafield', 'Mrs Saint Delafield — tanda tangan tipis (referensi)'], ['Herr Von Muellerhoff', 'Herr Von Muellerhoff — tanda tangan elegan'], ['Monsieur La Doulaise', 'Monsieur La Doulaise — kaligrafi klasik'], ['Allison', 'Allison — tulisan tangan ramping'], ['La Belle Aurore', 'La Belle Aurore — tulisan tangan natural'], ['Great Vibes', 'Great Vibes'], ['Allura', 'Allura'], ['Pinyon Script', 'Pinyon Script'], ['Parisienne', 'Parisienne']] },
+    { k: 'slide.fontFile', l: 'FILE FONT Vivaldi (.ttf / .otf / .woff / .woff2) — Vivaldi berlisensi Monotype sehingga tidak bisa disertakan di sini. Unggah file font milik Anda agar tampil sama di semua HP. Kosong = memakai Vivaldi bila terpasang di perangkat tamu, bila tidak otomatis Great Vibes (mirip)', t: 'fontfile' },
     { k: 'slide.scriptSize', l: 'Ukuran semua tulisan tangan Tema 13 (font tipis tampak kecil — perbesar bila perlu)', t: 'range', min: 70, max: 160, step: 1, unit: '%', def: 100 },
     { k: 'slide.animStyle', l: 'GAYA ANIMASI foto saat slide masuk', t: 'select', o: [['mist', 'Kabut lembut — foto muncul dari buram menjadi jelas (bawaan)'], ['zoom', 'Zoom pelan'], ['slide', 'Geser dari samping'], ['fade', 'Muncul perlahan (fade)']] },
     { k: 'slide.parallax', l: 'Efek parallax: foto bergerak lebih lambat dari gulir layar (kesan mengambang seperti referensi)', t: 'bool' },
@@ -300,3 +301,49 @@ const ANIM_MODES = [
   { id: 'clean', ico: '🧼', name: 'Bersih total', note: 'Tanpa awan, burung, kupu-kupu, partikel & kamera sinematik di mana pun. Hanya animasi teks & gambar masuk.',
     v: Object.assign({ openZoom: false, clouds: false, butterflies: false, birds: false, particles: false, petals: false, lights: false, glow: false, sway: false, parallax: false, revealAnim: true, scrollReveal: true }, ANIM_INNER_OFF) },
 ];
+
+// ====== v5: menu admin per tema (th) + pengatur posisi & ukuran tulisan Tema 13 ======
+// th = daftar tema tempat kolom ini tampil, mis. 'slide' / 'mono,slide'. Awalan ! = tampil di semua tema KECUALI yang disebut.
+// Kolom tanpa th tampil di semua tema. Data kolom yang disembunyikan tetap tersimpan.
+const TH_PIC = 'bali,princess,emas,biru,rimba,klasik,dayak,airterjun,istana';
+(function () {
+  const G = (id) => SCHEMA.find((g) => g.id === id);
+  const src = (k) => SCHEMA.find((g) => g.id === 'slide').fields.find((f) => f.k === k);
+  const tag = (id, test, v) => G(id).fields.forEach((f) => { if (test(f)) f.th = v; });
+  const clone = (ks) => ks.map((k) => Object.assign({}, src(k), { th: 'slide' }));
+  const adj = (set, l) => ({ k: 'slide.adj', l, t: 'sladj', set, th: 'slide' });
+  const nested = (id, lk, ck, v) => { const l = G(id).fields.find((f) => f.k === lk); if (l && l.fields) l.fields.forEach((f) => { if (f.k === ck) f.th = v; }); };
+
+  // COVER — Tema 12 punya kolomnya sendiri, Tema 13 punya kolomnya sendiri, Tema 1-11 memakai foto cover biasa
+  tag('cover', (f) => /^mono\./.test(f.k), 'mono');
+  tag('cover', (f) => ['cover.photo', 'cover.photoRatio', 'cover.bg'].includes(f.k), '!mono,slide');
+  G('cover').fields.unshift(...clone(['slide.coverMedia', 'slide.coverPoster', 'slide.coverLabel', 'slide.coverLoc', 'slide.coverText', 'slide.shade']),
+    adj('cover', 'POSISI & UKURAN TULISAN COVER — tarik teks langsung di pratinjau kanan (Shift + roda mouse = besar/kecil), atau pakai penggeser'));
+  // PEMBUKA
+  tag('hero', (f) => /^slide\./.test(f.k), 'slide');
+  tag('hero', (f) => /^mono\./.test(f.k), 'mono');
+  G('hero').fields.unshift(adj('open', 'POSISI & UKURAN TULISAN PEMBUKA — tarik langsung di pratinjau, atau pakai penggeser'));
+  // MEMPELAI
+  tag('couple', (f) => ['couple.bg', 'couple.flower', 'couple.connector'].includes(f.k), '!slide');
+  G('couple').fields.push(...clone(['slide.groomMedia', 'slide.brideMedia', 'slide.coupleShape', 'slide.groomPos', 'slide.bridePos', 'slide.coupleAlign', 'slide.coupleNudge']),
+    adj('couple', 'POSISI & UKURAN TULISAN MEMPELAI — tarik langsung di pratinjau, atau pakai penggeser'));
+  // AYAT
+  G('quote').fields.push(...clone(['slide.quoteMedia']), adj('quote', 'POSISI & UKURAN TULISAN AYAT & HITUNG MUNDUR'));
+  // ACARA
+  nested('events', 'events.items', 'photo', 'slide');
+  G('events').fields.push(...clone(['slide.akadMedia', 'slide.resepsiMedia', 'slide.eventShape', 'slide.eventPos', 'slide.eventFade', 'slide.eventAlign', 'slide.eventNudge']),
+    adj('events', 'POSISI & UKURAN TULISAN AKAD / RESEPSI — tarik langsung di pratinjau, atau pakai penggeser'));
+  // LOVE STORY
+  nested('story', 'story.items', 'year', 'slide');
+  G('story').fields.push(...clone(['slide.storyShape']), adj('story', 'POSISI & UKURAN TULISAN LOVE STORY'));
+  // PENUTUP
+  G('closing').fields.push(...clone(['slide.closingMedia']), adj('closing', 'POSISI & UKURAN TULISAN PENUTUP'));
+  // GIFT & RSVP: kolom latar ini dipakai Tema 12 DAN Tema 13 (Tema 13 memakai tampilan Tema 12 untuk bagian ini)
+  ['gift', 'rsvp'].forEach((id) => tag(id, (f) => /^mono\./.test(f.k), 'mono,slide'));
+  [['gift', 'mono.giftBg'], ['rsvp', 'mono.rsvpBg']].forEach(([id, k]) => { const f = G(id).fields.find((x) => x.k === k); if (f) f.l = f.l.replace('khusus Tema 12', 'Tema 12 & Tema 13'); });
+  // ANIMASI & EFEK: hiasan bergerak ini hanya ada di Tema 1-11
+  tag('effects', (f) => /^effects\.(clouds|cloudSpeed|butterflies|butterflyCount|birds|particles|petals|lights|glow|sway|parallax|showTree|javaFx|themedCover)$/.test(f.k), '!mono,slide');
+  // FONT: pilihan font Tema 13 ikut di menu Tema, Warna & Font
+  G('theme').fields.push(...clone(['slide.scriptFont', 'slide.fontFile', 'slide.scriptSize']));
+  tag('theme', (f) => f.k === 'theme.fontScript', '!slide');
+})();
