@@ -187,6 +187,10 @@ const SCHEMA = [
     { k: 'cover.textSpeed', l: 'Kecepatan animasi teks masuk di COVER (semua tema; hanya teks cover, tidak mengubah bagian lain)', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
   ] },
   { id: 'hero', title: 'Pembuka', fields: [
+    { k: 'slide.openMedia', l: 'TEMA 13 — Foto pembuka 1 (slide 2). Kosong = pakai foto cover. Klik "✥ Atur posisi" untuk geser & zoom', t: 'media', ar: '9/19' },
+    { k: 'slide.openMedia2', l: 'TEMA 13 — Foto pembuka 2 (opsional): bergantian otomatis dengan foto 1 setiap ±5 detik', t: 'media', ar: '9/19' },
+    { k: 'slide.openPos', l: 'TEMA 13 — Posisi tulisan nama & tanggal di pembuka', t: 'select', o: [['top', 'Di atas foto'], ['middle', 'Di tengah foto'], ['bottom', 'Di bawah foto']] },
+    { k: 'slide.openNudge', l: 'TEMA 13 — Geser tulisan pembuka menjauhi tepi (minus = mendekati tepi)', t: 'range', min: -20, max: 60, step: 1, unit: '', def: 0 },
     { k: 'mono.frameStyle', l: 'BENTUK PEMBUKA (khusus Tema 12): Kotak / Oval / Bulat / Layar penuh', t: 'select', o: [['rect', 'Kotak — mawar di keempat sudut (bisa foto atau video)'], ['oval', 'Oval — bunga atas & bawah'], ['circle', 'Bulat — lingkaran penuh dengan bunga'], ['full', 'Layar penuh — foto/VIDEO tanpa bingkai, nama di bawah']] },
     { k: 'mono.frameMedia', l: 'VIDEO / foto di dalam bingkai (khusus Tema 12) — unggah video apa saja (.mp4/.mov/.mkv… otomatis dikonversi), atau tempel link YouTube', t: 'media', ar: '636/1007' },
     { k: 'hero.kicker', l: 'Teks kecil', t: 'text' }, { k: 'hero.groom', l: 'Nama pria', t: 'text' }, { k: 'hero.bride', l: 'Nama wanita', t: 'text' },
