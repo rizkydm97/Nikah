@@ -2,7 +2,7 @@
    Alur: sampul foto/video → (buka) → pembuka otomatis (foto + teks) → mempelai pria / wanita (satu slide masing-masing)
    → ayat + hitung mundur → akad / resepsi (foto + gradasi putih di bawah agar teks jelas) → love story, galeri, live,
    gift, RSVP, ucapan memakai tampilan Tema 12 (bersih) → penutup berfoto.
-   Dipakai invitation.js lewat window.SLIDE = { cover, hero, couple, quote, events, closing, open, fx, order, assets, deco, colors }. */
+   Dipakai invitation.js lewat window.SLIDE = { cover, hero, couple, quote, events, story, closing, open, fx, order, assets, deco, colors }. */
 (function () {
   'use strict';
   const M = window.MONO || {};
@@ -192,6 +192,22 @@
       <div class="footer sl-cl-ft">${H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${E(H, o.footer)}</a>` : E(H, o.footer)}</div></div></section>`;
   }
 
+  // ---------- 7. love story: judul → foto lebar penuh (kabut di tepi) → cerita + tahun, dipisah garis vertikal tipis ----------
+  function story(H) {
+    const o = H.C.story || {}, s = sl(H), items = o.items || [], dflt = shapeOf(s.storyShape, '4/5') || '4/5';
+    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht">${chars(H, o.title, 38, 100)}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
+    const chs = items.map((e, i) => {
+      const sh = shapeOf(e.shape, dflt) || dflt, side = i % 2 ? 'r' : 'l';
+      const src = e.image && H.safeUrl(e.image) ? [e, 'image'] : null;
+      return `<div class="sl-s sl-ch${tone(H)}" style="${rv(sh)}">
+        <div class="sl-ch-t">${wipe(H, e.title, 150)}</div>
+        <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f2"></i><i class="sl-sh f"></i></div>
+        <div class="sl-ch-b"><p class="sl-ch-tx">${words(H, e.text, 22, 700)}</p>${e.year ? up('sl-ch-y', 1500, E(H, e.year)) : ''}</div>
+        ${i < items.length - 1 ? '<i class="sl-vl sl-draw sl-vl-e" style="--d:1900ms"></i>' : ''}</div>`;
+    }).join('');
+    return `<section class="sec sl-story" id="s-story">${head}${chs}</section>`;
+  }
+
   // ---------- buka undangan: sampul naik, pembuka (slide 2) langsung tampil otomatis ----------
   function open(X) {
     const { cover: cv, hero: hr, D, instant, unlock, finish, later } = X;
@@ -204,17 +220,39 @@
   }
 
   // ---------- teks & foto tiap slide diputar ulang setiap kali slide masuk layar ----------
-  let io = null;
-  function fx(root) {
+  let io = null, parOff = null;
+  function parallax(on) {
+    if (parOff) { parOff(); parOff = null; }
+    if (!on) return;
+    const els = [...document.querySelectorAll('#app .sl-s .sl-pk, #app .sl-open .sl-pk')]; if (!els.length) return;
+    let raf = 0;
+    const tick = () => {
+      raf = 0; const vh = innerHeight;
+      els.forEach((el) => {
+        const r = el.parentElement.getBoundingClientRect(); if (r.bottom < -80 || r.top > vh + 80) return;
+        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
+        el.style.setProperty('--py', (-p * Math.min(r.height * 0.035, 34)).toFixed(1) + 'px');
+      });
+    };
+    const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
+    parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); };
+  }
+  function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
+    const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const de = document.documentElement;
+    de.dataset.slAnim = ['mist', 'zoom', 'slide', 'fade'].includes(s.animStyle) ? s.animStyle : 'mist';
+    const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
+    parallax(par);
     if (io) { io.disconnect(); io = null; }
     const els = root.querySelectorAll('.sl-s');
-    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches) { els.forEach((e) => e.classList.add('sl-go')); return; }
+    if (!('IntersectionObserver' in window) || rm) { els.forEach((e) => e.classList.add('sl-go')); return; }
     io = new IntersectionObserver((es) => es.forEach((e) => {
       const r = e.intersectionRatio, vh = innerHeight;
-      if (e.isIntersecting && (r >= 0.4 || e.intersectionRect.height >= vh * 0.45)) e.target.classList.add('sl-go');
+      if (e.isIntersecting && (r >= 0.35 || e.intersectionRect.height >= vh * 0.45)) e.target.classList.add('sl-go');
       else if (!e.isIntersecting) e.target.classList.remove('sl-go');
-    }), { threshold: [0, 0.2, 0.4, 0.6] });
+    }), { threshold: [0, 0.2, 0.35, 0.6] });
     els.forEach((e) => io.observe(e));
   }
 
@@ -235,7 +273,7 @@
   }
 
   window.SLIDE = {
-    cover, hero, couple, quote, events, closing, open, fx, order, chars, words,
+    cover, hero, couple, quote, events, story, closing, open, fx, order, chars, words,
     deco: M.deco || {}, colors: M.colors || {}, assets: M.assets || [],
   };
 })();

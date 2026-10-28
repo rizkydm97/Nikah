@@ -1,6 +1,6 @@
 // Skema editor admin. t = tipe field: text | area | url | image | audio | color | select | bool | number | datetime | list
 const F_SERIF = ['Cormorant Infant', 'Cormorant Garamond', 'Playfair Display', 'Lora', 'Libre Baskerville', 'EB Garamond', 'Marcellus', 'Cinzel', 'Alice', 'Abhaya Libre', 'Poppins', 'Montserrat', 'Josefin Sans'];
-const F_SCRIPT = ['Great Vibes', 'Allura', 'Parisienne', 'Pinyon Script', 'Dancing Script'];
+const F_SCRIPT = ['Great Vibes', 'Allura', 'Parisienne', 'Pinyon Script', 'Dancing Script', 'Mrs Saint Delafield', 'Herr Von Muellerhoff', 'Monsieur La Doulaise', 'Allison', 'La Belle Aurore', 'Italianno', 'Whisper'];
 const ANIMS = [
   ['none', 'Tanpa animasi'], ['soft', 'Lembut mewah (naik + blur halus)'], ['fade-in', 'Fade (muncul perlahan)'], ['fade-up', 'Naik dari bawah'], ['fade-down', 'Turun dari atas'],
   ['fade-left', 'Geser dari kiri'], ['fade-right', 'Geser dari kanan'], ['zoom-in', 'Zoom masuk'], ['zoom-out', 'Zoom keluar'],
@@ -140,6 +140,11 @@ const SCHEMA = [
     { k: 'slide.eventNudge', l: 'AKAD & RESEPSI — Geser tulisan menjauhi tepi (layar penuh: dalam % tinggi layar; foto di atas: dalam px)', t: 'range', min: -20, max: 60, step: 1, unit: '', def: 0 },
     { k: 'slide.closingMedia', l: 'PENUTUP — Foto slide penutup (kosong = foto latar / foto penutup di menu Penutup)', t: 'media', ar: '9/19' },
     { k: 'closing.textSpeed', l: 'Kecepatan animasi teks masuk di penutup', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
+    { k: 'slide.scriptFont', l: 'FONT tulisan tangan Tema 13 (nama, judul acara, judul love story). "Mrs Saint Delafield" = gaya tanda tangan tipis seperti referensi', t: 'select', o: [['', 'Ikuti font di menu Tema, Warna & Font'], ['Mrs Saint Delafield', 'Mrs Saint Delafield — tanda tangan tipis (referensi)'], ['Herr Von Muellerhoff', 'Herr Von Muellerhoff — tanda tangan elegan'], ['Monsieur La Doulaise', 'Monsieur La Doulaise — kaligrafi klasik'], ['Allison', 'Allison — tulisan tangan ramping'], ['La Belle Aurore', 'La Belle Aurore — tulisan tangan natural'], ['Great Vibes', 'Great Vibes'], ['Allura', 'Allura'], ['Pinyon Script', 'Pinyon Script'], ['Parisienne', 'Parisienne']] },
+    { k: 'slide.scriptSize', l: 'Ukuran semua tulisan tangan Tema 13 (font tipis tampak kecil — perbesar bila perlu)', t: 'range', min: 70, max: 160, step: 1, unit: '%', def: 100 },
+    { k: 'slide.animStyle', l: 'GAYA ANIMASI foto saat slide masuk', t: 'select', o: [['mist', 'Kabut lembut — foto muncul dari buram menjadi jelas (bawaan)'], ['zoom', 'Zoom pelan'], ['slide', 'Geser dari samping'], ['fade', 'Muncul perlahan (fade)']] },
+    { k: 'slide.parallax', l: 'Efek parallax: foto bergerak lebih lambat dari gulir layar (kesan mengambang seperti referensi)', t: 'bool' },
+    { k: 'slide.storyShape', l: 'LOVE STORY — Bentuk foto tiap cerita (foto lebar penuh, teks di bawah foto). Tiap cerita bisa diatur sendiri di menu Love Story', t: 'select', rr: 1, o: [['4/5', 'Potret 4:5'], ['3/4', 'Potret 3:4'], ['2/3', 'Potret tinggi 2:3'], ['1/1', 'Persegi 1:1'], ['4/3', 'Lanskap 4:3'], ['3/2', 'Lanskap 3:2'], ['16/9', 'Lanskap lebar 16:9']] },
     { k: 'slide.shade', l: 'Gelap-terang bayangan di atas foto (0 = tanpa bayangan, 100 = bawaan, 200 = lebih gelap)', t: 'range', min: 0, max: 200, step: 5, unit: '%', def: 100 },
     { k: 'slide.grayPhoto', l: 'Ubah semua foto/video slide jadi hitam putih (matikan agar foto tampil berwarna)', t: 'bool' },
   ] },
@@ -227,7 +232,7 @@ const SCHEMA = [
   ] },
   { id: 'story', title: 'Love Story', fields: [
     { k: 'story.title', l: 'Judul (tulisan tangan)', t: 'text' }, { k: 'story.bg', l: 'Foto latar (kosongkan untuk pakai langit bawaan)', t: 'image', ar: '9/19', bg: 1 },
-    { k: 'story.items', l: 'Cerita', t: 'list', itemTitle: 'title', addLabel: 'Tambah cerita', fields: [{ k: 'image', l: 'Foto', t: 'image', ar: '4/5' }, { k: 'title', l: 'Judul', t: 'text' }, { k: 'text', l: 'Cerita', t: 'area' }] },
+    { k: 'story.items', l: 'Cerita', t: 'list', itemTitle: 'title', addLabel: 'Tambah cerita', fields: [{ k: 'image', l: 'Foto (Tema 13: klik "✥ Atur posisi" agar wajah pas; bentuk mengikuti pengaturan Tema 13 atau pilih sendiri)', t: 'image', ar: '4/5', arKey: 'slide.storyShape', arOwn: 'shape' }, { k: 'title', l: 'Judul (tulisan tangan)', t: 'text' }, { k: 'year', l: 'Tahun / waktu kecil di bawah cerita (mis. 2021) — khusus Tema 13, boleh kosong', t: 'text' }, { k: 'text', l: 'Cerita', t: 'area' }] },
   ] },
   { id: 'gift', title: 'Wedding Gift', fields: [
     { k: 'mono.giftBg', l: 'Latar Wedding Gift — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/19', bg: 1 },

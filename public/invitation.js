@@ -35,7 +35,7 @@
   }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // font -> [bobot, punya-italic]. Hanya yang punya italic asli diminta italic (hindari italic palsu).
-  const FONTS = { 'Cormorant Infant': ['400;500;600;700', 1], 'Cormorant Garamond': ['400;500;600;700', 1], 'Playfair Display': ['400;500;600;700', 1], 'Lora': ['400;500;600;700', 1], 'Poppins': ['400;500;600;700', 0], 'Libre Baskerville': ['400;700', 1], 'EB Garamond': ['400;500;600;700', 1], 'Marcellus': ['', 0], 'Cinzel': ['400;500;600;700', 0], 'Great Vibes': ['', 0], 'Allura': ['', 0], 'Parisienne': ['', 0], 'Pinyon Script': ['', 0], 'Dancing Script': ['400;500;600;700', 0], 'Alice': ['', 0], 'Abhaya Libre': ['400;500;600;700', 0], 'Montserrat': ['400;500;600;700', 1], 'Amiri': ['400;700', 0], 'Josefin Sans': ['400;500;600;700', 1] };
+  const FONTS = { 'Cormorant Infant': ['400;500;600;700', 1], 'Cormorant Garamond': ['400;500;600;700', 1], 'Playfair Display': ['400;500;600;700', 1], 'Lora': ['400;500;600;700', 1], 'Poppins': ['400;500;600;700', 0], 'Libre Baskerville': ['400;700', 1], 'EB Garamond': ['400;500;600;700', 1], 'Marcellus': ['', 0], 'Cinzel': ['400;500;600;700', 0], 'Great Vibes': ['', 0], 'Mrs Saint Delafield': ['', 0], 'Herr Von Muellerhoff': ['', 0], 'Monsieur La Doulaise': ['', 0], 'Allison': ['', 0], 'La Belle Aurore': ['', 0], 'Italianno': ['', 0], 'Whisper': ['', 0], 'Allura': ['', 0], 'Parisienne': ['', 0], 'Pinyon Script': ['', 0], 'Dancing Script': ['400;500;600;700', 0], 'Alice': ['', 0], 'Abhaya Libre': ['400;500;600;700', 0], 'Montserrat': ['400;500;600;700', 1], 'Amiri': ['400;700', 0], 'Josefin Sans': ['400;500;600;700', 1] };
   const CLOUD_SETS = { jawa: [1, 2, 3, 4].map((i) => `/assets/scene/cloud${i}.webp`), rose: [1, 2, 3, 4].map((i) => `/assets/rose/rose-cloud${i}.webp`) };
   let CLOUDS = CLOUD_SETS.jawa, THEME = 'jawa';
   // tema aktif: gambar dekorasi tema 2 disimpan terpisah (scene2) supaya pindah tema tidak menimpa gambar tema 1
@@ -281,12 +281,15 @@
     r.setProperty('--fDisplay', ff(t.fontDisplay, 'Georgia,serif'));
     r.setProperty('--fHeading', ff(t.fontHeading, 'Georgia,serif'));
     r.setProperty('--fBody', ff(t.fontBody, 'Georgia,serif'));
-    r.setProperty('--fScript', ff(t.fontScript, 'cursive'));
+    const slF = c.theme.preset === 'slide' && c.slide && c.slide.scriptFont ? c.slide.scriptFont : '';
+    const SCF = { 'Mrs Saint Delafield': 1.4, 'Herr Von Muellerhoff': 1.35, 'Monsieur La Doulaise': 1.2, 'Allison': 1.2, 'La Belle Aurore': 1.1, 'Whisper': 1.15 };
+    r.setProperty('--fScript', ff(slF || t.fontScript, 'cursive'));
+    r.setProperty('--sc', String(((SCF[slF || t.fontScript] || 1) * (c.theme.preset === 'slide' ? (parseFloat(c.slide && c.slide.scriptSize) || 100) / 100 : 1)).toFixed(3)));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's'); r.setProperty('--tk', String(sp));
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
-    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, 'Poppins', 'Lora', 'Amiri'])].filter(Boolean).map((n) => {
+    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', 'Poppins', 'Lora', 'Amiri'])].filter(Boolean).map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
       if (!w) return 'family=' + nm;
       const ws = w.split(';');
@@ -1123,6 +1126,7 @@
         ${videoEmbed(o.video)}${galleryBody(o)}</section>`;
     },
     story(c) {
+      if (SL) return window.SLIDE.story(mh());
       const o = c.story;
       return `<section class="sec story" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.scene.sky))}<h2 class="rv script-h">${esc(o.title)}</h2>
         <div class="tl">${(o.items || []).map((s) => `<div class="rv card" data-a="soft"><span class="mk">${ICON.heart}</span><div class="im"><div class="phb">${photo(s, 'image', s.title)}</div></div><div class="tx"><h4>${esc(s.title)}</h4><p>${br(s.text)}</p></div></div>`).join('')}</div>
@@ -1296,7 +1300,7 @@
     const order = (SL ? window.SLIDE.order(cfg.sections) : (cfg.sections || [])).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
     if (MN && window.MONO.fx) { window.MONO.fx($('#app')); window.MONO.closingFx($('#app')); }
-    if (SL) window.SLIDE.fx($('#app'));
+    if (SL) window.SLIDE.fx($('#app'), cfg);
     if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
     $$('#app section').forEach((sec, idx) => {
       if (!sec.id) sec.id = 's-' + order[idx].id;
