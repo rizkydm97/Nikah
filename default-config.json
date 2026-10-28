@@ -388,5 +388,22 @@
     "shade": 100,
     "nameGap": 0,
     "pos": {}
+  },
+  "slide": {
+    "coverMedia": "",
+    "coverPoster": "",
+    "coverLabel": "Wedding Invitation",
+    "coverLoc": "",
+    "coverText": "Teriring rasa syukur dan mengharap ridho Allah Subhanahu Wa Ta'ala, kami mengundang Bapak/Ibu/Sahabat untuk hadir pada acara pernikahan kami.",
+    "openMedia": "",
+    "openMedia2": "",
+    "groomLabel": "Mempelai Pria",
+    "brideLabel": "Mempelai Wanita",
+    "quoteMedia": "",
+    "akadMedia": "",
+    "resepsiMedia": "",
+    "closingMedia": "",
+    "shade": 100,
+    "grayPhoto": false
   }
 }

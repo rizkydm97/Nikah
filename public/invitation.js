@@ -18,7 +18,7 @@
     root.style.removeProperty('--tk'); root.removeAttribute('data-ts');
     const m = TSPD[v]; if (!m || reduce) return;
     const mark = (e) => { if (e.dataset.ts) return; e.dataset.ts = '1'; e.style.setProperty('--dur', m + 's'); e.style.setProperty('--tk', String(m)); };
-    if (root.classList.contains('mono') || root.classList.contains('mono-hero') || root.classList.contains('mn-closing')) { mark(root); return; } // Tema 12: seluruh teks diatur lewat --tk
+    if (root.classList.contains('mono') || root.classList.contains('mono-hero') || root.classList.contains('mn-closing') || root.classList.contains('slcv') || root.classList.contains('sl-open') || root.classList.contains('sl-closing')) { mark(root); return; } // Tema 12: seluruh teks diatur lewat --tk
     const own = (e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
     $$('*', root).forEach((e) => {
       if (/^(SCRIPT|STYLE)$/.test(e.tagName) || !own(e)) return;
@@ -47,10 +47,10 @@
     rose: { floralTop: '/assets/rose/rose-top.webp', floralBottom: '/assets/rose/rose-bottom.webp', column: '/assets/rose/rose-column.webp', frameArc: '/assets/rose/rose-frame-arc.webp', frameSide: '/assets/rose/rose-frame-side.webp', flowers: '/assets/rose/rose-bouquet.webp' },
   };
   const FL_FILE = { floralTop: 'top', floralBottom: 'bottom', column: 'column', frameArc: 'frame-arc', frameSide: 'frame-side', flowers: 'bouquet' };
-  let PAL = 'auto', PT = null, PICT = null, MN = false; // PT = data tema bergambar (Tema 3-8)
+  let PAL = 'auto', PT = null, PICT = null, MN = false, SL = false; // PT = data tema bergambar (Tema 3-8)
   function effective(cfg) {
     const pre = cfg.theme && cfg.theme.preset;
-    PT = (window.PIC_THEMES && window.PIC_THEMES[pre]) || null; PICT = PT ? pre : null; MN = !!(window.MONO && pre === 'mono');
+    PT = (window.PIC_THEMES && window.PIC_THEMES[pre]) || null; PICT = PT ? pre : null; MN = !!(window.MONO && (pre === 'mono' || pre === 'slide')); SL = !!(window.SLIDE && MN && pre === 'slide');
     THEME = PT ? PT.base : pre === 'rose' ? 'rose' : 'jawa';
     CLOUDS = CLOUD_SETS[THEME];
     const out = THEME === 'rose' ? Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene, cfg.scene2 || {}) }) : Object.assign({}, cfg, { scene: Object.assign({}, cfg.scene) });
@@ -171,7 +171,7 @@
 
   // ---------- pembuka layar penuh: foto / video (cover.loaderMedia; Tema 12 otomatis memakai media cover) ----------
   function loaderMedia(c) {
-    const m = c.mono || {};
+    const m = SL && c.slide && safeUrl(c.slide.coverMedia) ? c.slide : (c.mono || {});
     const u = safeUrl(c.cover.loaderMedia) || (MN ? (safeUrl(m.coverMedia) || (safeUrl(c.cover.photo) && !/\/assets\/default\//.test(c.cover.photo) ? safeUrl(c.cover.photo) : '')) : '');
     if (!u) return '';
     const yt = (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
@@ -251,7 +251,7 @@
     const cap = new Promise((r) => setTimeout(r, 15000)); // batas tunggu untuk jaringan sangat lambat (dulu 7 dtk -> gambar menyusul setelah dibuka)
     // video: sampul didahulukan (harus siap ~3 dtk di buffer), video bingkai menyusul (tidak berebut bandwidth); batas tunggu 12 dtk
     const coverV = vids.filter((v) => v.closest('#cover')), frameV = vids.filter((v) => !v.closest('#cover'));
-    const poster = safeUrl((c.mono || {}).coverPoster);
+    const poster = safeUrl(SL && c.slide && c.slide.coverMedia ? c.slide.coverPoster : (c.mono || {}).coverPoster);
     if (poster) urls.push(poster);
     // SEMUA gambar undangan (galeri, cerita, mempelai, penutup, latar, bingkai, hiasan tema) dimuat & di-decode DI SINI,
     // sehingga begitu tamu menekan "Buka Undangan" tidak ada gambar yang menyusul/telat muncul.
@@ -305,7 +305,7 @@
       let d = PAL === 'auto' || PAL === nat || PAL_HUE[PAL] === undefined ? 0 : (PAL_HUE[PAL] - PAL_HUE[nat]) * 360; d = ((d + 540) % 360) - 180;
       r.setProperty('--hr', d.toFixed(1) + 'deg'); r.setProperty('--hs', d !== 0 && PAL === 'champagne' ? '.5' : '1');
       document.body.classList.toggle('hued', !!PT && d !== 0); }
-    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-mono', MN); b.toggle('mono-gray', MN && !!(c.mono && c.mono.grayPhoto === true)); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
+    b.toggle('t-rose', THEME === 'rose'); b.toggle('t-jawa', THEME !== 'rose'); b.toggle('t-pic', !!PT); b.toggle('t-mono', MN); b.toggle('t-slide', SL); document.documentElement.classList.toggle('h-slide', SL); b.toggle('mono-gray', MN && !!(c.mono && c.mono.grayPhoto === true)); b.toggle('t-dark', !!(PT && PT.dark)); Object.keys(window.PIC_THEMES || {}).forEach((k) => b.toggle('t-' + k, PICT === k));
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
     // saklar animasi (admin → Animasi & Efek); kosong/true = menyala
     ['birds', 'particles', 'lights'].forEach((k) => b.toggle('no' + k, c.effects[k] === false));
@@ -1068,6 +1068,7 @@
 
   const R = {
     hero(c) {
+      if (SL) return window.SLIDE.hero(mh());
       if (MN) return window.MONO.hero(mh());
       if (PT) return picHero(c);
       const h = c.hero;
@@ -1078,6 +1079,7 @@
         <div class="scroll-hint"></div></section>`;
     },
     quote(c) {
+      if (SL) return window.SLIDE.quote(mh());
       const o = c.quote, l = o.labels;
       // ayat Arab: kolom sendiri di admin; bila kosong, baris berhuruf Arab di teks ayat dipisahkan otomatis
       const isAr = (s) => { const a = (s.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g) || []).length, t = (s.match(/[A-Za-z\u0600-\u06FF\uFB50-\uFEFF]/g) || []).length; return a > 0 && a >= t * 0.5; };
@@ -1094,12 +1096,14 @@
         <div class="rv gpanel"><p>${br(o.text)}</p>${safeUrl(o.photo) ? `<div class="circ"><div class="phb">${photo(o, 'photo')}</div></div>` : ''}</div></section>`;
     },
     couple(c) {
+      if (SL) return window.SLIDE.couple(mh());
       const o = Object.assign({}, c.couple, THEME === 'rose' && safeUrl(c.scene.flowers) ? { flower: c.scene.flowers } : {});
       const p = (x, side) => `<div class="person">${PT && window.CINEMA && window.CINEMA.has(PICT) ? window.CINEMA.pframe(PICT, photo(x, 'photo', x.fullName), side, safeUrl(o.flower) || PT.deco.flowers) : `<div class="pho-w"><div class="rv pho" data-a="zoom-in" style="--i:2"><div class="phb">${photo(x, 'photo', x.fullName)}</div></div>${safeUrl(o.flower) ? `<img class="rv fl-acc" data-a="bloom" style="--i:4" src="${link(o.flower)}" alt="">` : ''}</div>
         `}<div class="rv script" data-a="soft" style="--i:6">${esc(x.script)}</div><div class="rv fn" data-a="soft" style="--i:7">${esc(x.fullName)}</div><div class="rv par" data-a="soft" style="--i:8">${esc(x.parents)}</div>${safeUrl(x.instagram) ? `<a class="rv btn pill" data-a="soft" style="--i:9" href="${link(x.instagram)}" target="_blank" rel="noopener">${ICON.ig}${esc(o.instagramLabel)}</a>` : ''}</div>`;
       return `<section class="sec paperbg couple">${bgl(o, 'bg')}<div class="rv cpanel" data-a="soft" style="--i:0">${p(o.groom, 'l')}<div class="rv amp" data-a="zoom-in" style="--i:2">${esc(o.connector)}</div>${p(o.bride, 'r')}</div></section>`;
     },
     events(c) {
+      if (SL) return window.SLIDE.events(mh());
       const o = c.events, orn = safeUrl(c.scene.ornament);
       const cards = (o.items || []).map((e) => capsule('evcap', `${orn ? `<img class="orn" src="${link(orn)}" alt="">` : ''}<h3>${esc(e.title)}</h3>
         ${heartDiv}<div class="date">${esc(e.date)}</div><div class="time">${esc(e.time)}</div>${ICON.pin}
@@ -1160,6 +1164,7 @@
     closing(c) {
       const o = c.closing, s = c.scene;
       const half = (src, i) => `<div class="half l rv" data-a="bloom-l" style="--i:${i}">${fimg(src)}</div><div class="half r rv" data-a="bloom-r" style="--i:${i}">${fimg(src)}</div>`;
+      if (SL) return window.SLIDE.closing(mh());
       if (MN) { // Tema 12: penutup berkesan tapi tetap elegan (hitam putih, hanya transform/opacity)
         const M = window.MONO, hh = { esc };
         const stars = [[15, 21], [85, 17], [9, 47], [91, 55], [21, 73], [80, 78], [50, 9]].map((p, i) => `<i class="mc-st" style="left:${p[0]}%;top:${p[1]}%;--sd:${(i * 0.9).toFixed(1)}s"></i>`).join('');
@@ -1259,8 +1264,9 @@
     return '';
   }
 
-  const mh = () => ({ C, esc, safeUrl, guest, icon: ICON.mail, alt: C.cover.names, adj: (o, k) => adjStyle(adj(o, k)) });
+  const mh = () => ({ C, esc, safeUrl, guest, icon: ICON.mail, alt: C.cover.names, adj: (o, k) => adjStyle(adj(o, k)), ICON, br, link });
   function coverHtml(c) {
+    if (SL) return window.SLIDE.cover(mh());
     if (MN) return window.MONO.cover(mh());
     if (PT) return picCover(c);
     const o = c.cover, ratio = /^\d+(\.\d+)?\/\d+(\.\d+)?$/.test(o.photoRatio || '') ? o.photoRatio : '16/9';
@@ -1287,9 +1293,10 @@
     observers.forEach((o) => o.disconnect()); observers = [];
     clearInterval(cdsTimer);
     applyTheme(cfg);
-    const order = (cfg.sections || []).filter((s) => s.enabled && R[s.id]);
+    const order = (SL ? window.SLIDE.order(cfg.sections) : (cfg.sections || [])).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
     if (MN && window.MONO.fx) { window.MONO.fx($('#app')); window.MONO.closingFx($('#app')); }
+    if (SL) window.SLIDE.fx($('#app'));
     if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
     $$('#app section').forEach((sec, idx) => {
       if (!sec.id) sec.id = 's-' + order[idx].id;
@@ -1311,7 +1318,7 @@
       }
       if (PT) picFlyers($('#cover .flyers'), Math.min(Math.max(+C.effects.butterflyCount || 0, 0), 5)); else if (!MN) setupButterflies($('#cover .flyers'));
       if (PREVIEW && q.has('cover') && inited) $('#cover').classList.add('play', 'shown', 'instant');
-      if (PREVIEW && MN && window.MONO.drag) window.MONO.drag($('#cover'), (cfg.mono || {}).pos, (pos) => { try { parent.postMessage({ type: 'mnpos', pos }, location.origin); } catch (e) { /* abaikan */ } });
+      if (PREVIEW && MN && !SL && window.MONO.drag) window.MONO.drag($('#cover'), (cfg.mono || {}).pos, (pos) => { try { parent.postMessage({ type: 'mnpos', pos }, location.origin); } catch (e) { /* abaikan */ } });
     }
     applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
     bind(cfg);
@@ -1332,6 +1339,7 @@
     const unlock = () => { document.documentElement.classList.remove('locked'); document.body.classList.remove('locked'); window.scrollTo(0, 0); };
     const heroIn = () => { if (hero) { hero.classList.remove('pre'); hero.classList.add('play'); setupButterflies($('.flyers', hero), { sweep: true }); } };
     const finish = () => { startObserver(); parallax(); petals(); };
+    if (SL && hero) { window.SLIDE.open({ cover, hero, D: sp, instant: instant || !C.effects.openZoom || reduce, unlock, finish, later }); return; }
     if (MN && hero) { window.MONO.open({ cover, hero, D: sp, instant: instant || !C.effects.openZoom || reduce, unlock, finish, later }); return; }
     if (PT && hero) { picOpen(instant || !C.effects.openZoom || reduce, cover, hero, unlock, finish); return; }
     if (instant || !C.effects.openZoom || reduce || !hero) {
@@ -1437,7 +1445,7 @@
     rv.forEach((r) => { r.style.transition = ''; }); later(() => rv.forEach((r) => r.classList.add('in')), 90);
   }
   function gotoSection(id) {
-    const map = { scene: 'hero', scene2: 'hero', mono: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
+    const map = { scene: 'hero', scene2: 'hero', mono: 'hero', slide: 'hero', effects: 'hero', theme: 'hero', general: 'hero', sections: 'hero', 'd-wishes': 'wishes', 'd-rsvp': 'rsvp', 'd-gifts': 'gift' };
     const el = $('#s-' + (map[id] || id)); if (!el) return;
     const y = el.getBoundingClientRect().top + scrollY;
     scrollTo({ top: Math.max(0, y - 6), behavior: 'smooth' });

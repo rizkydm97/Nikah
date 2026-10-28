@@ -257,3 +257,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Admin → Cover → "Posisi teks cover"**: susunan nama (bertingkat / tengah / kiri / kanan / satu baris), posisi naik-turun nama, ukuran nama, posisi teks kecil atas, posisi blok bawah (tanggal, tamu, tombol), dan kekuatan bayangan gelap di atas foto. Pratinjau langsung ikut berubah; tombol **Reset** mengembalikan ke bawaan.
 - **Loader memuat SEMUA gambar** (galeri, cerita, mempelai, penutup, latar, bingkai, hiasan Tema 12) + `decode()` sebelum tombol "Buka Undangan" muncul, sehingga tidak ada gambar yang menyusul setelah undangan dibuka. Batas tunggu loader 7 dtk → 15 dtk.
 - File berubah: `public/mono.js`, `public/mono.css`, `public/invitation.js`, `public/admin/{admin,schema}.js`, `public/admin/index.html`, `default-config.json`, `lib/index.template.html`.
+
+## Tema 13 — Slide Foto
+- Admin → **Tema, Warna & Font → Tema undangan → Tema 13**, lalu isi foto di menu **Tema 13 Slide Foto** (Pengaturan Lanjutan).
+- Alur: sampul foto/video → klik Buka → pembuka otomatis (1–2 foto bergantian + teks masuk) → mempelai pria & wanita (satu slide masing-masing, foto dari menu Mempelai) → ayat + hitung mundur → akad & resepsi (foto per-acara di menu Acara, gradasi putih di bawah) → love story, galeri, live, gift, RSVP, ucapan (tampilan Tema 12) → penutup berfoto.
+- Teks & foto setiap slide diputar ulang tiap kali slide masuk layar. Urutan bagian di tema ini tetap; bagian yang dimatikan tetap dilewati.

@@ -15,12 +15,13 @@ module.exports = async (req, res) => {
     .replace('<meta name="theme-color" content="#AD2940">', `<meta name="theme-color" content="${attr(config.theme.primary)}">`);
   // Tema 12 (Monokrom): warna awal putih/abu sejak byte pertama — tanpa kilatan krem & bilah browser ikut putih
   let out = html;
-  if (config.theme && config.theme.preset === 'mono') {
-    out = out.replace('<body class="locked">', '<body class="locked t-mono">')
+  if (config.theme && (config.theme.preset === 'mono' || config.theme.preset === 'slide')) {
+    const sld = config.theme.preset === 'slide';
+    out = out.replace('<body class="locked">', `<body class="locked t-mono${sld ? ' t-slide' : ''}">`)
       .replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#ffffff">')
       .replace('</head>', '<style>html,body{background:#e6e6e6}#loader{background:#fff!important}</style></head>');
     // foto cover mulai diunduh sejak byte pertama (paralel dengan skrip & konfigurasi), bukan menunggu JS jalan
-    const m = config.mono || {}, c = config.cover || {};
+    const m = sld && config.slide && config.slide.coverMedia ? config.slide : (config.mono || {}), c = config.cover || {};
     const ok = (u) => /^(https?:\/\/|\/(?!\/))/i.test(String(u || '')) && !/\.(mp4|webm|mov|m4v|mkv)(\?|#|$)|youtu/i.test(String(u));
     const pre = [m.coverMedia, m.coverPoster, m.coverMedia ? '' : (/\/assets\/default\//.test(c.photo || '') ? '' : c.photo), c.loaderLogo].filter(ok);
     if (pre.length) out = out.replace('</head>', [...new Set(pre)].slice(0, 3).map((u) => `<link rel="preload" as="image" href="${attr(u)}" fetchpriority="high">`).join('') + '</head>');

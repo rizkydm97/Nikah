@@ -130,7 +130,7 @@ const NAV = [
   ['Data Tamu', [['d-rsvp', '📋', 'Kehadiran (RSVP)'], ['d-wishes', '📝', 'Ucapan Tamu'], ['d-gifts', '💳', 'Konfirmasi Gift'], ['links', '🔗', 'Buat Link Tamu']]],
   ['Pengaturan Lanjutan (opsional)', [
     ['livingfx', '🌿', 'Sampul & Suasana Hidup'], ['scrollfx', '🖱️', 'Efek Scroll'], ['soundfx', '🔊', 'Suara & Sentuhan'],
-    ['scene', '🏡', 'Gambar Tema 1'], ['scene2', '🌹', 'Gambar Tema 2'], ['mono', '◐', 'Tema 12 Hitam Putih'],
+    ['scene', '🏡', 'Gambar Tema 1'], ['scene2', '🌹', 'Gambar Tema 2'], ['mono', '◐', 'Tema 12 Hitam Putih'], ['slide', '🎞️', 'Tema 13 Slide Foto'],
   ], true],
   ['Lainnya', [['security', '🔒', 'Keamanan & Cadangan']]],
 ];

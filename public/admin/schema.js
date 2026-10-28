@@ -25,7 +25,7 @@ const SCHEMA = [
     { k: 'general.blockRightClick', l: 'Matikan klik kanan', t: 'bool' },
   ] },
   { id: 'theme', title: 'Tema, Warna & Font', hint: 'Pilih tema tampilan. Isi undangan (nama, acara, foto, rekening, RSVP) tetap sama — hanya desain, animasi & dekorasi yang berganti.', fields: [
-    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan'], ['dayak', 'Tema 9 — Dayak: Kerajaan Malinau (tameng 3D, penari, enggang)'], ['airterjun', 'Tema 10 — Ungu Adat Jawa (joglo, air terjun berkabut, gunungan, melati, penjor)'], ['istana', 'Tema 11 — Adat Jawa (joglo, gunungan, gong, mega mendung)'], ['mono', 'Tema 12 — Monokrom: hitam putih, bersih & ringan (foto/video, bingkai oval)']], preset: 1 },
+    { k: 'theme.preset', l: 'Tema undangan', t: 'select', o: [['jawa', 'Tema 1 — Jawa Merah (rumah joglo)'], ['rose', 'Tema 2 — Rose Garden (gapura & mawar pink)'], ['bali', 'Tema 3 — Nusantara: Candi Bali & air terjun'], ['princess', 'Tema 4 — Princess: kastil & taman mawar'], ['emas', 'Tema 5 — Jawa Emas: senja, gazebo & air terjun'], ['biru', 'Tema 6 — Biru: air terjun malam berbintang'], ['rimba', 'Tema 7 — Kerajaan Rimba Bulan'], ['klasik', 'Tema 8 — Jawa Klasik: joglo, candi & gamelan'], ['dayak', 'Tema 9 — Dayak: Kerajaan Malinau (tameng 3D, penari, enggang)'], ['airterjun', 'Tema 10 — Ungu Adat Jawa (joglo, air terjun berkabut, gunungan, melati, penjor)'], ['istana', 'Tema 11 — Adat Jawa (joglo, gunungan, gong, mega mendung)'], ['mono', 'Tema 12 — Monokrom: hitam putih, bersih & ringan (foto/video, bingkai oval)'], ['slide', 'Tema 13 — Slide Foto: tiap bagian satu slide berfoto (mempelai, akad, resepsi, penutup)']], preset: 1 },
     { k: 'theme.palette', l: 'Tema warna — klik salah satu; warna tulisan, tombol, latar & bunga ikut berganti', t: 'palette' },
     { k: 'theme.primary', l: 'Warna utama (judul)', t: 'color' }, { k: 'theme.accent', l: 'Warna tombol', t: 'color' }, { k: 'theme.rose', l: 'Warna merah muda (kartu Wedding Gift)', t: 'color' },
     { k: 'theme.gold', l: 'Warna emas (garis lengkung cover & penutup)', t: 'color' }, { k: 'theme.paper', l: 'Warna latar kertas', t: 'color' },
@@ -111,6 +111,26 @@ const SCHEMA = [
     { k: 'mono.rsvpBg', l: 'Latar RSVP — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/16', bg: 1 },
     { k: 'mono.grayPhoto', l: 'Ubah foto/video jadi hitam putih (biarkan mati agar foto tampil berwarna; hanya tampilan undangan yang hitam putih)', t: 'bool' },
   ] },
+  { id: 'slide', title: 'Tema 13 — Slide Foto', hint: 'Dipakai bila "Tema undangan" = Tema 13. Tiap bagian jadi satu slide layar penuh: sampul → pembuka otomatis → mempelai pria & wanita → ayat + hitung mundur → akad → resepsi → love story, galeri, live, gift, RSVP, ucapan → penutup. Foto/video boleh JPG/PNG/MP4/link YouTube. Urutan bagian di tema ini tetap mengikuti alur referensi (bagian yang dimatikan di menu Urutan & Tampil Section dilewati). Foto mempelai diisi di menu Mempelai; foto tiap acara di menu Acara.', fields: [
+    { k: 'slide.coverMedia', l: 'Foto / video cover (layar penuh)', t: 'media', ar: '9/19' },
+    { k: 'slide.coverPoster', l: 'Poster video cover — FOTO yang langsung tampil sambil video diunduh (kecil saja, <300KB)', t: 'image' },
+    { k: 'slide.coverLabel', l: 'Teks tengah di baris atas cover (mis. Wedding Invitation)', t: 'text' },
+    { k: 'slide.coverLoc', l: 'Lokasi di pojok kanan atas cover (mis. Jakarta; kosongkan = tanpa lokasi)', t: 'text' },
+    { k: 'slide.coverText', l: 'Kalimat undangan di bawah nama tamu pada cover', t: 'area' },
+    { k: 'cover.textSpeed', l: 'Kecepatan animasi teks masuk di cover', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
+    { k: 'slide.openMedia', l: 'Foto / video slide pembuka (slide 2, tampil otomatis setelah klik Buka Undangan). Kosong = pakai foto cover', t: 'media', ar: '9/19' },
+    { k: 'slide.openMedia2', l: 'Foto kedua pembuka (opsional): bergantian otomatis dengan foto pertama', t: 'media', ar: '9/19' },
+    { k: 'hero.textSpeed', l: 'Kecepatan animasi teks masuk di pembuka', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
+    { k: 'slide.groomLabel', l: 'Label kecil di atas slide mempelai pria (kosongkan = tanpa label)', t: 'text' },
+    { k: 'slide.brideLabel', l: 'Label kecil di atas slide mempelai wanita (kosongkan = tanpa label)', t: 'text' },
+    { k: 'slide.quoteMedia', l: 'Foto slide ayat + hitung mundur (kosong = foto latar ayat / foto cover)', t: 'media', ar: '9/16' },
+    { k: 'slide.akadMedia', l: 'Foto slide acara pertama (Akad) bila foto per-acara di menu Acara kosong', t: 'media', ar: '9/19' },
+    { k: 'slide.resepsiMedia', l: 'Foto slide acara kedua (Resepsi) bila foto per-acara di menu Acara kosong', t: 'media', ar: '9/19' },
+    { k: 'slide.closingMedia', l: 'Foto slide penutup (kosong = foto latar / foto penutup di menu Penutup)', t: 'media', ar: '9/19' },
+    { k: 'closing.textSpeed', l: 'Kecepatan animasi teks masuk di penutup', t: 'select', o: [['', 'Ikuti pengaturan umum (Animasi & Efek)'], ['vslow', 'Sangat pelan'], ['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat'], ['vfast', 'Sangat cepat']] },
+    { k: 'slide.shade', l: 'Gelap-terang bayangan di atas foto (0 = tanpa bayangan, 100 = bawaan, 200 = lebih gelap)', t: 'range', min: 0, max: 200, step: 5, unit: '%', def: 100 },
+    { k: 'slide.grayPhoto', l: 'Ubah semua foto/video slide jadi hitam putih (matikan agar foto tampil berwarna)', t: 'bool' },
+  ] },
   { id: 'scene2', title: 'Dekorasi Tema 2 (Rose Garden)', hint: 'Gambar khusus Tema 2. Dipakai bila "Tema undangan" = Tema 2. Ganti dengan PNG/WebP/SVG transparan bila ingin.', fields: [
     { k: 'scene2.sky', l: 'Latar langit pink', t: 'image', deco: 1 },
     { k: 'scene2.house', l: 'Gapura klasik (tengah)', t: 'image', deco: 1 },
@@ -174,7 +194,8 @@ const SCHEMA = [
     { k: 'events.bg', l: 'Foto latar', t: 'image', ar: '9/19', bg: 1 }, { k: 'events.title', l: 'Judul', t: 'text' }, { k: 'events.intro', l: 'Teks pengantar', t: 'area' }, { k: 'events.mapLabel', l: 'Teks tombol peta', t: 'text' },
     { k: 'events.items', l: 'Daftar acara', t: 'list', itemTitle: 'title', addLabel: 'Tambah acara', fields: [
       { k: 'title', l: 'Nama acara', t: 'text' }, { k: 'date', l: 'Tanggal', t: 'text' }, { k: 'time', l: 'Jam', t: 'text' },
-      { k: 'place', l: 'Nama tempat', t: 'text' }, { k: 'address', l: 'Alamat', t: 'area' }, { k: 'mapUrl', l: 'Link Google Maps', t: 'url' }] },
+      { k: 'place', l: 'Nama tempat', t: 'text' }, { k: 'address', l: 'Alamat', t: 'area' }, { k: 'mapUrl', l: 'Link Google Maps', t: 'url' },
+      { k: 'photo', l: 'Foto slide acara ini — khusus Tema 13 (kosong = foto Tema 13 di menu Tema 13)', t: 'image', ar: '9/19' }] },
   ] },
   { id: 'live', title: 'Live Streaming', fields: [
     { k: 'live.bg', l: 'Foto latar', t: 'image', ar: '1/1.1', bg: 1 }, { k: 'live.title', l: 'Judul', t: 'text' }, { k: 'live.text', l: 'Teks', t: 'area' },
@@ -231,6 +252,7 @@ const THEME_PRESETS = {
   klasik: { palette: 'auto', primary: '#6B3E16', accent: '#8A5422', rose: '#8A5422', gold: '#B88A3E', paper: '#F8F1E6', ink: '#2C1A0B', body: '#47321F', sideBg: '#EBDFCC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   dayak: { palette: 'auto', primary: '#9A2A1E', accent: '#B8341F', rose: '#B8341F', gold: '#C99A3C', paper: '#FBF4E8', ink: '#1E120C', body: '#3E2A1E', sideBg: '#EFE2CC', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
   airterjun: { palette: 'auto', primary: '#6B4A8A', accent: '#8E6BB0', rose: '#B4503E', gold: '#C9A27A', paper: '#F7F1FB', ink: '#2E2140', body: '#4A3B5C', sideBg: '#E6DDF0', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
+  slide: { palette: 'auto', primary: '#111111', accent: '#111111', rose: '#222222', gold: '#8c8c8c', paper: '#ffffff', ink: '#111111', body: '#3d3d3d', sideBg: '#e6e6e6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cormorant Garamond', fontBody: 'Poppins', fontScript: 'Great Vibes' },
   mono: { palette: 'auto', primary: '#111111', accent: '#111111', rose: '#222222', gold: '#8c8c8c', paper: '#ffffff', ink: '#111111', body: '#3d3d3d', sideBg: '#e6e6e6', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cormorant Garamond', fontBody: 'Poppins', fontScript: 'Great Vibes' },
   istana: { palette: 'auto', primary: '#8A3A12', accent: '#B8561E', rose: '#B8561E', gold: '#C99A3C', paper: '#FFF6E4', ink: '#3A1D0C', body: '#5A3A22', sideBg: '#F1DDB4', fontDisplay: 'Cormorant Garamond', fontHeading: 'Cinzel', fontBody: 'Cormorant Garamond', fontScript: 'Great Vibes' },
 };
