@@ -125,3 +125,36 @@
   const NATIVE_COL = {"bali":{"primary":"#8A5A1E","accent":"#A0702A","rose":"#A0702A","gold":"#B8913F","paper":"#FBF6EC","ink":"#3A2610","body":"#4D3A26","sideBg":"#EFE6D6"},"princess":{"primary":"#B4536D","accent":"#C0607A","rose":"#C0607A","gold":"#B8955A","paper":"#FDF3F4","ink":"#4A2530","body":"#5A3A42","sideBg":"#F6E4E7"},"emas":{"primary":"#9A6B1F","accent":"#B07F2C","rose":"#B07F2C","gold":"#C9A250","paper":"#FBF5E8","ink":"#3A2A12","body":"#4F4027","sideBg":"#EEE4CF"},"biru":{"primary":"#2F4C7A","accent":"#3E5F92","rose":"#3E5F92","gold":"#B9A06A","paper":"#F2F5FA","ink":"#16243B","body":"#36445A","sideBg":"#E2E8F1"},"rimba":{"primary":"#1F5560","accent":"#2B6A73","rose":"#2B6A73","gold":"#C8A24E","paper":"#F1F5F4","ink":"#0E2328","body":"#2E4247","sideBg":"#DEE8E6"},"klasik":{"primary":"#6B3E16","accent":"#8A5422","rose":"#8A5422","gold":"#B88A3E","paper":"#F8F1E6","ink":"#2C1A0B","body":"#47321F","sideBg":"#EBDFCC"},"dayak":{"primary":"#9A2A1E","accent":"#B8341F","rose":"#B8341F","gold":"#C99A3C","paper":"#FBF4E8","ink":"#1E120C","body":"#3E2A1E","sideBg":"#EFE2CC"},"airterjun":{"primary":"#6B4A8A","accent":"#8E6BB0","rose":"#B4503E","gold":"#C9A27A","paper":"#F7F1FB","ink":"#2E2140","body":"#4A3B5C","sideBg":"#E6DDF0"},"istana":{"primary":"#8A3A12","accent":"#B8561E","rose":"#B8561E","gold":"#C99A3C","paper":"#FFF6E4","ink":"#3A1D0C","body":"#5A3A22","sideBg":"#F1DDB4"}};
   for (const k in NATIVE_COL) if (window.PIC_THEMES[k]) window.PIC_THEMES[k].colors = NATIVE_COL[k];
 })();
+
+/* v13: cadangan untuk HP/WebView lama (tanpa cqw, cqh, color-mix): angka dihitung lewat JS, dipakai CSS lewat var(--cw/--ch/--prgb) */
+(function () {
+  var r = document.documentElement, last = '', raf = 0;
+  function dims() {
+    var a = document.getElementById('app'), w = (a && a.clientWidth) || Math.min(window.innerWidth, 480);
+    r.style.setProperty('--cw', (w / 100) + 'px');
+    r.style.setProperty('--ch', (window.innerHeight / 100) + 'px');
+  }
+  function paper() {
+    try {
+      var v = getComputedStyle(document.getElementById('app') || r).getPropertyValue('--paper').trim(); if (!v) return;
+      var d = document.createElement('i'); d.style.cssText = 'display:none;color:' + v; document.body.appendChild(d);
+      var m = /(\d+)[^\d]+(\d+)[^\d]+(\d+)/.exec(getComputedStyle(d).color); d.parentNode.removeChild(d);
+      if (m) { var c = m[1] + ',' + m[2] + ',' + m[3]; if (c !== last) { last = c; r.style.setProperty('--prgb', c); } }
+    } catch (e) {}
+  }
+  function all() { raf = 0; dims(); paper(); }
+  function q() { if (!raf) raf = requestAnimationFrame(all); }
+  all();
+  addEventListener('resize', q); addEventListener('orientationchange', q); addEventListener('load', q);
+  try { new MutationObserver(function () { paper(); }).observe(r, { attributes: true, attributeFilter: ['style'] }); } catch (e) {}
+  var t = 0, iv = setInterval(function () { all(); if (++t > 12) clearInterval(iv); }, 400);
+})();
+
+/* v14: pembantu satuan untuk nilai yang ditulis lewat JS (geser/ukuran dari admin). Browser lama tanpa cqw/cqh memakai --cw/--ch. */
+(function () {
+  var ok = false; try { ok = !!(window.CSS && CSS.supports && CSS.supports('width', '1cqw')); } catch (e) {}
+  window.CQ = {
+    w: function (n) { return ok ? n + 'cqw' : 'calc(var(--cw,4.2px)*' + n + ')'; },
+    h: function (n) { return ok ? n + 'cqh' : 'calc(var(--ch,7px)*' + n + ')'; }
+  };
+})();

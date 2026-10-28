@@ -5,6 +5,7 @@
 (function () {
   'use strict';
   const A = '/assets/mono/';
+  const CQ = window.CQ || { w: (n) => n + 'cqw', h: (n) => n + 'cqh' };
   const VID = /\.(mp4|webm|mov|m4v)(\?|#|$)/i;
   const ytId = (u) => (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/) || [])[1];
 
@@ -48,8 +49,8 @@
     const num = (v, d, lo, hi) => { const n = (v === '' || v == null) ? NaN : +v; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
     const al = ['center', 'left', 'right', 'one'].includes(m.nameAlign) ? m.nameAlign : 'stagger';
     const P = m.pos && typeof m.pos === 'object' ? m.pos : {};
-    const pv = ['a', 'm', 'b', 'k', 'o'].map((id) => { const p = P[id] || {}, x = num(p.x, 0, -100, 100), y = num(p.y, 0, -100, 100); return x || y ? `--${id}x:${x}cqw;--${id}y:${y}cqh` : ''; }).filter(Boolean).join(';');
-    const vars = `--ng:${num(m.nameGap, 0, -60, 100) / 100}em;${pv ? pv + ';' : ''}--nmY:${num(m.nameY, 15, 0, 80)}cqh;--nmS:${num(m.nameSize, 100, 40, 140) / 100};--kY:${num(m.kickerY, 7.5, 1, 85)}cqh;--bY:${num(m.bottomY, 5.5, 1, 60)}cqh;--shd:${num(m.shade, 100, 0, 200) / 100}`;
+    const pv = ['a', 'm', 'b', 'k', 'o'].map((id) => { const p = P[id] || {}, x = num(p.x, 0, -100, 100), y = num(p.y, 0, -100, 100); return x || y ? `--${id}x:${CQ.w(x)};--${id}y:${CQ.h(y)}` : ''; }).filter(Boolean).join(';');
+    const vars = `--ng:${num(m.nameGap, 0, -60, 100) / 100}em;${pv ? pv + ';' : ''}--nmY:${CQ.h(num(m.nameY, 15, 0, 80))};--nmS:${num(m.nameSize, 100, 40, 140) / 100};--kY:${CQ.h(num(m.kickerY, 7.5, 1, 85))};--bY:${CQ.h(num(m.bottomY, 5.5, 1, 60))};--shd:${num(m.shade, 100, 0, 200) / 100}`;
     return `<div class="cover mono${m.grayPhoto === true ? ' gray' : ''}" id="cover" style="${vars}">
       <div class="mn-bg${md ? '' : ' none'}"><div class="mn-kb">${md}</div></div><i class="mn-sh"></i>
       <div class="mn-top"><div class="mn-k">${chars(H, o.kicker, 38, 250)}</div></div>
@@ -183,7 +184,7 @@
     if (!cv || cv._mnDrag) return; cv._mnDrag = true;
     const K = { a: '.mn-n.a', m: '.mn-amp', b: '.mn-n.b', k: '.mn-top', o: '.mn-bot' };
     const pos = JSON.parse(JSON.stringify(pos0 && typeof pos0 === 'object' ? pos0 : {}));
-    const put = (id) => { const p = pos[id] || { x: 0, y: 0 }; cv.style.setProperty(`--${id}x`, p.x + 'cqw'); cv.style.setProperty(`--${id}y`, p.y + 'cqh'); };
+    const put = (id) => { const p = pos[id] || { x: 0, y: 0 }; cv.style.setProperty(`--${id}x`, CQ.w(p.x)); cv.style.setProperty(`--${id}y`, CQ.h(p.y)); };
     cv.classList.add('mn-edit');
     cv.addEventListener('pointerdown', (e) => {
       if (e.button > 0 || e.target.closest('button')) return;

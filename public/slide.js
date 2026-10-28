@@ -18,6 +18,7 @@
   }).map((p) => p[0]);
 
   // ---------- teks beranimasi ----------
+  const CQ = window.CQ || { w: (n) => n + 'cqw', h: (n) => n + 'cqh' };  const U = (window.CSS && CSS.supports && CSS.supports('height', '1svh')) ? 'svh' : 'vh';
   const E = (H, s) => H.esc(s);
   function chars(H, s, step, start) {
     let n = 0; step = step || 42; start = start || 0;
@@ -117,7 +118,7 @@
     const strip = two
       ? `<div class="sl-strip dir-${dir}"><div class="sl-tile"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div><div class="sl-tile"><div class="sl-pk b">${ph(H, b, 'sl-pm')}</div></div></div>`
       : `<div class="sl-pan"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div>`;
-    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}svh" data-two="${two ? 1 : 0}">
+    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}${U}" data-two="${two ? 1 : 0}">
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
@@ -150,7 +151,7 @@
       return `<div class="sl-s sl-pp split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.coupleNudge)}px">
       <div class="sl-fr"><div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh f"></i></div>${txt}</div>`;
     }
-    return `<div class="sl-s sl-pp ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.coupleNudge)}svh">
+    return `<div class="sl-s sl-pp ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.coupleNudge)}${U}">
       <div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh ${tp === 'bottom' ? 'b' : 't'}"></i>${tp === 'bottom' ? '' : '<i class="sl-sh w"></i>'}${txt}</div>`;
   }
   function couple(H) {
@@ -198,7 +199,7 @@
         </div>`;
       if (shape) return `<div class="sl-s sl-ev split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.eventNudge)}px">
         <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f"></i></div>${inner}</div>`;
-      return `<div class="sl-s sl-ev ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.eventNudge)}svh;--fade:${Math.min(90, Math.max(20, parseFloat(s.eventFade) || 74))}%">
+      return `<div class="sl-s sl-ev ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.eventNudge)}${U};--fade:${Math.min(90, Math.max(20, parseFloat(s.eventFade) || 74))}%">
         <div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh w"></i>${inner}</div>`;
     }).join('');
     return `<section class="sec sl-events" id="s-events">${slides}</section>`;
@@ -317,7 +318,7 @@
     // [data-adg] = pengaturan lama satu blok nama (cv.nm / op.n): tetap berlaku bagi yang sudah pernah menggeser nama
     document.querySelectorAll('[data-ad],[data-adg]').forEach((el) => {
       const a = adj[el.dataset.ad || el.dataset.adg] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
-      el.style.translate = x || y ? `${x}cqw ${y}cqw` : '';
+      el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : '';
       el.style.scale = sc !== 1 ? String(sc) : '';
     });
   }
@@ -375,7 +376,7 @@
         const dx = ev.clientX - x0, dy = ev.clientY - y0; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
         if (!moved) return;
         const n = { x: +((parseFloat(a0.x) || 0) + dx / w * 100).toFixed(2), y: +((parseFloat(a0.y) || 0) + dy / w * 100).toFixed(2), s: a0.s };
-        adj[key] = n; el.style.translate = `${n.x}cqw ${n.y}cqw`;
+        adj[key] = n; el.style.translate = `${CQ.w(n.x)} ${CQ.w(n.y)}`;
       };
       const up = () => {
         el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);

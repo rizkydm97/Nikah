@@ -12,13 +12,13 @@
 .mono .mn-kb{position:absolute;inset:0;animation:mnKb 22s ease-in-out infinite alternate;will-change:transform}
 .mono.gray .mn-m{filter:grayscale(1) contrast(1.06) brightness(.92)}
 .mn-m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;display:block}
-.mn-yt{inset:auto;top:50%;left:50%;width:max(100%,177.78cqh);height:max(100%,56.25cqw);transform:translate(-50%,-50%);pointer-events:none}
+.mn-yt{inset:auto;top:50%;left:50%;width:max(100%,calc(var(--ch,7px)*177.78));width:max(100%,177.78cqh);height:max(100%,calc(var(--cw,4.2px)*56.25));height:max(100%,56.25cqw);transform:translate(-50%,-50%);pointer-events:none}
 .mono .mn-sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,.12) 30%,rgba(0,0,0,.08) 55%,rgba(0,0,0,.78) 100%);opacity:min(1,var(--shd,1));pointer-events:none}
 .mono .mn-sh::after{content:"";position:absolute;inset:0;background:inherit;opacity:calc(var(--shd,1) - 1)}
-.mono .mn-top{position:absolute;left:0;right:0;top:var(--kY,7.5cqh);text-align:center}
-.mono .mn-k{font-size:clamp(11px,3.3cqw,14px);letter-spacing:.32em;text-transform:uppercase;font-weight:500;padding-left:.32em}
-.mono .mn-nm{position:absolute;left:0;right:0;top:var(--nmY,15cqh);text-align:center;font-family:var(--fScript);line-height:1.12;text-shadow:0 2px 24px rgba(0,0,0,.45)}
-.mono .mn-n{display:block;font-size:calc(clamp(48px,17cqw,82px)*var(--nmS,1))}
+.mono .mn-top{position:absolute;left:0;right:0;top:var(--kY,calc(var(--ch,7px)*7.5));top:var(--kY,7.5cqh);text-align:center}
+.mono .mn-k{font-size:clamp(11px,calc(var(--cw,4.2px)*3.3),14px);font-size:clamp(11px,3.3cqw,14px);letter-spacing:.32em;text-transform:uppercase;font-weight:500;padding-left:.32em}
+.mono .mn-nm{position:absolute;left:0;right:0;top:var(--nmY,calc(var(--ch,7px)*15));top:var(--nmY,15cqh);text-align:center;font-family:var(--fScript);line-height:1.12;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.mono .mn-n{display:block;font-size:calc(clamp(48px,calc(var(--cw,4.2px)*17),82px)*var(--nmS,1));font-size:calc(clamp(48px,17cqw,82px)*var(--nmS,1))}
 .mono .mn-n.a{text-align:left;padding-left:16%}
 .mono .mn-n.b{text-align:right;padding-right:16%;margin-top:0}
 .mono .mn-n.a{translate:var(--ax,0) var(--ay,0)}.mono .mn-n.b{translate:var(--bx,0) var(--by,0)}
@@ -28,14 +28,14 @@
 .mono .mn-nm.al-left .mn-n{text-align:left}.mono .mn-nm.al-left .mn-amp{text-align:left;padding-left:calc(8% + .1em)}
 .mono .mn-nm.al-right .mn-n{text-align:right}.mono .mn-nm.al-right .mn-amp{text-align:right;padding-right:8%}
 .mono .mn-nm.al-one{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 .3em;padding:0 6%}
-.mono .mn-nm.al-one .mn-n,.mono .mn-nm.al-one .mn-n.a,.mono .mn-nm.al-one .mn-n.b{display:inline-block;padding:0;text-align:center;font-size:calc(clamp(38px,13cqw,64px)*var(--nmS,1))}
-.mono .mn-nm.al-one .mn-amp{display:inline-block;margin:0;padding:0;font-size:calc(clamp(24px,8cqw,38px)*var(--nmS,1))}
-.mono .mn-amp{translate:var(--mx,0) var(--my,0);display:block;font-style:normal;font-size:calc(clamp(28px,9cqw,44px)*var(--nmS,1));line-height:1;opacity:0;margin:calc(.14em + var(--ng,0em)) 0 calc(.1em + var(--ng,0em));padding-left:.1em;transform:scale(.6)}
-.mono .mn-bot{position:absolute;left:0;right:0;bottom:calc(var(--bY,5.5cqh) + env(safe-area-inset-bottom,0px));text-align:center;padding:0 8%}
-.mono .mn-date{font-size:clamp(12px,3.6cqw,15px);letter-spacing:.3em;font-weight:500;padding-left:.3em}
-.mono .mn-to{margin-top:14px;font-size:clamp(11px,3.2cqw,13px);line-height:1.5}
+.mono .mn-nm.al-one .mn-n,.mono .mn-nm.al-one .mn-n.a,.mono .mn-nm.al-one .mn-n.b{display:inline-block;padding:0;text-align:center;font-size:calc(clamp(38px,calc(var(--cw,4.2px)*13),64px)*var(--nmS,1));font-size:calc(clamp(38px,13cqw,64px)*var(--nmS,1))}
+.mono .mn-nm.al-one .mn-amp{display:inline-block;margin:0;padding:0;font-size:calc(clamp(24px,calc(var(--cw,4.2px)*8),38px)*var(--nmS,1));font-size:calc(clamp(24px,8cqw,38px)*var(--nmS,1))}
+.mono .mn-amp{translate:var(--mx,0) var(--my,0);display:block;font-style:normal;font-size:calc(clamp(28px,calc(var(--cw,4.2px)*9),44px)*var(--nmS,1));font-size:calc(clamp(28px,9cqw,44px)*var(--nmS,1));line-height:1;opacity:0;margin:calc(.14em + var(--ng,0em)) 0 calc(.1em + var(--ng,0em));padding-left:.1em;transform:scale(.6)}
+.mono .mn-bot{position:absolute;left:0;right:0;bottom:calc(var(--bY,calc(var(--ch,7px)*5.5)) + env(safe-area-inset-bottom,0px));bottom:calc(var(--bY,5.5cqh) + env(safe-area-inset-bottom,0px));text-align:center;padding:0 8%}
+.mono .mn-date{font-size:clamp(12px,calc(var(--cw,4.2px)*3.6),15px);font-size:clamp(12px,3.6cqw,15px);letter-spacing:.3em;font-weight:500;padding-left:.3em}
+.mono .mn-to{margin-top:14px;font-size:clamp(11px,calc(var(--cw,4.2px)*3.2),13px);font-size:clamp(11px,3.2cqw,13px);line-height:1.5}
 .mono .mn-to span{display:block;opacity:.85}
-.mono .mn-to b{display:block;font-size:clamp(15px,4.6cqw,19px);font-weight:600;margin-top:2px;overflow-wrap:anywhere}
+.mono .mn-to b{display:block;font-size:clamp(15px,calc(var(--cw,4.2px)*4.6),19px);font-size:clamp(15px,4.6cqw,19px);font-weight:600;margin-top:2px;overflow-wrap:anywhere}
 .mono .mn-btn{margin-top:18px;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:#fff;color:#111;font:500 12.5px/1 var(--fBody);letter-spacing:.04em;padding:12px 22px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s ease,background .25s}
 .mono .mn-btn svg{width:14px;height:14px;fill:currentColor}
 .mono .mn-btn:active{transform:scale(.96)}
@@ -53,11 +53,11 @@
 .cover.mono.mn-out .mn-top,.cover.mono.mn-out .mn-nm,.cover.mono.mn-out .mn-bot{opacity:0;transition:opacity .5s ease}
 
 /* ---------- halaman bingkai ---------- */
-.mono-hero{min-height:100svh;display:flex;align-items:center;justify-content:center;background:var(--paper);color:var(--ink);overflow:hidden;padding:0}
+.mono-hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;background:var(--paper);color:var(--ink);overflow:hidden;padding:0}
 .mono-hero::before{content:"";position:absolute;inset:14px;border:1px solid rgba(0,0,0,.16);pointer-events:none}
-.mh-in{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:5svh 0 4svh}
+.mh-in{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:5vh 0 4vh;padding:5svh 0 4svh}
 .mh-k{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;padding-left:.34em;color:#555}
-.mh-frame{position:relative;width:min(68%,calc(44svh * .636));aspect-ratio:640/1007;margin:2.4svh 0 2svh}
+.mh-frame{position:relative;width:min(68%,calc(44vh * .636));width:min(68%,calc(44svh * .636));aspect-ratio:640/1007;margin:2.4vh 0 2vh;margin:2.4svh 0 2svh}
 .mh-ph{position:absolute;overflow:hidden;background:#eee;display:grid;place-items:center}
 .mh-frame.oval .mh-ph{left:7.6%;right:3.2%;top:8.6%;bottom:2.4%;border-radius:50%}
 .mh-ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
@@ -67,7 +67,7 @@
 .mh-mono{font-family:var(--fScript);color:#222;font-size:clamp(46px,16vw,70px);line-height:1;display:flex;align-items:center;gap:.08em}
 .mh-mono i{font-size:.5em;font-style:normal;color:#777}
 /* bingkai kotak */
-.mh-frame.rect{aspect-ratio:4/5;width:min(74%,calc(42svh * .8))}
+.mh-frame.rect{aspect-ratio:4/5;width:min(74%,calc(42vh * .8));width:min(74%,calc(42svh * .8))}
 .mh-frame.rect .mh-ph{inset:14px}
 .mh-frame.rect .mh-ring::before,.mh-frame.rect .mh-ring::after{content:"";position:absolute;pointer-events:none;z-index:2}
 .mh-frame.rect .mh-ring::before{inset:0;border:1px solid #1a1a1a}
@@ -76,13 +76,13 @@
 .mh-fl{position:absolute;z-index:3;pointer-events:none;transform-origin:50% 100%}
 .mh-fl.a{left:-17%;top:-7%;height:64%;width:auto}
 .mh-fl.b{right:-17%;bottom:-5%;width:44%;height:auto;transform-origin:20% 90%}
-.mh-names{font-family:var(--fScript);font-weight:400;font-size:clamp(40px,13.5vw,64px);line-height:1.18;color:#111;margin:.8svh 0 0;display:flex;flex-direction:column;align-items:center}
+.mh-names{font-family:var(--fScript);font-weight:400;font-size:clamp(40px,13.5vw,64px);line-height:1.18;color:#111;margin:.8vh 0 0;margin:.8svh 0 0;display:flex;flex-direction:column;align-items:center}
 .mh-n{display:block;padding:0 .1em}
 .mh-amp{display:block;font-style:normal;font-size:.5em;line-height:1;color:#666;margin:.16em 0 .12em;padding-left:.08em}
-.mh-orn{width:min(52%,230px);height:auto;margin:1.6svh 0 1.2svh}
+.mh-orn{width:min(52%,230px);height:auto;margin:1.6vh 0 1.2vh;margin:1.6svh 0 1.2svh}
 .mh-date{font-size:13px;letter-spacing:.3em;font-weight:500;padding-left:.3em;color:#222}
 .mh-tag{font-size:12px;letter-spacing:.12em;color:#777;margin-top:6px}
-.mh-scroll{margin-top:2.4svh;width:1px;height:34px;background:rgba(0,0,0,.18);position:relative;overflow:hidden}
+.mh-scroll{margin-top:2.4vh;margin-top:2.4svh;width:1px;height:34px;background:rgba(0,0,0,.18);position:relative;overflow:hidden}
 .mh-scroll i{position:absolute;left:0;top:0;width:1px;height:12px;background:#111;animation:mnScroll 2s ease-in-out infinite}
 
 /* keadaan awal (sebelum dibuka) & animasi saat .play */
@@ -219,7 +219,7 @@ body.t-mono.mono-gray #app img:not([src*="/assets/mono/"]),body.t-mono.mono-gray
 .t-mono .closing .cl-in{z-index:2}
 
 /* ---------- bingkai kotak: mawar di empat sudut, foto / video di tengah ---------- */
-.mh-frame.rect{width:min(78%,calc(46svh * .8),340px)}
+.mh-frame.rect{width:min(78%,calc(46vh * .8),340px);width:min(78%,calc(46svh * .8),340px)}
 .mh-cr{position:absolute;z-index:3;width:38%;height:auto;pointer-events:none;opacity:0}
 .mh-cr.cq-br{right:-7%;bottom:-6%}
 .mh-cr.cq-tl{left:-7%;top:-6%;transform:rotate(180deg)}
@@ -244,7 +244,7 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
    ===================================================================== */
 .mono-hero{position:relative}
 /* bulat */
-.mh-frame.circle{aspect-ratio:1;width:min(78%,calc(46svh))}
+.mh-frame.circle{aspect-ratio:1;width:min(78%,calc(46vh));width:min(78%,calc(46svh))}
 .mh-frame.circle .mh-ph{inset:5.5%;border-radius:50%}
 .mh-frame.circle .mh-ring::before,.mh-frame.circle .mh-ring::after{content:"";position:absolute;border-radius:50%;pointer-events:none;z-index:2}
 .mh-frame.circle .mh-ring::before{inset:0;border:1px solid #1a1a1a}
@@ -254,15 +254,15 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 /* layar penuh tanpa bingkai */
 .mono-hero.full{color:#fff;background:#0d0d0d}
 .mono-hero.full::before{display:none}
-.mono-hero.full .mh-in{position:absolute;inset:0;width:100%;padding:6svh 0 5svh;justify-content:flex-end}
+.mono-hero.full .mh-in{position:absolute;inset:0;width:100%;padding:6vh 0 5vh;padding:6svh 0 5svh;justify-content:flex-end}
 .mono-hero.full .mh-in>*:not(.mh-frame){position:relative;z-index:3}
 .mono-hero.full .mh-frame{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;margin:0;z-index:0}
 .mono-hero.full .mh-frame::before,.mono-hero.full .mh-frame::after{display:none}
 .mono-hero.full .mh-ph{inset:0;border-radius:0;background:#111}
 .mono-hero.full .mh-ph::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%)}
-.mono-hero.full .mh-ph .mn-yt{width:max(100%,177.78svh);height:max(100%,56.25vw);min-width:0;min-height:0;aspect-ratio:auto}
+.mono-hero.full .mh-ph .mn-yt{width:max(100%,177.78vh);width:max(100%,177.78svh);height:max(100%,56.25vw);min-width:0;min-height:0;aspect-ratio:auto}
 .mono-hero.full .mh-mono{color:#fff}
-.mono-hero.full .mh-k{position:absolute;top:6svh;left:0;right:0;color:#fff}
+.mono-hero.full .mh-k{position:absolute;top:6vh;top:6svh;left:0;right:0;color:#fff}
 .mono-hero.full .mh-names{color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.5);margin-top:0}
 .mono-hero.full .mh-amp{color:rgba(255,255,255,.85)}
 .mono-hero.full .mh-orn{filter:invert(1) brightness(1.2);opacity:.9}
@@ -271,7 +271,7 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mono-hero.full .mh-scroll{background:rgba(255,255,255,.25)}.mono-hero.full .mh-scroll i{background:#fff}
 .mono-hero.full.play .mh-frame{animation:mnFade 1.4s ease .1s both}
 @keyframes mnFade{from{opacity:0}to{opacity:1}}
-.mono-hero.full .mh-in>.mh-k{position:absolute;top:6svh;left:0;right:0}
+.mono-hero.full .mh-in>.mh-k{position:absolute;top:6vh;top:6svh;left:0;right:0}
 .mono-hero.full .mh-ph::after{background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,0) 24%,rgba(0,0,0,.05) 38%,rgba(0,0,0,.88) 100%)}
 .mh-frame.circle .mh-fl.a{left:-9%;top:-8%;height:62%}
 .mh-frame.circle .mh-fl.b{right:-12%;bottom:-6%;width:42%}
