@@ -123,11 +123,11 @@
       <div class="sl-op-in">
         <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1500)}</div>
         <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1900, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
-        <i class="sl-line sl-draw" style="--d:3200ms"></i>
+        <i class="sl-line sl-draw" style="--d:3200ms" data-ad="op.line"></i>
         ${up('sl-op-d', 3500, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
         ${h.hashtag ? up('sl-op-t', 3800, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
       </div>
-      <div class="sl-scroll" aria-hidden="true"><i></i></div></section>`;
+      <div class="sl-scroll" aria-hidden="true" data-ad="op.sc"><i></i></div></section>`;
   }
 
   // ---------- 3. mempelai: satu slide per orang ----------
@@ -210,20 +210,21 @@
     const src = pick(H, [[s, 'closingMedia'], [o, 'bg'], [o, 'photo'], [C.cover, 'photo'], [s, 'coverMedia']]);
     const spark = [[8, 12, 0, 7], [19, 38, 1.4, 9], [31, 6, 2.8, 8], [44, 52, 0.7, 10], [57, 20, 3.6, 7.5], [68, 44, 2.1, 9.5], [79, 10, 4.4, 8], [90, 34, 1.1, 10], [14, 64, 3.1, 11], [36, 72, 4.8, 8.5], [62, 68, 0.3, 10.5], [85, 60, 2.6, 9], [50, 30, 5.2, 12], [25, 24, 3.9, 11], [74, 26, 1.8, 12]]
       .map((q) => `<b style="left:${q[0]}%;bottom:${q[1]}%;--sd:${q[2]}s;--sp:${q[3]}s"></b>`).join('');
+    const nmc = splitNames(o.names);
     const ft = String(o.footer == null ? '' : o.footer).trim();
     const m = /^(.*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
-    const fin = `<div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 4300)}</div>`
-      + (fy ? `<div class="sl-ft-y sl-up" style="--d:5000ms"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
+    const fin = `<i class="sl-ft-div sl-draw" style="--d:4100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 4300)}</div>`
+      + (fy ? `<div class="sl-ft-y sl-up" style="--d:5000ms" data-ad="cl.fy"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
     const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>
       <div class="sl-cl-fx" aria-hidden="true">${spark}<u></u></div>
       <div class="sl-cl-fr" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><em class="a"></em><em class="b"></em><em class="c"></em><em class="d"></em></div>
       <div class="sl-cl-in">
-        <div class="sl-cl-orn sl-draw" style="--d:1500ms" aria-hidden="true"><i></i><em></em><i></i></div>
+        <div class="sl-cl-orn sl-draw" style="--d:1500ms" aria-hidden="true" data-ad="cl.orn"><i></i><em></em><i></i></div>
         <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, 44, 1700)}</div>
-        <div class="sl-cl-n" data-ad="cl.n"${tx('closing.names')}>${wipe(H, o.names, 2500)}</div>
+        <div class="sl-cl-n">${nameParts(H, nmc[0], nmc[1], 'cl', 2500, 'cl.n', ['closing.names#0', 'closing.names#1'])}</div>
         <div class="sl-cl-hr sl-up" style="--d:3500ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
         <p class="sl-cl-tx" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, 30, 3800)}</p>
       </div>
