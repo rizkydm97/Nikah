@@ -214,8 +214,8 @@
     const ft = String(o.footer == null ? '' : o.footer).trim();
     const m = /^(.*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
-    const fin = `<i class="sl-ft-div sl-draw" style="--d:4100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 4300)}</div>`
-      + (fy ? `<div class="sl-ft-y sl-up" style="--d:5000ms" data-ad="cl.fy"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
+    const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 350)}</div>`
+      + (fy ? `<div class="sl-ft-y sl-up" style="--d:1100ms" data-ad="cl.fy"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
     const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>
@@ -228,7 +228,7 @@
         <div class="sl-cl-hr sl-up" style="--d:3500ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
         <p class="sl-cl-tx" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, 30, 3800)}</p>
       </div>
-      <div class="footer sl-cl-ft">${ftHtml}</div></div></section>`;
+      </div><div class="footer sl-foot">${ftHtml}</div></section>`;
   }
 
   // ---------- 7. love story: judul → foto lebar penuh (kabut di tepi) → cerita + tahun, dipisah garis vertikal tipis ----------
@@ -287,7 +287,7 @@
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
     parallax(par);
     if (io) { io.disconnect(); io = null; }
-    const els = root.querySelectorAll('.sl-s');
+    const els = root.querySelectorAll('.sl-s, .sl-foot');
     // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar
     root.querySelectorAll('[data-sid="gallery"],[data-sid="live"],[data-sid="gift"],[data-sid="rsvp"],[data-sid="wishes"]').forEach((sec) => {
       sec.querySelectorAll('h2, h3.gt').forEach((t) => {
@@ -358,7 +358,7 @@
       const hint = document.createElement('div'); hint.className = 'sl-hint'; hint.textContent = 'Tarik = geser · Klik 2× = ubah teks · Shift + roda = ukuran';
       document.body.appendChild(hint); setTimeout(() => hint.classList.add('off'), 7000);
     }
-    const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open');
+    const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open,.sl-foot');
     document.addEventListener('pointerdown', (e) => {
       if (e.button > 0) return;
       const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;
