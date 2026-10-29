@@ -282,53 +282,6 @@
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
     parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); };
   }
-  // ---------- galeri: foto bergeser sedikit lebih lambat daripada bingkainya saat menggulir (parallax tipis di dalam bingkai) ----------
-  let gOff = null;
-  function galleryPar(root, on) {
-    if (gOff) { gOff(); gOff = null; }
-    if (!on) return;
-    const imgs = [...root.querySelectorAll('.gallery .gi img')]; if (!imgs.length) return;
-    let raf = 0;
-    const tick = () => {
-      raf = 0; const vh = innerHeight;
-      imgs.forEach((im) => {
-        const f = im.closest('.gi'); if (!f) return;
-        const r = f.getBoundingClientRect(); if (r.bottom < -60 || r.top > vh + 60) return;
-        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
-        im.style.setProperty('--gpy', (-p * Math.min(r.height * 0.05, 22)).toFixed(1) + 'px');
-      });
-    };
-    const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick); tick();
-    gOff = () => { removeEventListener('scroll', kick); removeEventListener('resize', kick); cancelAnimationFrame(raf); };
-  }
-  // ---------- galeri: zoom-parallax (foto-foto tersusun lalu membesar satu per satu saat digulir, seperti komponen ZoomParallax) ----------
-  // tata letak = kotak kecil (lebar/tinggi/geser dalam % lebar & tinggi layar kerja) di sekitar kotak tengah; tiap foto punya skala akhir berbeda
-  const ZP = [[25, 25, 0, 0, 4], [35, 30, 5, -30, 5], [20, 45, -25, -10, 6], [25, 25, 27.5, 0, 5], [20, 25, 5, 27.5, 6], [30, 25, -22.5, 27.5, 8], [15, 15, 25, 22.5, 9]];
-  let zpOff = null;
-  function zoomPar(root, cfg, on) {
-    if (zpOff) { zpOff(); zpOff = null; }
-    root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
-    if (!on) return;
-    const g = root.querySelector('.gallery'), h2 = g && g.querySelector('h2'); if (!g || !h2) return;
-    const items = ((cfg && cfg.gallery && cfg.gallery.items) || []).map((x) => x && x.image).filter((u) => u && !DEF.test(u) && /^(https?:\/\/|\/(?!\/))/i.test(String(u)) && !VID.test(u)).slice(0, 7);
-    if (items.length < 3) return; // butuh minimal 3 foto sendiri agar susunannya terlihat bagus
-    const wrap = document.createElement('div'); wrap.className = 'sl-zp';
-    // foto dirender di ukuran AKHIR (besar) lalu diperkecil di awal — bukan kotak kecil yang ditarik membesar — agar tetap tajam saat zoom
-    const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    wrap.innerHTML = '<div class="sl-zp-st">' + items.map((u, i) => { const z = ZP[i], k = z[4];
-      return `<div class="sl-zp-i" data-k="${k}" style="width:${k * 100}%;height:${k * 100}%;left:${50 - k * 50}%;top:${50 - k * 50}%;transform:scale(${(1 / k).toFixed(4)})"><div class="sl-zp-b" style="width:${z[0]}%;height:${z[1]}%;left:${z[2]}%;top:${z[3]}%"><img src="${esc(u)}" alt="" decoding="async" draggable="false"></div></div>`; }).join('') + '</div>';
-    h2.insertAdjacentElement('afterend', wrap);
-    const els = [...wrap.querySelectorAll('.sl-zp-i')]; let raf = 0;
-    const tick = () => {
-      raf = 0; const r = wrap.getBoundingClientRect(), span = r.height - innerHeight; if (span <= 0) return;
-      const p = Math.min(1, Math.max(0, -r.top / span) / 0.84); // 84% gulir pertama = zoom, sisanya jeda di foto penuh
-      els.forEach((el) => { const k = +el.dataset.k; el.style.transform = `scale(${((1 + (k - 1) * p) / k).toFixed(4)})`; });
-    };
-    const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick); tick();
-    zpOff = () => { removeEventListener('scroll', kick); removeEventListener('resize', kick); cancelAnimationFrame(raf); };
-  }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -336,10 +289,10 @@
     de.dataset.slAnim = ['mist', 'zoom', 'slide', 'fade'].includes(s.animStyle) ? s.animStyle : 'mist';
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
-    de.dataset.slGal = ['tirai', 'zoom', 'fade', 'zoomparallax', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'tirai';
+    de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d
     { const rt = parseFloat(s.stageRatio); de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }
-    parallax(par); galleryPar(root, par && de.dataset.slGal !== 'none');
-    zoomPar(root, cfg, de.dataset.slGal === 'zoomparallax' && !rm);
+    parallax(par);
+    root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
     if (io) { io.disconnect(); io = null; }
     const els = root.querySelectorAll('.sl-s, .sl-foot');
     // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar

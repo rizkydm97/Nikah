@@ -164,6 +164,15 @@ async function route(req, res, url) {
       return send(res, 200, rows);
     }
     if (m === 'DELETE' && id) { must(await sb().from(TABLES[name]).delete().eq('id', id)); return send(res, 200, { ok: true }); }
+    // hapus massal: body { ids: [...] } = hapus yang dipilih, { all: true } = hapus semua data tabel ini
+    if (m === 'DELETE' && !id) {
+      const b = await readJson(req);
+      if (b && b.all === true) { must(await sb().from(TABLES[name]).delete().neq('id', '')); return send(res, 200, { ok: true, all: true }); }
+      const ids = (Array.isArray(b && b.ids) ? b.ids : []).map((x) => String(x)).filter((x) => /^[a-f0-9]+$/.test(x)).slice(0, 1000);
+      if (!ids.length) return send(res, 400, { error: 'Tidak ada data yang dipilih' });
+      for (let k = 0; k < ids.length; k += 100) must(await sb().from(TABLES[name]).delete().in('id', ids.slice(k, k + 100)));
+      return send(res, 200, { ok: true, count: ids.length });
+    }
   }
   return send(res, 404, { error: 'Tidak ditemukan' });
 }

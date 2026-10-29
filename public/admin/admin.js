@@ -671,6 +671,43 @@
       <table><thead><tr><th>No</th><th>Nama</th><th>Status</th><th>Jumlah</th><th>Waktu</th></tr></thead><tbody>${tr}</tbody></table>`);
     w.document.close(); w.focus(); setTimeout(() => w.print(), 450);
   }
+  // ---------- hapus cepat: pilih beberapa / pilih semua / hapus semua (RSVP, Ucapan, Gift) ----------
+  function bulkTools(kind, viewId, total) {
+    const sel = new Set(), rows = new Map(); let on = false, host = null;
+    const bPick = h('button', { class: 'btn sm', type: 'button' }, '☑ Pilih cepat');
+    const bAll = h('button', { class: 'btn sm', type: 'button' }, 'Pilih semua');
+    const bDel = h('button', { class: 'btn sm danger', type: 'button' }, '🗑 Hapus terpilih (0)');
+    const bWipe = h('button', { class: 'btn sm danger', type: 'button' }, '🗑 Hapus semua (' + total + ')');
+    const bar = h('div', { class: 'libbar bulkbar' }, bPick, bAll, bDel, bWipe);
+    const refresh = () => {
+      bAll.hidden = bDel.hidden = !on; bDel.disabled = !sel.size; bDel.textContent = '🗑 Hapus terpilih (' + sel.size + ')';
+      bPick.textContent = on ? '✕ Selesai pilih' : '☑ Pilih cepat'; bAll.textContent = sel.size === rows.size ? 'Batal pilih semua' : 'Pilih semua';
+      if (host) host.classList.toggle('bulkmode', on);
+      rows.forEach((el, id) => { el.classList.toggle('sel', sel.has(id)); const c = el.querySelector('input.bk'); if (c) c.checked = sel.has(id); });
+    };
+    const run = async (body, msg) => {
+      if (!confirm(msg)) return;
+      try { await api('/api/admin/' + kind, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), timeout: 60000 }); toast('Data dihapus ✓'); show(viewId); }
+      catch (er) { toast(er.message || 'Gagal menghapus', true); }
+    };
+    bPick.onclick = () => { on = !on; if (!on) sel.clear(); refresh(); };
+    bAll.onclick = () => { if (sel.size === rows.size) sel.clear(); else rows.forEach((_, id) => sel.add(id)); refresh(); };
+    bDel.onclick = () => run({ ids: [...sel] }, 'Hapus ' + sel.size + ' data terpilih?\n\nTidak bisa dibatalkan.');
+    bWipe.onclick = () => run({ all: true }, 'HAPUS SEMUA ' + total + ' data di halaman ini?\n\nSeluruh data akan hilang dan tidak bisa dibatalkan.');
+    bar.hidden = !total;
+    return {
+      bar,
+      // daftarkan baris; return kotak centang yang disisipkan di awal baris
+      reg(id, el) {
+        rows.set(id, el); host = host || el.parentElement;
+        const ck = h('input', { type: 'checkbox', class: 'bk', 'aria-label': 'Pilih' }); ck.onclick = (e) => e.stopPropagation();
+        ck.onchange = () => { ck.checked ? sel.add(id) : sel.delete(id); refresh(); };
+        el.addEventListener('click', (e) => { if (!on || e.target.closest('a,button')) return; sel.has(id) ? sel.delete(id) : sel.add(id); refresh(); });
+        return ck;
+      },
+      setHost(el) { host = el; },
+    };
+  }
   async function rsvpView() {
     const m = h('div', {});
     const rows = await api('/api/admin/rsvp');
@@ -680,10 +717,12 @@
       h('div', { class: 'row' }, h('button', { class: 'btn', onclick: () => show('d-rsvp') }, 'Refresh'), h('a', { class: 'btn', href: '/api/admin/rsvp.csv' }, '⬇ CSV'), h('button', { class: 'btn pri', onclick: () => printRsvp(rows) }, 'Cetak PDF'))));
     m.append(h('div', { class: 'total' }, h('small', {}, 'TOTAL TAMU YANG AKAN DATANG'), h('b', {}, tot), h('span', {}, 'orang')));
     m.append(h('div', { class: 'stats three' }, h('div', {}, h('small', {}, 'Respons'), h('b', {}, rows.length)), h('div', {}, h('small', {}, 'Hadir'), h('b', { class: 'ok' }, hadir.length)), h('div', {}, h('small', {}, 'Berhalangan'), h('b', { class: 'bad' }, tidak.length)), h('div', {}, h('small', {}, 'Masih ragu'), h('b', { class: 'wait' }, ragu.length))));
+    const bk = bulkTools('rsvp', 'd-rsvp', rows.length); bk.setHost(m);
+    m.append(bk.bar);
     const group = (title, list, cls, withCount) => {
       if (!list.length) return;
       const box = h('div', { class: 'glist ' + cls }, h('div', { class: 'gh' }, title + ' — ' + list.length + ' konfirmasi' + (withCount ? ' · ' + list.reduce((a, r) => a + (+r.count || 1), 0) + ' orang' : '')));
-      list.forEach((r) => { const row = h('div', { class: 'gr' }, h('div', {}, h('b', {}, r.name), h('small', {}, (r.status === 'hadir' ? (+r.count || 1) + ' orang · ' : '') + fmtT(r.ts))),
+      list.forEach((r) => { const row = h('div', { class: 'gr' }); row.append(bk.reg(r.id, row), h('div', { class: 'grt' }, h('b', {}, r.name), h('small', {}, (r.status === 'hadir' ? (+r.count || 1) + ' orang · ' : '') + fmtT(r.ts))),
         h('button', { class: 'ghost sm', onclick: async () => { if (!confirm('Hapus data ini?')) return; await api('/api/admin/rsvp/' + r.id, { method: 'DELETE' }); show('d-rsvp'); } }, 'Hapus')); box.append(row); });
       m.append(box);
     };
@@ -702,40 +741,81 @@
     }
     m.append(h('p', { style: 'margin-bottom:10px' }, h('a', { class: 'btn sm', href: `/api/admin/${kind}.csv` }, '⬇ Unduh CSV')));
     const cols = { rsvp: ['Nama', 'Status', 'Jumlah', 'Waktu'], wishes: ['Nama', 'Ucapan', 'Foto profil', 'Waktu'], gifts: ['Nama', 'Bank', 'Nominal', 'Ucapan', 'Bukti', 'Waktu'] }[kind];
-    const tb = h('table', {}, h('thead', {}, h('tr', {}, cols.map((c) => h('th', {}, c)), h('th', {}))));
+    const bk = bulkTools(kind, kind === 'wishes' ? 'd-wishes' : 'd-gifts', rows.length);
+    m.append(bk.bar);
+    const tb = h('table', {}, h('thead', {}, h('tr', {}, h('th', { class: 'bkc' }), cols.map((c) => h('th', {}, c)), h('th', {}))));
     const body = h('tbody');
     rows.forEach((r) => {
       const cells = kind === 'rsvp' ? [r.name, h('span', { class: 'tag ' + r.status }, { hadir: 'Hadir', tidak: 'Tidak hadir', ragu: 'Ragu' }[r.status]), r.count || '-', fmtT(r.ts)]
         : kind === 'wishes' ? [r.name, r.message, r.photo ? h('a', { href: r.photo, target: '_blank', rel: 'noopener' }, h('img', { src: r.photo, alt: '', style: 'width:44px;height:44px;object-fit:cover;border-radius:6px;display:block' })) : '-', fmtT(r.ts)]
           : [r.name, r.bank, r.amount, r.message, r.proof ? h('a', { href: r.proof, target: '_blank', rel: 'noopener' }, 'Lihat') : '-', fmtT(r.ts)];
-      const tr = h('tr', {}, cells.map((c) => h('td', {}, c)), h('td', {}, h('button', { class: 'btn danger sm', onclick: async () => { if (!confirm('Hapus data ini?')) return; await api(`/api/admin/${kind}/${r.id}`, { method: 'DELETE' }); tr.remove(); } }, 'Hapus')));
-      body.append(tr);
+      const tr = h('tr', {}); const ckc = h('td', { class: 'bkc' }); tr.append(ckc, ...cells.map((c) => h('td', {}, c)), h('td', {}, h('button', { class: 'btn danger sm', onclick: async () => { if (!confirm('Hapus data ini?')) return; await api(`/api/admin/${kind}/${r.id}`, { method: 'DELETE' }); show(kind === 'wishes' ? 'd-wishes' : 'd-gifts'); } }, 'Hapus')));
+      ckc.append(bk.reg(r.id, tr)); body.append(tr);
     });
-    tb.append(body);
+    tb.append(body); bk.setHost(m);
     m.append(rows.length ? h('div', { class: 'tw' }, tb) : h('p', { class: 'hint' }, 'Belum ada data.'));
     return m;
   }
 
   function linksView() {
-    const m = h('div', {}, h('h2', {}, 'Buat Link Tamu'), h('p', { class: 'hint' }, 'Tulis satu nama tamu per baris. Setiap tamu mendapat link pribadi yang menampilkan namanya di cover.'));
+    const m = h('div', {}, h('h2', {}, 'Buat Link Tamu'), h('p', { class: 'hint' }, 'Ada 2 cara: (1) buat link lalu kirim sendiri lewat WhatsApp (pilih kontaknya di WhatsApp), atau (2) isi nomor WA tiap tamu dan kirim langsung ke nomornya.'));
     const ls = (k, d) => { try { return localStorage.getItem(k) || d; } catch { return d; } };
     const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* */ } };
+    const TPL = 'Assalamualaikum Wr. Wb.\n\nKepada Yth. {nama}\n\nKami mengundang Anda ke acara pernikahan kami. Detail undangan digital:\n{link}\n\nMerupakan kebahagiaan bagi kami apabila Anda berkenan hadir. Terima kasih 🙏';
+    const mk = (n) => { const link = `${location.origin}/?to=${encodeURIComponent(n).replace(/%20/g, '+')}`; return { link }; };
+    const fill = (t, n) => t.replace(/\{nama\}/g, n).replace(/\{link\}/g, mk(n).link);
+
+    // ----- Cara 1 (tetap): daftar nama -> link pribadi -> salin / kirim lewat WhatsApp (pilih kontak sendiri) -----
     const names = h('textarea', { placeholder: 'Yogi dan Ratna\nBapak Budi & Keluarga\n…', style: 'min-height:120px' }, ls('lk_names', ''));
-    const tpl = h('textarea', { style: 'min-height:130px' }, ls('lk_tpl', 'Assalamualaikum Wr. Wb.\n\nKepada Yth. {nama}\n\nKami mengundang Anda ke acara pernikahan kami. Detail undangan digital:\n{link}\n\nMerupakan kebahagiaan bagi kami apabila Anda berkenan hadir. Terima kasih 🙏'));
+    const tpl = h('textarea', { style: 'min-height:130px' }, ls('lk_tpl', TPL));
     const out = h('div');
     const gen = () => {
       lsSet('lk_names', names.value); lsSet('lk_tpl', tpl.value); out.textContent = '';
       names.value.split('\n').map((s) => s.trim()).filter(Boolean).forEach((n) => {
-        const link = `${location.origin}/?to=${encodeURIComponent(n).replace(/%20/g, '+')}`;
-        const msg = tpl.value.replace(/\{nama\}/g, n).replace(/\{link\}/g, link);
+        const link = mk(n).link, msg = fill(tpl.value, n);
         out.append(h('div', { class: 'linkrow' }, h('span', {}, n),
           h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(link).then(() => toast('Link disalin ✓')) }, 'Salin link'),
           h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'),
           h('a', { class: 'btn sm pri', href: 'https://wa.me/?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, 'Kirim WhatsApp')));
       });
     };
-    m.append(h('div', { class: 'card' }, h('div', { class: 'fld' }, h('label', {}, 'Daftar nama tamu'), names), h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl), h('button', { class: 'btn pri', onclick: gen }, 'Buat link')), out);
-    gen(); return m;
+    m.append(h('div', { class: 'card' }, h('h3', { style: 'margin:0 0 8px' }, 'Cara 1 — Buat link, kirim sendiri'),
+      h('div', { class: 'fld' }, h('label', {}, 'Daftar nama tamu'), names), h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl), h('button', { class: 'btn pri', onclick: gen }, 'Buat link')), out);
+    gen();
+
+    // ----- Cara 2 (baru): nama + nomor WA -> tombol langsung membuka chat ke nomor itu dengan pesan siap kirim -----
+    const toWa = (raw) => { let d = String(raw || '').replace(/[^\d]/g, ''); if (!d) return ''; if (d.startsWith('00')) d = d.slice(2); if (d.startsWith('0')) d = '62' + d.slice(1); else if (d.startsWith('8')) d = '62' + d; return d.length >= 9 && d.length <= 15 ? d : ''; };
+    const sentSet = new Set((() => { try { return JSON.parse(ls('lk2_sent', '[]')); } catch { return []; } })());
+    const saveSent = () => lsSet('lk2_sent', JSON.stringify([...sentSet].slice(-2000)));
+    const list2 = h('textarea', { placeholder: 'Yogi dan Ratna | 081234567890\nBapak Budi & Keluarga | 0812-3456-7890\nIbu Sari, 6285xxxxxxxxx', style: 'min-height:120px' }, ls('lk2_list', ''));
+    const tpl2 = h('textarea', { style: 'min-height:130px' }, ls('lk2_tpl', ls('lk_tpl', TPL)));
+    const out2 = h('div');
+    const parse = () => list2.value.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+      const mm = /^(.*?)\s*(?:\||,|;|\t)\s*(\+?[\d][\d\s\-().]{7,})$/.exec(l) || /^(.*?)\s+(\+?\d[\d\-().]{7,})$/.exec(l);
+      return mm ? { name: mm[1].trim(), tel: toWa(mm[2]), raw: mm[2].trim() } : { name: l, tel: '', raw: '' };
+    }).filter((x) => x.name);
+    const gen2 = () => {
+      lsSet('lk2_list', list2.value); lsSet('lk2_tpl', tpl2.value); out2.textContent = '';
+      const rows = parse(); let ok = 0;
+      rows.forEach((x) => {
+        const key = x.name + '|' + x.tel, msg = fill(tpl2.value, x.name);
+        const row = h('div', { class: 'linkrow' + (sentSet.has(key) ? ' sent' : '') });
+        const st = h('small', { class: 'lkst' }, x.tel ? '+' + x.tel : 'Nomor tidak valid');
+        if (x.tel) { ok++; const a = h('a', { class: 'btn sm pri', href: 'https://wa.me/' + x.tel + '?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, sentSet.has(key) ? 'Kirim lagi' : 'Kirim ke WA');
+          a.addEventListener('click', () => { sentSet.add(key); saveSent(); row.classList.add('sent'); a.textContent = 'Kirim lagi'; badge.hidden = false; });
+          var badge = h('span', { class: 'sentbadge' }, '✓ Terkirim'); badge.hidden = !sentSet.has(key);
+          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'), a);
+        } else row.append(h('span', {}, x.name, h('br'), st), h('small', { class: 'lkbad' }, 'Tulis: Nama | 0812xxxx'));
+        out2.append(row);
+      });
+      if (rows.length) out2.prepend(h('p', { class: 'hint', style: 'margin:10px 0 4px' }, ok + ' dari ' + rows.length + ' tamu punya nomor valid. Klik "Kirim ke WA" → WhatsApp terbuka ke nomor itu dengan pesan siap kirim; tinggal tekan kirim.'));
+    };
+    m.append(h('div', { class: 'card', style: 'margin-top:14px' }, h('h3', { style: 'margin:0 0 8px' }, 'Cara 2 — Kirim langsung ke nomor WA tamu'),
+      h('div', { class: 'fld' }, h('label', {}, 'Daftar tamu: satu per baris, format "Nama | Nomor WA" (08xx, 628xx, atau +62 semua bisa)'), list2),
+      h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl2),
+      h('div', { class: 'row', style: 'flex-wrap:wrap' }, h('button', { class: 'btn pri', onclick: gen2 }, 'Buat daftar kirim'),
+        h('button', { class: 'btn', onclick: () => { if (!confirm('Kosongkan tanda "Terkirim"?')) return; sentSet.clear(); saveSent(); gen2(); } }, 'Reset tanda terkirim'))), out2);
+    gen2(); return m;
   }
 
   function securityView() {

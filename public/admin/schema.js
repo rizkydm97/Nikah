@@ -229,7 +229,7 @@ const SCHEMA = [
   ] },
   { id: 'gallery', title: 'Galeri', fields: [
     { k: 'gallery.title', l: 'Judul', t: 'text' }, { k: 'gallery.bg', l: 'Foto latar (kosongkan untuk pakai tekstur kertas bawaan)', t: 'image', ar: '9/19' }, { k: 'gallery.video', l: 'Video galeri — tempel link YouTube / URL .mp4, atau unggah video (autoplay tanpa suara, opsional)', t: 'video' },
-    { k: 'slide.galleryAnim', l: 'ANIMASI FOTO GALERI saat masuk layar (Tema 13)', t: 'select', th: 'slide', o: [['tirai', 'Tirai bergantian kiri–kanan + zoom turun + parallax tipis (bawaan)'], ['zoom', 'Zoom masuk (Tema 12)'], ['fade', 'Muncul perlahan (fade)'], ['zoomparallax', 'Zoom-parallax — foto tersusun lalu membesar satu per satu saat digulir (pakai 3–7 foto galeri sendiri; foto lain tetap tampil di bawahnya)'], ['none', 'Tanpa animasi']] },
+    { k: 'slide.galleryAnim', l: 'ANIMASI FOTO GALERI saat masuk layar (Tema 13)', t: 'select', th: 'slide', o: [['flip3d', '3D Flip — foto terbuka seperti pintu, bergantian kiri–kanan (bawaan, ringan)'], ['tilt3d', '3D Bangkit — foto rebah lalu tegak berdiri'], ['depth3d', '3D Kedalaman — foto datang dari jauh sambil miring'], ['tirai', 'Tirai bergantian kiri–kanan + zoom turun'], ['zoom', 'Zoom masuk (Tema 12)'], ['fade', 'Muncul perlahan (fade)'], ['none', 'Tanpa animasi']] },
     { k: 'gallery.slider', l: 'Slider foto berjalan sendiri (foto tampil utuh, landscape/portrait sesuai aslinya)', t: 'bool' },
     { k: 'gallery.sliderDir', l: 'Arah slider', t: 'select', o: [['right', 'Ke kanan'], ['left', 'Ke kiri']] },
     { k: 'gallery.sliderSpeed', l: 'Kecepatan slider', t: 'select', o: [['slow', 'Pelan'], ['normal', 'Normal'], ['fast', 'Cepat']] },

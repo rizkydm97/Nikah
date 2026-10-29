@@ -430,7 +430,7 @@
     "animStyle": "mist",
     "stageRatio": "2",
     "titleFont": "cover",
-    "galleryAnim": "tirai",
+    "galleryAnim": "flip3d",
     "parallax": true,
     "storyShape": "4/5"
   }
