@@ -329,9 +329,9 @@
       setBox(el, a);
     });
   }
-  // lebar kotak (a.w = % lebar layar; kosong / 0 = otomatis seperti bawaan). Elemen inline dijadikan inline-block supaya lebarnya bisa diatur.
+  // lebar kotak (a.w = % lebar layar yang tampak, tidak terpengaruh ukuran tulisan; kosong / 0 = otomatis seperti bawaan). Elemen inline dijadikan inline-block supaya lebarnya bisa diatur.
   function setBox(el, a) {
-    const w = parseFloat(a && a.w) || 0;
+    const w0 = parseFloat(a && a.w) || 0, sc = parseFloat(a && a.s) > 0 ? parseFloat(a.s) / 100 : 1, w = w0 / sc; // w = lebar tampak di layar; dibagi skala supaya mengecilkan tulisan tidak ikut mengecilkan kotak
     if (w > 0) {
       if (el.dataset.adD == null) el.dataset.adD = getComputedStyle(el).display;
       if (el.dataset.adD === 'inline') el.style.display = 'inline-block';
@@ -347,7 +347,7 @@
     if (editOn) return; editOn = true;
     document.documentElement.classList.add('sl-edit');
     // klik 2× pada tulisan = ubah teksnya langsung (Enter / klik di luar = simpan, Esc = batal; teks panjang: Enter = baris baru, Ctrl+Enter = simpan)
-    const HINT0 = 'Tarik = geser (garis pink = pas/sejajar) · Titik tepi = lebar kotak · Klik 2× = ubah teks';
+    const HINT0 = 'Tarik = geser (garis pink = pas/sejajar) · Titik tepi = lebar kotak · Shift + roda = ukuran tulisan · Klik 2× = ubah teks';
     let showHint = () => {};
     if (onText && getText) {
       const begin = (el) => {
@@ -388,7 +388,7 @@
 
     // ----- lapisan bantu: garis sejajar/tengah (pink) + titik pegangan lebar & ukuran kotak yang sedang dipilih -----
     const ov = document.createElement('div'); ov.className = 'sl-ov';
-    ov.innerHTML = '<b class="hd hl" data-h="l" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hr" data-h="r" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hs" data-h="s" title="Tarik = ukuran tulisan"></b>';
+    ov.innerHTML = '<b class="hd hl" data-h="l" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hr" data-h="r" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hs" data-h="s" title="Tarik = lebar kotak (ukuran tulisan tetap)"></b>';
     document.documentElement.appendChild(ov);
     const hL = ov.querySelector('.hl'), hR = ov.querySelector('.hr'), hS = ov.querySelector('.hs');
     let selKey = '';
@@ -481,15 +481,9 @@
       hd.classList.add('on'); el.classList.add('sl-dragging');
       const mv = (ev) => {
         const dx = ev.clientX - px0; if (Math.abs(dx) > 2) moved = true; if (!moved) return;
-        if (kind === 's') {
-          const s = Math.round(clamp((parseFloat(a0.s) || 100) * Math.max(0.1, (r0.width + dx) / r0.width), 30, 300));
-          a.s = s; el.style.scale = s === 100 ? '' : String(s / 100);
-          const r = el.getBoundingClientRect(); cx += (r0.left - r.left) / cw * 100; cy += (r0.top - r.top) / cw * 100; // sudut kiri-atas tetap
-        } else {
-          const nw = Math.max(r0.width * 0.1, r0.width + (kind === 'r' ? dx : -dx));
-          a.w = +clamp(nw / sc0 / cw * 100, 3, 100).toFixed(1); setBox(el, a);
-          const r = el.getBoundingClientRect(); cx += (kind === 'r' ? r0.left - r.left : r0.right - r.right) / cw * 100; // sisi seberang tetap
-        }
+        const nw = Math.max(r0.width * 0.1, r0.width + (kind === 'l' ? -dx : dx)); // pojok kanan-bawah ('s') = sama seperti tepi kanan
+        a.w = +clamp(nw / cw * 100, 3, 100).toFixed(1); setBox(el, a); // hanya lebar kotak; ukuran tulisan tidak berubah
+        const r = el.getBoundingClientRect(); cx += (kind === 'l' ? r0.right - r.right : r0.left - r.left) / cw * 100; // sisi seberang tetap
         putT(el, cx, cy); a.x = +cx.toFixed(2); a.y = +cy.toFixed(2); adj[key] = Object.assign({}, a);
       };
       const up = () => {
@@ -501,7 +495,7 @@
     });
     // klik 2× pada pegangan lebar = kembali ke lebar otomatis
     ov.addEventListener('dblclick', (e) => {
-      const hd = e.target.closest && e.target.closest('.hd'), el = selEl(); if (!hd || !el || hd.dataset.h === 's') return;
+      const hd = e.target.closest && e.target.closest('.hd'), el = selEl(); if (!hd || !el) return;
       e.preventDefault(); e.stopPropagation();
       const adj = getAdj(), key = el.dataset.ad, a = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}); delete a.w;
       adj[key] = a; setBox(el, a); done(JSON.parse(JSON.stringify(adj)));
@@ -515,7 +509,7 @@
       e.preventDefault();
       const key = el.dataset.ad, adj = getAdj(), a = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {});
       a.s = Math.round(Math.min(300, Math.max(30, (parseFloat(a.s) || 100) + (e.deltaY < 0 ? 4 : -4))));
-      adj[key] = a; el.style.scale = a.s === 100 ? '' : String(a.s / 100);
+      adj[key] = a; el.style.scale = a.s === 100 ? '' : String(a.s / 100); setBox(el, a);
       clearTimeout(wt); wt = setTimeout(() => done(JSON.parse(JSON.stringify(adj))), 350);
     }, { passive: false });
   }
