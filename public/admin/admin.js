@@ -63,6 +63,22 @@
     story: () => [['st.h', 'Judul Love Story'], ['ch.t', 'Judul tiap cerita'], ['ch.tx', 'Isi tiap cerita'], ['ch.y', 'Tahun tiap cerita']],
     closing: () => [['cl.orn', 'Garis & berlian di atas'], ['cl.k', 'Teks kecil'], ['cl.n1', 'Nama 1 (mis. Adi)'], ['cl.n2', 'Tanda & di antara nama'], ['cl.n3', 'Nama 2 (mis. Debby)'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.fd', 'Garis pemisah di bawah'], ['cl.ft', 'Nama bawah'], ['cl.fy', 'Tahun bawah']],
   };
+  const SL_GROUP = { cover: 'cover', open: 'hero', couple: 'couple', quote: 'quote', events: 'events', story: 'story', closing: 'closing' };
+  const SL_FONTS = [
+    ['Tulisan tangan / kaligrafi', ['Vivaldi', 'Great Vibes', 'Mrs Saint Delafield', 'Herr Von Muellerhoff', 'Monsieur La Doulaise', 'Allison', 'La Belle Aurore', 'Allura', 'Pinyon Script', 'Parisienne', 'Italianno', 'Whisper', 'Dancing Script', 'Alex Brush', 'Tangerine', 'Sacramento', 'Satisfy', 'Cookie', 'Playball', 'Rouge Script', 'Petit Formal Script', 'Marck Script', 'Kaushan Script', 'Lovers Quarrel', 'Mea Culpa', 'Ballet', 'Birthstone', 'Imperial Script', 'Ephesis', 'Square Peg', 'WindSong', 'Qwigley', 'Meddon', 'Arizonia', 'Bilbo Swash Caps', 'Yesteryear', 'Courgette', 'Niconne', 'Euphoria Script', 'Rochester', 'Style Script', 'Corinthia', 'Send Flowers', 'Fleur De Leah', 'Island Moments', 'Luxurious Script', 'Passions Conflict', 'The Nautigal', 'Hurricane', 'Licorice', 'Babylonica', 'Water Brush']],
+    ['Serif (huruf berkaki)', ['Cormorant Garamond', 'Cormorant Infant', 'Cormorant SC', 'Cormorant Upright', 'Playfair Display', 'Lora', 'Cinzel', 'Cinzel Decorative', 'Marcellus', 'Libre Baskerville', 'EB Garamond', 'Bodoni Moda', 'DM Serif Display', 'Prata', 'Italiana', 'Forum', 'Crimson Text', 'Spectral', 'Abhaya Libre', 'Alice', 'Gilda Display', 'Bellefair', 'Cardo', 'Old Standard TT', 'Abril Fatface', 'Limelight']],
+    ['Sans (polos)', ['Poppins', 'Montserrat', 'Josefin Sans', 'Raleway', 'Jost', 'Quicksand', 'Nunito', 'Lato', 'Open Sans', 'Inter', 'Questrial', 'Tenor Sans', 'Didact Gothic']],
+  ];
+  let slSel = '', skipGoto = false; // slSel = tulisan yang sedang diklik di pratinjau
+  const slLabel = (k) => { for (const n of Object.keys(SLADJ)) { const f = SLADJ[n]().find((x) => x[0] === k); if (f) return f[1]; } return ''; };
+  function paintSlSel(scroll) {
+    const lb = slSel ? slLabel(slSel) : '';
+    document.querySelectorAll('.sladj .sa-now').forEach((n) => { n.classList.toggle('on', !!lb); n.textContent = lb ? '👆 Sedang dipilih di pratinjau: ' + lb : 'Klik tulisan di pratinjau — barisnya di bawah ini akan ditandai biru.'; });
+    document.querySelectorAll('.sladj .sa-r').forEach((r) => {
+      const on = !!slSel && r.dataset.k === slSel; r.classList.toggle('sel', on);
+      if (on && scroll) { const d = r.closest('details'); if (d) d.open = true; r.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    });
+  }
   const sladjKeys = (set) => (set === 'all' ? Object.keys(SLADJ) : [set]).flatMap((n) => SLADJ[n]());
 
   // ---------- dirty & preview ----------
@@ -120,8 +136,25 @@
   addEventListener('message', (e) => {
     if (e.origin !== location.origin || !e.data || e.data.type !== 'sladj' || !cfg) return;
     const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
-    cfg.slide = cfg.slide || {}; cfg.slide.adj = e.data.adj && typeof e.data.adj === 'object' ? e.data.adj : {}; changed(true);
-    if (document.querySelector('#main .sladj')) { const sc = document.querySelector('.main, #main, main'); const y = sc ? sc.scrollTop : 0, wy = scrollY; show(current); if (sc) sc.scrollTop = y; scrollTo(0, wy); }
+    cfg.slide = cfg.slide || {};
+    { // font per tulisan hanya diatur di admin: jangan sampai hilang bila pratinjau belum sempat menerima pilihan font terbaru saat tulisan digeser
+      const inc = e.data.adj && typeof e.data.adj === 'object' ? e.data.adj : {}, old = cfg.slide.adj && typeof cfg.slide.adj === 'object' ? cfg.slide.adj : {};
+      Object.keys(old).forEach((k) => { const of = old[k] && old[k].f; if (!of) return; if (!inc[k]) inc[k] = { f: of }; else if (!inc[k].f) inc[k].f = of; });
+      cfg.slide.adj = inc;
+    }
+    changed(true); sendPreview();
+    if (document.querySelector('#main .sladj')) { const sc = document.querySelector('.main, #main, main'); const y = sc ? sc.scrollTop : 0, wy = scrollY; skipGoto = true; show(current); if (sc) sc.scrollTop = y; scrollTo(0, wy); paintSlSel(); }
+  });
+  // klik tulisan di pratinjau (Tema 13) -> buka bagian yang sesuai di panel kiri & tandai barisnya
+  addEventListener('message', async (e) => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'slsel' || !cfg) return;
+    const fr = $('#pvFrame'); if (!fr || e.source !== fr.contentWindow) return;
+    slSel = String(e.data.key || '');
+    if (!slSel) { paintSlSel(); return; }
+    const sn = Object.keys(SLADJ).find((n) => SLADJ[n]().some(([k]) => k === slSel));
+    if (!sn) { slSel = ''; paintSlSel(); toast('Tulisan ini belum punya pengaturan di panel kiri'); return; }
+    if (!document.querySelector('#main .sladj .sa-r[data-k="' + slSel.replace(/"/g, '') + '"]')) { skipGoto = true; await show(SL_GROUP[sn]); skipGoto = false; }
+    paintSlSel(true);
   });
   // hasil mengubah teks langsung di pratinjau (klik 2× pada tulisan, Tema 13) -> simpan ke isian yang sama di admin
   addEventListener('message', (e) => {
@@ -487,20 +520,28 @@
     const sets = f.set === 'all' ? Object.keys(SLADJ) : [f.set];
     const row = (k, l) => {
       const cur = () => Object.assign({ x: 0, y: 0, s: 100, w: 0 }, store()[k] || {});
-      const put = (p, v) => { const c = cur(); c[p] = v; if (!(+c.x) && !(+c.y) && +c.s === 100 && !(+c.w)) delete store()[k]; else store()[k] = c; changed(true); };
+      const put = (p, v) => { const c = cur(); c[p] = v; if (p === 'f' && !v) delete c.f; if (!(+c.x) && !(+c.y) && +c.s === 100 && !(+c.w) && !c.f) delete store()[k]; else store()[k] = c; changed(true); };
       const mk = (lab, p, min, max, step, unit) => {
         const fmt = (v) => (p === 'w' && !+v ? 'otomatis' : v + unit);
         const out = h('b', { class: 'rv-out' }, fmt(cur()[p]));
         const rg = h('input', { type: 'range', min, max, step, value: cur()[p], oninput: (e) => { out.textContent = fmt(e.target.value); put(p, +e.target.value); } });
         return h('label', { class: 'sa-c' }, h('span', {}, lab), rg, out);
       };
-      const r = h('div', { class: 'sa-r' }, h('div', { class: 'sa-h' }, h('b', {}, l), h('button', { class: 'btn sm', type: 'button', onclick: () => { delete store()[k]; changed(true); draw(); } }, 'Reset')),
-        h('div', { class: 'sa-g' }, mk('Kiri ↔ Kanan', 'x', -60, 60, 0.5, ''), mk('Atas ↕ Bawah', 'y', -80, 80, 0.5, ''), mk('Ukuran', 's', 30, 300, 1, '%'), mk('Lebar kotak', 'w', 0, 100, 0.5, '%')));
+      const fsel = h('select', { title: 'Font khusus untuk tulisan ini', onchange: (e) => { put('f', e.target.value); } },
+        h('option', { value: '' }, 'Ikuti font bawaan bagian ini'),
+        ...SL_FONTS.map(([g, list]) => h('optgroup', { label: g }, ...list.map((n) => h('option', { value: n, style: `font-family:'${n}',cursive` }, n)))));
+      fsel.value = cur().f || ''; if (fsel.value !== (cur().f || '')) { fsel.append(h('option', { value: cur().f }, cur().f)); fsel.value = cur().f; }
+      const r = h('div', { class: 'sa-r', 'data-k': k }, h('div', { class: 'sa-h' }, h('b', {}, l, h('span', { class: 'sa-tag' }, '◀ dipilih di pratinjau')), h('button', { class: 'btn sm', type: 'button', onclick: () => { delete store()[k]; changed(true); draw(); } }, 'Reset')),
+        h('div', { class: 'sa-g' }, mk('Kiri ↔ Kanan', 'x', -60, 60, 0.5, ''), mk('Atas ↕ Bawah', 'y', -80, 80, 0.5, ''), mk('Ukuran', 's', 30, 300, 1, '%'), mk('Lebar kotak', 'w', 0, 100, 0.5, '%'), h('label', { class: 'sa-c sa-f' }, h('span', {}, 'Font tulisan ini'), fsel)));
+      // menyentuh baris ini = tulisannya ikut terpilih (berbingkai biru) di pratinjau
+      r.addEventListener('pointerdown', () => { if (slSel !== k) { slSel = k; post({ type: 'slpick', key: k }); paintSlSel(); } });
+      r.addEventListener('focusin', () => { if (slSel !== k) { slSel = k; post({ type: 'slpick', key: k }); paintSlSel(); } });
       return r;
     };
     const draw = () => {
       box.textContent = '';
-      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan — garis pink muncul saat posisinya pas di tengah layar atau sejajar dengan tulisan lain (tahan Alt = geser bebas). Klik tulisan lalu tarik titik bulat di tepi kiri/kanan kotak untuk melebarkan/menyempitkan kotak (klik 2× titik = otomatis), titik kotak di pojok kanan-bawah sama fungsinya. Ukuran tulisan tidak ikut berubah — atur ukuran tulisan lewat slider Ukuran (atau Shift + roda mouse), lalu lebarkan kotaknya agar teks muat dalam satu baris. Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
+      box.append(h('div', { class: 'sa-now' }));
+      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan — garis pink muncul saat posisinya pas di tengah layar atau sejajar dengan tulisan lain (tahan Alt = geser bebas). Klik tulisan lalu tarik titik bulat di tepi kiri/kanan kotak untuk melebarkan/menyempitkan kotak (klik 2× titik = otomatis), titik kotak di pojok kanan-bawah sama fungsinya. Ukuran tulisan tidak ikut berubah — atur ukuran tulisan lewat slider Ukuran (atau Shift + roda mouse), lalu lebarkan kotaknya agar teks muat dalam satu baris. Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan. Setiap kali Anda mengklik tulisan di pratinjau, barisnya di bawah ini otomatis ditandai biru; font tiap tulisan dipilih di barisnya (kolom "Font tulisan ini").'));
       sets.forEach((sn) => {
         const items = SLADJ[sn]();
         const body = h('div', {}, items.length ? items.map(([k, l]) => row(k, l)) : h('p', { class: 'hint' }, 'Belum ada isi untuk diatur di bagian ini.'));
@@ -508,6 +549,7 @@
         else box.append(body);
       });
       if (f.set !== 'all') box.append(h('button', { class: 'btn danger sm', type: 'button', style: 'margin-top:10px', onclick: () => { const a = store(); sladjKeys(f.set).forEach(([k]) => { delete a[k]; }); changed(true); draw(); } }, 'Reset semua posisi & ukuran bagian ini'));
+      paintSlSel();
     };
     draw(); return box;
   }
@@ -894,7 +936,7 @@
       const g = SCHEMA.find((x) => x.id === id);
       const v = g ? groupView(g) : id === 'home' ? homeView() : id === 'sections' ? sectionsView() : /^d-(rsvp|wishes|gifts)$/.test(id) ? await dataView(id.slice(2)) : id === 'links' ? linksView() : securityView();
       main.textContent = ''; main.append(v); scrollTo(0, 0);
-      gotoPreview();
+      if (skipGoto) skipGoto = false; else gotoPreview();
     } catch (e) { main.textContent = e.message; }
   }
 

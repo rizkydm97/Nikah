@@ -327,7 +327,16 @@
       el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : '';
       el.style.scale = sc !== 1 ? String(sc) : '';
       setBox(el, a);
+      setFont(el, a);
     });
+  }
+  // font khusus satu tulisan (a.f = nama font; kosong = ikut font bawaan bagian itu)
+  const ADF_SERIF = ['Cormorant Garamond', 'Cormorant Infant', 'Cormorant SC', 'Cormorant Upright', 'Playfair Display', 'Lora', 'Cinzel', 'Cinzel Decorative', 'Marcellus', 'Libre Baskerville', 'EB Garamond', 'Bodoni Moda', 'DM Serif Display', 'Prata', 'Italiana', 'Forum', 'Crimson Text', 'Spectral', 'Abhaya Libre', 'Alice', 'Gilda Display', 'Bellefair', 'Cardo', 'Old Standard TT', 'Abril Fatface', 'Limelight'], ADF_SANS = ['Poppins', 'Montserrat', 'Josefin Sans', 'Raleway', 'Jost', 'Quicksand', 'Nunito', 'Lato', 'Open Sans', 'Inter', 'Questrial', 'Tenor Sans', 'Didact Gothic'];
+  const adfStack = (f) => (f === 'Vivaldi' ? "'Vivaldi','Great Vibes','Monsieur La Doulaise',cursive" : `'${f}',${ADF_SERIF.includes(f) ? 'Georgia,serif' : ADF_SANS.includes(f) ? 'Arial,sans-serif' : 'cursive'}`);
+  function setFont(el, a) {
+    const f = a && typeof a.f === 'string' ? a.f.replace(/['"\\;{}<>]/g, '').slice(0, 60) : '';
+    if (f) { el.style.setProperty('--adf', adfStack(f)); el.dataset.adf = '1'; }
+    else { el.style.removeProperty('--adf'); delete el.dataset.adf; }
   }
   // lebar kotak (a.w = % lebar layar yang tampak, tidak terpengaruh ukuran tulisan; kosong / 0 = otomatis seperti bawaan). Elemen inline dijadikan inline-block supaya lebarnya bisa diatur.
   function setBox(el, a) {
@@ -342,8 +351,8 @@
     }
   }
   // pratinjau admin: tulisan bisa ditarik langsung (geser) dan Shift + roda mouse = besar/kecil; hasil dikirim ke admin lewat done(adj)
-  let editOn = false, lastDrag = 0;
-  function edit(getAdj, done, onText, getText) {
+  let editOn = false, lastDrag = 0, pickFn = null;
+  function edit(getAdj, done, onText, getText, onSel) {
     if (editOn) return; editOn = true;
     document.documentElement.classList.add('sl-edit');
     // klik 2× pada tulisan = ubah teksnya langsung (Enter / klik di luar = simpan, Esc = batal; teks panjang: Enter = baris baru, Ctrl+Enter = simpan)
@@ -391,11 +400,13 @@
     ov.innerHTML = '<b class="hd hl" data-h="l" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hr" data-h="r" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hs" data-h="s" title="Tarik = lebar kotak (ukuran tulisan tetap)"></b>';
     document.documentElement.appendChild(ov);
     const hL = ov.querySelector('.hl'), hR = ov.querySelector('.hr'), hS = ov.querySelector('.hs');
-    let selKey = '';
+    let selKey = '', lastSel = null;
     const selEl = () => (selKey ? document.querySelector('[data-ad="' + selKey.replace(/"/g, '\\"') + '"]') : null);
     const place = () => {
       const el = selEl(), ok = el && el.isConnected && !el.classList.contains('sl-typing');
       ov.classList.toggle('has', !!ok);
+      if (lastSel && lastSel !== el) lastSel.classList.remove('sl-sel');
+      lastSel = ok ? el : null; if (ok) el.classList.add('sl-sel');
       if (ok) {
         const r = el.getBoundingClientRect(), mid = r.top + r.height / 2;
         hL.style.cssText = `left:${r.left}px;top:${mid}px`; hR.style.cssText = `left:${r.right}px;top:${mid}px`; hS.style.cssText = `left:${r.right}px;top:${r.bottom}px`;
@@ -439,10 +450,10 @@
       if (e.button > 0) return;
       if (e.target.closest && e.target.closest('.sl-ov')) return; // pegangan punya pendengar sendiri
       const el = e.target.closest && e.target.closest('[data-ad]');
-      if (!el) { selKey = ''; return; }
+      if (!el) { if (selKey) { selKey = ''; if (onSel) onSel(''); } return; }
       if (e.target.closest('.sl-typing')) return; // sedang mengetik: biarkan kursor bekerja, jangan memulai geser
       const cont = wrapOf(el); if (!cont) return;
-      selKey = el.dataset.ad;
+      selKey = el.dataset.ad; if (onSel) onSel(selKey);
       const key = el.dataset.ad, w = cont.getBoundingClientRect().width || 1, adj = getAdj();
       const a0 = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}), x0 = e.clientX, y0 = e.clientY; let moved = false;
       e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch (er) { /* abaikan */ }
@@ -503,6 +514,7 @@
     // klik setelah menggeser jangan ikut menekan tombol (mis. Buka Undangan)
     document.addEventListener('click', (e) => { if (Date.now() - lastDrag < 400 && e.target.closest('[data-ad]')) { e.preventDefault(); e.stopPropagation(); } }, true);
     let wt = 0;
+    pickFn = (key) => { selKey = key || ''; const el = selEl(); if (el) { try { const r = el.getBoundingClientRect(); if (r.top < 60 || r.bottom > innerHeight - 60) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (er) { /* abaikan */ } } };
     document.addEventListener('wheel', (e) => {
       if (!e.shiftKey) return;
       const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;
@@ -530,7 +542,7 @@
   }
 
   window.SLIDE = {
-    cover, hero, couple, quote, events, story, closing, open, fx, order, chars, words, adjust, edit, toTop,
+    cover, hero, couple, quote, events, story, closing, open, fx, order, chars, words, adjust, edit, toTop, pick: (k) => { if (pickFn) pickFn(k); },
     deco: M.deco || {}, colors: M.colors || {}, assets: M.assets || [],
   };
 })();

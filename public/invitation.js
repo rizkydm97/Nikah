@@ -152,6 +152,7 @@
         const y = scrollY; render(e.data.cfg); if (opened) { reveal(); requestAnimationFrame(() => scrollTo(0, y)); }
       }
       if (e.data.type === 'goto') gotoSection(e.data.id);
+      if (e.data.type === 'slpick' && window.SLIDE && window.SLIDE.pick) window.SLIDE.pick(String(e.data.key || ''));
       if (e.data.type === 'replay') replaySection(e.data.id);
     });
   }
@@ -304,7 +305,7 @@
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's'); r.setProperty('--tk', String(sp));
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
-    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' || isSl ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri'])].filter((n) => n && n !== 'Vivaldi').map((n) => {
+    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' || isSl ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri', ...(isSl && c.slide && c.slide.adj ? Object.values(c.slide.adj).map((a) => a && a.f) : [])])].filter((n) => n && typeof n === 'string' && n !== 'Vivaldi').map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
       if (!w) return 'family=' + nm;
       const ws = w.split(';');
@@ -1344,7 +1345,8 @@
       window.SLIDE.adjust(cfg); window.SLIDE.toTop(true);
       if (PREVIEW) window.SLIDE.edit(() => { const s = (C.slide = C.slide || {}); return (s.adj = s.adj && typeof s.adj === 'object' ? s.adj : {}); }, (adj) => { try { parent.postMessage({ type: 'sladj', adj }, location.origin); } catch (e) { /* abaikan */ } },
         (path, value) => { try { parent.postMessage({ type: 'sltext', path, value }, location.origin); } catch (e) { /* abaikan */ } },
-        (path) => { const pr = String(path).split('#'), v = pr[0].split('.').reduce((o, k) => (o == null ? undefined : o[k]), C), tx = v == null ? '' : String(v); if (pr[1] == null) return tx; const i = tx.indexOf('&'), ps = i < 0 ? [tx.trim(), ''] : [tx.slice(0, i).trim(), tx.slice(i + 1).trim()]; return ps[+pr[1]] || ''; });
+        (path) => { const pr = String(path).split('#'), v = pr[0].split('.').reduce((o, k) => (o == null ? undefined : o[k]), C), tx = v == null ? '' : String(v); if (pr[1] == null) return tx; const i = tx.indexOf('&'), ps = i < 0 ? [tx.trim(), ''] : [tx.slice(0, i).trim(), tx.slice(i + 1).trim()]; return ps[+pr[1]] || ''; },
+        (key) => { try { parent.postMessage({ type: 'slsel', key }, location.origin); } catch (e) { /* abaikan */ } });
     } else if (window.SLIDE) window.SLIDE.toTop(false);
     bind(cfg);
     if (PT) picGL($('#s-hero .pstage'));
