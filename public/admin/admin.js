@@ -486,20 +486,21 @@
     const store = () => { const sl = (cfg.slide = cfg.slide || {}); if (!sl.adj || typeof sl.adj !== 'object') sl.adj = {}; return sl.adj; };
     const sets = f.set === 'all' ? Object.keys(SLADJ) : [f.set];
     const row = (k, l) => {
-      const cur = () => Object.assign({ x: 0, y: 0, s: 100 }, store()[k] || {});
-      const put = (p, v) => { const c = cur(); c[p] = v; if (!(+c.x) && !(+c.y) && +c.s === 100) delete store()[k]; else store()[k] = c; changed(true); };
+      const cur = () => Object.assign({ x: 0, y: 0, s: 100, w: 0 }, store()[k] || {});
+      const put = (p, v) => { const c = cur(); c[p] = v; if (!(+c.x) && !(+c.y) && +c.s === 100 && !(+c.w)) delete store()[k]; else store()[k] = c; changed(true); };
       const mk = (lab, p, min, max, step, unit) => {
-        const out = h('b', { class: 'rv-out' }, cur()[p] + unit);
-        const rg = h('input', { type: 'range', min, max, step, value: cur()[p], oninput: (e) => { out.textContent = e.target.value + unit; put(p, +e.target.value); } });
+        const fmt = (v) => (p === 'w' && !+v ? 'otomatis' : v + unit);
+        const out = h('b', { class: 'rv-out' }, fmt(cur()[p]));
+        const rg = h('input', { type: 'range', min, max, step, value: cur()[p], oninput: (e) => { out.textContent = fmt(e.target.value); put(p, +e.target.value); } });
         return h('label', { class: 'sa-c' }, h('span', {}, lab), rg, out);
       };
       const r = h('div', { class: 'sa-r' }, h('div', { class: 'sa-h' }, h('b', {}, l), h('button', { class: 'btn sm', type: 'button', onclick: () => { delete store()[k]; changed(true); draw(); } }, 'Reset')),
-        h('div', { class: 'sa-g' }, mk('Kiri ↔ Kanan', 'x', -60, 60, 0.5, ''), mk('Atas ↕ Bawah', 'y', -80, 80, 0.5, ''), mk('Ukuran', 's', 30, 300, 1, '%')));
+        h('div', { class: 'sa-g' }, mk('Kiri ↔ Kanan', 'x', -60, 60, 0.5, ''), mk('Atas ↕ Bawah', 'y', -80, 80, 0.5, ''), mk('Ukuran', 's', 30, 300, 1, '%'), mk('Lebar kotak', 'w', 0, 100, 0.5, '%')));
       return r;
     };
     const draw = () => {
       box.textContent = '';
-      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan (Shift + roda mouse = besar/kecil). Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
+      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan — garis pink muncul saat posisinya pas di tengah layar atau sejajar dengan tulisan lain (tahan Alt = geser bebas). Klik tulisan lalu tarik titik bulat di tepi kiri/kanan kotak untuk melebarkan/menyempitkan kotak (klik 2× titik = otomatis), titik kotak di pojok kanan-bawah = besar/kecil (atau Shift + roda mouse). Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan.'));
       sets.forEach((sn) => {
         const items = SLADJ[sn]();
         const body = h('div', {}, items.length ? items.map(([k, l]) => row(k, l)) : h('p', { class: 'hint' }, 'Belum ada isi untuk diatur di bagian ini.'));

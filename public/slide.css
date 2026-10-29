@@ -518,3 +518,15 @@ html[data-sl-gal="tilt3d"] .t-slide .gallery :is(.gi,.mi).rv:not(.in){transform:
 html[data-sl-gal="depth3d"] .t-slide .gallery :is(.gi,.mi).rv:not(.in){transform:perspective(900px) translateZ(-340px) rotateY(-16deg) translateX(-26px);transform-origin:50% 50%}
 html[data-sl-gal="depth3d"] .t-slide .gallery :is(.gi,.mi).rv:nth-child(even):not(.in){transform:perspective(900px) translateZ(-340px) rotateY(16deg) translateX(26px)}
 @media (prefers-reduced-motion:reduce){html[data-sl-gal] .t-slide .gallery :is(.gi,.mi).rv{transform:none!important;opacity:1!important;transition:none!important}}
+
+/* pratinjau admin: garis bantu sejajar/tengah + pegangan lebar & ukuran kotak */
+.sl-ov{position:fixed;inset:0;z-index:98;pointer-events:none}
+.sl-ov .g{position:absolute;background:#ff2d8f;pointer-events:none;box-shadow:0 0 0 .5px rgba(255,255,255,.6)}
+.sl-ov .gv{width:1px}.sl-ov .gh{height:1px}
+.sl-ov .g::after{content:attr(data-t);position:absolute;top:3px;left:5px;font:600 9px/1 system-ui,sans-serif;color:#fff;background:#ff2d8f;padding:2px 5px;border-radius:3px;white-space:nowrap}
+.sl-ov .gh::after{top:3px;left:3px}
+.sl-ov .hd{position:absolute;display:none;width:13px;height:13px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;border:2px solid #3b82f6;box-shadow:0 1px 4px rgba(0,0,0,.45);pointer-events:auto;touch-action:none;cursor:ew-resize}
+.sl-ov .hd::after{content:"";position:absolute;inset:-10px}
+.sl-ov .hd.hs{border-radius:3px;cursor:nwse-resize;background:#3b82f6;border-color:#fff}
+.sl-ov .hd.on{background:#3b82f6}
+.sl-ov.has .hd{display:block}

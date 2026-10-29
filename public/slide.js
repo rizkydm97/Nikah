@@ -326,7 +326,20 @@
       const a = adj[el.dataset.ad || el.dataset.adg] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
       el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : '';
       el.style.scale = sc !== 1 ? String(sc) : '';
+      setBox(el, a);
     });
+  }
+  // lebar kotak (a.w = % lebar layar; kosong / 0 = otomatis seperti bawaan). Elemen inline dijadikan inline-block supaya lebarnya bisa diatur.
+  function setBox(el, a) {
+    const w = parseFloat(a && a.w) || 0;
+    if (w > 0) {
+      if (el.dataset.adD == null) el.dataset.adD = getComputedStyle(el).display;
+      if (el.dataset.adD === 'inline') el.style.display = 'inline-block';
+      el.style.width = CQ.w(w); el.style.maxWidth = 'none'; el.style.boxSizing = 'border-box';
+    } else {
+      el.style.width = ''; el.style.maxWidth = ''; el.style.boxSizing = '';
+      if (el.dataset.adD === 'inline') el.style.display = '';
+    }
   }
   // pratinjau admin: tulisan bisa ditarik langsung (geser) dan Shift + roda mouse = besar/kecil; hasil dikirim ke admin lewat done(adj)
   let editOn = false, lastDrag = 0;
@@ -334,7 +347,7 @@
     if (editOn) return; editOn = true;
     document.documentElement.classList.add('sl-edit');
     // klik 2× pada tulisan = ubah teksnya langsung (Enter / klik di luar = simpan, Esc = batal; teks panjang: Enter = baris baru, Ctrl+Enter = simpan)
-    const HINT0 = 'Tarik = geser · Klik 2× = ubah teks · Enter = baris baru · Shift + roda = ukuran';
+    const HINT0 = 'Tarik = geser (garis pink = pas/sejajar) · Titik tepi = lebar kotak · Klik 2× = ubah teks';
     let showHint = () => {};
     if (onText && getText) {
       const begin = (el) => {
@@ -369,11 +382,67 @@
       showHint = (t, on) => { hint.textContent = t; hint.classList.remove('off'); clearTimeout(hT); if (!on) hT = setTimeout(() => hint.classList.add('off'), 3500); };
     }
     const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open,.sl-foot');
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+    const ts = (a) => ({ x: parseFloat(a.x) || 0, y: parseFloat(a.y) || 0 });
+    const putT = (el, x, y) => { el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : ''; };
+
+    // ----- lapisan bantu: garis sejajar/tengah (pink) + titik pegangan lebar & ukuran kotak yang sedang dipilih -----
+    const ov = document.createElement('div'); ov.className = 'sl-ov';
+    ov.innerHTML = '<b class="hd hl" data-h="l" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hr" data-h="r" title="Tarik = lebar kotak (klik 2× = otomatis)"></b><b class="hd hs" data-h="s" title="Tarik = ukuran tulisan"></b>';
+    document.documentElement.appendChild(ov);
+    const hL = ov.querySelector('.hl'), hR = ov.querySelector('.hr'), hS = ov.querySelector('.hs');
+    let selKey = '';
+    const selEl = () => (selKey ? document.querySelector('[data-ad="' + selKey.replace(/"/g, '\\"') + '"]') : null);
+    const place = () => {
+      const el = selEl(), ok = el && el.isConnected && !el.classList.contains('sl-typing');
+      ov.classList.toggle('has', !!ok);
+      if (ok) {
+        const r = el.getBoundingClientRect(), mid = r.top + r.height / 2;
+        hL.style.cssText = `left:${r.left}px;top:${mid}px`; hR.style.cssText = `left:${r.right}px;top:${mid}px`; hS.style.cssText = `left:${r.right}px;top:${r.bottom}px`;
+      }
+      requestAnimationFrame(place);
+    };
+    requestAnimationFrame(place);
+    const showGuides = (list) => {
+      ov.querySelectorAll('.g').forEach((g) => g.remove());
+      (list || []).forEach((g) => {
+        const d = document.createElement('i'); d.className = 'g ' + (g.v ? 'gv' : 'gh'); d.dataset.t = g.t || '';
+        d.style.cssText = g.v ? `left:${g.p}px;top:${g.a}px;height:${g.b - g.a}px` : `top:${g.p}px;left:${g.a}px;width:${g.b - g.a}px`;
+        ov.appendChild(d);
+      });
+    };
+    // cari posisi yang "pas": tengah layar, atau sejajar tepi/tengah tulisan lain di bagian yang sama
+    const SNAP = 6;
+    const snap = (el, cont) => {
+      const cr = cont.getBoundingClientRect(), r = el.getBoundingClientRect();
+      const X = [{ p: cr.left + cr.width / 2, t: 'Tengah layar' }], Y = [{ p: cr.top + cr.height / 2, t: 'Tengah layar' }];
+      cont.querySelectorAll('[data-ad]').forEach((o) => {
+        if (o === el || o.contains(el) || el.contains(o)) return;
+        const q = o.getBoundingClientRect(); if (q.width < 2 || q.height < 2) return;
+        const cs = getComputedStyle(o); if (cs.visibility === 'hidden' || cs.display === 'none') return;
+        X.push({ p: q.left, t: 'Sejajar kiri' }, { p: q.left + q.width / 2, t: 'Sejajar tengah' }, { p: q.right, t: 'Sejajar kanan' });
+        Y.push({ p: q.top, t: 'Sejajar atas' }, { p: q.top + q.height / 2, t: 'Sejajar tengah' }, { p: q.bottom, t: 'Sejajar bawah' });
+      });
+      const best = (mine, T) => {
+        let b = null;
+        mine.forEach((m) => T.forEach((t) => { const d = t.p - m; if (Math.abs(d) <= SNAP && (!b || Math.abs(d) < Math.abs(b.d) - 0.01)) b = { d, p: t.p, t: t.t }; }));
+        return b;
+      };
+      const bx = best([r.left, r.left + r.width / 2, r.right], X), by = best([r.top, r.top + r.height / 2, r.bottom], Y);
+      const g = [];
+      if (bx) g.push({ v: 1, p: bx.p, a: cr.top, b: cr.bottom, t: bx.t });
+      if (by) g.push({ p: by.p, a: cr.left, b: cr.right, t: by.t });
+      return { dx: bx ? bx.d : 0, dy: by ? by.d : 0, g };
+    };
+
     document.addEventListener('pointerdown', (e) => {
       if (e.button > 0) return;
-      const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;
+      if (e.target.closest && e.target.closest('.sl-ov')) return; // pegangan punya pendengar sendiri
+      const el = e.target.closest && e.target.closest('[data-ad]');
+      if (!el) { selKey = ''; return; }
       if (e.target.closest('.sl-typing')) return; // sedang mengetik: biarkan kursor bekerja, jangan memulai geser
       const cont = wrapOf(el); if (!cont) return;
+      selKey = el.dataset.ad;
       const key = el.dataset.ad, w = cont.getBoundingClientRect().width || 1, adj = getAdj();
       const a0 = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}), x0 = e.clientX, y0 = e.clientY; let moved = false;
       e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch (er) { /* abaikan */ }
@@ -381,16 +450,62 @@
       const mv = (ev) => {
         const dx = ev.clientX - x0, dy = ev.clientY - y0; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
         if (!moved) return;
-        const n = { x: +((parseFloat(a0.x) || 0) + dx / w * 100).toFixed(2), y: +((parseFloat(a0.y) || 0) + dy / w * 100).toFixed(2), s: a0.s };
-        adj[key] = n; el.style.translate = `${CQ.w(n.x)} ${CQ.w(n.y)}`;
+        let nx = (parseFloat(a0.x) || 0) + dx / w * 100, ny = (parseFloat(a0.y) || 0) + dy / w * 100;
+        putT(el, nx, ny);
+        let g = [];
+        if (!ev.altKey) { // tahan Alt = geser bebas tanpa tarikan magnet
+          const sn = snap(el, cont);
+          if (sn.dx || sn.dy) { nx += sn.dx / w * 100; ny += sn.dy / w * 100; putT(el, nx, ny); }
+          g = sn.g;
+        }
+        showGuides(g);
+        adj[key] = Object.assign({}, a0, { x: +nx.toFixed(2), y: +ny.toFixed(2) });
       };
       const up = () => {
         el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
-        el.classList.remove('sl-dragging');
+        el.classList.remove('sl-dragging'); showGuides([]);
         if (moved) { lastDrag = Date.now(); done(JSON.parse(JSON.stringify(adj))); }
       };
       el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
     }, true);
+
+    // pegangan: kiri/kanan = lebar kotak (sisi seberang tetap diam), pojok kanan-bawah = ukuran tulisan
+    ov.addEventListener('pointerdown', (e) => {
+      const hd = e.target.closest && e.target.closest('.hd'), el = selEl(); if (!hd || !el) return;
+      const cont = wrapOf(el); if (!cont) return;
+      e.preventDefault(); e.stopPropagation();
+      const kind = hd.dataset.h, key = el.dataset.ad, cw = cont.getBoundingClientRect().width || 1, adj = getAdj();
+      const a0 = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}), r0 = el.getBoundingClientRect(), px0 = e.clientX, sc0 = (parseFloat(a0.s) || 100) / 100;
+      let cx = parseFloat(a0.x) || 0, cy = parseFloat(a0.y) || 0, a = Object.assign({}, a0), moved = false;
+      try { hd.setPointerCapture(e.pointerId); } catch (er) { /* abaikan */ }
+      hd.classList.add('on'); el.classList.add('sl-dragging');
+      const mv = (ev) => {
+        const dx = ev.clientX - px0; if (Math.abs(dx) > 2) moved = true; if (!moved) return;
+        if (kind === 's') {
+          const s = Math.round(clamp((parseFloat(a0.s) || 100) * Math.max(0.1, (r0.width + dx) / r0.width), 30, 300));
+          a.s = s; el.style.scale = s === 100 ? '' : String(s / 100);
+          const r = el.getBoundingClientRect(); cx += (r0.left - r.left) / cw * 100; cy += (r0.top - r.top) / cw * 100; // sudut kiri-atas tetap
+        } else {
+          const nw = Math.max(r0.width * 0.1, r0.width + (kind === 'r' ? dx : -dx));
+          a.w = +clamp(nw / sc0 / cw * 100, 3, 100).toFixed(1); setBox(el, a);
+          const r = el.getBoundingClientRect(); cx += (kind === 'r' ? r0.left - r.left : r0.right - r.right) / cw * 100; // sisi seberang tetap
+        }
+        putT(el, cx, cy); a.x = +cx.toFixed(2); a.y = +cy.toFixed(2); adj[key] = Object.assign({}, a);
+      };
+      const up = () => {
+        hd.removeEventListener('pointermove', mv); hd.removeEventListener('pointerup', up); hd.removeEventListener('pointercancel', up);
+        hd.classList.remove('on'); el.classList.remove('sl-dragging');
+        if (moved) { lastDrag = Date.now(); done(JSON.parse(JSON.stringify(adj))); }
+      };
+      hd.addEventListener('pointermove', mv); hd.addEventListener('pointerup', up); hd.addEventListener('pointercancel', up);
+    });
+    // klik 2× pada pegangan lebar = kembali ke lebar otomatis
+    ov.addEventListener('dblclick', (e) => {
+      const hd = e.target.closest && e.target.closest('.hd'), el = selEl(); if (!hd || !el || hd.dataset.h === 's') return;
+      e.preventDefault(); e.stopPropagation();
+      const adj = getAdj(), key = el.dataset.ad, a = Object.assign({ x: 0, y: 0, s: 100 }, adj[key] || {}); delete a.w;
+      adj[key] = a; setBox(el, a); done(JSON.parse(JSON.stringify(adj)));
+    });
     // klik setelah menggeser jangan ikut menekan tombol (mis. Buka Undangan)
     document.addEventListener('click', (e) => { if (Date.now() - lastDrag < 400 && e.target.closest('[data-ad]')) { e.preventDefault(); e.stopPropagation(); } }, true);
     let wt = 0;
