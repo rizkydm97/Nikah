@@ -776,11 +776,12 @@
         out.append(h('div', { class: 'linkrow' }, h('span', {}, n),
           h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(link).then(() => toast('Link disalin ✓')) }, 'Salin link'),
           h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'),
-          h('a', { class: 'btn sm pri', href: 'https://wa.me/?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, 'Kirim WhatsApp')));
+          h('a', { class: 'btn sm pri', href: 'https://wa.me/?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, 'Kirim WhatsApp'),
+          h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => { const L = names.value.split('\n'); const i = L.findIndex((l) => l.trim() === n); if (i >= 0) L.splice(i, 1); names.value = L.join('\n'); gen(); } }, '🗑')));
       });
     };
     m.append(h('div', { class: 'card' }, h('h3', { style: 'margin:0 0 8px' }, 'Cara 1 — Buat link, kirim sendiri'),
-      h('div', { class: 'fld' }, h('label', {}, 'Daftar nama tamu'), names), h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl), h('button', { class: 'btn pri', onclick: gen }, 'Buat link')), out);
+      h('div', { class: 'fld' }, h('label', {}, 'Daftar nama tamu'), names), h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl), h('div', { class: 'row', style: 'flex-wrap:wrap' }, h('button', { class: 'btn pri', onclick: gen }, 'Buat link'), h('button', { class: 'btn danger', onclick: () => { if (!names.value.trim() || !confirm('Hapus SEMUA nama dari daftar ini?')) return; names.value = ''; gen(); } }, '🗑 Hapus semua daftar'))), out);
     gen();
 
     // ----- Cara 2 (baru): nama + nomor WA -> tombol langsung membuka chat ke nomor itu dengan pesan siap kirim -----
@@ -792,8 +793,12 @@
     const out2 = h('div');
     const parse = () => list2.value.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
       const mm = /^(.*?)\s*(?:\||,|;|\t)\s*(\+?[\d][\d\s\-().]{7,})$/.exec(l) || /^(.*?)\s+(\+?\d[\d\-().]{7,})$/.exec(l);
-      return mm ? { name: mm[1].trim(), tel: toWa(mm[2]), raw: mm[2].trim() } : { name: l, tel: '', raw: '' };
+      return mm ? { name: mm[1].trim(), tel: toWa(mm[2]), raw: mm[2].trim(), src: l } : { name: l, tel: '', raw: '', src: l };
     }).filter((x) => x.name);
+    const delGuest = (x) => {
+      const ls_ = list2.value.split('\n'); const i = ls_.findIndex((l) => l.trim() === x.src);
+      if (i >= 0) ls_.splice(i, 1); list2.value = ls_.join('\n'); sentSet.delete(x.name + '|' + x.tel); saveSent(); gen2();
+    };
     const gen2 = () => {
       lsSet('lk2_list', list2.value); lsSet('lk2_tpl', tpl2.value); out2.textContent = '';
       const rows = parse(); let ok = 0; const queue = []; let redraw = null;
@@ -811,8 +816,8 @@
           paint();
           a.addEventListener('click', mark);
           queue.push({ key, name: x.name, url: a.href, mark, row });
-          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'), a);
-        } else row.append(h('span', {}, x.name, h('br'), st), h('small', { class: 'lkbad' }, 'Tulis: Nama | 0812xxxx'));
+          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => delGuest(x) }, '🗑'), h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'), a);
+        } else row.append(h('span', {}, x.name, h('br'), st), h('small', { class: 'lkbad' }, 'Tulis: Nama | 0812xxxx'), h('button', { class: 'btn sm danger', type: 'button', onclick: () => delGuest(x) }, '🗑'));
         out2.append(row);
       });
       if (queue.length) {
@@ -843,7 +848,8 @@
       h('div', { class: 'fld' }, h('label', {}, 'Daftar tamu: satu per baris, format "Nama | Nomor WA" (08xx, 628xx, atau +62 semua bisa)'), list2),
       h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl2),
       h('div', { class: 'row', style: 'flex-wrap:wrap' }, h('button', { class: 'btn pri', onclick: gen2 }, 'Buat daftar kirim'),
-        h('button', { class: 'btn', onclick: () => { if (!confirm('Kosongkan tanda "Terkirim"?')) return; sentSet.clear(); saveSent(); gen2(); } }, 'Reset tanda terkirim'))), out2);
+        h('button', { class: 'btn', onclick: () => { if (!confirm('Kosongkan tanda "Terkirim"?')) return; sentSet.clear(); saveSent(); gen2(); } }, 'Reset tanda terkirim'),
+        h('button', { class: 'btn danger', onclick: () => { if (!list2.value.trim() || !confirm('Hapus SEMUA tamu dari daftar ini?')) return; list2.value = ''; sentSet.clear(); saveSent(); gen2(); } }, '🗑 Hapus semua daftar'))), out2);
     gen2(); return m;
   }
 
