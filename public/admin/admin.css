@@ -280,4 +280,12 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .glist .gr .grt{flex:1;min-width:0}
 .linkrow.sent{background:#f1f8f1}
 .linkrow .lkst{color:var(--mu);font-weight:400}.linkrow .lkbad{color:#b3261e}
-.sentbadge{color:#1e7d32;font-size:12px;font-weight:600}
+.sentbadge{font:600 12px system-ui,sans-serif;padding:4px 10px;border-radius:999px;border:1px solid #d9b25a;background:#fff6e0;color:#8a5a00;cursor:pointer}
+.sentbadge.on{border-color:#1e7d32;background:#e3f4e5;color:#1e7d32}
+.sumbar{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap}.cs{font:600 13px system-ui,sans-serif;padding:5px 12px;border-radius:8px;background:#fff6e0;color:#8a5a00}.cs.on{background:#e3f4e5;color:#1e7d32}
+
+.qwrap{margin:10px 0}
+.qbox{position:sticky;bottom:8px;z-index:5;background:#fff;border:2px solid #a8283f;border-radius:12px;padding:12px;margin-top:10px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.qbox[hidden]{display:none}
+.qprog{height:6px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:8px}.qprog>div{height:100%;background:#1e7d32;width:0;transition:width .3s}
+.qinfo{font-size:13px;margin-bottom:8px}

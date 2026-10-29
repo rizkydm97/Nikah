@@ -796,18 +796,47 @@
     }).filter((x) => x.name);
     const gen2 = () => {
       lsSet('lk2_list', list2.value); lsSet('lk2_tpl', tpl2.value); out2.textContent = '';
-      const rows = parse(); let ok = 0;
+      const rows = parse(); let ok = 0; const queue = []; let redraw = null;
+      const sumEl = h('div', { class: 'sumbar' });
+      const counts = () => { const n = queue.filter((q) => sentSet.has(q.key)).length; sumEl.innerHTML = '<span class="cs on">✓ Terkirim: ' + n + '</span><span class="cs">○ Belum: ' + (queue.length - n) + '</span>'; };
       rows.forEach((x) => {
         const key = x.name + '|' + x.tel, msg = fill(tpl2.value, x.name);
         const row = h('div', { class: 'linkrow' + (sentSet.has(key) ? ' sent' : '') });
         const st = h('small', { class: 'lkst' }, x.tel ? '+' + x.tel : 'Nomor tidak valid');
         if (x.tel) { ok++; const a = h('a', { class: 'btn sm pri', href: 'https://wa.me/' + x.tel + '?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, sentSet.has(key) ? 'Kirim lagi' : 'Kirim ke WA');
-          a.addEventListener('click', () => { sentSet.add(key); saveSent(); row.classList.add('sent'); a.textContent = 'Kirim lagi'; badge.hidden = false; });
-          var badge = h('span', { class: 'sentbadge' }, '✓ Terkirim'); badge.hidden = !sentSet.has(key);
+          var badge = h('button', { class: 'sentbadge', type: 'button', title: 'Klik untuk ubah tanda manual' });
+          const paint = () => { const d = sentSet.has(key); row.classList.toggle('sent', d); badge.classList.toggle('on', d); badge.textContent = d ? '✓ Sudah terkirim' : '○ Belum terkirim'; a.textContent = d ? 'Kirim lagi' : 'Kirim ke WA'; };
+          const mark = () => { sentSet.add(key); saveSent(); paint(); counts(); };
+          badge.onclick = () => { sentSet.has(key) ? sentSet.delete(key) : sentSet.add(key); saveSent(); paint(); counts(); if (typeof redraw === 'function') redraw(); };
+          paint();
+          a.addEventListener('click', mark);
+          queue.push({ key, name: x.name, url: a.href, mark, row });
           row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'), a);
         } else row.append(h('span', {}, x.name, h('br'), st), h('small', { class: 'lkbad' }, 'Tulis: Nama | 0812xxxx'));
         out2.append(row);
       });
+      if (queue.length) {
+        // ----- Kirim semua berurutan: satu tombol, tiap klik membuka chat tamu berikutnya (tab WhatsApp yang sama dipakai ulang) -----
+        let idx = 0, active = false;
+        const nextIdx = () => { while (idx < queue.length && sentSet.has(queue[idx].key)) idx++; return idx; };
+        const info = h('div', { class: 'qinfo' }), bar = h('div', { class: 'qbar' }), go = h('button', { class: 'btn pri', type: 'button' }), skip = h('button', { class: 'btn', type: 'button' }, 'Lewati'), stop = h('button', { class: 'btn', type: 'button' }, 'Berhenti');
+        const box = h('div', { class: 'qbox' }, h('div', { class: 'qprog' }, bar), info, h('div', { class: 'row', style: 'flex-wrap:wrap;gap:6px' }, go, skip, stop));
+        const draw = () => {
+          counts(); const left = queue.filter((q) => !sentSet.has(q.key)).length;
+          bar.style.width = Math.round((queue.length - left) / queue.length * 100) + '%';
+          if (!active) { box.hidden = true; startBtn.textContent = left ? '▶ Kirim semua berurutan (' + left + ' tamu)' : '✓ Semua sudah terkirim'; startBtn.disabled = !left; return; }
+          box.hidden = false; const i = nextIdx();
+          if (i >= queue.length) { active = false; toast('Semua undangan sudah dikirim ✓'); draw(); return; }
+          info.textContent = 'Berikutnya: ' + queue[i].name + ' — ' + (queue.length - left + 1) + ' dari ' + queue.length + '. Setelah WhatsApp terbuka, tekan kirim di sana, lalu kembali ke sini dan klik Lanjut (atau tekan Enter).';
+          go.textContent = '▶ Buka chat ' + queue[i].name; setTimeout(() => go.focus({ preventScroll: true }), 50);
+        };
+        const openNext = () => { const i = nextIdx(); if (i >= queue.length) { draw(); return; } const q = queue[i]; window.open(q.url, 'wa_kirim_undangan'); q.mark(); q.row.scrollIntoView({ block: 'nearest' }); idx = i + 1; draw(); };
+        const startBtn = h('button', { class: 'btn pri', type: 'button', onclick: () => { idx = 0; active = true; draw(); openNext(); } });
+        go.onclick = openNext; skip.onclick = () => { const i = nextIdx(); if (i < queue.length) idx = i + 1; draw(); }; stop.onclick = () => { active = false; draw(); };
+        box.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === box) { e.preventDefault(); openNext(); } });
+        out2.append(h('div', { class: 'qwrap' }, startBtn, box)); redraw = draw; draw();
+      }
+      counts(); if (queue.length) out2.prepend(sumEl);
       if (rows.length) out2.prepend(h('p', { class: 'hint', style: 'margin:10px 0 4px' }, ok + ' dari ' + rows.length + ' tamu punya nomor valid. Klik "Kirim ke WA" → WhatsApp terbuka ke nomor itu dengan pesan siap kirim; tinggal tekan kirim.'));
     };
     m.append(h('div', { class: 'card', style: 'margin-top:14px' }, h('h3', { style: 'margin:0 0 8px' }, 'Cara 2 — Kirim langsung ke nomor WA tamu'),
