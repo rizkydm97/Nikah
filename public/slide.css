@@ -173,8 +173,9 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-q .cd span{color:var(--body);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
 .sl-q .cds .sep{color:var(--ink);opacity:.35;padding-top:2px}
 .sl-q .sl-save{background:#1d1a18;color:#fff;border-radius:999px;padding:10px 22px;box-shadow:none}
-.sl-q-ph{position:relative;flex:1 0 auto;min-height:54vh;min-height:54svh;margin-top:12px}
-.sl-q-ph::after{content:"";position:absolute;left:0;right:0;top:-1px;height:34%;z-index:2;background:linear-gradient(180deg,var(--paper),rgba(var(--prgb,255,255,255),0));background:linear-gradient(180deg,var(--paper),color-mix(in srgb,var(--paper) 0%,transparent));pointer-events:none}
+.sl-q{position:relative}
+.sl-q-ph{position:absolute;left:0;right:0;bottom:0;top:20%;z-index:1}
+.sl-q-ph::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(var(--prgb,255,255,255),.82) 0,rgba(var(--prgb,255,255,255),.88) 26%,rgba(var(--prgb,255,255,255),.82) 48%,rgba(var(--prgb,255,255,255),.35) 72%,rgba(var(--prgb,255,255,255),0) 92%);background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 82%,transparent) 0,color-mix(in srgb,var(--paper) 88%,transparent) 26%,color-mix(in srgb,var(--paper) 82%,transparent) 48%,color-mix(in srgb,var(--paper) 35%,transparent) 72%,color-mix(in srgb,var(--paper) 0%,transparent) 92%)}
 .sl-q-ph .sl-ph{background:linear-gradient(160deg,#4a403a,#14110f)}
 
 /* ---------- akad / resepsi ---------- */
@@ -451,9 +452,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .t-slide .sl-pp.tp-middle .sl-pp-in{padding:var(--ty,0px) 26px 0}
   .t-slide .sl-pp.split .sl-pp-in{padding:14px 26px 40px;margin-top:var(--ty,0px)}
   /* ayat */
-  .t-slide .sl-quote .sl-s{height:auto;min-height:var(--cvh,780px)}
-  .t-slide .sl-q-in{padding:calc(var(--cvh,780px)*.05) 26px 6px}
-  .t-slide .sl-q-ph{min-height:calc(var(--cvh,780px)*.5)}
+  .t-slide .sl-q-in{padding:calc(var(--cvh,780px)*.06) 26px 6px}
+  .t-slide .sl-q-ph{top:calc(var(--cvh,780px)*.2)}
   /* akad & resepsi */
   .t-slide .sl-ev-in{padding:64px 26px calc(40px + var(--ty,0px))}
   .t-slide .sl-ev.tp-top .sl-ev-in{padding:calc(40px + var(--ty,0px)) 26px 40px}
@@ -484,21 +484,32 @@ html[data-sl-font="serif"] .t-slide .sl-ch-t,html[data-sl-font="serif"] .t-slide
 html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv{opacity:1;transition:none}
 html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv[data-a]{transform:none;filter:none}
 html[data-sl-gal="tirai"] .t-slide .gallery .gi{overflow:hidden}
-html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv:not(.in){clip-path:inset(-20px 100% -20px -20px)}
-html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv:nth-child(even):not(.in){clip-path:inset(-20px -20px -20px 100%)}
-html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv.in{animation:slGiR 1.4s var(--sl-ease) calc(var(--i,0)*.16s) both}
-html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv:nth-child(even).in{animation-name:slGiL}
+html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv:not(.in)>:is(img,.phb){clip-path:inset(-20px 100% -20px -20px)}
+html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv:nth-child(even):not(.in)>:is(img,.phb){clip-path:inset(-20px -20px -20px 100%)}
+html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv.in>.phb{animation:slGiR 1.4s var(--sl-ease) calc(var(--i,0)*.16s) both}
+html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv:nth-child(even).in>.phb{animation-name:slGiL}
+html[data-sl-gal="tirai"] .t-slide .gallery .mi.rv.in>img{animation:slGiR 1.4s var(--sl-ease) calc(var(--i,0)*.16s) both,slGiZ 2.2s var(--sl-ease) calc(var(--i,0)*.16s) both}
+html[data-sl-gal="tirai"] .t-slide .gallery .mi.rv:nth-child(even).in>img{animation-name:slGiL,slGiZ}
 @keyframes slGiR{from{clip-path:inset(-20px 100% -20px -20px)}to{clip-path:inset(-20px -20px -20px -20px)}}
 @keyframes slGiL{from{clip-path:inset(-20px -20px -20px 100%)}to{clip-path:inset(-20px -20px -20px -20px)}}
 html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv img,html[data-sl-gal="zoom"] .t-slide .gallery :is(.gi,.mi).rv img{transform:scale(1.28)}
 html[data-sl-gal="tirai"] .t-slide .gallery :is(.gi,.mi).rv.in img,html[data-sl-gal="zoom"] .t-slide .gallery :is(.gi,.mi).rv.in img{animation:slGiZ 2.2s var(--sl-ease) calc(var(--i,0)*.16s) both}
 @keyframes slGiZ{from{transform:scale(1.28)}to{transform:scale(1)}}
-html[data-sl-gal="fade"] .t-slide .gallery :is(.gi,.mi).rv[data-a]{transform:none;filter:none}
-html[data-sl-gal="fade"] .t-slide .gallery :is(.gi,.mi).rv{transition:opacity 1.1s ease calc(var(--i,0)*.14s)}
+html:is([data-sl-gal="fade"],[data-sl-gal="zoomparallax"]) .t-slide .gallery :is(.gi,.mi).rv[data-a]{transform:none;filter:none}
+html:is([data-sl-gal="fade"],[data-sl-gal="zoomparallax"]) .t-slide .gallery :is(.gi,.mi).rv{transition:opacity 1.1s ease calc(var(--i,0)*.14s)}
 html[data-sl-gal="none"] .t-slide .gallery :is(.gi,.mi).rv{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;animation:none!important}
 html[data-sl-par="1"]:not([data-sl-gal="none"]) .t-slide .gallery .gi img{scale:1.12;translate:0 var(--gpy,0px)}
 @media (prefers-reduced-motion:reduce){
-  .t-slide .gallery :is(.gi,.mi).rv{clip-path:none!important;animation:none!important}
+  .t-slide .gallery :is(.gi,.mi).rv,.t-slide .gallery :is(.gi,.mi).rv>*{clip-path:none!important;animation:none!important}
   .t-slide .gallery :is(.gi,.mi).rv img{transform:none!important;animation:none!important}
   .t-slide .gallery .gi img{scale:1!important;translate:none!important}
 }
+
+/* ---------- galeri zoom-parallax: tinggi gulir 300% layar, panggung menempel (sticky) dan foto-foto membesar mengikuti gulir ---------- */
+html[data-sl-gal="zoomparallax"] .t-slide .gallery{overflow:visible}
+.sl-zp{position:relative;height:300vh;height:300svh;margin:18px 0 6px}
+.sl-zp-st{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.sl-zp-i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;will-change:transform;transform-origin:50% 50%}
+.sl-zp-b{position:relative;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+.sl-zp-b img{width:100%;height:100%;object-fit:cover;display:block}
+@media (prefers-reduced-motion:reduce){.sl-zp{display:none}}
