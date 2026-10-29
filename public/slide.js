@@ -18,7 +18,9 @@
   }).map((p) => p[0]);
 
   // ---------- teks beranimasi ----------
+  const ZOOMOK = !!(window.CSS && CSS.supports && CSS.supports('zoom', '1')); // kanvas tetap: nilai geser vertikal = persen tinggi kanvas, bukan tinggi layar
   const CQ = window.CQ || { w: (n) => n + 'cqw', h: (n) => n + 'cqh' };  const U = (window.CSS && CSS.supports && CSS.supports('height', '1svh')) ? 'svh' : 'vh';
+  const NU = (n) => (ZOOMOK ? `calc(var(--cvh,780px)*${(n / 100).toFixed(4)})` : n + U);
   const E = (H, s) => H.esc(s);
   function chars(H, s, step, start) {
     let n = 0; step = step || 42; start = start || 0;
@@ -118,7 +120,7 @@
     const strip = two
       ? `<div class="sl-strip dir-${dir}"><div class="sl-tile"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div><div class="sl-tile"><div class="sl-pk b">${ph(H, b, 'sl-pm')}</div></div></div>`
       : `<div class="sl-pan"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div>`;
-    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${nudge(s.openNudge)}${U}" data-two="${two ? 1 : 0}">
+    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${NU(nudge(s.openNudge))}" data-two="${two ? 1 : 0}">
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
@@ -151,7 +153,7 @@
       return `<div class="sl-s sl-pp split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.coupleNudge)}px">
       <div class="sl-fr"><div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh f"></i></div>${txt}</div>`;
     }
-    return `<div class="sl-s sl-pp ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.coupleNudge)}${U}">
+    return `<div class="sl-s sl-pp ${side} tp-${tp}${tone(H)}" style="--ty:${NU(nudge(s.coupleNudge))}">
       <div class="sl-ph from-${side === 'g' ? 'l' : 'r'}"><div class="sl-pk">${md}</div></div><i class="sl-sh ${tp === 'bottom' ? 'b' : 't'}"></i>${tp === 'bottom' ? '' : '<i class="sl-sh w"></i>'}${txt}</div>`;
   }
   function couple(H) {
@@ -199,7 +201,7 @@
         </div>`;
       if (shape) return `<div class="sl-s sl-ev split ${side}${tone(H)}" style="${rv(shape)};--ty:${nudge(s.eventNudge)}px">
         <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f"></i></div>${inner}</div>`;
-      return `<div class="sl-s sl-ev ${side} tp-${tp}${tone(H)}" style="--ty:${nudge(s.eventNudge)}${U};--fade:${Math.min(90, Math.max(20, parseFloat(s.eventFade) || 74))}%">
+      return `<div class="sl-s sl-ev ${side} tp-${tp}${tone(H)}" style="--ty:${NU(nudge(s.eventNudge))};--fade:${Math.min(90, Math.max(20, parseFloat(s.eventFade) || 74))}%">
         <div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh w"></i>${inner}</div>`;
     }).join('');
     return `<section class="sec sl-events" id="s-events">${slides}</section>`;
@@ -280,13 +282,36 @@
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
     parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); };
   }
+  // ---------- galeri: foto bergeser sedikit lebih lambat daripada bingkainya saat menggulir (parallax tipis di dalam bingkai) ----------
+  let gOff = null;
+  function galleryPar(root, on) {
+    if (gOff) { gOff(); gOff = null; }
+    if (!on) return;
+    const imgs = [...root.querySelectorAll('.gallery .gi img')]; if (!imgs.length) return;
+    let raf = 0;
+    const tick = () => {
+      raf = 0; const vh = innerHeight;
+      imgs.forEach((im) => {
+        const f = im.closest('.gi'); if (!f) return;
+        const r = f.getBoundingClientRect(); if (r.bottom < -60 || r.top > vh + 60) return;
+        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
+        im.style.setProperty('--gpy', (-p * Math.min(r.height * 0.05, 22)).toFixed(1) + 'px');
+      });
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick); tick();
+    gOff = () => { removeEventListener('scroll', kick); removeEventListener('resize', kick); cancelAnimationFrame(raf); };
+  }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
     const de = document.documentElement;
     de.dataset.slAnim = ['mist', 'zoom', 'slide', 'fade'].includes(s.animStyle) ? s.animStyle : 'mist';
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
-    parallax(par);
+    de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
+    de.dataset.slGal = ['tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'tirai';
+    { const rt = parseFloat(s.stageRatio); de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }
+    parallax(par); galleryPar(root, par && de.dataset.slGal !== 'none');
     if (io) { io.disconnect(); io = null; }
     const els = root.querySelectorAll('.sl-s, .sl-foot');
     // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar

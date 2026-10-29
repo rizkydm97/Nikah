@@ -428,6 +428,9 @@
     "adj": {},
     "scriptSize": 100,
     "animStyle": "mist",
+    "stageRatio": "2",
+    "titleFont": "cover",
+    "galleryAnim": "tirai",
     "parallax": true,
     "storyShape": "4/5"
   }

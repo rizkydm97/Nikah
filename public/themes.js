@@ -132,6 +132,7 @@
   function dims() {
     var a = document.getElementById('app'), w = (a && a.clientWidth) || Math.min(window.innerWidth, 480);
     r.style.setProperty('--cw', (w / 100) + 'px');
+    r.style.setProperty('--zs', (w / 390).toFixed(4)); // skala kanvas slide Tema 13 (kanvas dirancang 390px lebar)
     r.style.setProperty('--ch', (window.innerHeight / 100) + 'px');
   }
   function paper() {
