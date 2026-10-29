@@ -95,6 +95,7 @@ const LAYOUT = {
   ],
   gallery: [
     ['Foto', ['gallery.title', 'gallery.items']],
+    ['Animasi foto galeri (Tema 13)', ['slide.galleryAnim']],
     ['Susunan foto di bawah slider', ['gallery.layout', 'gallery.shape', 'gallery.cols']],
     ['Slider (foto berjalan sendiri)', ['gallery.slider', 'gallery.sliderSize', 'gallery.sliderDir', 'gallery.sliderSpeed']],
     ['Video & latar (opsional)', ['gallery.video', 'gallery.bg'], true],

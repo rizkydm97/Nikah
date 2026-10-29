@@ -174,8 +174,8 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-q .cds .sep{color:var(--ink);opacity:.35;padding-top:2px}
 .sl-q .sl-save{background:#1d1a18;color:#fff;border-radius:999px;padding:10px 22px;box-shadow:none}
 .sl-q{position:relative}
-.sl-q-ph{position:absolute;left:0;right:0;bottom:0;top:20%;z-index:1}
-.sl-q-ph::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(var(--prgb,255,255,255),.82) 0,rgba(var(--prgb,255,255,255),.88) 26%,rgba(var(--prgb,255,255,255),.82) 48%,rgba(var(--prgb,255,255,255),.35) 72%,rgba(var(--prgb,255,255,255),0) 92%);background:linear-gradient(180deg,color-mix(in srgb,var(--paper) 82%,transparent) 0,color-mix(in srgb,var(--paper) 88%,transparent) 26%,color-mix(in srgb,var(--paper) 82%,transparent) 48%,color-mix(in srgb,var(--paper) 35%,transparent) 72%,color-mix(in srgb,var(--paper) 0%,transparent) 92%)}
+.sl-q-ph{position:relative;flex:1 0 auto;min-height:44vh;min-height:44svh;margin-top:-84px;z-index:1}
+.sl-q-ph::after{content:"";position:absolute;left:0;right:0;top:0;height:62%;z-index:2;pointer-events:none;background:linear-gradient(180deg,var(--paper) 0,var(--paper) 22%,rgba(var(--prgb,255,255,255),.72) 48%,rgba(var(--prgb,255,255,255),.28) 76%,rgba(var(--prgb,255,255,255),0) 100%);background:linear-gradient(180deg,var(--paper) 0,var(--paper) 22%,color-mix(in srgb,var(--paper) 72%,transparent) 48%,color-mix(in srgb,var(--paper) 28%,transparent) 76%,color-mix(in srgb,var(--paper) 0%,transparent) 100%)}
 .sl-q-ph .sl-ph{background:linear-gradient(160deg,#4a403a,#14110f)}
 
 /* ---------- akad / resepsi ---------- */
@@ -453,7 +453,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .t-slide .sl-pp.split .sl-pp-in{padding:14px 26px 40px;margin-top:var(--ty,0px)}
   /* ayat */
   .t-slide .sl-q-in{padding:calc(var(--cvh,780px)*.06) 26px 6px}
-  .t-slide .sl-q-ph{top:calc(var(--cvh,780px)*.2)}
+  .t-slide .sl-quote .sl-s{height:auto;min-height:var(--cvh,780px)}
+  .t-slide .sl-q-ph{min-height:calc(var(--cvh,780px)*.44)}
   /* akad & resepsi */
   .t-slide .sl-ev-in{padding:64px 26px calc(40px + var(--ty,0px))}
   .t-slide .sl-ev.tp-top .sl-ev-in{padding:calc(40px + var(--ty,0px)) 26px 40px}
@@ -509,7 +510,7 @@ html[data-sl-par="1"]:not([data-sl-gal="none"]) .t-slide .gallery .gi img{scale:
 html[data-sl-gal="zoomparallax"] .t-slide .gallery{overflow:visible}
 .sl-zp{position:relative;height:300vh;height:300svh;margin:18px 0 6px}
 .sl-zp-st{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
-.sl-zp-i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;will-change:transform;transform-origin:50% 50%}
+.sl-zp-i{position:absolute;display:flex;align-items:center;justify-content:center;transform-origin:50% 50%;backface-visibility:hidden}
 .sl-zp-b{position:relative;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.18)}
 .sl-zp-b img{width:100%;height:100%;object-fit:cover;display:block}
 @media (prefers-reduced-motion:reduce){.sl-zp{display:none}}

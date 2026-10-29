@@ -314,14 +314,16 @@
     const items = ((cfg && cfg.gallery && cfg.gallery.items) || []).map((x) => x && x.image).filter((u) => u && !DEF.test(u) && /^(https?:\/\/|\/(?!\/))/i.test(String(u)) && !VID.test(u)).slice(0, 7);
     if (items.length < 3) return; // butuh minimal 3 foto sendiri agar susunannya terlihat bagus
     const wrap = document.createElement('div'); wrap.className = 'sl-zp';
-    wrap.innerHTML = '<div class="sl-zp-st">' + items.map((u, i) => { const z = ZP[i];
-      return `<div class="sl-zp-i" data-k="${z[4]}"><div class="sl-zp-b" style="width:${z[0]}%;height:${z[1]}%;left:${z[2]}%;top:${z[3]}%"><img src="${E({ esc: (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }, u)}" alt="" decoding="async" draggable="false"></div></div>`; }).join('') + '</div>';
+    // foto dirender di ukuran AKHIR (besar) lalu diperkecil di awal — bukan kotak kecil yang ditarik membesar — agar tetap tajam saat zoom
+    const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    wrap.innerHTML = '<div class="sl-zp-st">' + items.map((u, i) => { const z = ZP[i], k = z[4];
+      return `<div class="sl-zp-i" data-k="${k}" style="width:${k * 100}%;height:${k * 100}%;left:${50 - k * 50}%;top:${50 - k * 50}%;transform:scale(${(1 / k).toFixed(4)})"><div class="sl-zp-b" style="width:${z[0]}%;height:${z[1]}%;left:${z[2]}%;top:${z[3]}%"><img src="${esc(u)}" alt="" decoding="async" draggable="false"></div></div>`; }).join('') + '</div>';
     h2.insertAdjacentElement('afterend', wrap);
     const els = [...wrap.querySelectorAll('.sl-zp-i')]; let raf = 0;
     const tick = () => {
       raf = 0; const r = wrap.getBoundingClientRect(), span = r.height - innerHeight; if (span <= 0) return;
-      const p = Math.max(0, Math.min(1, -r.top / span));
-      els.forEach((el) => { el.style.transform = `scale(${(1 + (+el.dataset.k - 1) * p).toFixed(3)})`; });
+      const p = Math.min(1, Math.max(0, -r.top / span) / 0.84); // 84% gulir pertama = zoom, sisanya jeda di foto penuh
+      els.forEach((el) => { const k = +el.dataset.k; el.style.transform = `scale(${((1 + (k - 1) * p) / k).toFixed(4)})`; });
     };
     const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
     addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick); tick();
