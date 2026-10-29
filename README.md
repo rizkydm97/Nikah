@@ -273,3 +273,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Tombol ke atas** (pojok kanan bawah, di atas tombol musik) muncul setelah menggulir lebih dari satu layar.
 - Upload admin kini menerima file font (`.ttf .otf .woff .woff2`).
 - File berubah: `public/slide.js`, `public/slide.css`, `public/invitation.js`, `public/admin/{schema,ux,admin}.js`, `public/admin/admin.css`, `public/admin/index.html`, `api/index.js`, `api/[...path].js`, `default-config.json`, `lib/index.template.html` (`slide.js?v=4`, `slide.css?v=4`, `invitation.js?v=101`).
+
+## Pembaruan v16
+- **Galeri — slide jalan dengan efek lingkaran (Tema 13)**: slide foto tetap berjalan sendiri, tetapi foto di tepi layar berbentuk lingkaran lalu membuka jadi bingkai penuh saat mendekati tengah, dan menutup lagi saat pergi. Bisa dimatikan di admin ("SLIDE GALERI JALAN").
+- **Slide ayat**: foto dipindah ke atas ayat (tidak terpotong di bawah), mengisi sisa layar dan pudar halus ke area teks.
+- Versi file di `lib/index.template.html` dinaikkan (slide.css/js v16, invitation.js v104) agar browser memuat file baru.
