@@ -161,19 +161,13 @@
     return `<section class="sec sl-couple" id="s-couple">${person(H, o, o.groom, 'g')}${person(H, o, o.bride, 'b')}</section>`;
   }
 
-  // ---------- foto slide ayat: satu foto utuh di atas ayat ----------
-  function quotePhoto(H) {
-    const C = H.C, s = sl(H);
-    return pick(H, [[s, 'quoteMedia'], [C.quote, 'bg'], [C.cover, 'photo'], [s, 'coverMedia']]);
-  }
-
   // ---------- 4. ayat + hitung mundur ----------
   function quote(H) {
     const C = H.C, o = C.quote, l = o.labels, s = sl(H);
     const isAr = (t) => { const a = (t.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g) || []).length, n = (t.match(/[A-Za-z\u0600-\u06FF\uFB50-\uFEFF]/g) || []).length; return a > 0 && a >= n * 0.5; };
     const lines = String(o.text || '').split('\n'), own = String(o.arabic || '').trim(), arabic = own || lines.filter(isAr).join('\n'), text = own ? o.text : lines.filter((t) => !isAr(t)).join('\n').trim();
     const ars = { normal: 1, large: 1.25, xl: 1.5 }[o.arabicSize] || 1.25;
-    const src = quotePhoto(H);
+    const src = pick(H, [[s, 'quoteMedia'], [o, 'bg'], [C.cover, 'photo'], [s, 'coverMedia']]);
     const cd0 = (arabic ? 1100 : 500) + Math.min(60, String(text).split(/\s+/).filter(Boolean).length) * 30 + 700;
     return `<section class="sec sl-quote" id="s-quote"><div class="sl-s sl-q${tone(H)}">
       <div class="sl-q-in">
@@ -184,7 +178,7 @@
         <div class="cds" id="cds" data-ad="q.cd">${[['d', l.days], ['h', l.hours], ['m', l.minutes], ['s', l.seconds]].map((c, k) => `${k ? `<div class="sep sl-fade" style="--d:${cd0 + k * 170 - 60}ms">:</div>` : ''}<div class="cd sl-pop" style="--d:${cd0 + k * 170}ms"><b data-k="${c[0]}">00</b><span>${E(H, c[1])}</span></div>`).join('')}</div>
         <a class="btn sq up sl-save sl-pop" id="saveDate" data-ad="q.btn" style="--d:${cd0 + 800}ms" target="_blank" rel="noopener">${H.ICON.cal}${E(H, o.saveButton)}</a>
       </div>
-      <div class="sl-q-ph"><div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh q"></i></div></div></section>`;
+      <div class="sl-q-ph"><div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div></div></div></section>`;
   }
 
   // ---------- 5. akad / resepsi ----------

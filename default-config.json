@@ -431,7 +431,6 @@
     "stageRatio": "2",
     "titleFont": "cover",
     "galleryAnim": "tirai",
-    "galleryIris": "on",
     "parallax": true,
     "storyShape": "4/5"
   }

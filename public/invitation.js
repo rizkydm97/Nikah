@@ -1247,37 +1247,22 @@
     };
     fill();
     const dir = el.dataset.dir === 'left' ? -1 : 1, v = { slow: 22, normal: 38, fast: 62 }[el.dataset.speed] || 38;
-    // efek lingkaran (Tema 13): foto di tepi layar berbentuk lingkaran, membuka jadi bingkai penuh saat mendekati tengah, lalu menutup lagi saat pergi
-    const iris = SL && !reduce && ((C.slide || {}).galleryIris !== 'off');
-    let cells = [], vw = 0;
-    const cache = () => {
-      vw = el.clientWidth; const o0 = tr.children[0] ? tr.children[0].offsetLeft : 0;
-      cells = [...tr.children].map((n) => ({ n, l: n.offsetLeft - o0, w: n.offsetWidth, h: n.offsetHeight }));
-    };
-    const irisFx = (x) => {
-      for (const c of cells) {
-        const u = Math.min(1, Math.abs(c.l + c.w / 2 + x - vw / 2) / (vw * 0.52)), t = Math.min(1, Math.max(0, (u - 0.26) / 0.64)), k = t * t * (3 - 2 * t);
-        if (k < 0.004) { if (c.on) { c.n.style.clipPath = ''; c.on = 0; } continue; }
-        const full = 71, min = (100 * Math.min(c.w, c.h) / 2) / Math.sqrt((c.w * c.w + c.h * c.h) / 2) * 0.78;
-        c.n.style.clipPath = `circle(${(full - (full - min) * k).toFixed(2)}% at 50% 50%)`; c.on = 1;
-      }
-    };
     let setW = 0; const meas = () => { const d = $('.dup', tr); setW = d ? d.offsetLeft - orig[0].offsetLeft : tr.scrollWidth / 2; };
-    meas(); if (iris) cache();
+    meas();
     let x = dir > 0 ? -setW : 0, last = 0, raf = 0, vis = false, hold = false, drag = null, moved = 0;
     const wrap = () => { if (setW <= 0) return; while (x > 0) x -= setW; while (x <= -setW) x += setW; };
     const tick = (t) => {
       raf = requestAnimationFrame(tick);
       const dt = last ? Math.min(64, t - last) : 16; last = t;
       if (!hold && !reduce) x += dir * v * dt / 1000;
-      wrap(); tr.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`; if (iris) irisFx(x);
+      wrap(); tr.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
     };
     const run = () => { if (!raf && vis) { last = 0; raf = requestAnimationFrame(tick); } };
     const halt = () => { cancelAnimationFrame(raf); raf = 0; };
     const io = new IntersectionObserver((es) => { vis = es[0].isIntersecting; vis ? run() : halt(); }); io.observe(el); observers.push(io);
-    const onLoad = () => { const old = setW; fill(); meas(); if (iris) cache(); if (old && setW) x = x / old * setW; };
+    const onLoad = () => { const old = setW; fill(); meas(); if (old && setW) x = x / old * setW; };
     $$('img', tr).forEach((im) => { if (!im.complete) im.addEventListener('load', onLoad, { once: true }); });
-    const ro = new ResizeObserver(() => { meas(); if (iris) cache(); }); ro.observe(el);
+    const ro = new ResizeObserver(() => meas()); ro.observe(el);
     // geser manual (sentuh / tarik), lalu jalan sendiri lagi
     el.addEventListener('pointerdown', (e) => { drag = { x0: e.clientX, p0: x }; moved = 0; hold = true; el.classList.add('drag'); }, { signal: AC.signal });
     addEventListener('pointermove', (e) => { if (!drag) return; const d = e.clientX - drag.x0; moved = Math.max(moved, Math.abs(d)); x = drag.p0 + d; }, { signal: AC.signal, passive: true });

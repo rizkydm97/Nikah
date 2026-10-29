@@ -161,7 +161,7 @@ html.h-slide{scroll-snap-type:y proximity}
 
 /* ---------- ayat + hitung mundur ---------- */
 .sl-q{background:var(--paper);color:var(--ink);display:flex;flex-direction:column}
-.sl-q-in{position:relative;z-index:5;flex:none;padding:clamp(40px,8svh,72px) 26px 6px;text-align:center}
+.sl-q-in{position:relative;z-index:3;padding:clamp(40px,8vh,72px) 26px 6px;padding:clamp(40px,8svh,72px) 26px 6px;text-align:center}
 .sl-q .qar{font-size:clamp(22px,calc(min(100vw,var(--col,480px))*.062*var(--ars,1.25)),36px);line-height:2.2;word-spacing:.1em;margin:0;color:var(--ink);text-wrap:balance}
 .sl-q .qar::after{content:"";display:block;width:64px;height:1px;margin:14px auto 16px;background:linear-gradient(90deg,transparent,var(--ink),transparent);opacity:.5}
 .sl-q .qt{font-size:14px;line-height:1.85;color:var(--body);text-wrap:pretty;margin:0}
@@ -173,10 +173,9 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-q .cd span{color:var(--body);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
 .sl-q .cds .sep{color:var(--ink);opacity:.35;padding-top:2px}
 .sl-q .sl-save{background:#1d1a18;color:#fff;border-radius:999px;padding:10px 22px;box-shadow:none}
-/* foto slideshow DI ATAS ayat: mengisi sisa tinggi layar, lalu pudar halus ke latar kertas tempat teks berada */
-.sl-q-ph{position:relative;flex:1 0 auto;min-height:max(62svh,420px);margin-top:14px;overflow:hidden;background:#14110f}
-.sl-q-ph .sl-ph{background:#14110f}
-.sl-sh.q{top:-1px;bottom:auto;height:26%;z-index:3;background:linear-gradient(180deg,var(--paper) 4%,rgba(var(--prgb,255,255,255),0));background:linear-gradient(180deg,var(--paper) 4%,color-mix(in srgb,var(--paper) 0%,transparent))}
+.sl-q-ph{position:relative;flex:1 0 auto;min-height:54vh;min-height:54svh;margin-top:12px}
+.sl-q-ph::after{content:"";position:absolute;left:0;right:0;top:-1px;height:34%;z-index:2;background:linear-gradient(180deg,var(--paper),rgba(var(--prgb,255,255,255),0));background:linear-gradient(180deg,var(--paper),color-mix(in srgb,var(--paper) 0%,transparent));pointer-events:none}
+.sl-q-ph .sl-ph{background:linear-gradient(160deg,#4a403a,#14110f)}
 
 /* ---------- akad / resepsi ---------- */
 .sl-ev{background:var(--paper);color:var(--ink);display:flex;flex-direction:column;justify-content:flex-end}
@@ -452,9 +451,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .t-slide .sl-pp.tp-middle .sl-pp-in{padding:var(--ty,0px) 26px 0}
   .t-slide .sl-pp.split .sl-pp-in{padding:14px 26px 40px;margin-top:var(--ty,0px)}
   /* ayat */
-  .t-slide .sl-q-in{padding:calc(var(--cvh,780px)*.08) 26px 6px}
-  .t-slide .sl-s.sl-q{height:auto;min-height:var(--cvh,780px)}
-  .t-slide .sl-q-ph{min-height:calc(var(--cvh,780px)*.66)}
+  .t-slide .sl-quote .sl-s{height:auto;min-height:var(--cvh,780px)}
+  .t-slide .sl-q-in{padding:calc(var(--cvh,780px)*.05) 26px 6px}
+  .t-slide .sl-q-ph{min-height:calc(var(--cvh,780px)*.5)}
   /* akad & resepsi */
   .t-slide .sl-ev-in{padding:64px 26px calc(40px + var(--ty,0px))}
   .t-slide .sl-ev.tp-top .sl-ev-in{padding:calc(40px + var(--ty,0px)) 26px 40px}
