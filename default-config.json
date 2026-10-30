@@ -247,6 +247,7 @@
   "gift": {
     "bg": "/assets/default/couple-wide.svg",
     "title": "Wedding Gift",
+    "titleFont": "",
     "intro": "Tanpa mengurangi rasa hormat, bagi rekan-rekan dan sahabat yang hendak memberikan tanda kasih untuk kami, dapat melalui nomor rekening di bawah ini.",
     "copyBank": "Copy Rekening",
     "banks": [
@@ -272,6 +273,7 @@
     "sendWhatsapp": true
   },
   "rsvp": {
+    "titleFont": "",
     "bg": "/assets/default/couple-wide.svg",
     "title": "RSVP",
     "text": "Mohon konfirmasi kehadiran Anda.",
@@ -282,6 +284,7 @@
     "photo": "/assets/default/cover-photo.svg"
   },
   "wishes": {
+    "titleFont": "",
     "title": "Ucapan & Doa",
     "text": "Berikan harapan dan doa tulus Anda di sini karena kami sangat bersemangat untuk memulai perjalanan baru bersama.",
     "button": "Kirim Ucapan",

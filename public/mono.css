@@ -542,3 +542,13 @@ video.mn-m{background:#111}
 @keyframes lgHalo{from{opacity:.25;transform:scale(.94)}to{opacity:1;transform:scale(1.06)}}
 @keyframes lgShine{0%{background-position:100% 0}55%,100%{background-position:0% 0}}
 @media (prefers-reduced-motion:reduce){#loader .ld-logo,#loader .ld-lg,#loader .ld-halo,#loader .ld-shine{animation:none!important;opacity:1;clip-path:none}#loader .ld-shine{display:none}}
+
+/* font judul per bagian (admin: gift/rsvp/wishes.titleFont) */
+.t-mono [data-tf="font"] :is(h2,h3.gt,h3.gt .s,h3.gt .d){font-family:var(--tf)!important;font-weight:400!important;text-transform:none!important;letter-spacing:0!important}
+.t-mono [data-tf="serif"] :is(h2,h3.gt,h3.gt .s,h3.gt .d){font-family:var(--fDisplay)!important;font-weight:600!important;text-transform:uppercase!important;letter-spacing:.14em!important}
+.t-mono [data-tf] h2.big span{display:inline!important}
+.t-mono [data-tf] h2.big span+span{padding-left:0!important}
+.t-mono [data-tf="font"] h2.big{font-size:clamp(44px,13vw,64px)!important;line-height:1.1!important;padding-top:34px!important}
+.t-mono [data-tf="serif"] h2.big{font-size:clamp(30px,9vw,42px)!important;line-height:1.2!important}
+.t-mono [data-tf="font"] h2:not(.big){font-size:clamp(40px,12.5vw,60px)!important;line-height:1.15!important;padding:.04em .1em .12em!important}
+.t-mono [data-tf="serif"] h2:not(.big){font-size:clamp(24px,7.5vw,34px)!important;line-height:1.25!important}

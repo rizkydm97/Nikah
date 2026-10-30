@@ -1,5 +1,6 @@
 // Skema editor admin. t = tipe field: text | area | url | image | audio | color | select | bool | number | datetime | list
 const F_SERIF = ['Cormorant Infant', 'Cormorant Garamond', 'Playfair Display', 'Lora', 'Libre Baskerville', 'EB Garamond', 'Marcellus', 'Cinzel', 'Alice', 'Abhaya Libre', 'Poppins', 'Montserrat', 'Josefin Sans'];
+const F_TF = (() => { const f = ['Great Vibes', 'Allura', 'Parisienne', 'Pinyon Script', 'Dancing Script', 'Mrs Saint Delafield', 'Herr Von Muellerhoff', 'Monsieur La Doulaise', 'Allison', 'La Belle Aurore', 'Italianno', 'Whisper']; return [['', 'Ikuti pengaturan umum (menu Tema, Warna & Font → FONT JUDUL bagian)'], ...f.map((n) => [n, n + ' — tulisan tangan']), ['serif', 'Serif klasik huruf kapital (formal & rapi)']]; })();
 const F_SCRIPT = ['Great Vibes', 'Allura', 'Parisienne', 'Pinyon Script', 'Dancing Script', 'Mrs Saint Delafield', 'Herr Von Muellerhoff', 'Monsieur La Doulaise', 'Allison', 'La Belle Aurore', 'Italianno', 'Whisper'];
 const ANIMS = [
   ['none', 'Tanpa animasi'], ['soft', 'Lembut mewah (naik + blur halus)'], ['fade-in', 'Fade (muncul perlahan)'], ['fade-up', 'Naik dari bawah'], ['fade-down', 'Turun dari atas'],
@@ -245,6 +246,7 @@ const SCHEMA = [
     { k: 'story.items', l: 'Cerita', t: 'list', itemTitle: 'title', addLabel: 'Tambah cerita', fields: [{ k: 'image', l: 'Foto (Tema 13: klik "✥ Atur posisi" agar wajah pas; bentuk mengikuti pengaturan Tema 13 atau pilih sendiri)', t: 'image', ar: '4/5', arKey: 'slide.storyShape', arOwn: 'shape' }, { k: 'title', l: 'Judul (tulisan tangan)', t: 'text' }, { k: 'year', l: 'Tahun / waktu kecil di bawah cerita (mis. 2021) — khusus Tema 13, boleh kosong', t: 'text' }, { k: 'text', l: 'Cerita', t: 'area' }] },
   ] },
   { id: 'gift', title: 'Wedding Gift', fields: [
+    { k: 'gift.titleFont', l: 'FONT judul bagian ini (khusus Tema 12 & 13; kosong = ikut pengaturan umum)', t: 'select', o: F_TF },
     { k: 'mono.giftBg', l: 'Latar Wedding Gift — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/19', bg: 1 },
     { k: 'gift.bg', l: 'Foto latar (Tema 1-11; Tema 12 memakai kolom "Latar Wedding Gift — khusus Tema 12")', t: 'image', ar: '9/19', bg: 1 }, { k: 'gift.title', l: 'Judul (kata pertama tulisan tangan, sisanya huruf biasa)', t: 'text' }, { k: 'gift.intro', l: 'Teks pengantar', t: 'area' }, { k: 'gift.copyBank', l: 'Teks tombol salin rekening', t: 'text' },
     { k: 'gift.banks', l: 'Rekening', t: 'list', itemTitle: 'bank', addLabel: 'Tambah rekening', fields: [{ k: 'bank', l: 'Nama bank / e-wallet', t: 'text' }, { k: 'number', l: 'Nomor rekening', t: 'text' }, { k: 'name', l: 'Atas nama', t: 'text' }] },
@@ -252,12 +254,14 @@ const SCHEMA = [
     { k: 'gift.formEnabled', l: 'Tampilkan form konfirmasi gift', t: 'bool' }, { k: 'gift.sendWhatsapp', l: 'Buka WhatsApp admin setelah konfirmasi gift (isi nomor di Umum)', t: 'bool' }, { k: 'gift.formTitle', l: 'Judul form (kata pertama tulisan tangan)', t: 'text' }, { k: 'gift.formText', l: 'Teks form', t: 'area' }, { k: 'gift.formButton', l: 'Teks tombol form', t: 'text' },
   ] },
   { id: 'rsvp', title: 'RSVP', fields: [
+    { k: 'rsvp.titleFont', l: 'FONT judul bagian ini (khusus Tema 12 & 13; kosong = ikut pengaturan umum)', t: 'select', o: F_TF },
     { k: 'mono.rsvpBg', l: 'Latar RSVP — khusus Tema 12 (kosongkan = latar bawaan Tema 12: terang dengan hiasan bingkai)', t: 'image', ar: '9/16', bg: 1 },
     { k: 'rsvp.bg', l: 'Foto latar (Tema 1-11; Tema 12 memakai kolom "Latar RSVP — khusus Tema 12")', t: 'image', ar: '9/16', bg: 1 }, { k: 'rsvp.photo', l: 'Foto di samping judul', t: 'image', ar: '1/1' }, { k: 'rsvp.title', l: 'Judul (dipecah dua baris, mis. RS / VP)', t: 'text' }, { k: 'rsvp.text', l: 'Teks', t: 'area' },
     { k: 'rsvp.maxGuests', l: 'Maksimal jumlah tamu per undangan', t: 'number', min: 1, max: 20 }, { k: 'rsvp.button', l: 'Teks tombol', t: 'text' },
     { k: 'rsvp.thanks', l: 'Pesan setelah submit', t: 'text' }, { k: 'rsvp.sendWhatsapp', l: 'Buka WhatsApp admin setelah submit', t: 'bool' },
   ] },
   { id: 'wishes', title: 'Ucapan & Doa', fields: [
+    { k: 'wishes.titleFont', l: 'FONT judul bagian ini (khusus Tema 12 & 13; kosong = ikut pengaturan umum)', t: 'select', o: F_TF },
     { k: 'wishes.bg', l: 'Foto latar (kosongkan untuk pakai foto Ayat)', t: 'image', ar: '9/19', bg: 1 }, { k: 'wishes.title', l: 'Judul (kosongkan untuk menyembunyikan)', t: 'text' }, { k: 'wishes.text', l: 'Teks', t: 'area' }, { k: 'wishes.button', l: 'Teks tombol', t: 'text' },
   ] },
   { id: 'closing', title: 'Penutup', fields: [
