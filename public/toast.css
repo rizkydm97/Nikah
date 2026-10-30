@@ -1,0 +1,65 @@
+/* Notifikasi toast terpusat — dipakai undangan & admin.
+   Semua kelas berawalan .tst- supaya tidak bertabrakan dengan .toast lama. */
+
+.tst-stack{
+  position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);
+  width:min(calc(100vw - 24px),400px);z-index:10000;
+  display:flex;flex-direction:column;align-items:stretch;
+  pointer-events:none;
+}
+.tst-item{
+  display:block;margin:0 0 10px;
+  transition:height .26s cubic-bezier(.4,0,.2,1),margin .26s cubic-bezier(.4,0,.2,1);
+}
+.tst-item.tst-collapse{height:0!important;margin-bottom:0}
+
+.tst{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 16px 11px 12px;border-radius:16px;
+  background:rgba(255,255,255,.84);
+  -webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 12px 32px rgba(32,16,22,.14),0 2px 8px rgba(32,16,22,.08);
+  color:#2b1d20;font:500 14px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  letter-spacing:.005em;text-align:left;
+  opacity:0;transform:translateY(-10px);
+  transition:opacity .34s cubic-bezier(.22,1,.36,1),transform .34s cubic-bezier(.22,1,.36,1);
+}
+.tst-item.tst-in .tst{opacity:1;transform:none}
+.tst-item.tst-out .tst{opacity:0;transform:translateY(-6px);transition-duration:.26s;transition-timing-function:ease}
+
+.tst-ic{
+  flex:0 0 auto;width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--tst-bg);color:var(--tst-c);
+}
+.tst-ic svg{width:16px;height:16px;display:block}
+.tst-tx{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+
+.tst-success{--tst-c:#1b7a37;--tst-bg:rgba(27,122,55,.12)}
+.tst-error{--tst-c:#b3261e;--tst-bg:rgba(179,38,30,.12)}
+.tst-warning{--tst-c:#a86400;--tst-bg:rgba(214,134,0,.15)}
+.tst-info{--tst-c:#3a5a8c;--tst-bg:rgba(58,90,140,.12)}
+
+/* spinner untuk notifikasi "memuat" */
+.tst-spin{animation:tst-rot .9s linear infinite;transform-origin:50% 50%}
+@keyframes tst-rot{to{transform:rotate(360deg)}}
+
+/* tablet & desktop: sedikit lebih lega */
+@media (min-width:640px){
+  .tst-stack{top:calc(env(safe-area-inset-top,0px) + 22px);width:min(calc(100vw - 48px),420px)}
+  .tst{padding:12px 20px 12px 14px;font-size:14.5px}
+}
+
+/* layar sangat sempit */
+@media (max-width:340px){
+  .tst{gap:10px;padding:10px 12px 10px 10px;font-size:13px}
+  .tst-ic{width:26px;height:26px}
+}
+
+/* aksesibilitas: tanpa gerakan, hanya memudar */
+@media (prefers-reduced-motion:reduce){
+  .tst,.tst-item.tst-out .tst{transform:none!important;transition:opacity .2s linear}
+  .tst-item{transition:none}
+  .tst-spin{animation:none}
+}

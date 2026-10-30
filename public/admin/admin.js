@@ -28,6 +28,12 @@
     if (!r.ok) throw new Error((d && d.error) || ('Server membalas ' + r.status + (d ? '' : ' (bukan JSON — rute API mungkin tidak terpasang)') + ' • ' + url));
     return d;
   };
+  // salin ke papan klip dengan notifikasi toast terpusat (/toast.js): sukses hanya bila benar-benar tersalin
+  function copyTxt(txt, okMsg) {
+    const ok = () => window.Toast.success(okMsg), fail = () => window.Toast.error('Gagal menyalin, silakan coba lagi.');
+    const fb = () => { const t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(t); t.select(); let d = false; try { d = document.execCommand('copy'); } catch (e) {} t.remove(); d ? ok() : fail(); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, fb); else fb();
+  }
   let toastT;
   function toast(m, bad) { const t = $('#toast'); t.textContent = m; t.classList.toggle('bad', !!bad); t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
 
@@ -817,8 +823,8 @@
       names.value.split('\n').map((s) => s.trim()).filter(Boolean).forEach((n) => {
         const link = mk(n).link, msg = fill(tpl.value, n);
         out.append(h('div', { class: 'linkrow' }, h('span', {}, n),
-          h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(link).then(() => toast('Link disalin ✓')) }, 'Salin link'),
-          h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'),
+          h('button', { class: 'btn sm', onclick: () => copyTxt(link, 'Link berhasil disalin!') }, 'Salin link'),
+          h('button', { class: 'btn sm', onclick: () => copyTxt(msg, 'Pesan berhasil disalin!') }, 'Salin pesan'),
           h('a', { class: 'btn sm pri', href: 'https://wa.me/?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, 'Kirim WhatsApp'),
           h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => { const L = names.value.split('\n'); const i = L.findIndex((l) => l.trim() === n); if (i >= 0) L.splice(i, 1); names.value = L.join('\n'); gen(); } }, '🗑')));
       });
@@ -859,7 +865,7 @@
           paint();
           a.addEventListener('click', mark);
           queue.push({ key, name: x.name, url: a.href, mark, row });
-          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => delGuest(x) }, '🗑'), h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'), a);
+          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => delGuest(x) }, '🗑'), h('button', { class: 'btn sm', onclick: () => copyTxt(msg, 'Pesan berhasil disalin!') }, 'Salin pesan'), a);
         } else row.append(h('span', {}, x.name, h('br'), st), h('small', { class: 'lkbad' }, 'Tulis: Nama | 0812xxxx'), h('button', { class: 'btn sm danger', type: 'button', onclick: () => delGuest(x) }, '🗑'));
         out2.append(row);
       });

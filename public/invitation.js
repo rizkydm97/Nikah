@@ -1151,8 +1151,8 @@
     gift(c) {
       const o = c.gift, wa = hasWA(c) && o.sendWhatsapp;
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
-      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank"><div>${esc(b.bank)}</div><div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
-      const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}">${esc(o.copyAddress)} ${ICON.copy}</button></div>` : '';
+      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank"><div>${esc(b.bank)}</div><div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
+      const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}" data-copy-type="alamat">${esc(o.copyAddress)} ${ICON.copy}</button></div>` : '';
       const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}`);
       const form = o.formEnabled ? capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
         <form class="fm" id="giftForm"><label>Nama :</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Nama Bank :</label><input name="bank" maxlength="60" placeholder="Nama Bank"><label>Nominal :</label><input name="amount" maxlength="40" inputmode="numeric" placeholder="Nominal"><label>Ucapan :</label><input name="message" maxlength="500" placeholder="Ucapan"><label>Bukti TF :</label><input type="file" name="proof" accept="image/png,image/jpeg,image/webp"><button class="btn sq full" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.formButton)}</button><div class="msg" id="giftMsg"></div></form>`) : '';
@@ -1634,14 +1634,22 @@
     const close = () => { d.classList.remove('show'); setTimeout(() => d.remove(), 350); };
     d.addEventListener('click', (e) => { if (e.target === d || e.target.classList.contains('pop-x')) close(); });
   }
-  function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800); }
+  // Notifikasi: satu sistem terpusat di /toast.js (window.Toast)
+  const T = window.Toast || { success() {}, error() {}, warning() {}, info() { return { close() {} }; } };
 
-  // copy (sekali saja untuk seluruh halaman)
+  // copy (sekali saja untuk seluruh halaman) — notifikasi sukses hanya bila salinan benar-benar berhasil
+  const COPY_OK = { rekening: 'Nomor rekening berhasil disalin!', alamat: 'Alamat berhasil disalin!', link: 'Link berhasil disalin!' };
   document.addEventListener('click', (ev) => {
     const b = ev.target.closest && ev.target.closest('[data-copy]'); if (!b) return;
     const txt = b.dataset.copy;
-    const ok = () => toast('Berhasil disalin ✓');
-    const fb = () => { const t = document.createElement('textarea'); t.value = txt; t.style.position = 'fixed'; t.style.opacity = 0; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); ok(); } catch (e) { toast('Gagal menyalin'); } t.remove(); };
+    const ok = () => T.success(COPY_OK[b.dataset.copyType] || 'Berhasil disalin!');
+    const fail = () => T.error('Gagal menyalin, silakan coba lagi.');
+    const fb = () => {
+      const t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.appendChild(t); t.focus({ preventScroll: true }); t.select(); try { t.setSelectionRange(0, txt.length); } catch (e) {}
+      let done = false; try { done = document.execCommand('copy'); } catch (e) {}
+      t.remove(); done ? ok() : fail();
+    };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, fb); else fb();
   });
   // lightbox
@@ -1699,31 +1707,40 @@
     const rf = $('#rsvpForm');
     if (rf) {
       rf.status.addEventListener('change', () => ($('#cntWrap').style.display = rf.status.value === 'hadir' ? '' : 'none'), sig);
+      rf.noValidate = true; // pemeriksaan isian memakai notifikasi, bukan balon bawaan browser
       rf.addEventListener('submit', async (e) => {
-        e.preventDefault(); const m = $('#rsvpMsg'); m.className = 'msg'; m.textContent = 'Mengirim…';
+        e.preventDefault(); const m = $('#rsvpMsg');
+        if (!rf.checkValidity()) { T.warning('Silakan lengkapi data terlebih dahulu.'); const bad = rf.querySelector(':invalid'); if (bad) bad.focus({ preventScroll: true }); return; }
+        m.className = 'msg'; m.textContent = 'Mengirim…';
         const body = { name: rf.name.value, status: rf.status.value, count: rf.count.value };
-        const r = await post('/api/rsvp', body);
+        const ld = T.info('Memuat data...');
+        const r = await post('/api/rsvp', body); ld.close();
         if (r.ok) {
+          T.success('RSVP berhasil dikirim!');
           m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + body.name + '!', c.rsvp.thanks); loadWishes(true);
           const wa = String(c.general.whatsapp || '').replace(/\D/g, '');
           if (c.rsvp.sendWhatsapp && wa) { const st = { hadir: `akan hadir (${body.count} orang)`, tidak: 'tidak dapat hadir', ragu: 'masih ragu untuk hadir' }[body.status]; window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo, saya ${body.name} ${st} di acara pernikahan ${c.general.calendarTitle || ''}.`)}`, '_blank'); }
-        } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
+        } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; T.error(r.error || 'Gagal mengirim, silakan coba lagi.'); }
       }, sig);
     }
     // gift confirm
     const gf = $('#giftForm');
-    if (gf) gf.addEventListener('submit', async (e) => {
-      e.preventDefault(); const m = $('#giftMsg'); m.className = 'msg'; m.textContent = 'Mengirim…';
+    if (gf) { gf.noValidate = true; gf.addEventListener('submit', async (e) => {
+      e.preventDefault(); const m = $('#giftMsg');
+      if (!gf.checkValidity()) { T.warning('Silakan lengkapi data terlebih dahulu.'); const bad = gf.querySelector(':invalid'); if (bad) bad.focus({ preventScroll: true }); return; }
+      m.className = 'msg'; m.textContent = 'Mengirim…';
       const f = gf.proof.files[0]; let proofData = '';
-      if (f) { if (f.size > 2.5e6) { m.className = 'msg err'; m.textContent = 'Bukti maksimal 2,5MB'; return; } proofData = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(f); }); }
-      const r = await post('/api/gift', { name: gf.name.value, bank: gf.bank.value, amount: gf.amount.value, message: gf.message.value, proofData });
+      if (f) { if (f.size > 2.5e6) { m.className = 'msg err'; m.textContent = 'Bukti maksimal 2,5MB'; T.error('Bukti maksimal 2,5MB.'); return; } proofData = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(f); }); }
+      const ld = T.info('Memuat data...');
+      const r = await post('/api/gift', { name: gf.name.value, bank: gf.bank.value, amount: gf.amount.value, message: gf.message.value, proofData }); ld.close();
       if (r.ok) {
+        T.success('Konfirmasi gift berhasil dikirim!');
         m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + gf.name.value + '!', 'Konfirmasi gift Anda telah kami terima.');
         const wa = String(c.general.whatsapp || '').replace(/\D/g, '');
         if (c.gift.sendWhatsapp && wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo, saya ${gf.name.value} sudah mengirim gift${gf.amount.value ? ' sebesar ' + gf.amount.value : ''}${gf.bank.value ? ' via ' + gf.bank.value : ''}. ${gf.message.value || ''}`.trim())}`, '_blank');
         gf.reset();
-      } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
-    }, sig);
+      } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; T.error(r.error || 'Gagal mengirim, silakan coba lagi.'); }
+    }, sig); }
     // wishes
     const wf = $('#wishForm');
     if (wf) {
@@ -1737,11 +1754,15 @@
         catch (e) { clearPhoto(); m.className = 'msg err'; m.textContent = 'Foto tidak bisa dibaca. Gunakan JPG, PNG, atau WebP.'; }
       }, sig);
       $('#wishPrevX').addEventListener('click', clearPhoto, sig);
+      wf.noValidate = true;
       wf.addEventListener('submit', async (e) => {
-        e.preventDefault(); const m = $('#wishMsg'), btn = wf.querySelector('button[type=submit]'); m.className = 'msg'; m.textContent = 'Mengirim…'; btn.disabled = true;
+        e.preventDefault(); const m = $('#wishMsg'), btn = wf.querySelector('button[type=submit]');
+        if (!wf.checkValidity()) { T.warning('Silakan lengkapi data terlebih dahulu.'); const bad = wf.querySelector(':invalid'); if (bad) bad.focus({ preventScroll: true }); return; }
+        m.className = 'msg'; m.textContent = 'Mengirim…'; btn.disabled = true;
+        const ld = T.info('Memuat data...');
         const r = await post('/api/wishes', { name: wf.name.value, message: wf.message.value, photoData });
-        btn.disabled = false;
-        if (r.ok) { m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; clearPhoto(); loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; }
+        ld.close(); btn.disabled = false;
+        if (r.ok) { T.success('Ucapan berhasil dikirim!'); m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; clearPhoto(); loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; T.error(r.error || 'Gagal mengirim, silakan coba lagi.'); }
       }, sig);
       $('#wishMore').onclick = () => loadWishes(false);
       // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
