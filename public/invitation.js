@@ -1359,7 +1359,7 @@
   // ---------- buka undangan: kamera menembus bunga -> mendekat ke pintu rumah -> mundur perlahan ----------
   function openInvitation(instant) {
     if (opened) return; opened = true;
-    if (!instant && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(() => { /* ditolak */ });
+    if (!instant && !SL && !MN && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(() => { /* ditolak */ });
     const cover = $('#cover'), hero = $('#s-hero');
     applyTextSpeed(); setTimeout(applyTextSpeed, 900);
     startMusic();

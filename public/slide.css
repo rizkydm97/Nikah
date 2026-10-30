@@ -9,8 +9,8 @@ html.h-slide{scroll-snap-type:y proximity}
 
 /* ---------- teks beranimasi ---------- */
 .sl-w{display:inline-block;white-space:nowrap}
-.sl-c{display:inline-block;opacity:0;transform:translateY(.6em);filter:blur(6px)}
-.sl-wd{display:inline-block;opacity:0;transform:translateY(.8em);filter:blur(3px)}
+.sl-c{display:inline-block;opacity:0;transform:translateY(.6em)}
+.sl-wd{display:inline-block;opacity:0;transform:translateY(.8em)}
 .sl-up{opacity:0;transform:translateY(18px)}
 .sl-fade{opacity:0}
 .sl-pop{opacity:0;transform:scale(.7)}
@@ -26,8 +26,8 @@ html.h-slide{scroll-snap-type:y proximity}
 :is(.sl-go,.sl-open.play,.slcv.play) .sl-wipe{animation:slWipe calc(1.7s*var(--tk,1)) cubic-bezier(.45,.05,.2,1) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
 :is(.sl-go,.sl-open.play,.slcv.play) .sl-vl{animation:slDrawY calc(1.2s*var(--tk,1)) var(--sl-ease) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
 :is(.sl-go,.sl-open.play,.slcv.play) .sl-draw{animation:slDraw calc(1.1s*var(--tk,1)) var(--sl-ease) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
-@keyframes slC{from{opacity:0;transform:translateY(.6em);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
-@keyframes slW{from{opacity:0;transform:translateY(.8em);filter:blur(3px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes slC{from{opacity:0;transform:translateY(.6em)}to{opacity:1;transform:none}}
+@keyframes slW{from{opacity:0;transform:translateY(.8em)}to{opacity:1;transform:none}}
 @keyframes slUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @keyframes slFade{from{opacity:0}to{opacity:1}}
 @keyframes slPop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
@@ -211,8 +211,8 @@ html.h-slide{scroll-snap-type:y proximity}
 /* ---------- gaya animasi foto (diatur di admin: html[data-sl-anim]) + parallax ---------- */
 .sl-pk{translate:0 var(--py,0px)}
 html[data-sl-par="1"] .sl-pk{inset:-3.5% 0}
-@keyframes slPhMist{0%{opacity:0;filter:blur(14px);transform:translateY(5%) scale(1.1)}55%{opacity:1}100%{opacity:1;filter:blur(0);transform:none}}
-html[data-sl-anim="mist"] .sl-pm,html[data-sl-anim="mist"] .sl-ph.from-l .sl-pm,html[data-sl-anim="mist"] .sl-ph.from-r .sl-pm{opacity:0;filter:blur(14px);transform:translateY(5%) scale(1.1)}
+@keyframes slPhMist{0%{opacity:0;transform:translateY(5%) scale(1.1)}55%{opacity:1}100%{opacity:1;transform:none}}
+html[data-sl-anim="mist"] .sl-pm,html[data-sl-anim="mist"] .sl-ph.from-l .sl-pm,html[data-sl-anim="mist"] .sl-ph.from-r .sl-pm{opacity:0;transform:translateY(5%) scale(1.1)}
 html[data-sl-anim="mist"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-pm,html[data-sl-anim="mist"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-ph.from-l .sl-pm,html[data-sl-anim="mist"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-ph.from-r .sl-pm{animation:slPhMist calc(2s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both}
 html[data-sl-anim="zoom"] .sl-ph.from-l .sl-pm,html[data-sl-anim="zoom"] .sl-ph.from-r .sl-pm{transform:scale(1.22)}
 html[data-sl-anim="zoom"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-ph.from-l .sl-pm,html[data-sl-anim="zoom"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-ph.from-r .sl-pm{animation-name:slPh}
@@ -336,7 +336,7 @@ html.sl-edit [data-ad].sl-dragging{cursor:grabbing;outline-style:solid;backgroun
 .sl-q-in .sl-q-orn{margin-bottom:12px}
 .sl-ar{opacity:0}
 .sl-go .sl-ar{animation:slAr 1.9s var(--sl-ease) .45s both}
-@keyframes slAr{from{opacity:0;transform:translateY(16px) scale(.95);filter:blur(9px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes slAr{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
 .sl-q .src{display:flex;align-items:center;justify-content:center;gap:12px}
 .sl-q .src::before,.sl-q .src::after{content:"";width:26px;height:1px;background:currentColor;opacity:.4}
 .sl-q .cd b{display:block}
