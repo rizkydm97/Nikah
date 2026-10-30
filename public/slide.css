@@ -534,9 +534,3 @@ html[data-sl-gal="depth3d"] .t-slide .gallery :is(.gi,.mi).rv:nth-child(even):no
 /* font khusus per tulisan (dipilih di admin: Font tulisan ini) */
 [data-adf],[data-adf] *{font-family:var(--adf)!important}
 html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
-
-/* judul RSVP ikut pilihan FONT JUDUL bagian (sebelumnya terlewat karena memakai kelas .big) */
-html[data-sl-font="cover"] .t-slide .rsvp h2.big{font-family:var(--fViv,'Vivaldi','Great Vibes',cursive);font-weight:400;text-transform:none;letter-spacing:0;font-size:clamp(44px,13vw,64px);line-height:1.1;padding-top:34px}
-html[data-sl-font="serif"] .t-slide .rsvp h2.big{font-family:var(--fDisplay);font-weight:600;text-transform:uppercase;letter-spacing:.14em;font-size:clamp(30px,9vw,42px);line-height:1.2}
-html:is([data-sl-font="cover"],[data-sl-font="serif"]) .t-slide .rsvp h2.big span{display:inline}
-html:is([data-sl-font="cover"],[data-sl-font="serif"]) .t-slide .rsvp h2.big span+span{padding-left:0}

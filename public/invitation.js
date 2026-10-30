@@ -305,7 +305,7 @@
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
     r.setProperty('--dur', sp + 's'); r.setProperty('--tk', String(sp));
     r.setProperty('--cloudK', String({ slow: 1.6, normal: 1, fast: 0.55 }[c.effects.cloudSpeed] || 1));
-    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' || isSl ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri', c.gift && c.gift.titleFont, c.rsvp && c.rsvp.titleFont, c.wishes && c.wishes.titleFont, ...(isSl && c.slide && c.slide.adj ? Object.values(c.slide.adj).map((a) => a && a.f) : [])])].filter((n) => n && typeof n === 'string' && n !== 'Vivaldi' && n !== 'serif').map((n) => {
+    const fams = [...new Set([t.fontDisplay, t.fontHeading, t.fontBody, t.fontScript, c.theme.preset === 'slide' && c.slide ? c.slide.scriptFont : '', (slF || t.fontScript) === 'Vivaldi' || isSl ? 'Great Vibes' : '', 'Poppins', 'Lora', 'Amiri', ...(isSl && c.slide && c.slide.adj ? Object.values(c.slide.adj).map((a) => a && a.f) : [])])].filter((n) => n && typeof n === 'string' && n !== 'Vivaldi').map((n) => {
       const [w, it] = FONTS[n] || ['', 0], nm = encodeURIComponent(n).replace(/%20/g, '+');
       if (!w) return 'family=' + nm;
       const ws = w.split(';');
@@ -1315,7 +1315,6 @@
     applyTheme(cfg);
     const order = (SL ? window.SLIDE.order(cfg.sections) : (cfg.sections || [])).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
-    ['gift', 'rsvp', 'wishes'].forEach((id) => { const sec = $('#app [data-sid="' + id + '"]'), v = cfg[id] && cfg[id].titleFont; if (!sec || !v || typeof v !== 'string') return; if (v === 'serif') sec.dataset.tf = 'serif'; else { sec.dataset.tf = 'font'; sec.style.setProperty('--tf', "'" + v.replace(/[^\w ]/g, '') + "',cursive"); } });
     if (MN && window.MONO.fx) { window.MONO.fx($('#app')); window.MONO.closingFx($('#app')); }
     if (SL) window.SLIDE.fx($('#app'), cfg);
     if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
