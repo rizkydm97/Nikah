@@ -18,6 +18,7 @@ a{color:inherit}
 .ld{width:34px;height:34px;border:3px solid rgba(173,41,64,.2);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ld-in{position:relative;width:200px;text-align:center;color:var(--primary)}
+#loader .ld-in{translate:0 calc(var(--ly,0)*1vh);translate:0 calc(var(--ly,0)*1svh)} /* admin: Logo & Loading → posisi naik/turun */
 .ld-ring{position:absolute;left:50%;top:-14px;width:150px;height:150px;margin-left:-75px;border-radius:50%;border:1px solid var(--gold);opacity:.7;animation:ringIn 1.4s var(--lux) both}
 .ld-ring::after{content:"";position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(169,139,87,.45)}
 @keyframes ringIn{from{transform:scale(.6);opacity:0}}

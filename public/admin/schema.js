@@ -173,6 +173,7 @@ const SCHEMA = [
     { k: 'cover.loaderMedia', l: 'Pembuka layar penuh (semua tema) — foto / VIDEO yang tampil saat undangan dimuat, menggantikan lingkaran. Kosongkan = polos (Tema 12 otomatis pakai media cover)', t: 'media', ar: '9/19' },
     { k: 'cover.loaderLogo', l: 'Logo di layar loading awal (monogram 3D / logo PNG transparan) — menggantikan singkatan huruf. Kosongkan kolom link bila ingin kembali ke singkatan huruf. Efek: muncul mewah, kilau berjalan, melayang halus', t: 'image', deco: 1 },
     { k: 'cover.loaderLogoSize', l: 'Ukuran logo loading', t: 'range', min: 30, max: 160, step: 1, unit: '%', def: 100 },
+    { k: 'cover.loaderLogoY', l: 'Posisi logo & teks loading naik / turun — geser ke kiri = naik, ke kanan = turun (0 = tepat di tengah layar)', t: 'range', min: -45, max: 45, step: 1, unit: '%', def: 0 },
     { k: 'cover.loaderLogoTime', l: 'Lama layar loading tampil (detik) — makin besar makin lama logo terlihat sebelum masuk ke cover', t: 'range', min: 2, max: 15, step: 0.5, unit: ' dtk', def: 6 },
   ] },
   { id: 'cover', title: 'Cover (Sampul Undangan)', fields: [

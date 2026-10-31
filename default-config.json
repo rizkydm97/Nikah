@@ -98,6 +98,7 @@
     "textSpeed": "",
     "loaderLogo": "/assets/mono/logo-ad.webp",
     "loaderLogoSize": 100,
+    "loaderLogoY": 0,
     "loaderLogoTime": 6
   },
   "hero": {
