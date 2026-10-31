@@ -322,18 +322,19 @@
   let stkOff = null;
   function stack(root, on) {
     if (stkOff) { stkOff(); stkOff = null; }
-    root.classList.remove('stk-on');
+    root.classList.remove('stk-on'); document.documentElement.classList.remove('stk-h');
     root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
-      e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise'); delete e.dataset.stk;
-      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); if (e.classList.contains('sec')) e.style.top = '';
+      e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act'); delete e.dataset.stk;
+      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); if (e.classList.contains('sec')) e.style.top = '';
     });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
     const pins = [], groups = [], rises = [];
     let prevPinned = false;
     secs.forEach((sec, i) => {
-      const nxt = secs[i + 1] || null;
+      const nxt0 = secs[i + 1] || null;
+      const nxt = nxt0 && nxt0.classList.contains('sl-closing') ? null : nxt0; // penutup = slide terakhir: polos, tanpa efek tumpuk
       const dim = (el) => { const d = document.createElement('i'); d.className = 'stk-dim'; el.appendChild(d); };
       if (sec.classList.contains('sl-open')) { sec.classList.add('stk-pin'); dim(sec); pins.push({ el: sec, next: nxt, go: false }); prevPinned = true; return; }
       if (sec.classList.contains('sl-couple') || sec.classList.contains('sl-events')) {
@@ -348,12 +349,13 @@
           prevPinned = true; return;
         }
       }
-      if (sec.classList.contains('sl-quote') || sec.classList.contains('sl-closing')) { sec.classList.add('stk-in'); rises.push(sec); }
+      if (sec.classList.contains('sl-closing')) { prevPinned = false; return; }
+      if (sec.classList.contains('sl-quote')) { sec.classList.add('stk-in'); rises.push(sec); }
       else if (prevPinned) sec.classList.add('stk-in');
       prevPinned = false;
     });
     if (!pins.length) return;
-    root.classList.add('stk-on');
+    root.classList.add('stk-on'); document.documentElement.classList.add('stk-h');
     const cl = (v, a, b) => Math.max(a, Math.min(b, v));
     const place = () => groups.forEach((g) => { // bagian berisi beberapa slide menempel saat slide TERAKHIRnya tepat di atas layar
       const x = g.sec.getBoundingClientRect().height - g.last.getBoundingClientRect().height;
@@ -366,6 +368,8 @@
       const rr = rises.map((el) => [el, cl(1 - el.getBoundingClientRect().top / H, 0, 1)]);
       rd.forEach(([p, c, top]) => {
         if (p.c === undefined || Math.abs(c - p.c) > 0.002) { p.c = c; p.el.style.setProperty('--cp', c.toFixed(3)); }
+        const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); }
+        if (p.go && p.el.classList.contains('sl-pp')) { const e = cl(1 - top / H, 0, 1); if (p.e === undefined || Math.abs(e - p.e) > 0.004) { p.e = e; p.el.style.setProperty('--ep', e.toFixed(3)); } }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
           if (!p.on && top < H * 0.62 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }

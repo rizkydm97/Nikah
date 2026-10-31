@@ -252,11 +252,13 @@
     if (reduce || !matchMedia('(pointer:fine)').matches) return;
     let target = scrollY, cur = scrollY, raf = 0, mine = false;
     const max = () => document.documentElement.scrollHeight - innerHeight;
-    const step = () => {
-      cur += (target - cur) * 0.09;
+    let lt = 0;
+    const step = (t) => { // peredaman berbasis waktu: terasa sama di layar 60/90/120/144 Hz
+      const dt = lt ? Math.min(64, Math.max(1, t - lt)) : 16.7; lt = t;
+      cur += (target - cur) * (1 - Math.exp(-dt / 150));
       if (Math.abs(target - cur) < 0.4) cur = target;
       mine = true; scrollTo(0, cur);
-      raf = cur !== target ? requestAnimationFrame(step) : 0;
+      if (cur !== target) raf = requestAnimationFrame(step); else { raf = 0; lt = 0; }
     };
     addEventListener('wheel', (e) => {
       if (e.ctrlKey || document.body.classList.contains('locked') || document.documentElement.classList.contains('locked')) return;

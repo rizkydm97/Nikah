@@ -637,3 +637,23 @@ html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
 @keyframes slCdSheen{0%,70%{background-position:160% 0}100%{background-position:-60% 0}}
 @keyframes slCdBlink{0%,100%{opacity:.18}50%{opacity:.85}}
 @media (prefers-reduced-motion:reduce){.stk-on .stk-pin,.stk-on>.stk-rise{transform:none!important}.sl-cdx .cd::before,.sl-cdx .cd::after,.sl-cdx .sep::before,.sl-cdx .sep::after{animation:none!important}}
+
+/* =====================================================================
+   v21 — perbaikan: garis hitam Akad/Resepsi, penutup polos, transisi pembuka → mempelai, scroll lebih halus
+   ===================================================================== */
+/* garis hitam: sambungan foto → kertas meleset sub-piksel (zoom kanvas + pecahan piksel) sehingga latar gelap bingkai tampak.
+   Tutup 3px terbawah bingkai dengan warna kertas (bagian itu memang sudah memudar penuh jadi kertas) */
+.sl-ev.split .sl-fr{background:var(--paper)}
+.sl-ev.split .sl-fr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--paper);z-index:2;pointer-events:none}
+/* penutup: slide terakhir, polos (tanpa sudut membulat/bayangan/miring) dan selalu di atas slide menempel */
+.stk-on>.sec.sl-closing{position:relative;z-index:2;border-radius:0;box-shadow:none;transform:none}
+/* scroll halus: scroll-snap bentrok dengan slide menempel (loncat/tersendat) → matikan saat efek tumpuk aktif */
+html.h-slide.stk-h{scroll-snap-type:none}
+html.h-slide{overscroll-behavior-y:none}
+.stk-act{will-change:transform}
+/* transisi pembuka → mempelai: isi pembuka naik pelan & memudar saat ditutup, fotonya bergerak lebih lambat (kedalaman),
+   foto mempelai mengecil dari zoom 1.1 ke 1 saat kartunya naik */
+.stk-on .sl-open .sl-op-in,.stk-on .sl-open .sl-scroll{translate:0 calc(var(--cp,0)*-56px);opacity:calc(1 - var(--cp,0)*1.3)}
+.stk-on .sl-open>.sl-ph{translate:0 calc(var(--cp,0)*26px)}
+.stk-on .sl-pp .sl-ph{scale:calc(1.1 - var(--ep,1)*.1);transform-origin:50% 50%}
+@media (prefers-reduced-motion:reduce){.stk-on .sl-open .sl-op-in,.stk-on .sl-open .sl-scroll,.stk-on .sl-open>.sl-ph,.stk-on .sl-pp .sl-ph{translate:none!important;scale:none!important;opacity:1!important}}
