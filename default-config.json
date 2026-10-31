@@ -428,6 +428,7 @@
     "adj": {},
     "scriptSize": 100,
     "animStyle": "mist",
+    "textStyle": "standar",
     "stageRatio": "2",
     "titleFont": "cover",
     "galleryAnim": "flip3d",

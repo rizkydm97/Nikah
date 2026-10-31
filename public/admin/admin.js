@@ -28,12 +28,6 @@
     if (!r.ok) throw new Error((d && d.error) || ('Server membalas ' + r.status + (d ? '' : ' (bukan JSON — rute API mungkin tidak terpasang)') + ' • ' + url));
     return d;
   };
-  // salin ke papan klip dengan notifikasi toast terpusat (/toast.js): sukses hanya bila benar-benar tersalin
-  function copyTxt(txt, okMsg) {
-    const ok = () => window.Toast.success(okMsg), fail = () => window.Toast.error('Gagal menyalin, silakan coba lagi.');
-    const fb = () => { const t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(t); t.select(); let d = false; try { d = document.execCommand('copy'); } catch (e) {} t.remove(); d ? ok() : fail(); };
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, fb); else fb();
-  }
   let toastT;
   function toast(m, bad) { const t = $('#toast'); t.textContent = m; t.classList.toggle('bad', !!bad); t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
 
@@ -125,10 +119,12 @@
   const post = (msg) => { const f = $('#pvFrame'); try { f.contentWindow.postMessage(msg, location.origin); } catch { /* iframe belum siap */ } };
   function sendPreview() { post({ type: 'cfg', cfg }); }
   // pratinjau ikut melompat ke section yang sedang diedit
-  function gotoPreview(id) { const t = id || current; if (t && t !== 'cover') post({ type: 'goto', id: t }); }
+  function gotoPreview(id) { const t = id || current; if (t && t !== 'cover' && t !== 'loader') post({ type: 'goto', id: t }); }
   // tunggu pratinjau selesai menerima urutan/isi baru, baru melompat ke bagian itu
   function gotoPreviewSoon(id) { clearTimeout(gotoT); gotoT = setTimeout(() => gotoPreview(id), 700); }
-  let gotoT, replayT;
+  let gotoT, replayT, loaderT;
+  // tampilkan layar loading (logo) di pratinjau; dimatikan di Animasi & Efek → tidak ada yang bisa dilihat, jadi beri tahu
+  function loaderPreviewSoon(ms) { clearTimeout(loaderT); loaderT = setTimeout(() => { if (cfg && cfg.effects && cfg.effects.intro === false) { toast('Layar loading sedang dimatikan (Animasi & Efek → Animasi pembuka)'); return; } post({ type: 'loader' }); }, ms || 1000); }
   function replayPreviewSoon(id, ms) { clearTimeout(replayT); replayT = setTimeout(() => post({ type: 'replay', id }), ms || 1600); }
   function loadPreview() { const g = $('#pvGuest').value; $('#pvFrame').src = '/?preview=1' + ($('#pvMode').value ? '&cover=1' : '') + (g ? '&to=' + encodeURIComponent(g) : ''); }
   // hasil menggeser teks cover langsung di pratinjau (Tema 12) -> simpan ke konfigurasi
@@ -422,7 +418,7 @@
   function field(f, obj, key, onChange) {
     const wrap = h('div', { class: 'fld' });
     const label = h('label', {}, f.l); const get = () => obj[key];
-    const set = (v) => { obj[key] = v; (onChange || changed)(); };
+    const set = (v) => { obj[key] = v; (onChange || changed)(); if (f.k && f.k.indexOf('cover.loader') === 0) loaderPreviewSoon(1000); };
     const defVal = f._def;
     if (f.t === 'bool') {
       wrap.append(h('label', { class: 'sw' }, h('input', { type: 'checkbox', checked: !!get(), onchange: (e) => set(e.target.checked) }), h('span', {}, f.l)));
@@ -442,6 +438,8 @@
       const tx = h('input', { type: 'text', value: get() || '', oninput: (e) => { set(e.target.value); if (/^#[0-9a-f]{6}$/i.test(e.target.value)) cp.value = e.target.value; } });
       const cp = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(get() || '') ? get() : '#000000', oninput: (e) => { tx.value = e.target.value; set(e.target.value); } });
       wrap.append(label, h('div', { class: 'row' }, cp, tx));
+    } else if (f.t === 'loaderpv') {
+      wrap.append(label, h('button', { class: 'btn sm', type: 'button', onclick: () => loaderPreviewSoon(50) }, '▶ Lihat layar loading di pratinjau'));
     } else if (f.t === 'resetpos') {
       const n = () => Object.keys(get() || {}).length;
       wrap.append(label, h('button', { class: 'btn sm', type: 'button', onclick: () => { set({}); show(current); toast('Posisi geser dikembalikan ke bawaan'); } }, n() ? 'Reset posisi geser (' + n() + ' elemen digeser)' : 'Belum ada yang digeser'));
@@ -823,8 +821,8 @@
       names.value.split('\n').map((s) => s.trim()).filter(Boolean).forEach((n) => {
         const link = mk(n).link, msg = fill(tpl.value, n);
         out.append(h('div', { class: 'linkrow' }, h('span', {}, n),
-          h('button', { class: 'btn sm', onclick: () => copyTxt(link, 'Link berhasil disalin!') }, 'Salin link'),
-          h('button', { class: 'btn sm', onclick: () => copyTxt(msg, 'Pesan berhasil disalin!') }, 'Salin pesan'),
+          h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(link).then(() => toast('Link disalin ✓')) }, 'Salin link'),
+          h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'),
           h('a', { class: 'btn sm pri', href: 'https://wa.me/?text=' + encodeURIComponent(msg), target: '_blank', rel: 'noopener' }, 'Kirim WhatsApp'),
           h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => { const L = names.value.split('\n'); const i = L.findIndex((l) => l.trim() === n); if (i >= 0) L.splice(i, 1); names.value = L.join('\n'); gen(); } }, '🗑')));
       });
@@ -865,7 +863,7 @@
           paint();
           a.addEventListener('click', mark);
           queue.push({ key, name: x.name, url: a.href, mark, row });
-          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => delGuest(x) }, '🗑'), h('button', { class: 'btn sm', onclick: () => copyTxt(msg, 'Pesan berhasil disalin!') }, 'Salin pesan'), a);
+          row.append(h('span', {}, x.name, h('br'), st), badge, h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus tamu ini dari daftar', onclick: () => delGuest(x) }, '🗑'), h('button', { class: 'btn sm', onclick: () => navigator.clipboard.writeText(msg).then(() => toast('Pesan disalin ✓')) }, 'Salin pesan'), a);
         } else row.append(h('span', {}, x.name, h('br'), st), h('small', { class: 'lkbad' }, 'Tulis: Nama | 0812xxxx'), h('button', { class: 'btn sm danger', type: 'button', onclick: () => delGuest(x) }, '🗑'));
         out2.append(row);
       });
@@ -942,6 +940,7 @@
       const g = SCHEMA.find((x) => x.id === id);
       const v = g ? groupView(g) : id === 'home' ? homeView() : id === 'sections' ? sectionsView() : /^d-(rsvp|wishes|gifts)$/.test(id) ? await dataView(id.slice(2)) : id === 'links' ? linksView() : securityView();
       main.textContent = ''; main.append(v); scrollTo(0, 0);
+      if (id === 'loader') loaderPreviewSoon(500);
       if (skipGoto) skipGoto = false; else gotoPreview();
     } catch (e) { main.textContent = e.message; }
   }

@@ -158,8 +158,16 @@
     root.querySelectorAll(BODY).forEach((e) => { if (!arabic.test(e.textContent) && !e.classList.contains('qar')) splitText(e, 'w'); });
     const els = root.querySelectorAll('.mn-tx, .mn-tw');
     if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion:reduce)').matches) { els.forEach((e) => e.classList.add('mn-go')); return; }
-    fxIO = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('mn-go'); fxIO.unobserve(e.target); } }), { threshold: 0.35, rootMargin: '0px 0px -10% 0px' });
-    els.forEach((e) => fxIO.observe(e));
+    fxIO = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { (e.target._t || e.target).classList.add('mn-go'); fxIO.unobserve(e.target); } }), { threshold: 0.35, rootMargin: '0px 0px -10% 0px' });
+    // Tema 13 + Elegant Animation: judul disapu dengan clip-path, dan browser tidak menganggap elemen yang sedang ter-clip sebagai
+    // "terlihat" — maka yang diamati penanda kecil di depannya (mn-sn), bukan judulnya sendiri.
+    const elg = document.documentElement.dataset.slTx === 'elegan' && !!root.querySelector('.sl-s');
+    els.forEach((e) => {
+      if (!elg || !e.classList.contains('mn-tx')) return fxIO.observe(e);
+      let sn = e.previousElementSibling;
+      if (!sn || !sn.classList.contains('mn-sn')) { sn = document.createElement('i'); sn.className = 'mn-sn'; sn.setAttribute('aria-hidden', 'true'); sn.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none'; e.before(sn); }
+      sn._t = e; fxIO.observe(sn);
+    });
   }
 
   // ---------- penutup "Terima Kasih": diputar ulang tiap kali bagian ini masuk layar ----------
