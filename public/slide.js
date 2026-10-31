@@ -124,11 +124,11 @@
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
-        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1900)}</div>
-        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 2800, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
-        <i class="sl-line sl-draw" style="--d:3900ms" data-ad="op.line"></i>
-        ${up('sl-op-d', 4200, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
-        ${h.hashtag ? up('sl-op-t', 4300, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
+        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 3300)}</div>
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 3900, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
+        <i class="sl-line sl-draw" style="--d:5000ms" data-ad="op.line"></i>
+        ${up('sl-op-d', 5300, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
+        ${h.hashtag ? up('sl-op-t', 5500, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true" data-ad="op.sc"><i></i></div></section>`;
   }
@@ -282,6 +282,52 @@
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
     parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); };
   }
+  // ---------- transisi scroll 3D ----------
+  // Slide TIDAK digeser/dimiringkan (tidak ada celah putih & scroll tetap asli). Yang bergerak hanya foto di dalamnya:
+  // saat slide ditinggalkan, fotonya mundur ke belakang (miring ke atas, mengecil, menggelap); saat slide baru naik, fotonya mengecil dari ukuran besar.
+  // Semua ditulis langsung ke properti foto (bukan variabel CSS di slide) supaya tidak memicu hitung ulang gaya ratusan huruf animasi.
+  let d3Off = null;
+  function depth3d(on) {
+    if (d3Off) { d3Off(); d3Off = null; }
+    if (!on) return;
+    const els = [...document.querySelectorAll('#app .sec.sl-open, #app .sl-pp, #app .sl-ev, #app .sl-cl')];
+    if (els.length < 2) return;
+    const items = els.map((el) => {
+      el.classList.add('sl3');
+      let dim = el.querySelector(':scope > .sl-dim');
+      if (!dim) { dim = document.createElement('i'); dim.className = 'sl-dim'; dim.setAttribute('aria-hidden', 'true'); el.appendChild(dim); }
+      let edge = el.querySelector(':scope > .sl-edge');
+      if (!edge) { edge = document.createElement('i'); edge.className = 'sl-edge'; edge.setAttribute('aria-hidden', 'true'); el.appendChild(edge); }
+      return { el, ph: el.querySelector('.sl-ph'), dim, edge, k: '' };
+    }).filter((o) => o.ph);
+    let raf = 0;
+    const ease = (t) => t * t * (3 - 2 * t);
+    const tick = () => {
+      raf = 0; const vh = innerHeight;
+      const rs = items.map((o) => o.el.getBoundingClientRect());   // baca semua dulu, tulis sesudahnya
+      items.forEach((o, i) => {
+        const top = rs[i].top, h = rs[i].height || vh;
+        let q = 0, mode = 0;
+        if (top < 0 && top > -h) { q = ease(-top / h); mode = 1; }          // ditinggalkan
+        else if (top >= 0 && top < vh) { q = ease(top / vh); mode = 2; }    // naik masuk
+        const k = mode + ':' + q.toFixed(3); if (o.k === k) return; o.k = k;
+        const st = o.ph.style;
+        if (mode === 1) {
+          st.translate = '0 ' + (q * 7).toFixed(2) + '%'; st.rotate = 'x ' + (q * 20).toFixed(2) + 'deg'; st.scale = (1 - q * .12).toFixed(4);
+          o.dim.style.opacity = (q * .72).toFixed(3); o.edge.style.opacity = '0';
+        } else if (mode === 2) {
+          st.translate = ''; st.rotate = ''; st.scale = (1 + q * .16).toFixed(4);
+          o.dim.style.opacity = '0'; o.edge.style.opacity = (q * .9).toFixed(3);
+        } else { st.translate = ''; st.rotate = ''; st.scale = ''; o.dim.style.opacity = '0'; o.edge.style.opacity = '0'; }
+      });
+    };
+    const go = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('scroll', go, { passive: true }); addEventListener('resize', go); go();
+    d3Off = () => {
+      removeEventListener('scroll', go); removeEventListener('resize', go); if (raf) cancelAnimationFrame(raf);
+      items.forEach((o) => { o.el.classList.remove('sl3'); o.ph.style.translate = o.ph.style.rotate = o.ph.style.scale = ''; o.dim.remove(); o.edge.remove(); });
+    };
+  }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -292,6 +338,7 @@
     de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d
     { const rt = parseFloat(s.stageRatio); de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }
     parallax(par);
+    depth3d(s.scroll3d !== false && !rm);
     root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
     if (io) { io.disconnect(); io = null; }
     const els = root.querySelectorAll('.sl-s, .sl-foot');
