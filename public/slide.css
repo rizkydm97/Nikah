@@ -681,3 +681,5 @@ html.h-slide{overscroll-behavior-y:none}
    ia hanya meredup sedikit saat ditutup kartu mempelai pria (efek tumpuk kartu pria tetap ada). */
 .stk-on .sl-open.stk-pin{transform:none;border-radius:0;box-shadow:none}
 .stk-on .sl-open.stk-pin>.stk-dim{opacity:calc(var(--cp,0)*.3)}
+/* penyebab utama pita hitam: foto pembuka digeser turun (baris ±657) sehingga latar #0d0d0d terbuka di tepi atas → foto tidak digeser lagi */
+.stk-on .sl-open>.sl-ph{translate:none}
