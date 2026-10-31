@@ -271,11 +271,11 @@
     const els = [...document.querySelectorAll('#app .sl-s .sl-pk, #app .sl-open .sl-pk')]; if (!els.length) return;
     let raf = 0;
     const tick = () => {
-      raf = 0; const vh = innerHeight, rd = [];
-      els.forEach((el) => { const r = el.parentElement.getBoundingClientRect(); if (r.bottom < -80 || r.top > vh + 80) return; rd.push([el, r]); }); // fase BACA
-      rd.forEach(([el, r]) => { // fase TULIS
-        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh)), v = (-p * Math.min(r.height * 0.035, 34)).toFixed(1);
-        if (el._py !== v) { el._py = v; el.style.setProperty('--py', v + 'px'); }
+      raf = 0; const vh = innerHeight;
+      els.forEach((el) => {
+        const r = el.parentElement.getBoundingClientRect(); if (r.bottom < -80 || r.top > vh + 80) return;
+        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
+        el.style.setProperty('--py', (-p * Math.min(r.height * 0.035, 34)).toFixed(1) + 'px');
       });
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
@@ -323,10 +323,10 @@
   function stack(root, on) {
     if (stkOff) { stkOff(); stkOff = null; }
     root.classList.remove('stk-on');
-    root.querySelectorAll('.stk-dim,.stk-cn').forEach((e) => e.remove());
+    root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise'); delete e.dataset.stk;
-      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.transform = ''; e.classList.remove('stk-act'); if (e.classList.contains('sec')) e.style.top = '';
+      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); if (e.classList.contains('sec')) e.style.top = '';
     });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
@@ -335,22 +335,21 @@
     secs.forEach((sec, i) => {
       const nxt = secs[i + 1] || null;
       const dim = (el) => { const d = document.createElement('i'); d.className = 'stk-dim'; el.appendChild(d); };
-      const dimCn = (el) => { const d = document.createElement('i'); d.className = 'stk-cn'; d.setAttribute('aria-hidden', 'true'); el.appendChild(d); };
-      if (sec.classList.contains('sl-open')) { sec.classList.add('stk-pin'); dim(sec); pins.push({ el: sec, dim: sec.lastChild, next: nxt, go: false }); prevPinned = true; return; }
+      if (sec.classList.contains('sl-open')) { sec.classList.add('stk-pin'); dim(sec); pins.push({ el: sec, next: nxt, go: false }); prevPinned = true; return; }
       if (sec.classList.contains('sl-couple') || sec.classList.contains('sl-events')) {
         const cards = [...sec.children].filter((c) => c.classList.contains('sl-s'));
         if (cards.length) {
           sec.classList.add('stk-grp'); groups.push({ sec, last: cards[cards.length - 1] });
           cards.forEach((c, j) => {
             const lastC = j === cards.length - 1;
-            c.dataset.stk = '1'; c.classList.add('stk-pin', 'stk-in'); if (!lastC) c.classList.add('stk-s'); dimCn(c); dim(c);
-            pins.push({ el: c, dim: c.lastChild, next: lastC ? nxt : cards[j + 1], go: true });
+            c.dataset.stk = '1'; c.classList.add('stk-pin', 'stk-in'); if (!lastC) c.classList.add('stk-s'); dim(c);
+            pins.push({ el: c, next: lastC ? nxt : cards[j + 1], go: true });
           });
           prevPinned = true; return;
         }
       }
-      if (sec.classList.contains('sl-quote') || sec.classList.contains('sl-closing')) { sec.classList.add('stk-in'); dimCn(sec); rises.push(sec); }
-      else if (prevPinned) { sec.classList.add('stk-in'); dimCn(sec); }
+      if (sec.classList.contains('sl-quote') || sec.classList.contains('sl-closing')) { sec.classList.add('stk-in'); rises.push(sec); }
+      else if (prevPinned) sec.classList.add('stk-in');
       prevPinned = false;
     });
     if (!pins.length) return;
@@ -366,10 +365,7 @@
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
       const rr = rises.map((el) => [el, cl(1 - el.getBoundingClientRect().top / H, 0, 1)]);
       rd.forEach(([p, c, top]) => {
-        if (p.c === undefined || Math.abs(c - p.c) > 0.002) {
-          p.c = c; p.el.style.transform = c > 0.001 ? `scale(${(1 - c * 0.08).toFixed(4)})` : ''; p.dim.style.opacity = (c * 0.55).toFixed(3);
-          const act = c > 0.001 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); }
-        }
+        if (p.c === undefined || Math.abs(c - p.c) > 0.002) { p.c = c; p.el.style.setProperty('--cp', c.toFixed(3)); }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
           if (!p.on && top < H * 0.62 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
@@ -377,8 +373,8 @@
         }
       });
       rr.forEach(([el, r]) => {
-        if (r > 0 && r < 1) { el.classList.add('stk-rise'); el.style.transform = `perspective(1100px) rotateX(${((1 - r) * 7).toFixed(2)}deg) scale(${(0.94 + r * 0.06).toFixed(4)})`; }
-        else if (el.classList.contains('stk-rise')) { el.classList.remove('stk-rise'); el.style.transform = ''; }
+        if (r > 0 && r < 1) { el.classList.add('stk-rise'); el.style.setProperty('--rp', r.toFixed(3)); }
+        else if (el.classList.contains('stk-rise')) { el.classList.remove('stk-rise'); el.style.removeProperty('--rp'); }
       });
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
