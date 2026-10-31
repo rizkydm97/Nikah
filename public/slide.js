@@ -325,12 +325,12 @@
     root.classList.remove('stk-on'); document.documentElement.classList.remove('stk-h');
     root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
-      e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act'); delete e.dataset.stk;
+      e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
       e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); if (e.classList.contains('sec')) e.style.top = '';
     });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
-    const pins = [], groups = [], rises = [];
+    const pins = [], groups = [], rises = [], quotes = [];
     let prevPinned = false;
     secs.forEach((sec, i) => {
       const nxt0 = secs[i + 1] || null;
@@ -340,7 +340,8 @@
       if (sec.classList.contains('sl-couple') || sec.classList.contains('sl-events')) {
         const cards = [...sec.children].filter((c) => c.classList.contains('sl-s'));
         if (cards.length) {
-          sec.classList.add('stk-grp'); groups.push({ sec, last: cards[cards.length - 1] });
+          // bagian terakhir sebelum penutup tidak menempel: ia menggulir normal keluar, penutup menyusul polos (tanpa efek tumpuk)
+          if (!(nxt0 && nxt0.classList.contains('sl-closing'))) { sec.classList.add('stk-grp'); groups.push({ sec, last: cards[cards.length - 1] }); }
           cards.forEach((c, j) => {
             const lastC = j === cards.length - 1;
             c.dataset.stk = '1'; c.classList.add('stk-pin', 'stk-in'); if (!lastC) c.classList.add('stk-s'); dim(c);
@@ -350,7 +351,9 @@
         }
       }
       if (sec.classList.contains('sl-closing')) { prevPinned = false; return; }
-      if (sec.classList.contains('sl-quote')) { sec.classList.add('stk-in'); rises.push(sec); }
+      if (sec.classList.contains('sl-quote')) { // ayat + hitung mundur ikut menempel: Akad naik menutupinya seperti slide lain
+        sec.classList.add('stk-in', 'stk-pin', 'stk-q'); dim(sec); pins.push({ el: sec, next: nxt, go: false }); quotes.push(sec); prevPinned = true; return;
+      }
       else if (prevPinned) sec.classList.add('stk-in');
       prevPinned = false;
     });
@@ -361,6 +364,7 @@
       const x = g.sec.getBoundingClientRect().height - g.last.getBoundingClientRect().height;
       g.sec.style.top = (-Math.max(0, Math.round(x))) + 'px';
     });
+    const placeQ = () => quotes.forEach((q) => { q.style.top = Math.min(0, Math.round((innerHeight || 780) - q.offsetHeight)) + 'px'; }); // ayat lebih tinggi dari layar: menempel saat dasarnya tepat di dasar layar
     let raf = 0;
     const tick = () => {
       raf = 0; const H = innerHeight || 780;
@@ -382,7 +386,7 @@
       });
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    const re = () => { place(); on_(); };
+    const re = () => { place(); placeQ(); on_(); };
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', re); addEventListener('load', re);
     const t1 = setTimeout(re, 400), t2 = setTimeout(re, 1800);
     re(); tick();
