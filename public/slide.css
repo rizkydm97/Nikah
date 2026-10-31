@@ -674,4 +674,4 @@ html.h-slide{overscroll-behavior-y:none}
 
 /* v24 — penyebab sebenarnya sudut putih: bagian Mempelai (.sl-couple) berlatar kertas putih, sehingga sudut membulat kartu pria
    menampakkan putih itu. Selama efek tumpuk, latarnya transparan: yang terlihat di sudut adalah pembuka (gelap) di belakangnya */
-.stk-on>.sec.sl-couple.stk-grp{background:transparent}
+.stk-on>.sec.stk-grp{background:transparent} /* Mempelai + Akad/Resepsi (semua bagian bertumpuk) */
