@@ -675,3 +675,9 @@ html.h-slide{overscroll-behavior-y:none}
 /* v24 — penyebab sebenarnya sudut putih: bagian Mempelai (.sl-couple) berlatar kertas putih, sehingga sudut membulat kartu pria
    menampakkan putih itu. Selama efek tumpuk, latarnya transparan: yang terlihat di sudut adalah pembuka (gelap) di belakangnya */
 .stk-on>.sec.stk-grp{background:transparent} /* Mempelai + Akad/Resepsi (semua bagian bertumpuk) */
+
+/* v25 — sudut hitam di atas pembuka saat digulir: pembuka (sl-open) berlatar #0d0d0d dan ikut mengecil + membulat,
+   sehingga sudut atasnya memperlihatkan latar gelap. Kini pembuka tetap penuh & rata (tanpa mengecil / membulat);
+   ia hanya meredup sedikit saat ditutup kartu mempelai pria (efek tumpuk kartu pria tetap ada). */
+.stk-on .sl-open.stk-pin{transform:none;border-radius:0;box-shadow:none}
+.stk-on .sl-open.stk-pin>.stk-dim{opacity:calc(var(--cp,0)*.3)}
