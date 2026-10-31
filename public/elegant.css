@@ -1,0 +1,130 @@
+/* ===================================================================
+   ELEGANT ANIMATION (Tema 13 — Slide Foto)
+   Aktif hanya bila:  <html class="h-slide" data-anim-style="elegant">  (Admin → Animasi & Efek → Gaya animasi).
+   Gaya lama tidak disentuh: semua aturan di bawah diawali  :root.h-slide[data-anim-style="elegant"]  dan hanya menimpa animasi TEKS / TOMBOL / INFO.
+   Satu berkas ini = satu-satunya tempat mengatur animasi Elegant (durasi, jeda, urutan).
+   Urutan tampil:  1 judul & nama (tulisan tangan) → 2 garis ornamen → 3 isi / paragraf / info → 4 tombol & ikon
+   Standar gerak:  geser maks 8 px · 0,9–1,4 dtk · perlambatan di akhir · tanpa blur / bounce / zoom.
+   =================================================================== */
+@media (prefers-reduced-motion:no-preference){
+
+:root.h-slide[data-anim-style="elegant"]{--el-ease:cubic-bezier(.22,.7,.25,1);--el-wipe:cubic-bezier(.45,.05,.25,1)}
+
+/* ---------- 0. buang gerak per huruf / per kata / pop dari gaya lama ---------- */
+:root.h-slide[data-anim-style="elegant"] .sl-c{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
+:root.h-slide[data-anim-style="elegant"] :is(.sl-cv-k,.sl-op-k,.sl-cl-k,.sl-ft-n,.sl-ch-ht) .sl-wd{animation:none!important;opacity:1!important;transform:none!important}
+:root.h-slide[data-anim-style="elegant"] .sl-wd,:root.h-slide[data-anim-style="elegant"] .mn-wd{transform:none!important;filter:none!important}
+:root.h-slide[data-anim-style="elegant"] .sl-up,:root.h-slide[data-anim-style="elegant"] .sl-pop,:root.h-slide[data-anim-style="elegant"] .sl-fade{transform:none!important;filter:none!important}
+
+/* ---------- 1. JUDUL & NAMA — tulisan tangan, tersapu kiri → kanan (±1,9 dtk, bukan per huruf) ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-wipe{
+  animation:elWipe calc(1.9s*var(--tk,1)) var(--el-wipe) both!important;
+  animation-delay:calc(var(--el-wd,250ms)*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .sl-np.n1 .sl-wipe{--el-wd:250ms}
+:root.h-slide[data-anim-style="elegant"] .sl-np.n2 .sl-wipe{--el-wd:650ms}
+:root.h-slide[data-anim-style="elegant"] .sl-np.n3 .sl-wipe{--el-wd:1000ms}
+/* judul yang tadinya per huruf (Love Story) → disapu sebagai satu tulisan */
+:root.h-slide[data-anim-style="elegant"] .sl-ch-ht,:root.h-slide[data-anim-style="elegant"] .mn-tx{clip-path:inset(-10% 100% -25% -2%)}
+:root.h-slide[data-anim-style="elegant"] .sl-go .sl-ch-ht,:root.h-slide[data-anim-style="elegant"] .mn-tx.mn-go{
+  animation:elWipe calc(1.9s*var(--tk,1)) var(--el-wipe) both!important;
+  animation-delay:calc(250ms*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .cap .mn-tx.mn-go{animation-delay:calc(650ms*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .mn-tx .mn-c{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}
+:root.h-slide[data-anim-style="elegant"] [data-el-fit="c"]{width:fit-content;max-width:100%;margin-inline:auto}
+:root.h-slide[data-anim-style="elegant"] [data-el-fit="r"]{width:fit-content;max-width:100%;margin-left:auto}
+@keyframes elWipe{
+  0%{clip-path:inset(-10% 100% -25% -2%);opacity:.001}
+  4%{opacity:1}
+  100%{clip-path:inset(-10% -6% -25% -2%);opacity:1}}
+
+/* ---------- 2. GARIS ORNAMEN & DEKORATIF — setelah judul ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) :is(.sl-draw,.sl-vl){
+  animation-duration:calc(1.2s*var(--tk,1))!important;
+  animation-delay:calc(var(--el-od,800ms)*var(--tk,1))!important}
+
+/* ---------- 3a. SUBJUDUL KAPITAL — jarak huruf melebar + memudar, tanpa bergeser ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-cv-k,.sl-op-k,.sl-cl-k,.sl-ft-n,.sl-pp-l,.sl-op-d,.sl-op-t,.sl-cv-hd,.sl-ft-y){opacity:0}
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) :is(.sl-cv-k,.sl-op-k,.sl-cl-k,.sl-ft-n,.sl-pp-l,.sl-op-d,.sl-op-t,.sl-cv-hd,.sl-ft-y){
+  animation:elCaps calc(1.7s*var(--tk,1)) var(--el-ease) both!important;
+  animation-delay:calc(var(--el-cd,600ms)*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .sl-pp-l{--el-cd:350ms}
+:root.h-slide[data-anim-style="elegant"] .sl-cv-hd{--el-cd:200ms}
+:root.h-slide[data-anim-style="elegant"] .sl-cv-k,:root.h-slide[data-anim-style="elegant"] .sl-op-k{--el-cd:450ms}
+:root.h-slide[data-anim-style="elegant"] .sl-op-d{--el-cd:1300ms}
+:root.h-slide[data-anim-style="elegant"] .sl-op-t{--el-cd:1500ms}
+:root.h-slide[data-anim-style="elegant"] .sl-cl-k{--el-cd:600ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ft-n{--el-cd:300ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ft-y{--el-cd:900ms}
+@keyframes elCaps{from{opacity:0;letter-spacing:-.04em}to{opacity:1}}
+
+/* ---------- 3b. PARAGRAF — fade per BARIS (jeda 80 ms), tanpa blur / gerak ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) :is(.sl-cv-tx,.sl-pp-p,.qt,.sl-ev-ad,.sl-cl-tx,.sl-ch-tx) .sl-wd,
+:root.h-slide[data-anim-style="elegant"] .mn-tw.mn-go .mn-wd{
+  animation:elFade calc(1.1s*var(--tk,1)) var(--el-ease) both!important;
+  animation-delay:calc(var(--el-pd,900ms)*var(--tk,1) + var(--el-l,0)*80ms)!important}
+:root.h-slide[data-anim-style="elegant"] .sl-cv-tx{--el-pd:1500ms}
+:root.h-slide[data-anim-style="elegant"] .sl-pp-p{--el-pd:1500ms}
+:root.h-slide[data-anim-style="elegant"] .qt{--el-pd:900ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ev-ad{--el-pd:700ms}   /* alamat = informasi penting: tidak dibuat menunggu lama */
+:root.h-slide[data-anim-style="elegant"] .sl-cl-tx{--el-pd:1500ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ch-tx{--el-pd:900ms}
+:root.h-slide[data-anim-style="elegant"] .cap .mn-tw.mn-go .mn-wd{animation-delay:calc(var(--el-pd,900ms)*var(--tk,1) + .5s + var(--el-l,0)*80ms)!important}
+@keyframes elFade{from{opacity:0}to{opacity:1}}
+
+/* ---------- 3c. ISI LAIN — memudar + geser ≤ 8 px ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-up{
+  animation:elRise calc(1.1s*var(--tk,1)) var(--el-ease) both!important;
+  animation-delay:calc(var(--el-ud,1000ms)*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .sl-cv-dear{--el-ud:1250ms}
+:root.h-slide[data-anim-style="elegant"] .sl-cv-g{--el-ud:1400ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ch-y{--el-ud:1200ms}
+:root.h-slide[data-anim-style="elegant"] .sl-cl-hr{--el-ud:1300ms}
+@keyframes elRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- 4. AYAT AL-QUR'AN — memudar sangat pelan (±2 dtk), tanpa gerak / zoom / blur ---------- */
+:root.h-slide[data-anim-style="elegant"] .sl-go .sl-ar{animation:elQuran calc(2.1s*var(--tk,1)) ease-in-out both!important;animation-delay:calc(450ms*var(--tk,1))!important}
+@keyframes elQuran{from{opacity:0}to{opacity:1}}
+
+/* ---------- 5. INFORMASI PENTING — hitung mundur, tanggal, jam, tempat: muncul cepat & jelas ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) :is(.sl-ev-d,.sl-ev-h,.sl-ev-pl,.src){
+  animation:elFade calc(.7s*var(--tk,1)) ease both!important;
+  animation-delay:calc(var(--el-id,350ms)*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .sl-ev-d{--el-id:350ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ev-h{--el-id:450ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ev-pl{--el-id:550ms}
+:root.h-slide[data-anim-style="elegant"] .src{--el-id:1300ms}
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) :is(.cds .cd,.cds .sep){
+  animation:elFade calc(.6s*var(--tk,1)) ease both!important;
+  animation-delay:calc(200ms*var(--tk,1))!important}
+
+/* ---------- 6. TOMBOL & IKON — paling akhir, hanya memudar ---------- */
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-pop:not(.cd){
+  animation:elFade calc(.9s*var(--tk,1)) ease both!important;
+  animation-delay:calc(var(--el-bd,1900ms)*var(--tk,1))!important}
+:root.h-slide[data-anim-style="elegant"] .sl-cv-btn{--el-bd:2400ms}
+:root.h-slide[data-anim-style="elegant"] .sl-ig{--el-bd:2100ms}
+:root.h-slide[data-anim-style="elegant"] .sl-map{--el-bd:1500ms}
+:root.h-slide[data-anim-style="elegant"] .sl-save{--el-bd:1700ms}
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-scroll{animation:elFade 1s ease 3.2s both!important}
+
+/* ---------- Bagian umum (Gift, RSVP, Ucapan, Galeri, Live): elemen .rv ---------- */
+:root.h-slide[data-anim-style="elegant"] .rv:not(.gi):not(.mi):not(.pho):not(.cpho):not(.vid):not(.half):not(.gslider):not(.gun-s):not([data-a^="bloom"]):not(.mn-tx):not(.mn-tw){
+  filter:none!important;transform:translateY(8px);
+  transition:opacity calc(1.1s*var(--tk,1)) var(--el-ease),transform calc(1.1s*var(--tk,1)) var(--el-ease);
+  transition-delay:calc(var(--i,0)*.08s)}
+:root.h-slide[data-anim-style="elegant"] .rv.in:not(.gi):not(.mi):not(.pho):not(.cpho):not(.vid):not(.half):not(.gslider):not(.gun-s):not([data-a^="bloom"]){transform:none}
+:root.h-slide[data-anim-style="elegant"] .rv.in.h-display,:root.h-slide[data-anim-style="elegant"] .rv.in.script-h,:root.h-slide[data-anim-style="elegant"] .rv.in.h-head,:root.h-slide[data-anim-style="elegant"] .rv.in.names,:root.h-slide[data-anim-style="elegant"] .rv.in.script,:root.h-slide[data-anim-style="elegant"] .rv.in.big{animation:none}
+/* peran yang dikenali elegant.js di dalam .rv */
+:root.h-slide[data-anim-style="elegant"] .rv [data-el="title"],:root.h-slide[data-anim-style="elegant"] .rv[data-el="title"]{clip-path:inset(-10% 100% -25% -2%)}
+:root.h-slide[data-anim-style="elegant"] .rv[data-el="title"]{opacity:1;transform:none}
+:root.h-slide[data-anim-style="elegant"] .rv.in[data-el="title"],:root.h-slide[data-anim-style="elegant"] .rv.in [data-el="title"]{animation:elWipe calc(1.9s*var(--tk,1)) var(--el-wipe) both;animation-delay:calc(300ms*var(--tk,1))}
+:root.h-slide[data-anim-style="elegant"] .rv [data-el="caps"],:root.h-slide[data-anim-style="elegant"] .rv[data-el="caps"]{opacity:0}
+:root.h-slide[data-anim-style="elegant"] .rv[data-el="caps"]{transform:none}
+:root.h-slide[data-anim-style="elegant"] .rv.in[data-el="caps"],:root.h-slide[data-anim-style="elegant"] .rv.in [data-el="caps"]{animation:elCaps calc(1.7s*var(--tk,1)) var(--el-ease) both;animation-delay:calc(450ms*var(--tk,1))}
+:root.h-slide[data-anim-style="elegant"] .rv [data-el="quran"],:root.h-slide[data-anim-style="elegant"] .rv[data-el="quran"]{opacity:0}
+:root.h-slide[data-anim-style="elegant"] .rv.in[data-el="quran"],:root.h-slide[data-anim-style="elegant"] .rv.in [data-el="quran"]{animation:elQuran calc(2.1s*var(--tk,1)) ease-in-out both;animation-delay:calc(450ms*var(--tk,1))}
+:root.h-slide[data-anim-style="elegant"] .rv[data-el="quran"]{transform:none}
+:root.h-slide[data-anim-style="elegant"] .rv.in :is(.btn,[data-copy],.ic,.soc a,.soc button){animation:elFade calc(.9s*var(--tk,1)) ease both;animation-delay:calc(1.3s*var(--tk,1))}
+:root.h-slide[data-anim-style="elegant"] .rv.in:is(.btn,[data-copy]){animation:elFade calc(.9s*var(--tk,1)) ease both;animation-delay:calc(1.3s*var(--tk,1))}
+
+} /* /no-preference */

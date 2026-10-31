@@ -22,11 +22,7 @@
   const CQ = window.CQ || { w: (n) => n + 'cqw', h: (n) => n + 'cqh' };  const U = (window.CSS && CSS.supports && CSS.supports('height', '1svh')) ? 'svh' : 'vh';
   const NU = (n) => (ZOOMOK ? `calc(var(--cvh,780px)*${(n / 100).toFixed(4)})` : n + U);
   const E = (H, s) => H.esc(s);
-  // gaya animasi teks (admin: slide.textStyle): 'standar' = gaya lama · 'elegan' = Elegant Animation
-  const isEl = (H) => ((H.C && H.C.slide) || {}).textStyle === 'elegan';
-  const lsr = (H, s, start) => `<span class="sl-ls" style="--d:${start || 0}ms">${E(H, s).replace(/\r?\n/g, '<br>')}</span>`; // jarak huruf melebar + memudar
-  function chars(H, s, step, start, kind) {
-    if (isEl(H)) return kind === 'hw' ? wipe(H, s, start) : lsr(H, s, start); // Elegan: tanpa animasi per huruf
+  function chars(H, s, step, start) {
     let n = 0; step = step || 42; start = start || 0;
     return String(s == null ? '' : s).split(/\r?\n/).map((ln) => ln.split(/(\s+)/).map((w) => (!w || /^\s+$/.test(w)) ? ' '
       : `<span class="sl-w">${[...w].map((c) => `<span class="sl-c" style="--d:${start + (n++) * step}ms">${E(H, c)}</span>`).join('')}</span>`).join('')).join('<br>');
@@ -100,7 +96,7 @@
       <div class="sl-cv-bg${md ? '' : ' none'}"><div class="sl-cv-kb">${md}</div></div><i class="sl-cv-sh"></i>
       <div class="sl-cv-in">
         <div class="sl-cv-hd sl-fade" style="--d:300ms" data-ad="cv.hd"><span>${E(H, C.hero.dateText)}</span><b>${E(H, lab)}</b><span class="loc">${loc ? `${H.ICON.pin}${E(H, loc)}` : ''}</span></div>
-        <div class="sl-cv-k" data-ad="cv.k"${tx('cover.kicker')}>${isEl(H) ? wipe(H, o.kicker, 450) : words(H, o.kicker, 90, 450)}</div>
+        <div class="sl-cv-k" data-ad="cv.k"${tx('cover.kicker')}>${words(H, o.kicker, 90, 450)}</div>
         <div class="sl-cv-sp"></div>
         <div class="sl-cv-nm">${nameParts(H, nm[0], nm[1], 'cv', 900, 'cv.nm', ['cover.names#0', 'cover.names#1'])}</div>
         <div class="sl-cv-to">
@@ -128,7 +124,7 @@
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
-        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1500, 'cap')}</div>
+        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1500)}</div>
         <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1900, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
         <i class="sl-line sl-draw" style="--d:3200ms" data-ad="op.line"></i>
         ${up('sl-op-d', 3500, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
@@ -221,7 +217,7 @@
     const ft = String(o.footer == null ? '' : o.footer).trim();
     const m = /^([\s\S]*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
-    const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 350, 'cap')}</div>`
+    const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 350)}</div>`
       + (fy ? `<div class="sl-ft-y sl-up" style="--d:1100ms" data-ad="cl.fy"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
     const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
@@ -230,7 +226,7 @@
       <div class="sl-cl-fr" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><em class="a"></em><em class="b"></em><em class="c"></em><em class="d"></em></div>
       <div class="sl-cl-in">
         <div class="sl-cl-orn sl-draw" style="--d:1500ms" aria-hidden="true" data-ad="cl.orn"><i></i><em></em><i></i></div>
-        <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, 44, 1700, 'hw')}</div>
+        <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, 44, 1700)}</div>
         <div class="sl-cl-n">${nameParts(H, nmc[0], nmc[1], 'cl', 2500, 'cl.n', ['closing.names#0', 'closing.names#1'])}</div>
         <div class="sl-cl-hr sl-up" style="--d:3500ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
         <p class="sl-cl-tx" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, 30, 3800)}</p>
@@ -241,7 +237,7 @@
   // ---------- 7. love story: judul → foto lebar penuh (kabut di tepi) → cerita + tahun, dipisah garis vertikal tipis ----------
   function story(H) {
     const o = H.C.story || {}, s = sl(H), items = o.items || [], dflt = shapeOf(s.storyShape, '4/5') || '4/5';
-    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht" data-ad="st.h"${tx('story.title')}>${chars(H, o.title, 38, 100, 'hw')}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
+    const head = `<div class="sl-s sl-ch-h"><div class="sl-ch-ht" data-ad="st.h"${tx('story.title')}>${chars(H, o.title, 38, 100)}</div><i class="sl-vl sl-draw" style="--d:900ms"></i></div>`;
     const chs = items.map((e, i) => {
       const sh = shapeOf(e.shape, dflt) || dflt, side = i % 2 ? 'r' : 'l';
       const src = e.image && H.safeUrl(e.image) ? [e, 'image'] : null;
@@ -290,7 +286,6 @@
     root = root || document.getElementById('app'); if (!root) return;
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
     const de = document.documentElement;
-    de.dataset.slTx = s.textStyle === 'elegan' ? 'elegan' : 'standar';
     de.dataset.slAnim = ['mist', 'zoom', 'slide', 'fade'].includes(s.animStyle) ? s.animStyle : 'mist';
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
@@ -395,7 +390,7 @@
       document.body.appendChild(hint); let hT = setTimeout(() => hint.classList.add('off'), 7000);
       showHint = (t, on) => { hint.textContent = t; hint.classList.remove('off'); clearTimeout(hT); if (!on) hT = setTimeout(() => hint.classList.add('off'), 3500); };
     }
-    const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open,.sl-foot');
+    const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open,.sl-foot,#loader');
     const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
     const ts = (a) => ({ x: parseFloat(a.x) || 0, y: parseFloat(a.y) || 0 });
     const putT = (el, x, y) => { el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : ''; };
@@ -546,26 +541,7 @@
     addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(chk); }, { passive: true }); chk();
   }
 
-  // Elegan: paragraf muncul PER BARIS (bukan per kata) — kata yang sebaris diberi jeda yang sama, antarbaris +80 ms.
-  // Baris dihitung dari posisi tampil sebenarnya, jadi dihitung ulang bila lebar layar / font berubah.
-  function lines(root) {
-    root = root || document.getElementById('app');
-    if (!root || document.documentElement.dataset.slTx !== 'elegan') return;
-    const groups = new Set();
-    root.querySelectorAll('.sl-wd,.mn-wd').forEach((w) => groups.add(w.parentElement));
-    groups.forEach((p) => {
-      const ws = [...p.children].filter((c) => c.classList.contains('sl-wd') || c.classList.contains('mn-wd'));
-      if (!ws.length) return;
-      const d0 = parseFloat(ws[0].style.getPropertyValue('--d')) || 0;
-      let top = null, idx = -1;
-      ws.forEach((w) => { const t = Math.round(w.offsetTop / 4); if (t !== top) { top = t; idx++; } w.style.setProperty('--d', (d0 + idx * 80) + 'ms'); });
-    });
-  }
-  let lineT = 0;
-  addEventListener('resize', () => { clearTimeout(lineT); lineT = setTimeout(() => lines(), 250); });
-  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => lines());
-
-  window.SLIDE = { lines,
+  window.SLIDE = {
     cover, hero, couple, quote, events, story, closing, open, fx, order, chars, words, adjust, edit, toTop, pick: (k) => { if (pickFn) pickFn(k); },
     deco: M.deco || {}, colors: M.colors || {}, assets: M.assets || [],
   };

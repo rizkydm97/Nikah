@@ -154,35 +154,16 @@
       if (e.data.type === 'goto') gotoSection(e.data.id);
       if (e.data.type === 'slpick' && window.SLIDE && window.SLIDE.pick) window.SLIDE.pick(String(e.data.key || ''));
       if (e.data.type === 'replay') replaySection(e.data.id);
-      if (e.data.type === 'loader') showLoaderPreview();
     });
   }
   (pc ? Promise.resolve(pc) : fetch('/api/config', { cache: 'no-cache' }).then((r) => r.json())).then(init).catch((e) => { console.error(e); document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif">Gagal memuat undangan.</p>'; });
-
-  // pratinjau admin: perlihatkan layar loading (logo / monogram, ukuran, lama) dengan pengaturan terbaru, lalu tutup sendiri
-  function showLoaderPreview() {
-    const ld = $('#loader'), c = C; if (!ld || !c) return;
-    const names = String(c.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean);
-    const mono = names.length >= 2 ? `${esc(names[0][0])}<i>&amp;</i>${esc(names[1][0])}` : esc((names[0] || '♥')[0]);
-    const lm = loaderMedia(c), logo = safeUrl(c.cover.loaderLogo), lgs = c.cover.loaderLogoSize === '' || c.cover.loaderLogoSize == null ? 100 : num(c.cover.loaderLogoSize, 100, 30, 160);
-    const mid = logo ? `<div class="ld-logo" style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>` : `<div class="ld-ring"></div><div class="ld-mono">${mono}</div>`;
-    const lt = c.cover.loaderLogoTime === '' || c.cover.loaderLogoTime == null ? 6 : num(c.cover.loaderLogoTime, 6, 2, 15);
-    const holdMs = logo ? Math.round(lt * 1000) : MN ? 3600 : 1400;
-    ld.style.transition = 'none'; ld.classList.remove('off'); // langsung tampak penuh (tanpa fade-in) agar animasi logo terlihat utuh dari awal, persis seperti saat loading sungguhan
-    ld.innerHTML = `${lm}<div class="ld-in${logo ? ' has-logo' : ''}" style="--ly:${num(c.cover.loaderLogoY, 0, -45, 45)}">${mid}<div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
-    ld.classList.toggle('has-media', !!lm); ld.classList.add('ready');
-    const bar = $('#ldBar'); if (bar) { bar.style.transition = `width ${Math.max(1, holdMs - 400)}ms cubic-bezier(.4,0,.2,1)`; requestAnimationFrame(() => { bar.style.width = '96%'; }); }
-    void ld.offsetWidth; requestAnimationFrame(() => requestAnimationFrame(() => { ld.style.transition = ''; })); // fade-out saat menutup tetap halus
-    clearTimeout(showLoaderPreview.t);
-    const hide = () => { clearTimeout(showLoaderPreview.t); ld.classList.add('off'); ld.onclick = null; };
-    showLoaderPreview.t = setTimeout(hide, holdMs + 600); ld.onclick = hide;
-  }
 
   let inited = false;
   function init(cfg) {
     if (inited) return; inited = true;
     render(cfg);
     if (PREVIEW) {
+      if (q.has('loader')) return; // pratinjau "Loading / Logo": layar loading dibiarkan tampil (diisi oleh render)
       $('#loader').classList.add('off');
       if (q.has('cover')) { $('#cover').classList.add('play', 'shown', 'instant'); return; }
       openInvitation(true); return;
@@ -242,16 +223,30 @@
     Promise.all(list.map((u) => new Promise((res) => { const im = new Image(); (window.__pre = window.__pre || []).push(im); im.onload = im.onerror = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(res); im.src = u; }))).then(start);
     setTimeout(start, 8000); // jaringan sangat lambat: jangan menahan selamanya
   }
-  function introGo() {
-    const ld = $('#loader'), c = C;
+  // isi layar loading (dipakai intro() dan pratinjau admin "Loading / Logo"). Tema 13: logo, teks & bilah punya data-ad → bisa digeser di pratinjau (kunci ld.lg, ld.k, ld.bar)
+  function loaderParts(c) {
     const names = String(c.cover.names || '').split('&').map((s) => s.trim()).filter(Boolean);
     const mono = names.length >= 2 ? `${esc(names[0][0])}<i>&amp;</i>${esc(names[1][0])}` : esc((names[0] || '♥')[0]);
     const lm = loaderMedia(c);
     const logo = safeUrl(c.cover.loaderLogo), lgs = c.cover.loaderLogoSize === '' || c.cover.loaderLogoSize == null ? 100 : num(c.cover.loaderLogoSize, 100, 30, 160);
+    const ad = (k) => (SL ? ` data-ad="${k}"` : '');
     // logo (mis. monogram 3D) menggantikan singkatan huruf + lingkaran bila diisi di admin → Cover → "Logo di layar loading"
-    const mid = logo ? `<div class="ld-logo" style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>` : `<div class="ld-ring"></div><div class="ld-mono">${mono}</div>`;
-    if (c.effects.intro !== false) ld.innerHTML = `${lm}<div class="ld-in${logo ? ' has-logo' : ''}" style="--ly:${num(c.cover.loaderLogoY, 0, -45, 45)}">${mid}<div class="ld-k">${esc(c.cover.kicker)}</div><div class="ld-bar"><span id="ldBar"></span></div></div>`;
+    const mid = logo ? `<div class="ld-logo"${ad('ld.lg')} style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>`
+      : SL ? `<div class="ld-mg"${ad('ld.lg')}><div class="ld-ring"></div><div class="ld-mono">${mono}</div></div>` : `<div class="ld-ring"></div><div class="ld-mono">${mono}</div>`;
+    return { lm, html: `${lm}<div class="ld-in${logo ? ' has-logo' : ''}">${mid}<div class="ld-k"${ad('ld.k')}>${esc(c.cover.kicker)}</div><div class="ld-bar"${ad('ld.bar')}><span id="ldBar"></span></div></div>` };
+  }
+  // pratinjau admin (?loader=1): layar loading ditahan tampil (tanpa hitung waktu) supaya logo & tulisannya bisa dilihat dan digeser
+  function loaderPreview() {
+    const ld = $('#loader'), p = loaderParts(C);
+    ld.innerHTML = p.html; ld.classList.toggle('has-media', !!p.lm); ld.classList.add('ready', 'ld-pv'); ld.classList.remove('off');
+    const bar = $('#ldBar'); if (bar) { bar.style.transition = 'none'; bar.style.width = '62%'; }
+  }
+  function introGo() {
+    const ld = $('#loader'), c = C;
+    const parts = loaderParts(c), lm = parts.lm;
+    if (c.effects.intro !== false) ld.innerHTML = parts.html;
     ld.classList.toggle('has-media', !!lm); ld.classList.add('ready');
+    if (SL && window.SLIDE && c.effects.intro !== false) window.SLIDE.adjust(c); // posisi & ukuran logo/teks loading yang diatur di admin
     const s = c.scene;
     const urls = PT && PT.live ? [PT.bg, ...(PT.preload || ['bf_rajah', 'feather', 'leafj', 'orchid', 'cloudw1']).map((n) => /\//.test(n) ? n : PT.spr + n + '.webp')] : PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     // video sampul (+ video bingkai) ikut ditunggu: loader baru hilang setelah video punya cukup data untuk diputar mulus
@@ -348,6 +343,7 @@
     b.toggle('nosway', !c.effects.sway); b.toggle('noglow', !c.effects.glow); b.toggle('noclouds', c.effects.clouds === false);
     // saklar animasi (admin → Animasi & Efek); kosong/true = menyala
     ['birds', 'particles', 'lights'].forEach((k) => b.toggle('no' + k, c.effects[k] === false));
+    document.documentElement.dataset.animStyle = c.effects.animStyle === 'elegant' ? 'elegant' : 'default'; // gaya animasi (Admin → Animasi & Efek); gaya Elegant diatur di /elegant.css
     b.toggle('norv', c.effects.revealAnim === false); b.toggle('nobfly', c.effects.butterflies === false); b.toggle('nopetal', c.effects.petals === false); b.toggle('nopar', c.effects.parallax === false);
   }
 
@@ -1171,8 +1167,8 @@
     gift(c) {
       const o = c.gift, wa = hasWA(c) && o.sendWhatsapp;
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
-      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank"><div>${esc(b.bank)}</div><div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-ck="rek" data-copy="${esc(b.number)}">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
-      const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><button class="btn pill rose" data-ck="alamat" data-copy="${esc(o.addressName + ' - ' + o.address)}">${esc(o.copyAddress)} ${ICON.copy}</button></div>` : '';
+      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank"><div>${esc(b.bank)}</div><div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
+      const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}" data-copy-type="alamat">${esc(o.copyAddress)} ${ICON.copy}</button></div>` : '';
       const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}`);
       const form = o.formEnabled ? capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
         <form class="fm" id="giftForm"><label>Nama :</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Nama Bank :</label><input name="bank" maxlength="60" placeholder="Nama Bank"><label>Nominal :</label><input name="amount" maxlength="40" inputmode="numeric" placeholder="Nominal"><label>Ucapan :</label><input name="message" maxlength="500" placeholder="Ucapan"><label>Bukti TF :</label><input type="file" name="proof" accept="image/png,image/jpeg,image/webp"><button class="btn sq full" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.formButton)}</button><div class="msg" id="giftMsg"></div></form>`) : '';
@@ -1335,10 +1331,8 @@
     applyTheme(cfg);
     const order = (SL ? window.SLIDE.order(cfg.sections) : (cfg.sections || [])).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
-    if (SL) document.documentElement.dataset.slTx = (cfg.slide && cfg.slide.textStyle) === 'elegan' ? 'elegan' : 'standar'; // harus sudah terpasang sebelum MONO.fx (judul Elegan)
     if (MN && window.MONO.fx) { window.MONO.fx($('#app')); window.MONO.closingFx($('#app')); }
     if (SL) window.SLIDE.fx($('#app'), cfg);
-    if (SL && window.SLIDE.lines) window.SLIDE.lines($('#app')); // Elegant Animation: paragraf per baris
     if (JFX()) $$('#app .sec.paperbg, #app .sec.story').forEach((sec) => { const d = document.createElement('div'); d.className = 'batik'; d.setAttribute('aria-hidden', 'true'); d.innerHTML = '<i></i>'; const b = $(':scope>.bgl', sec); if (b) b.after(d); else sec.prepend(d); });
     $$('#app section').forEach((sec, idx) => {
       if (!sec.id) sec.id = 's-' + order[idx].id;
@@ -1363,6 +1357,8 @@
       if (PREVIEW && MN && !SL && window.MONO.drag) window.MONO.drag($('#cover'), (cfg.mono || {}).pos, (pos) => { try { parent.postMessage({ type: 'mnpos', pos }, location.origin); } catch (e) { /* abaikan */ } });
     }
     applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
+    if (window.ELEGANT) { window.ELEGANT.refresh(); setTimeout(window.ELEGANT.refresh, 400); }
+    if (PREVIEW && q.has('loader')) loaderPreview();
     if (SL) {
       window.SLIDE.adjust(cfg); window.SLIDE.toTop(true);
       if (PREVIEW) window.SLIDE.edit(() => { const s = (C.slide = C.slide || {}); return (s.adj = s.adj && typeof s.adj === 'object' ? s.adj : {}); }, (adj) => { try { parent.postMessage({ type: 'sladj', adj }, location.origin); } catch (e) { /* abaikan */ } },
@@ -1656,44 +1652,22 @@
     const close = () => { d.classList.remove('show'); setTimeout(() => d.remove(), 350); };
     d.addEventListener('click', (e) => { if (e.target === d || e.target.classList.contains('pop-x')) close(); });
   }
-  function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800); }
-  // ---------- notifikasi terpusat ----------
-  // Tema 13: toast kaca di atas-tengah layar (CSS .ntf di slide.css). Jenis: ok | err | warn | info.
-  // Tema lain tidak berubah: hanya memakai #toast lama bila o.legacy diberikan, selain itu tidak menampilkan apa pun.
-  const NTF_IC = {
-    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-    err: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
-    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.5v5.5M12 16.6v.01"/></svg>',
-    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11v5.5M12 7.6v.01"/></svg>'
-  };
-  const NTF_MS = { ok: 2800, err: 4000, warn: 3500, info: 2500 };
-  function notify(type, msg, o) {
-    o = o || {};
-    if (!SL) { if (o.legacy) toast(o.legacy); return { close() {} }; }
-    let wrap = document.getElementById('ntfWrap');
-    if (!wrap) { wrap = document.createElement('div'); wrap.id = 'ntfWrap'; wrap.className = 'ntf-wrap'; wrap.setAttribute('role', 'status'); wrap.setAttribute('aria-live', 'polite'); document.body.appendChild(wrap); }
-    const key = type + '|' + msg, ms = o.ms || NTF_MS[type] || 2800;
-    const dup = [...wrap.children].find((n) => n.dataset.k === key && !n.classList.contains('out'));
-    if (dup) { clearTimeout(dup._t); if (!o.sticky) dup._t = setTimeout(dup._close, ms); return { close: dup._close }; } // pesan sama: perpanjang, jangan menumpuk
-    const live = [...wrap.children].filter((n) => !n.classList.contains('out'));
-    if (live.length >= 3) live[0]._close(); // maksimal 3 sekaligus; yang tertua dilepas dulu
-    const n = document.createElement('div'); n.className = 'ntf ' + (NTF_IC[type] ? type : 'info'); n.dataset.k = key;
-    n.innerHTML = '<i>' + (NTF_IC[type] || NTF_IC.info) + '</i><b></b>'; n.lastChild.textContent = msg;
-    const close = () => { if (n.classList.contains('out')) return; clearTimeout(n._t); n.classList.remove('in'); n.classList.add('out'); setTimeout(() => n.remove(), 340); };
-    n._close = close; wrap.appendChild(n);
-    requestAnimationFrame(() => requestAnimationFrame(() => n.classList.add('in')));
-    if (!o.sticky) n._t = setTimeout(close, ms);
-    return { close };
-  }
+  // Notifikasi: satu sistem terpusat di /toast.js (window.Toast)
+  const T = window.Toast || { success() {}, error() {}, warning() {}, info() { return { close() {} }; } };
 
-  // copy (sekali saja untuk seluruh halaman)
+  // copy (sekali saja untuk seluruh halaman) — notifikasi sukses hanya bila salinan benar-benar berhasil
+  const COPY_OK = { rekening: 'Nomor rekening berhasil disalin!', alamat: 'Alamat berhasil disalin!', link: 'Link berhasil disalin!' };
   document.addEventListener('click', (ev) => {
     const b = ev.target.closest && ev.target.closest('[data-copy]'); if (!b) return;
     const txt = b.dataset.copy;
-    const okMsg = { rek: 'Nomor rekening berhasil disalin!', alamat: 'Alamat berhasil disalin!', link: 'Link berhasil disalin!' }[b.dataset.ck] || 'Berhasil disalin!';
-    const ok = () => notify('ok', okMsg, { legacy: 'Berhasil disalin ✓' });
-    const fail = () => notify('err', 'Gagal menyalin, silakan coba lagi.', { legacy: 'Gagal menyalin' });
-    const fb = () => { const t = document.createElement('textarea'); t.value = txt; t.style.position = 'fixed'; t.style.opacity = 0; document.body.appendChild(t); t.select(); let done = false; try { done = document.execCommand('copy'); } catch (e) { done = false; } t.remove(); done ? ok() : fail(); };
+    const ok = () => T.success(COPY_OK[b.dataset.copyType] || 'Berhasil disalin!');
+    const fail = () => T.error('Gagal menyalin, silakan coba lagi.');
+    const fb = () => {
+      const t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.appendChild(t); t.focus({ preventScroll: true }); t.select(); try { t.setSelectionRange(0, txt.length); } catch (e) {}
+      let done = false; try { done = document.execCommand('copy'); } catch (e) {}
+      t.remove(); done ? ok() : fail();
+    };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, fb); else fb();
   });
   // lightbox
@@ -1710,8 +1684,6 @@
   // ---------- interaksi per render ----------
   function bind(c) {
     const sig = { signal: AC.signal };
-    // Tema 13: kolom wajib kosong → toast peringatan (gelembung bawaan browser dimatikan), fokus ke kolom pertama yang kurang
-    const warnInvalid = (f) => { if (!SL || !f) return; let on = false; f.addEventListener('invalid', (e) => { e.preventDefault(); if (on) return; on = true; setTimeout(() => (on = false), 500); notify('warn', 'Silakan lengkapi data terlebih dahulu.'); const first = f.querySelector(':invalid'); if (first && first.focus) first.focus(); }, { capture: true, signal: AC.signal }); };
     // countdown
     const target = new Date(c.general.eventDate).getTime();
     const box = $('#cds'); cdsRun = null;
@@ -1751,38 +1723,44 @@
 
     // RSVP
     const rf = $('#rsvpForm');
-    warnInvalid(rf);
     if (rf) {
       rf.status.addEventListener('change', () => ($('#cntWrap').style.display = rf.status.value === 'hadir' ? '' : 'none'), sig);
+      rf.noValidate = true; // pemeriksaan isian memakai notifikasi, bukan balon bawaan browser
       rf.addEventListener('submit', async (e) => {
-        e.preventDefault(); const m = $('#rsvpMsg'); m.className = 'msg'; m.textContent = 'Mengirim…';
+        e.preventDefault(); const m = $('#rsvpMsg');
+        if (!rf.checkValidity()) { T.warning('Silakan lengkapi data terlebih dahulu.'); const bad = rf.querySelector(':invalid'); if (bad) bad.focus({ preventScroll: true }); return; }
+        m.className = 'msg'; m.textContent = 'Mengirim…';
         const body = { name: rf.name.value, status: rf.status.value, count: rf.count.value };
-        const r = await post('/api/rsvp', body);
+        const ld = T.info('Memuat data...');
+        const r = await post('/api/rsvp', body); ld.close();
         if (r.ok) {
-          m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + body.name + '!', c.rsvp.thanks); notify('ok', 'RSVP berhasil dikirim!'); loadWishes(true);
+          T.success('RSVP berhasil dikirim!');
+          m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + body.name + '!', c.rsvp.thanks); loadWishes(true);
           const wa = String(c.general.whatsapp || '').replace(/\D/g, '');
           if (c.rsvp.sendWhatsapp && wa) { const st = { hadir: `akan hadir (${body.count} orang)`, tidak: 'tidak dapat hadir', ragu: 'masih ragu untuk hadir' }[body.status]; window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo, saya ${body.name} ${st} di acara pernikahan ${c.general.calendarTitle || ''}.`)}`, '_blank'); }
-        } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; notify('err', r.error || 'Gagal mengirim, silakan coba lagi.'); }
+        } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; T.error(r.error || 'Gagal mengirim, silakan coba lagi.'); }
       }, sig);
     }
     // gift confirm
     const gf = $('#giftForm');
-    warnInvalid(gf);
-    if (gf) gf.addEventListener('submit', async (e) => {
-      e.preventDefault(); const m = $('#giftMsg'); m.className = 'msg'; m.textContent = 'Mengirim…';
+    if (gf) { gf.noValidate = true; gf.addEventListener('submit', async (e) => {
+      e.preventDefault(); const m = $('#giftMsg');
+      if (!gf.checkValidity()) { T.warning('Silakan lengkapi data terlebih dahulu.'); const bad = gf.querySelector(':invalid'); if (bad) bad.focus({ preventScroll: true }); return; }
+      m.className = 'msg'; m.textContent = 'Mengirim…';
       const f = gf.proof.files[0]; let proofData = '';
-      if (f) { if (f.size > 2.5e6) { m.className = 'msg err'; m.textContent = 'Bukti maksimal 2,5MB'; notify('warn', 'Bukti maksimal 2,5MB'); return; } proofData = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(f); }); }
-      const r = await post('/api/gift', { name: gf.name.value, bank: gf.bank.value, amount: gf.amount.value, message: gf.message.value, proofData });
+      if (f) { if (f.size > 2.5e6) { m.className = 'msg err'; m.textContent = 'Bukti maksimal 2,5MB'; T.error('Bukti maksimal 2,5MB.'); return; } proofData = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(f); }); }
+      const ld = T.info('Memuat data...');
+      const r = await post('/api/gift', { name: gf.name.value, bank: gf.bank.value, amount: gf.amount.value, message: gf.message.value, proofData }); ld.close();
       if (r.ok) {
-        m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + gf.name.value + '!', 'Konfirmasi gift Anda telah kami terima.'); notify('ok', 'Konfirmasi gift berhasil dikirim!');
+        T.success('Konfirmasi gift berhasil dikirim!');
+        m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + gf.name.value + '!', 'Konfirmasi gift Anda telah kami terima.');
         const wa = String(c.general.whatsapp || '').replace(/\D/g, '');
         if (c.gift.sendWhatsapp && wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(`Halo, saya ${gf.name.value} sudah mengirim gift${gf.amount.value ? ' sebesar ' + gf.amount.value : ''}${gf.bank.value ? ' via ' + gf.bank.value : ''}. ${gf.message.value || ''}`.trim())}`, '_blank');
         gf.reset();
-      } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; notify('err', r.error || 'Gagal mengirim, silakan coba lagi.'); }
-    }, sig);
+      } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; T.error(r.error || 'Gagal mengirim, silakan coba lagi.'); }
+    }, sig); }
     // wishes
     const wf = $('#wishForm');
-    warnInvalid(wf);
     if (wf) {
       let photoData = '';
       const pin = $('#wishPhoto'), prev = $('#wishPrev'), pimg = $('#wishPrevImg'), ptxt = $('#wishPhotoTxt');
@@ -1794,13 +1772,17 @@
         catch (e) { clearPhoto(); m.className = 'msg err'; m.textContent = 'Foto tidak bisa dibaca. Gunakan JPG, PNG, atau WebP.'; }
       }, sig);
       $('#wishPrevX').addEventListener('click', clearPhoto, sig);
+      wf.noValidate = true;
       wf.addEventListener('submit', async (e) => {
-        e.preventDefault(); const m = $('#wishMsg'), btn = wf.querySelector('button[type=submit]'); m.className = 'msg'; m.textContent = 'Mengirim…'; btn.disabled = true;
+        e.preventDefault(); const m = $('#wishMsg'), btn = wf.querySelector('button[type=submit]');
+        if (!wf.checkValidity()) { T.warning('Silakan lengkapi data terlebih dahulu.'); const bad = wf.querySelector(':invalid'); if (bad) bad.focus({ preventScroll: true }); return; }
+        m.className = 'msg'; m.textContent = 'Mengirim…'; btn.disabled = true;
+        const ld = T.info('Memuat data...');
         const r = await post('/api/wishes', { name: wf.name.value, message: wf.message.value, photoData });
-        btn.disabled = false;
-        if (r.ok) { m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); notify('ok', 'Ucapan berhasil dikirim!'); wf.message.value = ''; clearPhoto(); loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; notify('err', r.error || 'Gagal mengirim, silakan coba lagi.'); }
+        ld.close(); btn.disabled = false;
+        if (r.ok) { T.success('Ucapan berhasil dikirim!'); m.className = 'msg'; m.textContent = ''; popup('Terima kasih, ' + wf.name.value + '!', 'Ucapan dan doa Anda telah kami terima.'); wf.message.value = ''; clearPhoto(); loadWishes(true); } else { m.className = 'msg err'; m.textContent = r.error || 'Gagal mengirim'; T.error(r.error || 'Gagal mengirim, silakan coba lagi.'); }
       }, sig);
-      $('#wishMore').onclick = () => { const h = notify('info', 'Memuat data...', { sticky: true }); Promise.resolve(loadWishes(false)).finally(() => h.close()); };
+      $('#wishMore').onclick = () => loadWishes(false);
       // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
       if (WTOUCH) {
         $('#wishList').classList.add('paged');

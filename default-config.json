@@ -31,6 +31,7 @@
   },
   "effects": {
     "animSpeed": "normal",
+    "animStyle": "default",
     "butterflies": true,
     "butterflyCount": 5,
     "petals": true,
@@ -98,7 +99,6 @@
     "textSpeed": "",
     "loaderLogo": "/assets/mono/logo-ad.webp",
     "loaderLogoSize": 100,
-    "loaderLogoY": 0,
     "loaderLogoTime": 6
   },
   "hero": {
@@ -429,7 +429,6 @@
     "adj": {},
     "scriptSize": 100,
     "animStyle": "mist",
-    "textStyle": "standar",
     "stageRatio": "2",
     "titleFont": "cover",
     "galleryAnim": "flip3d",

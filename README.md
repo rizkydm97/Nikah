@@ -273,3 +273,20 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Tombol ke atas** (pojok kanan bawah, di atas tombol musik) muncul setelah menggulir lebih dari satu layar.
 - Upload admin kini menerima file font (`.ttf .otf .woff .woff2`).
 - File berubah: `public/slide.js`, `public/slide.css`, `public/invitation.js`, `public/admin/{schema,ux,admin}.js`, `public/admin/admin.css`, `public/admin/index.html`, `api/index.js`, `api/[...path].js`, `default-config.json`, `lib/index.template.html` (`slide.js?v=4`, `slide.css?v=4`, `invitation.js?v=101`).
+
+## Notifikasi toast (terpusat)
+
+- Berkas: `public/toast.js` + `public/toast.css` (dimuat di undangan dan `/admin`). API: `Toast.success(pesan)`, `Toast.error(pesan)`, `Toast.warning(pesan)`, `Toast.info(pesan)` (info tetap tampil sampai `.close()`).
+- Salin rekening/alamat memakai atribut `data-copy` + `data-copy-type="rekening|alamat|link"` pada tombol; pesan sukses hanya muncul bila salinan benar-benar berhasil.
+- RSVP, ucapan & doa, dan konfirmasi gift: isian kosong → peringatan; sukses/gagal ditampilkan setelah server menjawab.
+- Mengubah teks/durasi: ubah di `public/invitation.js` (pemanggil) atau `DURATION` di `public/toast.js`.
+
+## Elegant Animation (Tema 13)
+
+- Pilih di Admin → Animasi & Efek → **Gaya animasi** (`effects.animStyle`: `default` | `elegant`). Gaya lama tidak diubah; tersimpan di konfigurasi dan berlaku setelah muat ulang.
+- Berkas: `public/elegant.css` (semua gerak, durasi, urutan — satu tempat) + `public/elegant.js` (indeks baris paragraf & penanda peran). Aktif hanya bila `<html class="h-slide" data-anim-style="elegant">`.
+- Urutan: judul/nama (sapuan tulisan tangan ±1,9 dtk) → garis ornamen → isi/paragraf/info → tombol & ikon. Subjudul kapital: jarak huruf melebar + memudar. Paragraf: fade per baris (80 ms). Ayat: fade ±2 dtk. Info penting (hitung mundur, tanggal, jam, tempat, alamat): cepat. `prefers-reduced-motion` dihormati.
+
+## Logo & layar loading bisa digeser (Tema 13)
+
+- Admin → Cover → pilih tampilan **Loading / Logo** di atas pratinjau: layar loading ditahan tampil. Tarik logo/monogram, tulisan di bawah logo, dan bilah loading langsung di pratinjau (Shift + roda = ukuran), atau pakai penggeser di "POSISI & UKURAN LOGO, TULISAN & BILAH LOADING". Kunci: `ld.lg`, `ld.k`, `ld.bar` (disimpan di `slide.adj`, dipakai juga saat tamu membuka undangan).

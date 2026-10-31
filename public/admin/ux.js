@@ -20,6 +20,7 @@ const FRIENDLY = {
   'theme.body': ['Warna tulisan isi', ''], 'theme.sideBg': ['Warna latar samping (di komputer)', ''],
   'theme.fontDisplay': ['Font judul besar', ''], 'theme.fontHeading': ['Font sub-judul', ''], 'theme.fontBody': ['Font isi', ''],
   'theme.fontScript': ['Font tulisan tangan (nama mempelai)', ''], 'theme.colWidth': ['Lebar undangan di komputer (px)', 'Biarkan bila tidak yakin.'],
+  'effects.animStyle': ['Gaya animasi', 'Elegant Animation: judul & nama disapu seperti tulisan tangan, subjudul kapital melebar halus, paragraf memudar per baris, ayat memudar pelan, info penting langsung terbaca, tombol muncul paling akhir. Saat ini berlaku untuk Tema 13 (Slide Foto). Gaya lama tetap tersedia dan tidak berubah.'],
   'effects.animMode': ['Mode animasi', 'Klik salah satu. Setelah itu Anda masih bisa menyalakan/mematikan satu per satu di kartu di bawahnya.'],
   'effects.birds': ['Burung / enggang / merpati', 'Burung yang terbang melintas di langit pembuka dan latar.'],
   'effects.particles': ['Debu cahaya, kunang-kunang & kilau', 'Titik-titik cahaya yang melayang pelan.'],
@@ -68,6 +69,7 @@ const FRIENDLY = {
 // Kelompok kartu di dalam satu halaman: [judul kartu, [kunci...], dilipat?]
 const LAYOUT = {
   effects: [
+    ['Gaya animasi', ['effects.animStyle']],
     ['Mode animasi (pilih cepat)', ['effects.animMode']],
     ['Animasi pembuka saat tamu menekan "Buka Undangan"', ['effects.intro', 'effects.openZoom', 'effects.zoomFx']],
     ['Teks & gambar saat masuk', ['effects.revealAnim', 'effects.animSpeed']],
@@ -130,7 +132,7 @@ const NAV = [
     ['gallery', '🖼️', 'Galeri'], ['story', '❤️', 'Love Story'], ['gift', '🎁', 'Wedding Gift'], ['rsvp', '✅', 'RSVP'],
     ['wishes', '💬', 'Ucapan & Doa'], ['closing', '🙏', 'Penutup'],
   ]],
-  ['Tampilan', [['theme', '🎨', 'Tema, Warna & Font'], ['effects', '🎬', 'Animasi & Efek'], ['loader', '⏳', 'Logo & Loading'], ['sections', '↕️', 'Urutan & Tampil Section']]],
+  ['Tampilan', [['theme', '🎨', 'Tema, Warna & Font'], ['effects', '🎬', 'Animasi & Efek'], ['sections', '↕️', 'Urutan & Tampil Section']]],
   ['Data Tamu', [['d-rsvp', '📋', 'Kehadiran (RSVP)'], ['d-wishes', '📝', 'Ucapan Tamu'], ['d-gifts', '💳', 'Konfirmasi Gift'], ['links', '🔗', 'Buat Link Tamu']]],
   ['Pengaturan Lanjutan (opsional)', [
     ['livingfx', '🌿', 'Sampul & Suasana Hidup', TH_PIC], ['scrollfx', '🖱️', 'Efek Scroll', TH_PIC], ['soundfx', '🔊', 'Suara & Sentuhan', TH_PIC],

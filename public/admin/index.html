@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Admin Undangan</title>
 <link rel="stylesheet" href="/admin/admin.css?v=80">
+<link rel="stylesheet" href="/toast.css?v=1">
 </head>
 <body>
 <!-- Layar status: selalu tampil lebih dulu supaya halaman TIDAK PERNAH kosong -->
@@ -48,7 +49,7 @@
     <main id="main" class="main"></main>
     <aside id="preview" class="preview">
       <div class="pvbar"><span>Pratinjau langsung</span>
-        <select id="pvMode"><option value="">Isi undangan</option><option value="1">Cover</option></select>
+        <select id="pvMode"><option value="">Isi undangan</option><option value="1">Cover</option><option value="2">Loading / Logo</option></select>
         <select id="pvGuest"><option value="">Tanpa nama tamu</option><option value="Yogi dan Ratna">Yogi dan Ratna</option></select>
         <button id="pvReload" class="ghost sm">↻</button></div>
       <div class="phone"><iframe id="pvFrame" title="Pratinjau"></iframe></div>
@@ -87,8 +88,9 @@
   setTimeout(function () { if (!window.__adminReady) window.__adminFail('Admin tidak merespons. Periksa koneksi, lalu klik "Cek status server" untuk melihat apa yang kurang.'); }, 20000);
 })();
 </script>
-<script src="/admin/schema.js?v=87"></script>
+<script src="/toast.js?v=1"></script>
+<script src="/admin/schema.js?v=86"></script>
 <script src="/admin/ux.js?v=79"></script>
-<script src="/admin/admin.js?v=87"></script>
+<script src="/admin/admin.js?v=88"></script>
 </body>
 </html>
