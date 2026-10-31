@@ -282,6 +282,108 @@
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
     parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); };
   }
+  // ---------- hitung mundur: kartu 3D, angka bergulir, garis kemajuan, denyut detik ----------
+  // Sumber data tetap <b data-k> (diisi invitation.js); di atasnya digambar lapisan angka yang bergulir naik tiap berganti nilai.
+  function cdFx(root, rm) {
+    const box = root.querySelector('#cds'); if (!box) return;
+    box.classList.add('sl-cdx');
+    box.querySelectorAll('.cd').forEach((cd) => {
+      const b = cd.querySelector('b[data-k]'); if (!b || cd.querySelector('.cdr')) return;
+      const k = b.dataset.k, ov = document.createElement('div'), bar = document.createElement('div');
+      ov.className = 'cdr'; bar.className = 'cdb'; bar.innerHTML = '<u></u>';
+      ov.setAttribute('aria-hidden', 'true'); bar.setAttribute('aria-hidden', 'true'); cd.dataset.u = k;
+      b.after(ov, bar);
+      const u = bar.firstChild, max = { h: 24, m: 60, s: 60 }[k];
+      let cur = null, last = 0, prev = null;
+      const show = (t) => {
+        const now = performance.now();
+        if (!cur) { cur = document.createElement('i'); cur.className = 'cdn'; cur.textContent = t; ov.appendChild(cur); }
+        else if (cur.textContent !== t) {
+          if (rm || now - last < 160) { ov.querySelectorAll('.out').forEach((x) => x.remove()); cur.className = 'cdn'; cur.textContent = t; } // perubahan cepat (hitung naik awal): tanpa gulir
+          else { const o = cur; o.className = 'cdn out'; cur = document.createElement('i'); cur.className = 'cdn in'; cur.textContent = t; ov.appendChild(cur); setTimeout(() => o.remove(), 650); }
+          if (k === 's' && !rm) { cd.classList.remove('tp'); void cd.offsetWidth; cd.classList.add('tp'); }
+          last = now;
+        }
+        const v = parseInt(t, 10) || 0;
+        if (max) {
+          if (k === 's' && prev !== null && v < prev) { u.style.transition = 'none'; u.style.transform = 'scaleX(0)'; void u.offsetWidth; u.style.transition = ''; }
+          u.style.transform = 'scaleX(' + Math.min(1, (v + (k === 's' ? 1 : 0)) / max).toFixed(3) + ')'; prev = v;
+        } else u.style.transform = 'scaleX(1)';
+      };
+      show(b.textContent || '00');
+      new MutationObserver(() => show(b.textContent || '00')).observe(b, { childList: true, characterData: true, subtree: true });
+    });
+  }
+
+  // ---------- efek tumpuk 3D (seperti smooth-scroll 21st.dev): slide berikutnya naik menutupi slide sebelumnya ----------
+  // Slide yang "menempel" (sticky): pembuka, mempelai pria/wanita, akad/resepsi. Slide yang menutupinya mengirim progres 0→1
+  // (--cp) ke slide di bawahnya: mengecil, menggelap, lalu disembunyikan saat tertutup penuh (hemat baterai).
+  // Ayat+hitung mundur dan penutup tidak menempel, tapi "bangkit" miring→tegak saat naik (--rp).
+  let stkOff = null;
+  function stack(root, on) {
+    if (stkOff) { stkOff(); stkOff = null; }
+    root.classList.remove('stk-on');
+    root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
+    root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
+      e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise'); delete e.dataset.stk;
+      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); if (e.classList.contains('sec')) e.style.top = '';
+    });
+    if (!on) return;
+    const secs = [...root.children].filter((e) => e.matches('section.sec'));
+    const pins = [], groups = [], rises = [];
+    let prevPinned = false;
+    secs.forEach((sec, i) => {
+      const nxt = secs[i + 1] || null;
+      const dim = (el) => { const d = document.createElement('i'); d.className = 'stk-dim'; el.appendChild(d); };
+      if (sec.classList.contains('sl-open')) { sec.classList.add('stk-pin'); dim(sec); pins.push({ el: sec, next: nxt, go: false }); prevPinned = true; return; }
+      if (sec.classList.contains('sl-couple') || sec.classList.contains('sl-events')) {
+        const cards = [...sec.children].filter((c) => c.classList.contains('sl-s'));
+        if (cards.length) {
+          sec.classList.add('stk-grp'); groups.push({ sec, last: cards[cards.length - 1] });
+          cards.forEach((c, j) => {
+            const lastC = j === cards.length - 1;
+            c.dataset.stk = '1'; c.classList.add('stk-pin', 'stk-in'); if (!lastC) c.classList.add('stk-s'); dim(c);
+            pins.push({ el: c, next: lastC ? nxt : cards[j + 1], go: true });
+          });
+          prevPinned = true; return;
+        }
+      }
+      if (sec.classList.contains('sl-quote') || sec.classList.contains('sl-closing')) { sec.classList.add('stk-in'); rises.push(sec); }
+      else if (prevPinned) sec.classList.add('stk-in');
+      prevPinned = false;
+    });
+    if (!pins.length) return;
+    root.classList.add('stk-on');
+    const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+    const place = () => groups.forEach((g) => { // bagian berisi beberapa slide menempel saat slide TERAKHIRnya tepat di atas layar
+      const x = g.sec.getBoundingClientRect().height - g.last.getBoundingClientRect().height;
+      g.sec.style.top = (-Math.max(0, Math.round(x))) + 'px';
+    });
+    let raf = 0;
+    const tick = () => {
+      raf = 0; const H = innerHeight || 780;
+      const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
+      const rr = rises.map((el) => [el, cl(1 - el.getBoundingClientRect().top / H, 0, 1)]);
+      rd.forEach(([p, c, top]) => {
+        if (p.c === undefined || Math.abs(c - p.c) > 0.002) { p.c = c; p.el.style.setProperty('--cp', c.toFixed(3)); }
+        const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
+        if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
+          if (!p.on && top < H * 0.62 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
+          else if (p.on && (top >= H * 0.98 || c >= 1)) { p.on = false; p.el.classList.remove('sl-go'); }
+        }
+      });
+      rr.forEach(([el, r]) => {
+        if (r > 0 && r < 1) { el.classList.add('stk-rise'); el.style.setProperty('--rp', r.toFixed(3)); }
+        else if (el.classList.contains('stk-rise')) { el.classList.remove('stk-rise'); el.style.removeProperty('--rp'); }
+      });
+    };
+    const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    const re = () => { place(); on_(); };
+    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', re); addEventListener('load', re);
+    const t1 = setTimeout(re, 400), t2 = setTimeout(re, 1800);
+    re(); tick();
+    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', re); removeEventListener('load', re); clearTimeout(t1); clearTimeout(t2); if (raf) cancelAnimationFrame(raf); raf = 0; };
+  }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -294,7 +396,9 @@
     parallax(par);
     root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
     if (io) { io.disconnect(); io = null; }
-    const els = root.querySelectorAll('.sl-s, .sl-foot');
+    cdFx(root, rm);
+    stack(root, s.stack !== false && !rm && 'IntersectionObserver' in window);
+    const els = root.querySelectorAll('.sl-s:not([data-stk]), .sl-foot');
     // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar
     root.querySelectorAll('[data-sid="gallery"],[data-sid="live"],[data-sid="gift"],[data-sid="rsvp"],[data-sid="wishes"]').forEach((sec) => {
       sec.querySelectorAll('h2, h3.gt').forEach((t) => {

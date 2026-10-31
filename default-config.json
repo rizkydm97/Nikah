@@ -440,6 +440,7 @@
     "stageRatio": "2",
     "titleFont": "cover",
     "galleryAnim": "flip3d",
+    "stack": true,
     "parallax": true,
     "storyShape": "4/5"
   }
