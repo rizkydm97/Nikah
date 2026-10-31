@@ -562,3 +562,25 @@ html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
 .t-mono .wishes .wpick,.t-mono .wishes .wpick *{color:#fff!important}
 .t-mono .wishes .stats b{font-family:var(--fBody,'Poppins',sans-serif);font-weight:600;font-variant-numeric:lining-nums}
 .t-mono .wishes .stats span{font-family:var(--fBody,'Poppins',sans-serif)}
+
+/* ---------- pembuka 2 foto: nama mempelai tersapu SAMBIL foto bergeser (sesuai referensi) ----------
+   Foto menggeser ke kiri → tulisan nama ikut tersapu dari KANAN ke KIRI (Weni → & → Fardi) pada awal geseran, bukan menunggu foto berhenti.
+   Garis, tanggal & tagar menyusul tepat setelah nama selesai. Hanya berlaku pada slide pembuka 2 foto; berlaku di gaya animasi Default maupun Elegant. */
+@keyframes slWipeRL{
+  0%{clip-path:inset(-10% -6% -25% 100%);opacity:.001}
+  6%{opacity:1}
+  100%{clip-path:inset(-10% -6% -25% -2%);opacity:1}}
+@media (prefers-reduced-motion:no-preference){
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np .sl-wipe{animation-duration:calc(.7s*var(--tk,1))!important;animation-timing-function:cubic-bezier(.3,.1,.4,1)!important}
+  :root:root .sl-open[data-two="1"][data-dir="r"].play:not(.instant) .sl-op-n .sl-np .sl-wipe{animation-name:slWipeRL!important}
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-delay:calc(1400ms*var(--tk,1))!important;animation-duration:calc(.6s*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{animation-delay:calc(1750ms*var(--tk,1))!important;animation-duration:calc(.35s*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n1 .sl-wipe{animation-delay:calc(1950ms*var(--tk,1))!important;animation-duration:calc(.75s*var(--tk,1))!important}
+  /* dir-l (foto bergeser ke kanan): nama tetap tersapu kiri → kanan, urutan Fardi → & → Weni, waktunya sama */
+  :root:root .sl-open[data-two="1"][data-dir="l"].play:not(.instant) .sl-op-n .sl-np.n1 .sl-wipe{animation-delay:calc(1400ms*var(--tk,1))!important;animation-duration:calc(.6s*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"][data-dir="l"].play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{animation-delay:calc(1750ms*var(--tk,1))!important;animation-duration:calc(.35s*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"][data-dir="l"].play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-delay:calc(1950ms*var(--tk,1))!important;animation-duration:calc(.75s*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-line{animation-delay:calc(2800ms*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-d{animation-delay:calc(3000ms*var(--tk,1))!important}
+  :root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-t{animation-delay:calc(3100ms*var(--tk,1))!important}
+}

@@ -120,7 +120,7 @@
     const strip = two
       ? `<div class="sl-strip dir-${dir}"><div class="sl-tile"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div><div class="sl-tile"><div class="sl-pk b">${ph(H, b, 'sl-pm')}</div></div></div>`
       : `<div class="sl-pan"><div class="sl-pk a">${ph(H, a, 'sl-pm')}</div></div>`;
-    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${NU(nudge(s.openNudge))}" data-two="${two ? 1 : 0}">
+    return `<section class="sec hero sl-open pre${tone(H)} tp-${pos(s.openPos, 'top')}" id="s-hero" style="--shd:${shade(H)};--ty:${NU(nudge(s.openNudge))}" data-two="${two ? 1 : 0}" data-dir="${dir}">
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
