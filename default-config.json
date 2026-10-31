@@ -254,12 +254,14 @@
       {
         "bank": "Bank Mandiri",
         "number": "123123123",
-        "name": "Elyana Azkiya Nur"
+        "name": "Elyana Azkiya Nur",
+        "logo": ""
       },
       {
         "bank": "Bank BCA",
         "number": "456456456",
-        "name": "Robert Saputra"
+        "name": "Robert Saputra",
+        "logo": ""
       }
     ],
     "addressTitle": "Kirim Kado:",
@@ -270,7 +272,10 @@
     "formTitle": "Gift Confirm",
     "formText": "Mohon konfirmasi untuk pengiriman gift\nTerima kasih",
     "formButton": "Konfirmasi",
-    "sendWhatsapp": true
+    "sendWhatsapp": true,
+    "addressMap": true,
+    "addressMapLabel": "Buka Google Maps",
+    "addressMapUrl": ""
   },
   "rsvp": {
     "bg": "/assets/default/couple-wide.svg",

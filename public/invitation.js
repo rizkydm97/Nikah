@@ -293,12 +293,14 @@
   // Vivaldi bukan font Google (berlisensi Monotype): dipakai dari file font yang diunggah di admin (Tema 13 → File font Vivaldi);
   // bila belum ada file, dipakai Vivaldi yang terpasang di perangkat tamu, lalu Great Vibes sebagai cadangan yang mirip.
   function vivaldiFace(c, fam) {
+    // Vivaldi HANYA dipakai dari file font yang diunggah di admin. Vivaldi bawaan perangkat (mis. laptop Windows + Microsoft Office)
+    // sengaja TIDAK dipakai, supaya tulisan tangan sama persis di laptop & HP (Great Vibes) — bukan berbeda tergantung font yang terpasang.
     let st = $('#vivFace'); const u = safeUrl(c.slide && c.slide.fontFile);
-    if (fam !== 'Vivaldi') { if (st) st.textContent = ''; return; }
-    if (!st) { st = document.createElement('style'); st.id = 'vivFace'; document.head.appendChild(st); }
     const ext = ((u || '').split('?')[0].match(/\.(woff2|woff|ttf|otf)$/i) || [])[1], fmt = { woff2: 'woff2', woff: 'woff', ttf: 'truetype', otf: 'opentype' }[(ext || '').toLowerCase()];
-    const src = ["local('Vivaldi')", "local('Vivaldi Italic')", "local('Vivaldi-Italic')"].concat(u && fmt ? [`url('${u.replace(/['"\\\n\r]/g, '')}') format('${fmt}')`] : []).join(',');
-    st.textContent = `@font-face{font-family:'Vivaldi';font-style:normal;font-weight:400;font-display:swap;src:${src}}`;
+    window.VIV_FILE = !!(u && fmt && fam === 'Vivaldi');
+    if (!window.VIV_FILE) { if (st) st.textContent = ''; return; }
+    if (!st) { st = document.createElement('style'); st.id = 'vivFace'; document.head.appendChild(st); }
+    st.textContent = `@font-face{font-family:'Vivaldi';font-style:normal;font-weight:400;font-display:swap;src:url('${u.replace(/['"\\\n\r]/g, '')}') format('${fmt}')}`;
   }
   function applyTheme(c) {
     const t = c.theme, r = document.documentElement.style;
@@ -309,12 +311,13 @@
     r.setProperty('--fBody', ff(t.fontBody, 'Georgia,serif'));
     const slF = c.theme.preset === 'slide' && c.slide && c.slide.scriptFont ? c.slide.scriptFont : '';
     const SCF = { 'Vivaldi': 1.05, 'Mrs Saint Delafield': 1.4, 'Herr Von Muellerhoff': 1.35, 'Monsieur La Doulaise': 1.2, 'Allison': 1.2, 'La Belle Aurore': 1.1, 'Whisper': 1.15 };
-    r.setProperty('--fScript', ff(slF || t.fontScript, (slF || t.fontScript) === 'Vivaldi' ? "'Great Vibes','Monsieur La Doulaise',cursive" : 'cursive'));
+    vivaldiFace(c, c.theme.preset === 'slide' ? 'Vivaldi' : (slF || c.theme.fontScript));
+    const VF = !!window.VIV_FILE;
+    r.setProperty('--fScript', (slF || t.fontScript) === 'Vivaldi' && !VF ? "'Great Vibes','Monsieur La Doulaise',cursive" : ff(slF || t.fontScript, (slF || t.fontScript) === 'Vivaldi' ? "'Great Vibes','Monsieur La Doulaise',cursive" : 'cursive'));
     const isSl = c.theme.preset === 'slide';
     // Tema 13: seluruh teks cover & pembuka SELALU Vivaldi (file font unggahan → Vivaldi terpasang → Great Vibes yang mirip), terlepas dari font tulisan tangan slide lain
-    r.setProperty('--fViv', "'Vivaldi','Great Vibes','Monsieur La Doulaise',cursive");
+    r.setProperty('--fViv', VF ? "'Vivaldi','Great Vibes','Monsieur La Doulaise',cursive" : "'Great Vibes','Monsieur La Doulaise',cursive");
     r.setProperty('--scv', String((1.05 * (isSl ? (parseFloat(c.slide && c.slide.scriptSize) || 100) / 100 : 1)).toFixed(3)));
-    vivaldiFace(c, isSl ? 'Vivaldi' : (slF || t.fontScript));
     r.setProperty('--sc', String(((SCF[slF || t.fontScript] || 1) * (c.theme.preset === 'slide' ? (parseFloat(c.slide && c.slide.scriptSize) || 100) / 100 : 1)).toFixed(3)));
     r.setProperty('--col', (+t.colWidth || 480) + 'px');
     sp = reduce ? 0.01 : (SPEED[c.effects.animSpeed] || 1);
@@ -1166,9 +1169,13 @@
     },
     gift(c) {
       const o = c.gift, wa = hasWA(c) && o.sendWhatsapp;
+      // logo bank (unggahan di admin) atau, bila kosong, lencana nama bank yang tegas & mewah — ukuran sama di semua perangkat
+      const bankMark = (b) => { const u = safeUrl(b.logo); return u ? `<div class="bk-mark"><img class="bk-logo" src="${esc(u)}" alt="${esc(b.bank)}" loading="lazy" decoding="async"></div>` : `<div class="bk-mark"><span class="bk-badge">${esc(b.bank)}</span></div>`; };
+      // tombol buka Google Maps untuk alamat kirim kado: pakai link buatan sendiri (admin), atau otomatis dari teks alamat
+      const mapHref = (() => { const m = safeUrl(o.addressMapUrl); if (m) return m; const q = String(o.address || '').replace(/\s+/g, ' ').trim(); return q ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q) : ''; })();
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
-      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank"><div>${esc(b.bank)}</div><div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
-      const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}" data-copy-type="alamat">${esc(o.copyAddress)} ${ICON.copy}</button></div>` : '';
+      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank">${bankMark(b)}<div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
+      const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><div class="bk-acts"><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}" data-copy-type="alamat">${esc(o.copyAddress)} ${ICON.copy}</button>${mapHref && o.addressMap !== false ? `<a class="btn pill rose" href="${esc(mapHref)}" target="_blank" rel="noopener">${ICON.map}${esc(o.addressMapLabel || 'Buka Google Maps')}</a>` : ''}</div></div>` : '';
       const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}`);
       const form = o.formEnabled ? capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
         <form class="fm" id="giftForm"><label>Nama :</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Nama Bank :</label><input name="bank" maxlength="60" placeholder="Nama Bank"><label>Nominal :</label><input name="amount" maxlength="40" inputmode="numeric" placeholder="Nominal"><label>Ucapan :</label><input name="message" maxlength="500" placeholder="Ucapan"><label>Bukti TF :</label><input type="file" name="proof" accept="image/png,image/jpeg,image/webp"><button class="btn sq full" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.formButton)}</button><div class="msg" id="giftMsg"></div></form>`) : '';

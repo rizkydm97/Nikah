@@ -124,11 +124,11 @@
       <div class="sl-ph">${strip}</div>
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
-        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1500)}</div>
-        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 1900, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
-        <i class="sl-line sl-draw" style="--d:3200ms" data-ad="op.line"></i>
-        ${up('sl-op-d', 3500, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
-        ${h.hashtag ? up('sl-op-t', 3800, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
+        <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1900)}</div>
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 2600, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
+        <i class="sl-line sl-draw" style="--d:3900ms" data-ad="op.line"></i>
+        ${up('sl-op-d', 4100, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
+        ${h.hashtag ? up('sl-op-t', 4400, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true" data-ad="op.sc"><i></i></div></section>`;
   }
@@ -332,7 +332,7 @@
   }
   // font khusus satu tulisan (a.f = nama font; kosong = ikut font bawaan bagian itu)
   const ADF_SERIF = ['Cormorant Garamond', 'Cormorant Infant', 'Cormorant SC', 'Cormorant Upright', 'Playfair Display', 'Lora', 'Cinzel', 'Cinzel Decorative', 'Marcellus', 'Libre Baskerville', 'EB Garamond', 'Bodoni Moda', 'DM Serif Display', 'Prata', 'Italiana', 'Forum', 'Crimson Text', 'Spectral', 'Abhaya Libre', 'Alice', 'Gilda Display', 'Bellefair', 'Cardo', 'Old Standard TT', 'Abril Fatface', 'Limelight'], ADF_SANS = ['Poppins', 'Montserrat', 'Josefin Sans', 'Raleway', 'Jost', 'Quicksand', 'Nunito', 'Lato', 'Open Sans', 'Inter', 'Questrial', 'Tenor Sans', 'Didact Gothic'];
-  const adfStack = (f) => (f === 'Vivaldi' ? "'Vivaldi','Great Vibes','Monsieur La Doulaise',cursive" : `'${f}',${ADF_SERIF.includes(f) ? 'Georgia,serif' : ADF_SANS.includes(f) ? 'Arial,sans-serif' : 'cursive'}`);
+  const adfStack = (f) => (f === 'Vivaldi' ? (window.VIV_FILE ? "'Vivaldi','Great Vibes','Monsieur La Doulaise',cursive" : "'Great Vibes','Monsieur La Doulaise',cursive") : `'${f}',${ADF_SERIF.includes(f) ? 'Georgia,serif' : ADF_SANS.includes(f) ? 'Arial,sans-serif' : 'cursive'}`);
   function setFont(el, a) {
     const f = a && typeof a.f === 'string' ? a.f.replace(/['"\\;{}<>]/g, '').slice(0, 60) : '';
     if (f) { el.style.setProperty('--adf', adfStack(f)); el.dataset.adf = '1'; }
