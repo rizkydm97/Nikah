@@ -595,15 +595,18 @@ html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
 .stk-on>.sec.sl-open{position:sticky;top:0}
 .stk-on>.stk-grp{position:sticky}                       /* nilai top diisi JS: slide terakhir tepat di atas layar */
 .stk-on .stk-s{position:sticky;top:0}
-.stk-on .stk-pin{transform-origin:50% 0;transform:scale(calc(1 - var(--cp,0)*.08));backface-visibility:hidden}
-.stk-on .stk-in{border-radius:24px 24px 0 0;box-shadow:0 -16px 38px -12px rgba(0,0,0,.32)}
+.stk-on .stk-pin,.stk-on>.sec.stk-in{transform-origin:50% 0;backface-visibility:hidden}
+.stk-on .stk-in{box-shadow:0 -14px 30px -14px rgba(0,0,0,.3)}
 .stk-on>.sec.stk-in:not(.stk-grp){overflow:clip}
 .stk-dim{position:absolute;inset:0;z-index:50;pointer-events:none;background:#000;opacity:0}
-.stk-on .stk-pin>.stk-dim{opacity:calc(var(--cp,0)*.55)}
+/* sudut atas "membulat" digambar gelap DI DALAM slide (bukan border-radius), jadi tidak ada sisa garis/sudut putih dari lapisan di belakangnya */
+.stk-cn{position:absolute;left:0;right:0;top:0;height:24px;z-index:60;pointer-events:none;
+  background:radial-gradient(circle at 24px 24px,transparent 23.2px,#0f0f0f 24px) 0 0/24px 24px no-repeat,radial-gradient(circle at 0 24px,transparent 23.2px,#0f0f0f 24px) 100% 0/24px 24px no-repeat}
 .stk-on .stk-hid{visibility:hidden}
 .stk-on .stk-hid *{animation-play-state:paused!important}
-/* ayat/penutup: bangkit miring → tegak saat naik ke layar */
-.stk-on>.stk-rise{transform-origin:50% 0;transform:perspective(1100px) rotateX(calc((1 - var(--rp,1))*7deg)) scale(calc(.94 + var(--rp,1)*.06))}
+.stk-on .stk-act{will-change:transform}
+.stk-on .stk-act .sl-pk{animation-play-state:paused}   /* kamera pelan foto dijeda saat tertutup sebagian: scroll lebih ringan */
+.stk-on>.stk-rise{will-change:transform}
 
 /* =====================================================================
    HITUNG MUNDUR — kartu 3D masuk bergantian, angka bergulir naik, garis kemajuan, denyut tiap detik
@@ -637,3 +640,5 @@ html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
 @keyframes slCdSheen{0%,70%{background-position:160% 0}100%{background-position:-60% 0}}
 @keyframes slCdBlink{0%,100%{opacity:.18}50%{opacity:.85}}
 @media (prefers-reduced-motion:reduce){.stk-on .stk-pin,.stk-on>.stk-rise{transform:none!important}.sl-cdx .cd::before,.sl-cdx .cd::after,.sl-cdx .sep::before,.sl-cdx .sep::after{animation:none!important}}
+/* latar bagian yang berisi slide menempel = gelap (sisi kiri/kanan slide yang mengecil tidak boleh memperlihatkan kertas putih) */
+.stk-on>.sec.stk-grp{background-color:#0f0f0f}
