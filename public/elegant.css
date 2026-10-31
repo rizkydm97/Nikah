@@ -24,7 +24,11 @@
 :root.h-slide[data-anim-style="elegant"] .sl-np.n2 .sl-wipe{--el-wd:650ms}
 :root.h-slide[data-anim-style="elegant"] .sl-np.n3 .sl-wipe{--el-wd:1000ms}
 /* judul yang tadinya per huruf (Love Story) → disapu sebagai satu tulisan */
-:root.h-slide[data-anim-style="elegant"] .sl-ch-ht,:root.h-slide[data-anim-style="elegant"] .mn-tx{clip-path:inset(-10% 100% -25% -2%)}
+:root.h-slide[data-anim-style="elegant"] .sl-ch-ht{clip-path:inset(-10% 100% -25% -2%)}
+/* PERBAIKAN: judul (Our Gallery, Wedding Gift, RSVP, Ucapan…) dulu disembunyikan dengan clip-path penuh; Chrome laptop menganggap elemen
+   yang seluruhnya terpotong "tidak terlihat", sehingga pengamat scroll tak pernah menyalakan animasinya → judul kosong. Sekarang disembunyikan
+   dengan opacity (tetap terdeteksi), lalu disapu kiri→kanan oleh elWipe seperti semula. */
+:root.h-slide[data-anim-style="elegant"] .mn-tx:not(.mn-go){opacity:0!important}
 :root.h-slide[data-anim-style="elegant"] .sl-go .sl-ch-ht,:root.h-slide[data-anim-style="elegant"] .mn-tx.mn-go{
   animation:elWipe calc(1.9s*var(--tk,1)) var(--el-wipe) both!important;
   animation-delay:calc(250ms*var(--tk,1))!important}
@@ -128,3 +132,14 @@
 :root.h-slide[data-anim-style="elegant"] .rv.in:is(.btn,[data-copy]){animation:elFade calc(.9s*var(--tk,1)) ease both;animation-delay:calc(1.3s*var(--tk,1))}
 
 } /* /no-preference */
+
+/* ---------- Pembuka (foto geser): foto & teks SELESAI BERSAMAAN (±5,2 dtk) ----------
+   foto timbul perlahan 0 → 3,8 dtk sambil bergeser 0,3 → 5,2 dtk · teks menyusul berurutan & berakhir bersamaan */
+:root.h-slide[data-anim-style="elegant"] .sl-op-k{--el-cd:1900ms}
+:root.h-slide[data-anim-style="elegant"] .sl-open .sl-np.n1 .sl-wipe{--el-wd:2300ms}
+:root.h-slide[data-anim-style="elegant"] .sl-open .sl-np.n2 .sl-wipe{--el-wd:2800ms}
+:root.h-slide[data-anim-style="elegant"] .sl-open .sl-np.n3 .sl-wipe{--el-wd:3300ms}
+:root.h-slide[data-anim-style="elegant"] .sl-open .sl-line{--el-od:4000ms}
+:root.h-slide[data-anim-style="elegant"] .sl-open .sl-op-d{--el-cd:4000ms;--el-ud:4000ms}
+:root.h-slide[data-anim-style="elegant"] .sl-open .sl-op-t{--el-cd:4100ms;--el-ud:4100ms}
+:root.h-slide[data-anim-style="elegant"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-scroll{animation:elFade 1s ease 5.2s both!important}

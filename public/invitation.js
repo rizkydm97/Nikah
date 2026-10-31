@@ -101,6 +101,7 @@
     send: '<svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>',
     wa: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4.1c1.7.7 2.4.8 3.3.6a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.6-.3z"/></svg>',
     gift: '<svg class="gifticon" viewBox="0 0 24 24"><path d="M3 8h18v4H3z"/><path d="M4 13h16v8H4z"/><path d="M12 8c-1-4-6-4-6-1.5S10 8 12 8zm0 0c1-4 6-4 6-1.5S14 8 12 8z"/><path d="M11 8h2v13h-2z" fill="#fff" opacity=".85"/></svg>',
+    qr: '<svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm8-2h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v4h-4v-2h2v-2z"/></svg>',
     cam: '<svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v1.5l4-2.5v12l-4-2.5V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>',
   };
   const img = (src, alt = '', cls = '') => safeUrl(src) ? `<img${cls ? ` class="${cls}"` : ''} src="${esc(safeUrl(src))}" alt="${esc(alt)}" decoding="async">` : '';
@@ -1175,8 +1176,11 @@
       const mapHref = (() => { const m = safeUrl(o.addressMapUrl); if (m) return m; const q = String(o.address || '').replace(/\s+/g, ' ').trim(); return q ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q) : ''; })();
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
       const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank">${bankMark(b)}<div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
+      // QR / QRIS: tombol "Buka QR" → jendela berisi QR + tombol Download & Kembali
+      const qrU = safeUrl(o.qrImage);
+      const qr = qrU ? `${heartDiv}<div class="bank qr-box"><div class="bk-mark"><span class="bk-badge">${esc(o.qrTitle || 'QRIS')}</span></div><button class="btn pill rose" type="button" data-qr="${esc(qrU)}" data-qr-name="${esc(o.qrTitle || 'QR')}">${ICON.qr}${esc(o.qrButton || 'Buka QR')}</button></div>` : '';
       const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><div class="bk-acts"><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}" data-copy-type="alamat">${esc(o.copyAddress)} ${ICON.copy}</button>${mapHref && o.addressMap !== false ? `<a class="btn pill rose" href="${esc(mapHref)}" target="_blank" rel="noopener">${ICON.map}${esc(o.addressMapLabel || 'Buka Google Maps')}</a>` : ''}</div></div>` : '';
-      const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${addr}`);
+      const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${qr}${addr}`);
       const form = o.formEnabled ? capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
         <form class="fm" id="giftForm"><label>Nama :</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Nama Bank :</label><input name="bank" maxlength="60" placeholder="Nama Bank"><label>Nominal :</label><input name="amount" maxlength="40" inputmode="numeric" placeholder="Nominal"><label>Ucapan :</label><input name="message" maxlength="500" placeholder="Ucapan"><label>Bukti TF :</label><input type="file" name="proof" accept="image/png,image/jpeg,image/webp"><button class="btn sq full" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.formButton)}</button><div class="msg" id="giftMsg"></div></form>`) : '';
       if (MN) { const mb = monoSecBg(c, o, 'giftBg'); return mb ? `<section class="sec bgi gift" style="${mb.style}">${mb.html}${main}${form}</section>` : `<section class="sec mn-lite gift">${monoDeco(c)}${main}${form}</section>`; }
@@ -1189,7 +1193,7 @@
       return `<section class="sec ${lite ? 'mn-lite' : 'bgi'} rsvp" style="${MN ? (mb ? mb.style : '') : ov(o, 'bg')}">${lite ? monoDeco(c) : MN ? mb.html : bgl(o, 'bg', pick(o.bg, c.quote.bg))}<div class="rsvp-head"><h2 class="rv big"><span>${esc(t.slice(0, k))}</span><span>${esc(t.slice(k))}</span></h2>${safeUrl(o.photo) ? `<div class="rv ph"><div class="phb">${photo(o, 'photo')}</div></div>` : ''}</div>
         ${o.text ? `<p class="rv sub">${br(o.text)}</p>` : ''}
         <form class="rv fm" id="rsvpForm"><label>Nama *</label><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><label>Konfirmasi Kehadiran *</label>
-        <select name="status"><option value="hadir">Hadir</option><option value="tidak">Tidak Hadir</option><option value="ragu">Masih Ragu</option></select>
+        <select name="status"><option value="hadir">Hadir</option><option value="tidak">Tidak Hadir</option></select>
         <div id="cntWrap"><label>Jumlah *</label><select name="count">${Array.from({ length: n }, (_, i) => `<option value="${i + 1}">${i + 1} Orang</option>`).join('')}</select></div>
         <button class="btn sq ghostw" type="submit">${wa ? ICON.wa : ICON.send}${esc(o.button)}</button><div class="msg" id="rsvpMsg"></div></form></section>`;
     },
@@ -1677,6 +1681,33 @@
     };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, fb); else fb();
   });
+  // QR gift: buka → (opsional) download → kembali
+  (function () {
+    let ov = null, last = null;
+    const close = () => { if (!ov) return; ov.classList.remove('on'); setTimeout(() => { if (ov && !ov.classList.contains('on')) ov.hidden = true; }, 260); if (last && last.focus) try { last.focus({ preventScroll: true }); } catch (e) {} };
+    const build = () => {
+      ov = document.createElement('div'); ov.className = 'qr-ov'; ov.hidden = true; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+      ov.innerHTML = '<div class="qr-card"><div class="qr-ttl"></div><div class="qr-img"><img alt="QR"></div><div class="qr-acts"><button type="button" class="btn pill rose qr-dl">Download QR</button><button type="button" class="btn pill ghost qr-bk">Kembali</button></div></div>';
+      document.body.appendChild(ov);
+      ov.addEventListener('click', (e) => { if (e.target === ov || e.target.closest('.qr-bk')) close(); });
+      addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov && !ov.hidden) close(); });
+      $('.qr-dl', ov).addEventListener('click', async () => {
+        const u = ov.dataset.src, nm = (ov.dataset.name || 'QR').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'QR';
+        const ext = ((u.split('?')[0].match(/\.(png|jpe?g|webp|gif|svg)$/i) || [])[1] || 'png').toLowerCase();
+        const save = (href) => { const a = document.createElement('a'); a.href = href; a.download = nm + '.' + ext; document.body.appendChild(a); a.click(); a.remove(); };
+        try { const r = await fetch(u, { mode: 'cors' }); if (!r.ok) throw 0; const bl = await r.blob(); const ob = URL.createObjectURL(bl); save(ob); setTimeout(() => URL.revokeObjectURL(ob), 4000); T.success('QR berhasil diunduh!'); }
+        catch (e) { // server gambar tidak mengizinkan unduhan langsung → buka gambar di tab baru (tekan lama → Simpan)
+          window.open(u, '_blank', 'noopener'); T.success('QR dibuka — tekan lama gambar untuk menyimpan.'); }
+      });
+    };
+    document.addEventListener('click', (ev) => {
+      const b = ev.target.closest && ev.target.closest('[data-qr]'); if (!b) return;
+      if (!ov) build(); last = b;
+      ov.dataset.src = b.dataset.qr; ov.dataset.name = b.dataset.qrName || 'QR';
+      $('.qr-img img', ov).src = b.dataset.qr; $('.qr-ttl', ov).textContent = b.dataset.qrName || 'QR';
+      ov.hidden = false; requestAnimationFrame(() => ov.classList.add('on'));
+    });
+  })();
   // lightbox
   let lbItems = [], lbCur = 0;
   const lb = $('#lightbox'), lim = $('img', lb);

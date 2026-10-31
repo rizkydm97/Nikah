@@ -106,13 +106,14 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-open.play .sl-strip.dir-l{animation:slStripL calc(8s*var(--tk,1)) linear both}
 .sl-open.instant .sl-strip.dir-r{animation:none;transform:translate3d(-50%,0,0)}
 .sl-open.instant .sl-strip.dir-l{animation:none;transform:translate3d(0,0,0)}
-@keyframes slStripR{0%,22%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.55,0,.2,1)}62%,100%{transform:translate3d(-50%,0,0)}}
-@keyframes slStripL{0%,22%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.55,0,.2,1)}62%,100%{transform:translate3d(0,0,0)}}
+@keyframes slStripR{0%,4%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.42,0,.18,1)}65%,100%{transform:translate3d(-50%,0,0)}}
+@keyframes slStripL{0%,4%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.42,0,.18,1)}65%,100%{transform:translate3d(0,0,0)}}
 /* foto pembuka muncul dari bawah: kecil → membesar ke posisinya (seperti referensi) */
 .sl-open>.sl-ph{transform-origin:50% 100%;background:#0d0d0d}
-.sl-open.play>.sl-ph{animation:slRise calc(1.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both}
+.sl-open.play>.sl-ph{animation:slRise calc(3.8s*var(--tk,1)) cubic-bezier(.25,.1,.2,1) both}
 .sl-open.instant>.sl-ph{animation:none}
-@keyframes slRise{0%{opacity:0;transform:translateY(16%) scale(.6)}30%{opacity:1}100%{opacity:1;transform:none}}
+/* foto timbul perlahan (memudar masuk + sedikit mengecil ke posisi) SAMBIL bergeser; gerak foto & teks selesai bersamaan di detik ±5,2 */
+@keyframes slRise{0%{opacity:0;transform:scale(1.07)}100%{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.sl-strip,.sl-open.play .sl-strip{animation:none!important}}
 .sl-open .sl-sh.t{height:52%}
 .sl-op-in{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 9vh + var(--ty,0vh));top:calc(env(safe-area-inset-top,0px) + 9svh + var(--ty,0svh));z-index:3;padding:0 8%;text-shadow:0 2px 18px rgba(0,0,0,.55)}
@@ -556,3 +557,8 @@ html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
 .t-slide .fm .btn{font-family:var(--fBody)}
 .t-slide .fm input[type=file]{font-family:var(--fBody);font-size:12px;color:#333}
 .t-slide .fm input[type=file]::file-selector-button{font-family:var(--fBody);font-weight:600;font-size:12px;margin-right:10px;padding:7px 14px;border:1px solid #111;border-radius:999px;background:#111;color:#fff;cursor:pointer}
+
+/* ===== v19: Ucapan — tombol foto & angka statistik terbaca di latar gelap ===== */
+.t-mono .wishes .wpick,.t-mono .wishes .wpick *{color:#fff!important}
+.t-mono .wishes .stats b{font-family:var(--fBody,'Poppins',sans-serif);font-weight:600;font-variant-numeric:lining-nums}
+.t-mono .wishes .stats span{font-family:var(--fBody,'Poppins',sans-serif)}

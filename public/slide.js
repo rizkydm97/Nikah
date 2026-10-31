@@ -125,10 +125,10 @@
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
         <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1900)}</div>
-        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 2600, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 2800, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
         <i class="sl-line sl-draw" style="--d:3900ms" data-ad="op.line"></i>
-        ${up('sl-op-d', 4100, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
-        ${h.hashtag ? up('sl-op-t', 4400, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
+        ${up('sl-op-d', 4200, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
+        ${h.hashtag ? up('sl-op-t', 4300, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
       </div>
       <div class="sl-scroll" aria-hidden="true" data-ad="op.sc"><i></i></div></section>`;
   }

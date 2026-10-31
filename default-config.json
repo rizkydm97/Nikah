@@ -275,7 +275,10 @@
     "sendWhatsapp": true,
     "addressMap": true,
     "addressMapLabel": "Buka Google Maps",
-    "addressMapUrl": ""
+    "addressMapUrl": "",
+    "qrImage": "",
+    "qrTitle": "QRIS",
+    "qrButton": "Buka QR"
   },
   "rsvp": {
     "bg": "/assets/default/couple-wide.svg",
