@@ -323,6 +323,7 @@
   function stack(root, on) {
     if (stkOff) { stkOff(); stkOff = null; }
     root.classList.remove('stk-on'); document.documentElement.classList.remove('stk-h');
+    root.style.removeProperty('--ob');
     root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
@@ -365,7 +366,7 @@
       g.sec.style.top = (-Math.max(0, Math.round(x))) + 'px';
     });
     const placeQ = () => quotes.forEach((q) => { q.style.top = Math.min(0, Math.round((innerHeight || 780) - q.offsetHeight)) + 'px'; }); // ayat lebih tinggi dari layar: menempel saat dasarnya tepat di dasar layar
-    let raf = 0;
+    let raf = 0, stkOb;
     const tick = () => {
       raf = 0; const H = innerHeight || 780;
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
@@ -380,6 +381,11 @@
           else if (p.on && (top >= H * 0.98 || c >= 1)) { p.on = false; p.el.classList.remove('sl-go'); }
         }
       });
+      { // latar di belakang pembuka: gelap HANYA saat pembuka → mempelai pria (sudut membulat tidak menampakkan latar putih), normal lagi sesudahnya
+        const o = pins.find((p) => p.el.classList.contains('sl-open')), f = o && o.next ? o.next.querySelector(':scope>.sl-s') : null, g = f ? pins.find((p) => p.el === f) : null;
+        const ob = o ? cl((o.c || 0) * (1 - ((g && g.c) || 0)), 0, 1) : 0;
+        if (stkOb === undefined || Math.abs(ob - stkOb) > 0.004 || (ob === 0) !== (stkOb === 0)) { stkOb = ob; root.style.setProperty('--ob', ob.toFixed(3)); }
+      }
       rr.forEach(([el, r]) => {
         if (r > 0 && r < 1) { el.classList.add('stk-rise'); el.style.setProperty('--rp', r.toFixed(3)); }
         else if (el.classList.contains('stk-rise')) { el.classList.remove('stk-rise'); el.style.removeProperty('--rp'); }
