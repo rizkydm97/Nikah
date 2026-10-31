@@ -106,8 +106,8 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-open.play .sl-strip.dir-l{animation:slStripL calc(8s*var(--tk,1)) linear both}
 .sl-open.instant .sl-strip.dir-r{animation:none;transform:translate3d(-50%,0,0)}
 .sl-open.instant .sl-strip.dir-l{animation:none;transform:translate3d(0,0,0)}
-@keyframes slStripR{0%,4%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.42,0,.18,1)}65%,100%{transform:translate3d(-50%,0,0)}}
-@keyframes slStripL{0%,4%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.42,0,.18,1)}65%,100%{transform:translate3d(0,0,0)}}
+@keyframes slStripR{0%,4%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.42,0,.18,1)}50%,100%{transform:translate3d(-50%,0,0)}}
+@keyframes slStripL{0%,4%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.42,0,.18,1)}50%,100%{transform:translate3d(0,0,0)}}
 /* foto pembuka muncul dari bawah: kecil → membesar ke posisinya (seperti referensi) */
 .sl-open>.sl-ph{transform-origin:50% 100%;background:#0d0d0d}
 .sl-open.play>.sl-ph{animation:slRise calc(3.8s*var(--tk,1)) cubic-bezier(.25,.1,.2,1) both}
@@ -128,7 +128,7 @@ html.h-slide{scroll-snap-type:y proximity}
 .sl-op-t{margin-top:8px;font-size:11.5px;letter-spacing:.14em;color:rgba(255,255,255,.85)}
 .sl-scroll{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);width:22px;height:36px;border:1.5px solid rgba(255,255,255,.8);border-radius:14px;z-index:3;opacity:0}
 .sl-scroll i{position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:#fff;animation:slSc 1.8s ease-in-out infinite}
-.sl-open.play .sl-scroll{animation:slFade 1s ease 4.6s both}
+.sl-open.play .sl-scroll{animation:slFade 1s ease 6.4s both}
 @keyframes slSc{0%{transform:translateY(0);opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
 
 /* ---------- mempelai ---------- */
@@ -562,3 +562,19 @@ html.sl-edit [data-ad].sl-sel{outline:2px solid #2563eb;outline-offset:3px}
 .t-mono .wishes .wpick,.t-mono .wishes .wpick *{color:#fff!important}
 .t-mono .wishes .stats b{font-family:var(--fBody,'Poppins',sans-serif);font-weight:600;font-variant-numeric:lining-nums}
 .t-mono .wishes .stats span{font-family:var(--fBody,'Poppins',sans-serif)}
+
+
+/* ---------- pembuka: teks masuk SETELAH foto selesai bergeser + lapisan gelap lembut di belakang teks (tanggal putih tidak lagi hilang di baju putih) ---------- */
+.sl-op-in::before{content:"";position:absolute;z-index:-1;inset:-16% -6% -12%;pointer-events:none;opacity:0;background:radial-gradient(ellipse 64% 56% at 50% 50%,rgba(8,6,5,calc(.52*var(--shd,1))) 0%,rgba(8,6,5,calc(.3*var(--shd,1))) 48%,rgba(8,6,5,0) 78%)}
+.sl-open.play .sl-op-in::before{animation:slFade calc(1.8s*var(--tk,1)) ease calc(3s*var(--tk,1)) both}
+.sl-open.instant .sl-op-in::before{animation:none;opacity:1}
+.sl-op-k,.sl-op-d{text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 16px rgba(0,0,0,.55)}
+.sl-op-d{font-weight:600}
+
+/* ---------- transisi scroll 3D antar slide (pembuka → mempelai → acara → penutup) ---------- */
+.sl3 .sl-ph{scale:var(--zin,1);transform-origin:50% 50%}
+.sl3 .sl-dim{position:absolute;inset:0;z-index:30;background:#000;opacity:0;pointer-events:none}
+.sl3.sl3on{transform:perspective(1100px) translate3d(0,calc(var(--dy,0)*1%),0) rotateX(calc(var(--rx,0)*1deg)) scale(var(--sc,1));transform-origin:50% 100%;will-change:transform;backface-visibility:hidden}
+.sl3.sl3on .sl-dim{opacity:var(--dim,0)}
+.sl3.sl3in{box-shadow:0 -26px 60px -6px rgba(0,0,0,.45);will-change:transform}
+@media (prefers-reduced-motion:reduce){.sl3{transform:none!important;box-shadow:none!important}.sl3 .sl-ph{scale:1!important}.sl3 .sl-dim{display:none}}
