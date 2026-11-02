@@ -1242,3 +1242,31 @@ html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"
 @supports (zoom:1){.t-slide .sl-foot .sl-ft-n{font-size:calc(8.4cqw*var(--scv,1.05))}}
 /* penutup: "&" menyusul setelah nama pertama mulai tertulis */
 :root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n2 .sl-wipe{animation-delay:calc((var(--d,0ms) + 700ms)*var(--tk,1))!important}
+
+/* =====================================================================
+   v38 — PEMBUKA: "THE WEDDING OF" & nama lebih halus di HP
+   1) Teks kecil atas tidak lagi muncul sendirian di layar gelap (dulu mulai ±0,4 dtk, sebelum foto naik, huruf melebar→merapat).
+      Kini muncul SETELAH foto terlihat (±1,4 dtk): satu baris terbuka lembut dari TENGAH ke kedua sisi + jarak huruf merapat tipis.
+   2) Nama "tinta" lebih mulus: saat ditulis, nama tidak lagi memakai filter bayangan + teks bergradasi (keduanya dilukis ulang
+      tiap frame bersamaan dengan geseran foto → patah-patah di HP). Kini teks putih + bayangan teks biasa; tepi tinta lebih lebar & lembut.
+   ===================================================================== */
+/* --- Klasik: teks kecil atas --- */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-k .sl-c{opacity:1!important;transform:none!important;animation:none!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-k{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18%,#000 82%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 18%,#000 82%,transparent 100%);
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:50% 0;mask-position:50% 0;-webkit-mask-size:0% 100%;mask-size:0% 100%}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-k{animation:slKUnveil calc(1.8s*var(--tk,1)) cubic-bezier(.3,.1,.25,1) calc(1.3s*var(--tk,1)) both!important}
+@keyframes slKUnveil{0%{opacity:0;-webkit-mask-size:0% 100%;mask-size:0% 100%;letter-spacing:.46em}15%{opacity:1}100%{opacity:1;-webkit-mask-size:170% 100%;mask-size:170% 100%;letter-spacing:.34em}}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.instant .sl-op-k{opacity:1!important;-webkit-mask-image:none!important;mask-image:none!important}
+/* --- Klasik: nama ringan & mulus --- */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-n{filter:none;text-shadow:0 2px 14px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.35)}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-wipe>span{color:#fff;-webkit-text-fill-color:#fff;background:none;animation:none!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-wipe{
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 36%,transparent 64%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 36%,transparent 64%,transparent 100%);
+  -webkit-mask-size:300% 100%;mask-size:300% 100%;will-change:opacity}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"][data-dir="r"] .sl-op-n .sl-wipe:not(.n2 *){
+  -webkit-mask-image:linear-gradient(270deg,#000 0,#000 36%,transparent 64%,transparent 100%);mask-image:linear-gradient(270deg,#000 0,#000 36%,transparent 64%,transparent 100%)}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np:not(.n2) .sl-wipe{animation-timing-function:cubic-bezier(.35,.15,.3,1)!important}
+/* --- Elegan 3D: huruf kecil atas juga menunggu foto terlihat --- */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-k .sl-c{animation-delay:calc(((var(--d,0ms) - 1900ms) * .7 + 1200ms) * var(--tk,1))!important}
+@media (prefers-reduced-motion:reduce){html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-k{opacity:1!important;-webkit-mask-image:none!important;mask-image:none!important;animation:none!important}}

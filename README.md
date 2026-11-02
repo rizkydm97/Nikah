@@ -328,3 +328,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Penutup**: nama mulai tertulis ±1 dtk setelah slide tampil (dulu ±3,4 dtk); "&" menyusul setelah nama pertama, garis hati & ucapan ikut maju.
 - **Footer**: tidak lagi huruf kapital berjarak lebar + tahun bergaris. Kini teks footer dalam tulisan tangan + satu baris kecil "© tahun · nama mempelai" (tahun dari teks footer atau tanggal acara; bila footer sudah berisi nama mempelai → "© 2026 · Undangan Pernikahan").
 - File berubah: `public/slide.js`, `public/slide.css`, `public/invitation.js`, `lib/index.template.html`, `README.md`.
+
+## Tema 13 — v38 (2 Nov 2026): "THE WEDDING OF" & nama pembuka lebih halus
+- **Teks kecil atas (mis. THE WEDDING OF)** tidak lagi muncul sendirian di layar gelap sebelum foto naik. Kini muncul setelah foto terlihat (±1,4 dtk): satu baris terbuka lembut dari tengah ke kedua sisi sambil jarak huruf merapat tipis (gaya Klasik). Di Elegan 3D, huruf 3D-nya juga menunggu foto (±1,2 dtk).
+- **Nama gaya Klasik lebih mulus di HP**: selama tertulis, nama tidak lagi memakai filter bayangan + teks bergradasi (dilukis ulang tiap frame bersamaan geseran foto → patah-patah). Kini teks putih + bayangan teks biasa, tepi tinta lebih lebar & lembut, gerak lebih halus.
+- File berubah: `public/slide.css`, `lib/index.template.html`, `README.md`.
