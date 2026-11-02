@@ -436,6 +436,7 @@
     "fontFile": "",
     "adj": {},
     "scriptSize": 100,
+    "openFx": "particle",
     "animStyle": "mist",
     "stageRatio": "2",
     "titleFont": "cover",

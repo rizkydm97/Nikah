@@ -251,6 +251,7 @@
   }
 
   // ---------- buka undangan: sampul naik, pembuka (slide 2) langsung tampil otomatis ----------
+  let openFx = 'particle'; // diatur di fx() dari slide.openFx
   function open(X) {
     const { cover: cv, hero: hr, D, instant, unlock, finish, later } = X;
     const play = () => { hr.classList.remove('pre'); hr.classList.add('play'); };
@@ -258,8 +259,11 @@
     // seperti referensi: teks cover memudar naik → layar gelap sejenak → foto pembuka muncul dari bawah (kecil → membesar) → deretan foto bergeser
     cv.classList.add('sl-out'); cv.style.setProperty('--mo', (0.9 * D).toFixed(2) + 's');
     unlock();
+    // teks pembuka = partikel 3D (ptext.js): disiapkan selagi sampul memudar, dimulai tepat saat pembuka tampil; gagal / dimatikan di admin → animasi teks klasik
+    let pfx = null;
+    if (openFx === 'particle' && window.PTEXT) { try { pfx = window.PTEXT.prepare(hr); } catch (e) { pfx = null; } }
     later(() => cv.classList.add('sl-out2'), 750 * D);
-    later(play, 1050 * D);
+    later(() => { play(); if (pfx) pfx.go(); }, 1050 * D);
     later(() => { cv.remove(); hr.classList.add('done', 'shown'); finish(); }, 2100 * D);
   }
 
@@ -403,6 +407,7 @@
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
     const de = document.documentElement;
     de.dataset.slAnim = ['mist', 'zoom', 'slide', 'fade'].includes(s.animStyle) ? s.animStyle : 'mist';
+    openFx = s.openFx === 'classic' ? 'classic' : 'particle';
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
     de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d
