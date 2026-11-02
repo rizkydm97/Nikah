@@ -280,22 +280,60 @@
 
   // ---------- teks & foto tiap slide diputar ulang setiap kali slide masuk layar ----------
   let io = null, io2 = null, parOff = null;
-  function parallax(on) {
+  // tinggi layar STABIL = 100svh (layar saat bilah alamat HP tampil). innerHeight berubah ±60–120px setiap bilah alamat naik/turun
+  // (iPhone Safari / Chrome Android) sehingga semua hitungan scroll ikut loncat → dipakai satu ukuran tetap.
+  let vhProbe = null, vhVal = 0;
+  const VH = (fresh) => {
+    if (fresh || !vhVal) {
+      if (!vhProbe || !vhProbe.isConnected) {
+        vhProbe = document.createElement('div'); vhProbe.setAttribute('aria-hidden', 'true');
+        vhProbe.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:100vh;height:100svh;visibility:hidden;pointer-events:none;z-index:-1';
+        document.body.appendChild(vhProbe);
+      }
+      vhVal = vhProbe.offsetHeight || innerHeight || 780;
+    }
+    return vhVal;
+  };
+  const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+  // ---------- foto mengikuti SCROLL (bukan waktu) + parallax ----------
+  // Foto kartu mempelai, akad/resepsi, ayat & love story tampil lebih dulu dan geraknya (zoom-out + geser) dikendalikan posisi scroll (--ep 0→1);
+  // teks menyusul setelah kartunya naik. Dulu foto memudar 2 dtk menurut waktu sejak kartu masuk, terlepas dari jari tamu.
+  function parallax(on, sph) {
     if (parOff) { parOff(); parOff = null; }
-    if (!on) return;
-    const els = [...document.querySelectorAll('#app .sl-s .sl-pk, #app .sl-open .sl-pk')]; if (!els.length) return;
+    document.documentElement.dataset.slSph = sph ? '1' : '0';
+    document.querySelectorAll('#app .sl-ph').forEach((e) => { e.style.removeProperty('--ep'); e.classList.remove('sph-a'); });
+    if (!on && !sph) return;
+    const SPH = '.sl-couple,.sl-events,.sl-q-ph,.sl-ch';
+    const els = on ? [...document.querySelectorAll('#app .sl-s .sl-pk, #app .sl-open .sl-pk')].filter((el) => !(sph && el.closest(SPH))) : [];
+    // [kotak acuan posisi, foto (.sl-ph), jarak naik (× tinggi layar) sampai foto penuh]
+    const phs = [];
+    if (sph) {
+      document.querySelectorAll('#app .sl-couple>.sl-s, #app .sl-events>.sl-s').forEach((c) => c.querySelectorAll('.sl-ph').forEach((p) => phs.push({ box: c, ph: p, k: 0.9 })));
+      document.querySelectorAll('#app .sl-q-ph').forEach((b) => b.querySelectorAll('.sl-ph').forEach((p) => phs.push({ box: b, ph: p, k: 0.55 })));
+      document.querySelectorAll('#app .sl-ch .sl-fr').forEach((b) => b.querySelectorAll('.sl-ph').forEach((p) => phs.push({ box: b, ph: p, k: 0.7 })));
+    }
+    if (!els.length && !phs.length) return;
     let raf = 0;
     const tick = () => {
-      raf = 0; const vh = innerHeight;
-      els.forEach((el) => {
-        const r = el.parentElement.getBoundingClientRect(); if (r.bottom < -80 || r.top > vh + 80) return;
-        const p = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
+      raf = 0; const vh = VH();
+      // baca semua posisi dulu, baru tulis (tanpa bolak-balik baca-tulis yang memaksa hitung ulang tata letak tiap elemen)
+      const rp = els.map((el) => el.parentElement.getBoundingClientRect());
+      const re = phs.map((o) => o.box.getBoundingClientRect().top);
+      els.forEach((el, i) => {
+        const r = rp[i]; if (r.bottom < -80 || r.top > vh + 80) return;
+        const p = cl((r.top + r.height / 2 - vh / 2) / vh, -1, 1);
         el.style.setProperty('--py', (-p * Math.min(r.height * 0.035, 34)).toFixed(1) + 'px');
+      });
+      phs.forEach((o, i) => {
+        const e = cl((vh - re[i]) / (vh * o.k), 0, 1);
+        if (o.e === undefined || Math.abs(e - o.e) > 0.003 || ((e === 0 || e === 1) && e !== o.e)) { o.e = e; o.ph.style.setProperty('--ep', e.toFixed(3)); }
+        const a = e > 0 && e < 1; if (a !== !!o.a) { o.a = a; o.ph.classList.toggle('sph-a', a); } // lapisan GPU hanya selama foto bergerak
       });
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
-    parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); };
+    const t1 = setTimeout(on_, 500);
+    parOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); clearTimeout(t1); if (raf) cancelAnimationFrame(raf); raf = 0; };
   }
   // ---------- hitung mundur: kartu 3D, angka bergulir, garis kemajuan, denyut detik ----------
   // Sumber data tetap <b data-k> (diisi invitation.js); di atasnya digambar lapisan angka yang bergulir naik tiap berganti nilai.
@@ -343,7 +381,7 @@
     root.querySelectorAll('.sl-op-in,.sl-ptx,.sl-scroll,.sl-ph').forEach((e) => { e.style.removeProperty('--cp'); e.style.removeProperty('--ep'); });
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
-      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); if (e.classList.contains('sec')) e.style.top = '';
+      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); e.style.top = ''; e.style.transformOrigin = '';
     });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
@@ -376,38 +414,49 @@
     });
     if (!pins.length) return;
     root.classList.add('stk-on'); document.documentElement.classList.add('stk-h');
-    const cl = (v, a, b) => Math.max(a, Math.min(b, v));
-    const place = () => groups.forEach((g) => { // bagian berisi beberapa slide menempel saat slide TERAKHIRnya tepat di atas layar
-      const x = g.sec.getBoundingClientRect().height - g.last.getBoundingClientRect().height;
-      g.sec.style.top = (-Math.max(0, Math.round(x))) + 'px';
-    });
-    const placeQ = () => quotes.forEach((q) => { q.style.top = Math.min(0, Math.round((innerHeight || 780) - q.offsetHeight)) + 'px'; }); // ayat lebih tinggi dari layar: menempel saat dasarnya tepat di dasar layar
+    // tinggi tata letak asli (tanpa efek scale tumpukan): getBoundingClientRect ikut mengecil saat kartu sedang tertutup, offsetHeight tidak andal
+    // pada kartu ber-zoom (kanvas 390px) di sebagian peramban → bagi tinggi tampak dengan skala transform saat ini
+    const hgt = (el) => {
+      const h = el.getBoundingClientRect().height; let s = 1;
+      try { const t = getComputedStyle(el).transform; if (t && t !== 'none') s = Math.abs(new DOMMatrixReadOnly(t).d) || 1; } catch (e) { /* abaikan */ }
+      return h / s;
+    };
+    const solo = pins.filter((p) => p.el.classList.contains('stk-s') || p.el.classList.contains('sl-open') || p.el.classList.contains('stk-q'));
+    const lasts = groups.map((g) => g.last);
+    // Kanvas slide (390 × 780, diperbesar mengikuti lebar) biasanya LEBIH TINGGI dari layar HP (±660–750px). Dulu kartu menempel di top:0,
+    // sehingga bagian bawahnya (tombol Instagram/peta, teks posisi bawah) tak pernah terlihat dan kartu berikutnya "melompat".
+    // Kini kartu menggulir sampai DASARNYA tepat di dasar layar, baru menempel; titik pusat skala = tepi atas bagian yang terlihat.
+    const place = () => {
+      const H = VH();
+      const org = (el, h) => { el.style.transformOrigin = '50% ' + Math.max(0, Math.round(h - H)) + 'px'; };
+      solo.forEach((p) => { const h = p.el.classList.contains('stk-q') ? p.el.offsetHeight : hgt(p.el); p.el.style.top = Math.min(0, Math.round(H - h)) + 'px'; org(p.el, h); });
+      groups.forEach((g) => { // bagian berisi beberapa slide (mempelai, akad/resepsi) menempel saat slide TERAKHIRnya selesai digulir
+        const hl = hgt(g.last), x = g.sec.offsetHeight - hl;
+        g.sec.style.top = Math.round(-Math.max(0, x) + Math.min(0, H - hl)) + 'px'; org(g.last, hl);
+      });
+    };
     let raf = 0, stkOb;
     const tick = () => {
-      raf = 0; const H = innerHeight || 780;
+      raf = 0; const H = VH();
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
       const rr = rises.map((el) => [el, cl(1 - el.getBoundingClientRect().top / H, 0, 1)]);
       rd.forEach(([p, c, top]) => {
         if (p.c === undefined || Math.abs(c - p.c) > 0.002 || ((c === 0 || c === 1) && c !== p.c)) {
-          // --cp ditulis LANGSUNG ke elemen yang memakainya (kartu + lapisan gelap + teks pembuka) dan didaftarkan @property inherits:false di CSS:
-          // dulu satu perubahan --cp memaksa browser menghitung ulang gaya ratusan <span> huruf/kata di dalam kartu pada tiap frame scroll
-          if (!p.kids || !p.c) p.kids = [...p.el.querySelectorAll(':scope>.stk-dim,.sl-op-in,.sl-ptx,.sl-scroll')];
+          // --cp ditulis LANGSUNG ke elemen yang memakainya (kartu + lapisan gelap + teks pembuka) dan didaftarkan @property inherits:false di CSS
+          if (!p.kids) p.kids = [...p.el.querySelectorAll(':scope>.stk-dim,.sl-op-in,.sl-ptx,.sl-scroll')];
           const v = c.toFixed(3); p.c = c; p.el.style.setProperty('--cp', v); p.kids.forEach((k) => k.style.setProperty('--cp', v));
         }
         const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); }
-        if (p.go && p.el.classList.contains('sl-pp')) { const e = cl(1 - top / H, 0, 1); if (p.e === undefined || Math.abs(e - p.e) > 0.004) { p.e = e; const v = e.toFixed(3); (p.phs || (p.phs = [...p.el.querySelectorAll('.sl-ph')])).forEach((k) => k.style.setProperty('--ep', v)); } }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
-        if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
-          if (!p.on && top < H * 0.92 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
-          // reset HANYA bila kartu benar-benar keluar layar di bawah. Dulu juga direset saat c >= 1 (tertutup kartu berikutnya):
-          // saat digulir balik ke atas, foto kartu itu tak punya sl-go (opacity 0) sampai c < 0.5 → area foto tampak hitam.
+        if (p.go) { // foto sudah tampil (ikut scroll); teks diputar setelah kartu naik ±45% layar. Direset hanya bila kartu keluar layar di bawah.
+          if (!p.on && top < H * 0.55 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
           else if (p.on && top >= H * 0.98) { p.on = false; p.el.classList.remove('sl-go'); }
         }
       });
-      { // latar di belakang pembuka: gelap HANYA saat pembuka → mempelai pria (sudut membulat tidak menampakkan latar putih), normal lagi sesudahnya
+      { // latar di belakang pembuka: gelap HANYA saat pembuka → mempelai pria, normal lagi sesudahnya
         const o = pins.find((p) => p.el.classList.contains('sl-open')), f = o && o.next ? o.next.querySelector(':scope>.sl-s') : null, g = f ? pins.find((p) => p.el === f) : null;
         const ob = o ? cl((o.c || 0) * (1 - ((g && g.c) || 0)), 0, 1) : 0;
-        if (stkOb === undefined || Math.abs(ob - stkOb) > 0.004 || (ob === 0) !== (stkOb === 0)) { stkOb = ob; root.style.setProperty('--ob', ob.toFixed(3)); }
+        if (stkOb === undefined || Math.abs(ob - stkOb) > 0.02 || ((ob === 0 || ob === 1) && ob !== stkOb)) { stkOb = ob; root.style.setProperty('--ob', ob.toFixed(3)); }
       }
       rr.forEach(([el, r]) => {
         if (r > 0 && r < 1) { el.classList.add('stk-rise'); el.style.setProperty('--rp', r.toFixed(3)); }
@@ -415,15 +464,21 @@
       });
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    const re = () => { place(); placeQ(); on_(); };
-    // bilah alamat HP yang naik/turun saat scroll memicu 'resize' (tinggi berubah ±60–110px): menghitung ulang top sticky saat itu membuat kartu loncat/patah.
-    // Hitung ulang hanya bila lebar berubah (rotasi) atau tinggi berubah besar.
+    let rq = 0;
+    const re = () => { rq = 0; place(); on_(); };
+    const reSoon = () => { if (!rq) rq = requestAnimationFrame(re); };
+    // bilah alamat HP yang naik/turun memicu 'resize': posisi menempel TIDAK dihitung ulang (ukuran layar dipakai = 100svh, tetap).
+    // Hitung ulang hanya bila lebar berubah (rotasi) atau tinggi berubah besar (keyboard / jendela diubah).
     let lw = innerWidth, lh = innerHeight;
-    const rs = () => { if (innerWidth === lw && Math.abs(innerHeight - lh) < 160) { on_(); return; } lw = innerWidth; lh = innerHeight; re(); };
-    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', rs); addEventListener('load', re);
-    const t1 = setTimeout(re, 400), t2 = setTimeout(re, 1800);
-    re(); tick();
-    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', rs); removeEventListener('load', re); clearTimeout(t1); clearTimeout(t2); if (raf) cancelAnimationFrame(raf); raf = 0; };
+    const rs = () => { if (innerWidth === lw && Math.abs(innerHeight - lh) < 160) { on_(); return; } lw = innerWidth; lh = innerHeight; VH(true); reSoon(); };
+    // tinggi kartu berubah setelah font (Arab/skrip) & foto termuat atau tulisan digeser di admin → posisi menempel ikut diperbarui
+    let ro = null;
+    if (window.ResizeObserver) { ro = new ResizeObserver(reSoon); new Set([...solo.map((p) => p.el), ...groups.map((g) => g.sec), ...lasts]).forEach((e) => ro.observe(e)); }
+    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', rs); addEventListener('load', reSoon);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reSoon).catch(() => {});
+    const t1 = setTimeout(reSoon, 400), t2 = setTimeout(reSoon, 1800);
+    VH(true); place(); tick();
+    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', rs); removeEventListener('load', reSoon); clearTimeout(t1); clearTimeout(t2); if (ro) ro.disconnect(); if (raf) cancelAnimationFrame(raf); if (rq) cancelAnimationFrame(rq); raf = 0; rq = 0; };
   }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
@@ -435,11 +490,11 @@
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
     de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d
     { const rt = parseFloat(s.stageRatio); de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }
-    parallax(par);
     root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
     if (io) { io.disconnect(); io = null; }
     cdFx(root, rm);
     stack(root, s.stack !== false && !rm && 'IntersectionObserver' in window);
+    parallax(par, !rm && s.scrollPhoto !== false); // setelah stack(): foto di kartu bertumpuk digerakkan scroll, bukan parallax
     const els = root.querySelectorAll('.sl-s:not([data-stk]), .sl-foot');
     // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar
     root.querySelectorAll('[data-sid="gallery"],[data-sid="live"],[data-sid="gift"],[data-sid="rsvp"],[data-sid="wishes"]').forEach((sec) => {

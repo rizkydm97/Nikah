@@ -290,3 +290,10 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 ## Logo & layar loading bisa digeser (Tema 13)
 
 - Admin → Cover → pilih tampilan **Loading / Logo** di atas pratinjau: layar loading ditahan tampil. Tarik logo/monogram, tulisan di bawah logo, dan bilah loading langsung di pratinjau (Shift + roda = ukuran), atau pakai penggeser di "POSISI & UKURAN LOGO, TULISAN & BILAH LOADING". Kunci: `ld.lg`, `ld.k`, `ld.bar` (disimpan di `slide.adj`, dipakai juga saat tamu membuka undangan).
+
+## Tema 13 — v32 (2 Nov 2026): perbaikan scroll di HP
+- **Foto muncul duluan & mengikuti scroll**: foto mempelai, akad/resepsi, ayat & love story langsung tampil saat kartunya mengintip, lalu zoom-out + bergeser pelan sesuai posisi scroll (dulu memudar 2 dtk menurut waktu). Teks menyusul setelah kartu naik ±45% layar. Matikan dengan `slide.scrollPhoto = false` (default menyala).
+- **Kartu tidak lagi terpotong di HP**: kanvas slide (390×780) lebih tinggi dari layar HP (±660–750px). Dulu kartu langsung menempel di atas sehingga ±100px bagian bawah (teks posisi bawah, tombol peta/Instagram) tak pernah terlihat dan kartu berikutnya terasa melompat. Kini kartu digulir sampai dasarnya terlihat, baru menempel.
+- **Ayat → Akad**: ayat tidak lagi "meluncur" naik saat Akad menutupinya (titik pusat skala = bagian yang terlihat); posisi menempel dihitung ulang otomatis bila tinggi ayat berubah (font Arab termuat dll., `ResizeObserver`).
+- **Tumpukan 3D lebih mulus**: ukuran layar tetap (100svh) sehingga bilah alamat HP yang naik/turun tidak membuat kartu loncat; lapisan gelap jadi lapisan GPU; sudut/bayangan tidak berubah saat scroll; baca-tulis posisi tidak lagi bolak-balik; Ken Burns dimatikan di layar sentuh pada foto yang sudah digerakkan scroll; `overflow-anchor:none`.
+- File berubah: `public/slide.js`, `public/slide.css`, `lib/index.template.html` (`slide.css?v=31`, `slide.js?v=30`), `README.md`.
