@@ -446,9 +446,11 @@
     if (!('IntersectionObserver' in window) || rm) { els.forEach((e) => e.classList.add('sl-go')); return; }
     io = new IntersectionObserver((es) => es.forEach((e) => {
       const r = e.intersectionRatio, vh = innerHeight;
-      if (e.isIntersecting && (r >= 0.35 || e.intersectionRect.height >= vh * 0.45)) e.target.classList.add('sl-go');
+      // kartu ayat (putih) naik menutupi foto: teksnya mulai muncul begitu kartu mulai naik (±12% layar), bukan menunggu 45% → tak ada kartu putih kosong
+      const early = e.target.classList.contains('sl-q') && e.intersectionRect.height >= vh * 0.12;
+      if (e.isIntersecting && (early || r >= 0.35 || e.intersectionRect.height >= vh * 0.45)) e.target.classList.add('sl-go');
       else if (!e.isIntersecting) e.target.classList.remove('sl-go');
-    }), { threshold: [0, 0.2, 0.35, 0.6] });
+    }), { threshold: [0, 0.05, 0.1, 0.15, 0.2, 0.35, 0.6] });
     els.forEach((e) => io.observe(e));
   }
 
