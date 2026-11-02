@@ -127,7 +127,7 @@
       <i class="sl-sh t"></i><i class="sl-sh b"></i>
       <div class="sl-op-in">
         <div class="sl-op-k" data-ad="op.k"${tx('hero.kicker')}>${chars(H, h.kicker, 38, 1900)}</div>
-        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 2800, 'op.n', ['hero.groom', 'hero.bride'])}</h1>
+        <h1 class="sl-op-n">${nameParts(H, h.groom, h.bride, 'op', 2800, 'op.n', ['hero.groom', 'hero.bride'])}<i class="sl-op-gl" aria-hidden="true"></i></h1>
         <i class="sl-line sl-draw" style="--d:3900ms" data-ad="op.line"></i>
         ${up('sl-op-d', 4200, E(H, h.dateText), null, 'op.d', tx('hero.dateText'))}
         ${h.hashtag ? up('sl-op-t', 4300, E(H, h.hashtag), null, 'op.t', tx('hero.hashtag')) : ''}
@@ -271,7 +271,7 @@
   }
 
   // ---------- buka undangan: sampul naik, pembuka (slide 2) langsung tampil otomatis ----------
-  let openFx = 'particle'; // diatur di fx() dari slide.openFx
+  let openFx = '3d'; // diatur di fx() dari slide.openFx: '3d' (Elegan 3D, bawaan) | 'particle3d' (partikel) | 'classic'
   function open(X) {
     const { cover: cv, hero: hr, D, instant, unlock, finish, later } = X;
     const play = () => { hr.classList.remove('pre'); hr.classList.add('play'); };
@@ -281,7 +281,7 @@
     unlock();
     // teks pembuka = partikel 3D (ptext.js): disiapkan selagi sampul memudar, dimulai tepat saat pembuka tampil; gagal / dimatikan di admin → animasi teks klasik
     let pfx = null;
-    if (openFx === 'particle' && window.PTEXT) { try { pfx = window.PTEXT.prepare(hr); } catch (e) { pfx = null; } }
+    if (openFx === 'particle3d' && window.PTEXT) { try { pfx = window.PTEXT.prepare(hr); } catch (e) { pfx = null; } }
     later(() => cv.classList.add('sl-out2'), 750 * D);
     later(() => { play(); if (pfx) pfx.go(); }, 1050 * D);
     later(() => { cv.remove(); hr.classList.add('done', 'shown'); finish(); }, 2100 * D);
@@ -497,7 +497,9 @@
     const s = (cfg && cfg.slide) || {}, rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
     const de = document.documentElement;
     de.dataset.slAnim = ['mist', 'zoom', 'slide', 'fade'].includes(s.animStyle) ? s.animStyle : 'mist';
-    openFx = s.openFx === 'classic' ? 'classic' : 'particle';
+    // 'particle' lama (bawaan dulu) kini = Elegan 3D; efek partikel tetap bisa dipilih lewat 'particle3d'
+    openFx = s.openFx === 'classic' ? 'classic' : s.openFx === 'particle3d' ? 'particle3d' : '3d';
+    de.dataset.slOpfx = openFx;
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
     de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d

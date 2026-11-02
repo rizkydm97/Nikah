@@ -1013,3 +1013,68 @@ html.h-slide.stk-h,html.h-slide.stk-h body{overflow-anchor:none}
 /* latar di sela kartu: gelap lembut, supaya sisi kartu yang mengecil tampak seperti tumpukan di ruang gelap */
 .t-slide #app.stk-on{background:#1a1816;background:color-mix(in srgb,var(--ink,#111) 88%,var(--paper,#fff))}
 @media (prefers-reduced-motion:reduce){.stk-on .stk-pin:not(.sl-open){transform:none!important}}
+
+/* =====================================================================
+   v34 — PEMBUKA "ELEGAN 3D" (bawaan; slide.openFx = '3d') + foto pembuka lebih pelan
+   Urutan tenang, satu per satu (tidak ramai):
+   0,6 dtk  huruf kecil atas terbalik masuk seperti kartu 3D (rotateX), jarak huruf merapat
+   1,5 dtk  nama 1 bangkit dari miring ke tegak (perspektif) dengan kedalaman timbul champagne
+   2,3 dtk  "&"   2,7 dtk  nama 2
+   3,9 dtk  kilau cahaya menyapu nama sekali → garis tergambar → tanggal terbalik masuk → tagar
+   lalu     blok nama "mengambang" 3D sangat halus (±2,5°), kilau lewat lagi tiap ±11 dtk
+   Semua transform/opacity (tanpa blur per huruf → aman di iPhone).
+   ===================================================================== */
+/* awalan sangat spesifik agar menang dari aturan nama 2 foto (v18) & gaya Elegant */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-in{perspective:900px;perspective-origin:50% 40%}
+/* kedalaman timbul (emboss) nama: lapisan bayangan champagne bertingkat + bayangan jatuh lembut */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-n{position:relative;transform-style:preserve-3d;
+  text-shadow:0 1px 0 #efe3c6,0 2px 0 #dccaa0,0 3px 0 #c2ab7c,0 4px 1px rgba(90,70,40,.55),0 10px 18px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.35)}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-wipe{clip-path:none!important;opacity:0;transform-origin:50% 85%;backface-visibility:hidden}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3{display:inline-block;transform-style:preserve-3d}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np .sl-wipe{
+  animation:sl3dName calc(1.9s*var(--tk,1)) cubic-bezier(.16,.84,.22,1) both!important;animation-delay:calc(1500ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{animation-name:sl3dAmp!important;animation-duration:calc(1.4s*var(--tk,1))!important;animation-delay:calc(2300ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-delay:calc(2700ms*var(--tk,1))!important}
+@keyframes sl3dName{0%{opacity:0;transform:translate3d(0,.45em,-60px) rotateX(-72deg) rotateY(-10deg) scale(.94)}35%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes sl3dAmp{0%{opacity:0;transform:translate3d(0,0,-80px) rotateY(-120deg) scale(.6)}50%{opacity:1}100%{opacity:1;transform:none}}
+/* mengambang halus setelah semua nama tampil */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-nm3{animation:sl3dFloat 11s ease-in-out calc(4.8s*var(--tk,1)) infinite alternate}
+@keyframes sl3dFloat{0%{transform:rotateX(0) rotateY(0)}33%{transform:rotateX(2.5deg) rotateY(-3deg)}66%{transform:rotateX(-1.5deg) rotateY(2.5deg)}100%{transform:rotateX(1deg) rotateY(-1deg)}}
+/* kilau cahaya menyapu nama */
+.sl-op-gl{display:none}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-gl{display:block;position:absolute;inset:-10% -20%;pointer-events:none;overflow:hidden;transform:translateZ(20px)}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-gl::before{content:"";position:absolute;top:0;bottom:0;left:-40%;width:28%;transform:skewX(-18deg);opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(255,246,220,.55),transparent)}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-gl::before{animation:sl3dGlint 1.8s ease-in-out calc(3.9s*var(--tk,1)) 1 both,sl3dGlint 2.2s ease-in-out 14s infinite}
+@keyframes sl3dGlint{0%{left:-40%;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:115%;opacity:0}}
+/* huruf kecil atas: kartu 3D terbalik masuk */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-k{opacity:1!important;animation:none!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-k .sl-c{opacity:0;transform-origin:50% 100%;backface-visibility:hidden}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-k .sl-c{animation:sl3dChar calc(1.2s*var(--tk,1)) cubic-bezier(.2,.8,.2,1) both!important;
+  animation-delay:calc((var(--d,0ms) - 1300ms) * var(--tk,1) * .9)!important}
+@keyframes sl3dChar{0%{opacity:0;transform:translateY(.35em) rotateX(-95deg)}45%{opacity:1}100%{opacity:1;transform:none}}
+/* garis, tanggal, tagar */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-line{animation:slDraw calc(1.4s*var(--tk,1)) cubic-bezier(.6,.05,.3,1) both!important;animation-delay:calc(4100ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-d{transform-origin:50% 0;backface-visibility:hidden}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-d{animation:sl3dDate calc(1.4s*var(--tk,1)) cubic-bezier(.2,.8,.2,1) both!important;animation-delay:calc(4500ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-t{animation:slFade calc(1.6s*var(--tk,1)) ease both!important;animation-delay:calc(5100ms*var(--tk,1))!important}
+@keyframes sl3dDate{0%{opacity:0;transform:rotateX(80deg) translateY(-.3em);letter-spacing:.6em}100%{opacity:1;transform:none;letter-spacing:.3em}}
+/* langsung tampil (tanpa animasi pembuka / pratinjau admin) */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.instant :is(.sl-op-n .sl-wipe,.sl-op-k .sl-c,.sl-op-d,.sl-op-t){opacity:1!important;transform:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){
+  html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open :is(.sl-op-n .sl-wipe,.sl-op-k .sl-c,.sl-op-d,.sl-op-t,.sl-op-n .sl-nm3){opacity:1!important;transform:none!important;animation:none!important}
+  .sl-op-gl{display:none!important}
+}
+
+/* FOTO PEMBUKA LEBIH PELAN (dulu 2 foto bergeser hanya ±5 dtk → foto tak sempat dinikmati)
+   2 foto: foto 1 diam ±3,4 dtk → bergeser pelan ±8 dtk → foto 2 diam & perlahan mendekat. 1 foto: geser 26 dtk. */
+.sl-open.play .sl-strip.dir-r{animation:slStripR2 calc(17s*var(--tk,1)) linear both}
+.sl-open.play .sl-strip.dir-l{animation:slStripL2 calc(17s*var(--tk,1)) linear both}
+@keyframes slStripR2{0%,20%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.45,0,.2,1)}68%,100%{transform:translate3d(-50%,0,0)}}
+@keyframes slStripL2{0%,20%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.45,0,.2,1)}68%,100%{transform:translate3d(0,0,0)}}
+.sl-open.play .sl-tile .sl-pk{animation:slTileZoom 17s ease-out both}
+@keyframes slTileZoom{from{transform:scale(1.06)}to{transform:scale(1)}}
+.sl-open.play .sl-pan{animation-duration:calc(26s*var(--tk,1))}
+/* kilau: tepi atas/bawah memudar (bukan pita bersudut), lebih lembut */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-gl::before{width:22%;background:linear-gradient(90deg,transparent,rgba(255,246,220,.38),transparent);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent)}

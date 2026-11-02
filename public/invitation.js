@@ -305,7 +305,34 @@
     if (!st) { st = document.createElement('style'); st.id = 'vivFace'; document.head.appendChild(st); }
     st.textContent = `@font-face{font-family:'Vivaldi';font-style:normal;font-weight:400;font-display:swap;src:url('${u.replace(/['"\\\n\r]/g, '')}') format('${fmt}')}`;
   }
+  // ikon tab browser = logo sendiri (Umum → Ikon tab) atau logo layar loading. Logo digambar ke kanvas persegi (PNG) agar tampil di semua
+  // peramban (Safari tidak membaca favicon .webp). Bila tidak ada logo: tag ikon dilepas → ikon bawaan browser.
+  let favSrc = null;
+  function setFavicon(c) {
+    const ok = (v) => { const w = safeUrl(v || ''); return /^(https?:|\/)/i.test(w) ? w : ''; }, u = ok(c.general && c.general.favicon) || ok(c.cover && c.cover.loaderLogo);
+    if (u === favSrc) return; favSrc = u;
+    document.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"],link[rel="apple-touch-icon"]').forEach((l) => l.remove());
+    if (!u) return;
+    const put = (href, type) => {
+      const a = document.createElement('link'); a.rel = 'icon'; a.href = href; if (type) a.type = type; document.head.appendChild(a);
+      const t = document.createElement('link'); t.rel = 'apple-touch-icon'; t.href = href; document.head.appendChild(t);
+    };
+    put(u);
+    const im = new Image(); im.crossOrigin = 'anonymous'; im.decoding = 'async';
+    im.onload = () => {
+      if (favSrc !== u) return;
+      try {
+        const N = 128, cv = document.createElement('canvas'); cv.width = cv.height = N; const x = cv.getContext('2d');
+        const k = Math.min(N / im.naturalWidth, N / im.naturalHeight) * 0.96, w = im.naturalWidth * k, h = im.naturalHeight * k;
+        x.drawImage(im, (N - w) / 2, (N - h) / 2, w, h);
+        const png = cv.toDataURL('image/png');
+        document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach((l) => l.remove()); put(png, 'image/png');
+      } catch (e) { /* server gambar tanpa izin CORS: tetap memakai tautan asli */ }
+    };
+    im.src = u;
+  }
   function applyTheme(c) {
+    setFavicon(c);
     const t = c.theme, r = document.documentElement.style;
     ['primary', 'accent', 'rose', 'gold', 'paper', 'ink', 'body', 'sideBg'].forEach((k) => { if (t[k]) r.setProperty('--' + k, t[k]); });
     const ff = (n, fb) => `'${String(n).replace(/'/g, '')}',${fb}`;

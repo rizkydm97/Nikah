@@ -10,7 +10,8 @@
     "whatsapp": "",
     "musicUrl": "",
     "musicLabel": "Musik latar",
-    "blockRightClick": false
+    "blockRightClick": false,
+    "favicon": ""
   },
   "theme": {
     "primary": "#A00818",
@@ -436,7 +437,7 @@
     "fontFile": "",
     "adj": {},
     "scriptSize": 100,
-    "openFx": "particle",
+    "openFx": "3d",
     "animStyle": "mist",
     "stageRatio": "2",
     "titleFont": "cover",

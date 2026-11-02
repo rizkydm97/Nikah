@@ -26,6 +26,10 @@ module.exports = async (req, res) => {
     const pre = [m.coverMedia, m.coverPoster, m.coverMedia ? '' : (/\/assets\/default\//.test(c.photo || '') ? '' : c.photo), c.loaderLogo].filter(ok);
     if (pre.length) out = out.replace('</head>', [...new Set(pre)].slice(0, 3).map((u) => `<link rel="preload" as="image" href="${attr(u)}" fetchpriority="high">`).join('') + '</head>');
   }
+  // ikon tab browser: logo sendiri (Umum → Ikon tab) atau logo layar loading; bila keduanya kosong, tanpa ikon (ikon bawaan browser)
+  { const okU = (u) => /^(https?:\/\/|\/(?!\/))/i.test(String(u || ''));
+    const fav = [config.general && config.general.favicon, config.cover && config.cover.loaderLogo].find(okU);
+    if (fav) out = out.replace('</head>', `<link rel="icon" href="${attr(fav)}" id="favicon"><link rel="apple-touch-icon" href="${attr(fav)}">` + '</head>'); }
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');

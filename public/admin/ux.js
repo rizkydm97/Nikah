@@ -6,6 +6,7 @@ const FRIENDLY = {
   'general.title': ['Judul undangan', 'Muncul di tab browser dan saat link dibagikan lewat WhatsApp.'],
   'general.description': ['Deskripsi singkat', 'Kalimat pendek di bawah judul saat link dibagikan.'],
   'general.ogImage': ['Gambar saat link dibagikan', 'Foto kecil yang tampil di WhatsApp/Instagram ketika link dikirim.'],
+  'general.favicon': ['Ikon tab browser (logo)', 'Logo kecil di tab browser, menggantikan ikon bola dunia. Pakai gambar persegi (PNG transparan). Kosong = memakai logo layar loading; bila itu juga kosong, kembali ke ikon bawaan browser.'],
   'general.eventDate': ['Tanggal & jam acara', 'Dipakai untuk hitung mundur di undangan.'],
   'general.eventEnd': ['Jam selesai acara', 'Dipakai untuk tombol "Simpan ke Kalender".'],
   'general.eventLocation': ['Lokasi acara', 'Dipakai untuk tombol "Simpan ke Kalender".'],
@@ -77,7 +78,7 @@ const LAYOUT = {
     ['Khusus Tema 1', ['effects.showTree', 'effects.javaFx'], true],
   ],
   general: [
-    ['Judul & tampilan saat link dibagikan', ['general.title', 'general.description', 'general.ogImage']],
+    ['Judul & tampilan saat link dibagikan', ['general.title', 'general.description', 'general.ogImage', 'general.favicon']],
     ['Tanggal & lokasi acara', ['general.eventDate', 'general.eventEnd', 'general.eventLocation', 'general.calendarTitle']],
     ['Musik & kontak', ['general.musicUrl', 'general.whatsapp']],
     ['Lainnya (opsional)', ['general.blockRightClick'], true],
