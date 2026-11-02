@@ -713,3 +713,35 @@ html.h-slide{overscroll-behavior-y:none}
   #loader .ld-bg>img.ld-bk{display:block;object-fit:cover;filter:blur(28px) brightness(.8);transform:scale(1.12)}
   #loader .ld-bg>img.ld-fg{object-fit:contain;object-position:50% 50%}
 }
+
+/* =====================================================================
+   v29 — Wedding Gift Tema 13: bank berupa accordion (logo besar → klik → rincian rekening), huruf lebih besar, animasi masuk bertahap
+   ===================================================================== */
+.t-slide .gift .cap-in .gi{font-size:14px;line-height:1.7}
+.t-slide .gift .bank{font-size:14px;line-height:1.7}
+.t-slide .gift .bank .btn.pill{font-size:12.5px;padding:10px 22px}
+.t-slide .gift .bank .bk-badge{font-size:15px;padding:9px 22px 8px}
+.t-slide .gift .bank .bk-logo{height:56px;max-width:210px}
+.t-slide .gift .bank .bk-mark{min-height:56px;margin-bottom:6px}
+.t-slide .gift .bank .bk-acts .btn{font-size:12.5px;padding:10px 18px}
+.t-slide .gift .bank.bk-acc{border:1px solid color-mix(in srgb,var(--ink,#111) 16%,transparent);border-radius:18px;padding:6px 10px;background:color-mix(in srgb,var(--paper,#fff) 70%,transparent);box-shadow:0 10px 24px -16px rgba(0,0,0,.35);transition:box-shadow .5s ease,background .5s ease}
+.t-slide .gift .bank.bk-acc.open{background:color-mix(in srgb,var(--paper,#fff) 92%,transparent);box-shadow:0 16px 30px -14px rgba(0,0,0,.45)}
+.bk-head{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;width:100%;cursor:pointer;padding:8px 0 6px;position:relative;-webkit-tap-highlight-color:transparent}
+.bk-head:focus-visible{outline:2px solid var(--ink,#111);outline-offset:2px;border-radius:14px}
+.bk-head .bk-mark{margin:0 auto 4px}
+.bk-tap{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;opacity:.65;transition:opacity .4s}
+.bk-acc.open .bk-tap{opacity:.35}
+.bk-chev{display:block;width:9px;height:9px;margin-top:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .55s cubic-bezier(.2,.8,.2,1);opacity:.7}
+.bk-acc.open .bk-chev{transform:rotate(225deg) translate(-2px,-2px)}
+.bk-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .65s cubic-bezier(.2,.8,.2,1)}
+.bk-acc.open .bk-body{grid-template-rows:1fr}
+.bk-body-in{overflow:hidden;min-height:0;opacity:0;transform:translateY(-8px);transition:opacity .45s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.bk-acc.open .bk-body-in{opacity:1;transform:none;transition-delay:.12s;padding-bottom:10px}
+.bk-no{margin-top:6px;font-size:13px;opacity:.8}
+.bk-no b{display:block;font-size:20px;letter-spacing:.06em;font-weight:700;margin-top:2px;opacity:1;font-variant-numeric:lining-nums tabular-nums}
+.bk-an{margin-top:2px;font-size:14px}
+.bk-body .btn{margin-top:12px}
+/* masuk bertahap saat bagian gift terlihat */
+.t-slide .gift .bank.bk-acc.rv:not(.in){opacity:0;transform:translateY(26px) scale(.96)}
+.t-slide .gift .bank.bk-acc.rv{transition:opacity .9s ease calc(var(--i,0)*.18s),transform 1s cubic-bezier(.2,.8,.2,1) calc(var(--i,0)*.18s),box-shadow .5s ease,background .5s ease}
+@media (prefers-reduced-motion:reduce){.bk-body,.bk-body-in,.bk-chev,.t-slide .gift .bank.bk-acc.rv{transition:none!important}.t-slide .gift .bank.bk-acc.rv:not(.in){opacity:1;transform:none}}

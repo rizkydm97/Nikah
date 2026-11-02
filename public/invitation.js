@@ -1175,7 +1175,7 @@
       // tombol buka Google Maps untuk alamat kirim kado: pakai link buatan sendiri (admin), atau otomatis dari teks alamat
       const mapHref = (() => { const m = safeUrl(o.addressMapUrl); if (m) return m; const q = String(o.address || '').replace(/\s+/g, ' ').trim(); return q ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q) : ''; })();
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
-      const banks = (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank">${bankMark(b)}<div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
+      const banks = SL ? (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank bk-acc rv" style="--i:${i}"><button type="button" class="bk-head" aria-expanded="false">${bankMark(b)}<span class="bk-tap">Lihat Rekening</span><i class="bk-chev" aria-hidden="true"></i></button><div class="bk-body"><div class="bk-body-in"><div class="bk-no">No. Rekening<b>${esc(b.number)}</b></div><div class="bk-an">a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div></div></div>`).join('') : (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank">${bankMark(b)}<div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
       // QR / QRIS: tombol "Buka QR" → jendela berisi QR + tombol Download & Kembali
       const qrU = safeUrl(o.qrImage);
       const qr = qrU ? `${heartDiv}<div class="bank qr-box"><div class="bk-mark"><span class="bk-badge">${esc(o.qrTitle || 'QRIS')}</span></div><button class="btn pill rose" type="button" data-qr="${esc(qrU)}" data-qr-name="${esc(o.qrTitle || 'QR')}">${ICON.qr}${esc(o.qrButton || 'Buka QR')}</button></div>` : '';
@@ -1668,6 +1668,13 @@
 
   // copy (sekali saja untuk seluruh halaman) — notifikasi sukses hanya bila salinan benar-benar berhasil
   const COPY_OK = { rekening: 'Nomor rekening berhasil disalin!', alamat: 'Alamat berhasil disalin!', link: 'Link berhasil disalin!' };
+  // gift Tema 13: klik bank → rincian rekening terbuka (satu terbuka sekaligus)
+  document.addEventListener('click', (ev) => {
+    const h = ev.target.closest && ev.target.closest('.bk-head'); if (!h) return;
+    const bx = h.closest('.bk-acc'), open = !bx.classList.contains('open');
+    document.querySelectorAll('.bk-acc.open').forEach((x) => { x.classList.remove('open'); x.querySelector('.bk-head').setAttribute('aria-expanded', 'false'); });
+    if (open) { bx.classList.add('open'); h.setAttribute('aria-expanded', 'true'); }
+  });
   document.addEventListener('click', (ev) => {
     const b = ev.target.closest && ev.target.closest('[data-copy]'); if (!b) return;
     const txt = b.dataset.copy;
@@ -1822,11 +1829,11 @@
       }, sig);
       $('#wishMore').onclick = () => loadWishes(false);
       // Daftar ucapan = kotak dengan scroll sendiri (10 ucapan per muatan); sisanya dimuat otomatis saat scroll sampai dasar kotak.
-      if (WTOUCH) {
+      if (wPaged()) {
         $('#wishList').classList.add('paged');
         $('#wishOpen').addEventListener('click', openWishSheet, sig);
       } else
-      { const wl = $('#wishList'), mb = $('#wishMore'), touch = false; let wt = 0;
+      { const wl = $('#wishList'), mb = $('#wishMore'), touch = WTOUCH; let wt = 0;
         // HP: selama kotak digulir, semua animasi latar dijeda sementara supaya scroll tidak patah-patah
         const kick = () => { if (!touch) return; window.__wlBusy = true; document.documentElement.classList.add('wl-touch'); clearTimeout(wt); wt = setTimeout(() => { window.__wlBusy = false; document.documentElement.classList.remove('wl-touch'); }, 450); };
         ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((ev) => wl.addEventListener(ev, kick, { passive: true, signal: AC.signal }));
@@ -1868,6 +1875,7 @@
   // Solusi: di halaman hanya tampil 5 ucapan terbaru + tombol; daftar lengkap dibuka di lembar layar-penuh yang
   // bisa di-scroll dengan lancar (halaman & efek latar dimatikan sementara selama lembar terbuka).
   const WTOUCH = matchMedia('(pointer:coarse)').matches;
+  const wPaged = () => WTOUCH && !SL; // Tema 13: HP memakai kotak gulir langsung seperti laptop (bukan tombol "Lihat Semua")
   const wEmpty = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
   const wItem = (w, i) => {
     const ph = safeUrl(w.photo), ini = esc((w.name || '?').trim().charAt(0).toUpperCase());
@@ -1911,7 +1919,7 @@
   let wOff = 0, wBusy = false;
   async function loadWishes(reset) {
     const list = $('#wishList'); if (!list) return;
-    if (WTOUCH) return loadWishPreview();
+    if (wPaged()) return loadWishPreview();
     if (wBusy && !reset) return; wBusy = true;
     if (reset) wOff = 0;
     const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
