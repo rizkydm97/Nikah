@@ -231,10 +231,12 @@
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
     // baris hak cipta: "© tahun · nama mempelai" (tahun dari teks footer, atau dari tanggal acara); bila footer = nama mempelai, cukup "Undangan Pernikahan"
     const nmJ = [nmc[0], nmc[1]].filter(Boolean).join(' & '), cy = fy || String((C.general && C.general.eventDate) || '').slice(0, 4).replace(/\D/g, '');
+    // baris pembuat / hak cipta bisa diisi sendiri di admin (Penutup → Baris pembuat); '-' = sembunyikan; kosong = otomatis
+    const credit = String(o.credit == null ? '' : o.credit).trim();
     const cpN = nmJ && fn.replace(/\s+/g, ' ').toLowerCase() !== nmJ.toLowerCase() ? nmJ : 'Undangan Pernikahan';
     // footer bergaya hak cipta yang bersih: nama dalam tulisan tangan + "© tahun · nama" kecil (dulu huruf kapital berjarak lebar + tahun bergaris → terlalu ramai)
     const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${E(H, fn)}</div>`
-      + `<div class="sl-ft-y sl-up" style="--d:500ms" data-ad="cl.fy"><span>&copy; ${E(H, cy)}${cy && cpN ? ' · ' : ''}${E(H, cpN)}</span></div>`;
+      + (credit === '-' ? '' : `<div class="sl-ft-y sl-up" style="--d:500ms" data-ad="cl.fy"${tx('closing.credit')}><span>${credit ? E(H, credit) : `&copy; ${E(H, cy)}${cy && cpN ? ' · ' : ''}${E(H, cpN)}`}</span></div>`);
     const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>
@@ -306,10 +308,12 @@
   function parallax(on, sph) {
     if (parOff) { parOff(); parOff = null; }
     document.documentElement.dataset.slSph = sph ? '1' : '0';
-    document.querySelectorAll('#app .sl-ph').forEach((e) => { e.style.removeProperty('--ep'); e.classList.remove('sph-a'); });
+    document.querySelectorAll('#app .sl-ph').forEach((e) => { e.style.removeProperty('--ep'); e.classList.remove('sph-a', 'sph-in'); });
     if (!on && !sph) return;
     const SPH = '.sl-couple,.sl-events,.sl-q-ph,.sl-ch';
-    const els = on ? [...document.querySelectorAll('#app .sl-s .sl-pk, #app .sl-open .sl-pk')].filter((el) => !(sph && el.closest(SPH))) : [];
+    // parallax per frame dimatikan di layar sentuh (iPhone: tertinggal dari gulir momentum → foto bergetar)
+    const touch = matchMedia('(hover:none),(pointer:coarse)').matches;
+    const els = on && !touch ? [...document.querySelectorAll('#app .sl-s .sl-pk, #app .sl-open .sl-pk')].filter((el) => !(sph && el.closest(SPH))) : [];
     // [kotak acuan posisi, foto (.sl-ph), jarak naik (× tinggi layar) sampai foto penuh]
     const phs = [];
     if (sph) {
@@ -330,9 +334,10 @@
         el.style.setProperty('--py', (-p * Math.min(r.height * 0.035, 34)).toFixed(1) + 'px');
       });
       phs.forEach((o, i) => {
-        const e = cl((vh - re[i]) / (vh * o.k), 0, 1);
-        if (o.e === undefined || Math.abs(e - o.e) > 0.003 || ((e === 0 || e === 1) && e !== o.e)) { o.e = e; o.ph.style.setProperty('--ep', e.toFixed(3)); }
-        const a = e > 0 && e < 1; if (a !== !!o.a) { o.a = a; o.ph.classList.toggle('sph-a', a); } // lapisan GPU hanya selama foto bergerak
+        // v39: foto tampil sejak kartu mengintip, lalu "mendarat" (zoom-out + geser halus) lewat transisi CSS begitu kartu naik ±6% layar.
+        // Dulu posisi foto ditulis per frame mengikuti jari → di iPhone tertinggal dari gulir & foto naik-turun patah-patah.
+        const top = re[i], on = o.on ? top < vh * 0.99 : top < vh * 0.94;
+        if (on !== !!o.on) { o.on = on; o.ph.classList.toggle('sph-in', on); }
       });
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
@@ -381,12 +386,12 @@
   function stack(root, on) {
     if (stkOff) { stkOff(); stkOff = null; }
     root.classList.remove('stk-on'); document.documentElement.classList.remove('stk-h');
-    root.style.removeProperty('--ob');
+    root.style.removeProperty('--ob'); root.classList.remove('stk-ob');
     root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
     root.querySelectorAll('.sl-op-in,.sl-ptx,.sl-scroll,.sl-ph').forEach((e) => { e.style.removeProperty('--cp'); e.style.removeProperty('--ep'); });
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
-      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); e.style.removeProperty('--ip'); e.classList.remove('stk-up'); e.style.top = ''; e.style.transformOrigin = '';
+      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); e.style.removeProperty('--ip'); e.classList.remove('stk-up', 'stk-back', 'stk-flat'); e.style.top = ''; e.style.transformOrigin = '';
     });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
@@ -443,17 +448,18 @@
     let raf = 0, stkOb;
     // kartu yang MASUK (menutupi kartu sebelumnya) menerima --ip 0→1: naik dari posisi miring (atas menjauh) lalu tegak saat sampai atas
     pins.forEach((p) => { if (!p.next) return; const t = p.next.classList.contains('sl-s') || p.next.classList.contains('stk-q') ? p.next : p.next.querySelector(':scope>.sl-s'); if (t && pins.some((q) => q.el === t) && !t.classList.contains('sl-open')) p.inc = t; });
+    { const fed = new Set(pins.map((p) => p.inc).filter(Boolean)); pins.forEach((p) => { if (!fed.has(p.el)) p.el.classList.add('stk-flat'); }); } // kartu tanpa pendahulu dalam tumpukan: langsung tegak
     const tick = () => {
       raf = 0; const H = VH();
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
       const rr = rises.map((el) => [el, cl(1 - el.getBoundingClientRect().top / H, 0, 1)]);
       rd.forEach(([p, c, top]) => {
-        if (p.c === undefined || Math.abs(c - p.c) > 0.002 || ((c === 0 || c === 1) && c !== p.c)) {
-          // --cp ditulis LANGSUNG ke elemen yang memakainya (kartu + lapisan gelap + teks pembuka) dan didaftarkan @property inherits:false di CSS
-          if (!p.kids) p.kids = [...p.el.querySelectorAll(':scope>.stk-dim,.sl-op-in,.sl-ptx,.sl-scroll')];
-          const v = c.toFixed(3); p.c = c; p.el.style.setProperty('--cp', v); p.kids.forEach((k) => k.style.setProperty('--cp', v));
-        }
-        if (p.inc && (p.ic === undefined || Math.abs(c - p.ic) > 0.002 || ((c === 0 || c === 1) && c !== p.ic))) { p.ic = c; p.inc.style.setProperty('--ip', c.toFixed(3)); }
+        // v39: TIDAK lagi menulis nilai scroll per frame (--cp/--ip) — di iPhone nilai itu tertinggal 1–2 frame dari gulir momentum
+        // sehingga kartu & foto tampak bergetar naik-turun. Kini hanya kelas (dengan ambang ganda agar tidak berkedip) yang diganti;
+        // geraknya dijalankan transisi CSS di GPU → mulus.
+        p.c = c;
+        const back = p.back ? c > 0.1 : c > 0.2; if (back !== !!p.back) { p.back = back; p.el.classList.toggle('stk-back', back); }
+        if (p.inc) { const fl = p.fl ? c > 0.12 : c > 0.28; if (fl !== !!p.fl) { p.fl = fl; p.inc.classList.toggle('stk-flat', fl); } }
         const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); if (p.inc) p.inc.classList.toggle('stk-up', act); }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // foto sudah tampil (ikut scroll); teks diputar setelah kartu naik ±45% layar. Direset hanya bila kartu keluar layar di bawah.
@@ -464,7 +470,7 @@
       { // latar di belakang pembuka: gelap HANYA saat pembuka → mempelai pria, normal lagi sesudahnya
         const o = pins.find((p) => p.el.classList.contains('sl-open')), f = o && o.next ? o.next.querySelector(':scope>.sl-s') : null, g = f ? pins.find((p) => p.el === f) : null;
         const ob = o ? cl((o.c || 0) * (1 - ((g && g.c) || 0)), 0, 1) : 0;
-        if (stkOb === undefined || Math.abs(ob - stkOb) > 0.02 || ((ob === 0 || ob === 1) && ob !== stkOb)) { stkOb = ob; root.style.setProperty('--ob', ob.toFixed(3)); }
+        const obOn = ob > 0.15; if (obOn !== stkOb) { stkOb = obOn; root.classList.toggle('stk-ob', obOn); }
       }
       rr.forEach(([el, r]) => {
         if (r > 0 && r < 1) { el.classList.add('stk-rise'); el.style.setProperty('--rp', r.toFixed(3)); }

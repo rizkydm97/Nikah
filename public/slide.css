@@ -1270,3 +1270,36 @@ html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.in
 /* --- Elegan 3D: huruf kecil atas juga menunggu foto terlihat --- */
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-k .sl-c{animation-delay:calc(((var(--d,0ms) - 1900ms) * .7 + 1200ms) * var(--tk,1))!important}
 @media (prefers-reduced-motion:reduce){html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-k{opacity:1!important;-webkit-mask-image:none!important;mask-image:none!important;animation:none!important}}
+
+/* =====================================================================
+   v39 — TUMPUKAN 3D & FOTO TANPA GETAR DI HP
+   Penyebab "patah-patah naik-turun": kemiringan/skala kartu (--cp/--ip) dan posisi foto (--ep) ditulis JavaScript tiap frame
+   mengikuti scroll; di iPhone (gulir momentum) nilai itu tertinggal 1–2 frame → gambar bergetar. Kini JS hanya mengganti kelas
+   (stk-flat / stk-back / sph-in) dan gerak dijalankan TRANSISI CSS di GPU.
+   ===================================================================== */
+/* kartu bertumpuk: masuk miring → tegak (stk-flat); tertutup → mundur, mengecil, meredup (stk-back) */
+.stk-on .stk-pin:not(.sl-open){transform:perspective(1300px) rotateX(0deg) scale(1);transition:transform .75s cubic-bezier(.2,.75,.25,1)}
+.stk-on .stk-pin.stk-in:not(.sl-open):not(.stk-flat){transform:perspective(1300px) rotateX(9deg) scale(.97)}
+.stk-on .stk-pin.stk-back:not(.sl-open){transform:perspective(1300px) rotateX(4deg) scale(.92)}
+.stk-on .stk-pin>.stk-dim{opacity:0;transition:opacity .75s ease}
+.stk-on .stk-pin.stk-back>.stk-dim{opacity:.45}
+.stk-on .sl-open.stk-pin.stk-back>.stk-dim{opacity:.3}
+.stk-on .stk-pin.stk-in::before{opacity:.45;transition:opacity .75s ease}
+.stk-on .stk-pin.stk-in:not(.stk-flat)::before{opacity:.95}
+.stk-on .stk-pin.stk-in.stk-back::before{opacity:0}
+/* isi pembuka naik & memudar saat ditutup kartu mempelai */
+.stk-on .sl-open :is(.sl-op-in,.sl-ptx){translate:0 0;transition:translate .8s cubic-bezier(.2,.75,.25,1),opacity .6s ease}
+.stk-on .sl-open .sl-scroll{transition:filter .5s ease}
+.stk-on .sl-open.stk-back :is(.sl-op-in,.sl-ptx){translate:0 -48px;opacity:0}
+.stk-on .sl-open.stk-back .sl-scroll{filter:opacity(0)}
+.stk-on .sl-open:not(.stk-back) .sl-op-in{opacity:1}
+/* latar gelap di belakang pembuka hanya saat transisi pembuka → mempelai (kelas, bukan nilai per frame) */
+.t-slide #app.stk-on{transition:background-color .6s ease}
+/* foto: tampil sejak kartu mengintip, lalu "mendarat" (zoom-out + geser halus) begitu kartu mulai naik */
+html[data-sl-sph="1"] :is(.sl-couple,.sl-events,.sl-q-ph,.sl-ch) .sl-ph{opacity:1;scale:1.12;translate:calc(var(--sx,0)*4%) -4%;
+  transition:scale 1.6s cubic-bezier(.2,.7,.2,1),translate 1.6s cubic-bezier(.2,.7,.2,1)}
+html[data-sl-sph="1"] :is(.sl-couple,.sl-events,.sl-q-ph,.sl-ch) .sl-ph.sph-in{scale:1;translate:0 0;will-change:auto}
+@media (prefers-reduced-motion:reduce){
+  .stk-on .stk-pin:not(.sl-open),.stk-on .stk-pin.stk-in:not(.sl-open):not(.stk-flat),.stk-on .stk-pin.stk-back:not(.sl-open){transform:none!important;transition:none!important}
+  html[data-sl-sph="1"] :is(.sl-couple,.sl-events,.sl-q-ph,.sl-ch) .sl-ph{scale:none!important;translate:none!important;transition:none!important}
+}

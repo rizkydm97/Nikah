@@ -359,6 +359,12 @@ const TH_PIC = 'bali,princess,emas,biru,rimba,klasik,dayak,airterjun,istana';
   tag('theme', (f) => f.k === 'theme.fontScript', '!slide');
 })();
 
+// ====== v7: baris pembuat / hak cipta di footer penutup Tema 13 ======
+(function () {
+  const g = SCHEMA.find((x) => x.id === 'closing'); if (!g) return;
+  const i = g.fields.findIndex((f) => f.k === 'closing.footerUrl');
+  g.fields.splice(i < 0 ? g.fields.length : i + 1, 0, { k: 'closing.credit', t: 'text', th: 'slide', l: 'Baris pembuat / hak cipta di paling bawah (mis. "© 2026 · Dibuat oleh Rizky Digital Invitation"). Kosong = otomatis "© tahun · nama"; isi tanda - (minus) untuk menyembunyikan' });
+})();
 // ====== v6: Tema 12 dan Tema 13 dipisah total di admin ======
 // Dulu beberapa kolom dipakai bersama & berlabel "Tema 12 & Tema 13" / "Tema 1-11", sehingga editor Tema 13 melihat istilah Tema 12
 // (dan sebaliknya) serta kolom yang tidak berpengaruh apa-apa. Kini: kolom yang TIDAK dipakai tema aktif disembunyikan, dan kolom bersama
