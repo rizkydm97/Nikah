@@ -340,6 +340,7 @@
     root.classList.remove('stk-on'); document.documentElement.classList.remove('stk-h');
     root.style.removeProperty('--ob');
     root.querySelectorAll('.stk-dim').forEach((e) => e.remove());
+    root.querySelectorAll('.sl-op-in,.sl-ptx,.sl-scroll,.sl-ph').forEach((e) => { e.style.removeProperty('--cp'); e.style.removeProperty('--ep'); });
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
       e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); if (e.classList.contains('sec')) e.style.top = '';
@@ -387,9 +388,14 @@
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
       const rr = rises.map((el) => [el, cl(1 - el.getBoundingClientRect().top / H, 0, 1)]);
       rd.forEach(([p, c, top]) => {
-        if (p.c === undefined || Math.abs(c - p.c) > 0.002) { p.c = c; p.el.style.setProperty('--cp', c.toFixed(3)); }
+        if (p.c === undefined || Math.abs(c - p.c) > 0.002 || ((c === 0 || c === 1) && c !== p.c)) {
+          // --cp ditulis LANGSUNG ke elemen yang memakainya (kartu + lapisan gelap + teks pembuka) dan didaftarkan @property inherits:false di CSS:
+          // dulu satu perubahan --cp memaksa browser menghitung ulang gaya ratusan <span> huruf/kata di dalam kartu pada tiap frame scroll
+          if (!p.kids || !p.c) p.kids = [...p.el.querySelectorAll(':scope>.stk-dim,.sl-op-in,.sl-ptx,.sl-scroll')];
+          const v = c.toFixed(3); p.c = c; p.el.style.setProperty('--cp', v); p.kids.forEach((k) => k.style.setProperty('--cp', v));
+        }
         const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); }
-        if (p.go && p.el.classList.contains('sl-pp')) { const e = cl(1 - top / H, 0, 1); if (p.e === undefined || Math.abs(e - p.e) > 0.004) { p.e = e; p.el.style.setProperty('--ep', e.toFixed(3)); } }
+        if (p.go && p.el.classList.contains('sl-pp')) { const e = cl(1 - top / H, 0, 1); if (p.e === undefined || Math.abs(e - p.e) > 0.004) { p.e = e; const v = e.toFixed(3); (p.phs || (p.phs = [...p.el.querySelectorAll('.sl-ph')])).forEach((k) => k.style.setProperty('--ep', v)); } }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
           if (!p.on && top < H * 0.62 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
@@ -410,10 +416,14 @@
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
     const re = () => { place(); placeQ(); on_(); };
-    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', re); addEventListener('load', re);
+    // bilah alamat HP yang naik/turun saat scroll memicu 'resize' (tinggi berubah ±60–110px): menghitung ulang top sticky saat itu membuat kartu loncat/patah.
+    // Hitung ulang hanya bila lebar berubah (rotasi) atau tinggi berubah besar.
+    let lw = innerWidth, lh = innerHeight;
+    const rs = () => { if (innerWidth === lw && Math.abs(innerHeight - lh) < 160) { on_(); return; } lw = innerWidth; lh = innerHeight; re(); };
+    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', rs); addEventListener('load', re);
     const t1 = setTimeout(re, 400), t2 = setTimeout(re, 1800);
     re(); tick();
-    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', re); removeEventListener('load', re); clearTimeout(t1); clearTimeout(t2); if (raf) cancelAnimationFrame(raf); raf = 0; };
+    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', rs); removeEventListener('load', re); clearTimeout(t1); clearTimeout(t2); if (raf) cancelAnimationFrame(raf); raf = 0; };
   }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
