@@ -745,3 +745,20 @@ html.h-slide{overscroll-behavior-y:none}
 .t-slide .gift .bank.bk-acc.rv:not(.in){opacity:0;transform:translateY(26px) scale(.96)}
 .t-slide .gift .bank.bk-acc.rv{transition:opacity .9s ease calc(var(--i,0)*.18s),transform 1s cubic-bezier(.2,.8,.2,1) calc(var(--i,0)*.18s),box-shadow .5s ease,background .5s ease}
 @media (prefers-reduced-motion:reduce){.bk-body,.bk-body-in,.bk-chev,.t-slide .gift .bank.bk-acc.rv{transition:none!important}.t-slide .gift .bank.bk-acc.rv:not(.in){opacity:1;transform:none}}
+
+/* =====================================================================
+   v29 — PENUTUP lebih mewah & tidak kelewat cepat
+   1) Huruf kicker & kata ucapan ("Thank you for your coming & your blessing") naik pelan dengan gerak lebih panjang & lembut
+      (dulu 1 dtk / 0,9 dtk dengan jeda antar huruf/kata sangat rapat → terlihat langsung jadi). Jadwal tiap elemen dihitung di slide.js (closing()).
+   2) Setelah semua kata tampil, teks ucapan menyala keemasan sebentar (kilau lembut) lalu tenang — kesan "berkelas" tanpa blur per huruf (aman di iOS).
+   ===================================================================== */
+.sl-cl.sl-go .sl-cl-k .sl-c{animation:slClC calc(1.7s*var(--tk,1)) cubic-bezier(.16,.84,.24,1) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
+.sl-cl.sl-go .sl-cl-tx .sl-wd{animation:slClW calc(1.6s*var(--tk,1)) cubic-bezier(.16,.84,.24,1) both;animation-delay:calc(var(--d,0ms)*var(--tk,1))}
+.sl-cl-k .sl-c{transform:translateY(.5em) scale(.9)}
+.sl-cl-tx .sl-wd{transform:translateY(.9em)}
+@keyframes slClC{0%{opacity:0;transform:translateY(.5em) scale(.9)}45%{opacity:.85}100%{opacity:1;transform:none}}
+@keyframes slClW{0%{opacity:0;transform:translateY(.9em)}55%{opacity:.9}100%{opacity:1;transform:none}}
+.sl-cl.sl-go .sl-cl-tx{animation:slClGlow calc(3.2s*var(--tk,1)) ease-in-out both;animation-delay:calc(var(--gd,0ms)*var(--tk,1))}
+/* awal & akhir = bayangan gelap bawaan .sl-cl-in (keterbacaan di atas foto), hanya di tengah ditambah cahaya emas */
+@keyframes slClGlow{0%,100%{text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 0 rgba(255,236,190,0)}45%{text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 14px rgba(255,236,190,.6),0 0 2px rgba(255,248,226,.55)}}
+@media (prefers-reduced-motion:reduce){.sl-cl.sl-go .sl-cl-tx{animation:none!important}}

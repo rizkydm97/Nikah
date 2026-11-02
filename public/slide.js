@@ -216,6 +216,15 @@
     const spark = [[8, 12, 0, 7], [19, 38, 1.4, 9], [31, 6, 2.8, 8], [44, 52, 0.7, 10], [57, 20, 3.6, 7.5], [68, 44, 2.1, 9.5], [79, 10, 4.4, 8], [90, 34, 1.1, 10], [14, 64, 3.1, 11], [36, 72, 4.8, 8.5], [62, 68, 0.3, 10.5], [85, 60, 2.6, 9], [50, 30, 5.2, 12], [25, 24, 3.9, 11], [74, 26, 1.8, 12]]
       .map((q) => `<b style="left:${q[0]}%;bottom:${q[1]}%;--sd:${q[2]}s;--sp:${q[3]}s"></b>`).join('');
     const nmc = splitNames(o.names);
+    // ---- jadwal animasi penutup (ms, dikali --tk dari pengaturan kecepatan teks di admin) ----
+    // dihitung dari panjang teks supaya urutannya selalu rapi & tidak saling menimpa: ornamen → kicker (huruf demi huruf, pelan) → nama → garis hati → teks ucapan (kata demi kata) → kilau emas
+    const nChr = (v) => [...String(v == null ? '' : v).replace(/\s+/g, '')].length, nWrd = (v) => String(v == null ? '' : v).split(/\s+/).filter(Boolean).length;
+    const kN = nChr(o.kicker), tN = nWrd(o.text);
+    const kStep = kN > 20 ? 70 : 105, kAt = 2000;                         // huruf kicker muncul tiap 70–105 ms (dulu 44 ms)
+    const nAt = Math.max(3400, kAt + kN * kStep + 200);                    // nama mempelai menyusul setelah huruf kicker terakhir mulai
+    const hrAt = nAt + 2100;                                               // garis + hati setelah nama tersapu penuh
+    const tStep = Math.max(120, Math.min(260, Math.round(3200 / Math.max(tN, 1)))), tAt = hrAt + 500; // kata ucapan muncul tiap 120–260 ms (dulu 30 ms)
+    const gAt = tAt + tN * tStep + 900;                                    // kilau emas lembut setelah semua kata tampil
     const ft = String(o.footer == null ? '' : o.footer).trim();
     const m = /^([\s\S]*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
@@ -228,10 +237,10 @@
       <div class="sl-cl-fr" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><em class="a"></em><em class="b"></em><em class="c"></em><em class="d"></em></div>
       <div class="sl-cl-in">
         <div class="sl-cl-orn sl-draw" style="--d:1500ms" aria-hidden="true" data-ad="cl.orn"><i></i><em></em><i></i></div>
-        <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, 44, 1700)}</div>
-        <div class="sl-cl-n">${nameParts(H, nmc[0], nmc[1], 'cl', 2500, 'cl.n', ['closing.names#0', 'closing.names#1'])}</div>
-        <div class="sl-cl-hr sl-up" style="--d:3500ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
-        <p class="sl-cl-tx" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, 30, 3800)}</p>
+        <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, kStep, kAt)}</div>
+        <div class="sl-cl-n">${nameParts(H, nmc[0], nmc[1], 'cl', nAt, 'cl.n', ['closing.names#0', 'closing.names#1'])}</div>
+        <div class="sl-cl-hr sl-up" style="--d:${hrAt}ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
+        <p class="sl-cl-tx" style="--gd:${gAt}ms" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, tStep, tAt)}</p>
       </div>
       </div><div class="footer sl-foot">${ftHtml}</div></section>`;
   }
@@ -384,7 +393,9 @@
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
           if (!p.on && top < H * 0.62 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
-          else if (p.on && (top >= H * 0.98 || c >= 1)) { p.on = false; p.el.classList.remove('sl-go'); }
+          // reset HANYA bila kartu benar-benar keluar layar di bawah. Dulu juga direset saat c >= 1 (tertutup kartu berikutnya):
+          // saat digulir balik ke atas, foto kartu itu tak punya sl-go (opacity 0) sampai c < 0.5 → area foto tampak hitam.
+          else if (p.on && top >= H * 0.98) { p.on = false; p.el.classList.remove('sl-go'); }
         }
       });
       { // latar di belakang pembuka: gelap HANYA saat pembuka → mempelai pria (sudut membulat tidak menampakkan latar putih), normal lagi sesudahnya
