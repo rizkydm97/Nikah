@@ -68,7 +68,7 @@
     quote: () => [['q.ar', 'Ayat Arab'], ['q.t', 'Terjemahan ayat'], ['q.src', 'Sumber ayat'], ['q.cd', 'Hitung mundur'], ['q.btn', 'Tombol Save The Date']],
     events: () => ((cfg.events && cfg.events.items) || []).flatMap((e, i) => { const n = (e && e.title) || 'Acara ' + (i + 1); return [['e' + i + '.t', n + ' — judul'], ['e' + i + '.d', n + ' — tanggal'], ['e' + i + '.h', n + ' — jam'], ['e' + i + '.pl', n + ' — nama tempat'], ['e' + i + '.ad', n + ' — alamat'], ['e' + i + '.map', n + ' — tombol peta']]; }),
     story: () => [['st.h', 'Judul Love Story'], ['ch.t', 'Judul tiap cerita'], ['ch.tx', 'Isi tiap cerita'], ['ch.y', 'Tahun tiap cerita']],
-    closing: () => [['cl.mono', 'Monogram inisial'], ['cl.orn', 'Garis & berlian di atas'], ['cl.k', 'Teks kecil'], ['cl.n1', 'Nama 1 (mis. Adi)'], ['cl.n2', 'Tanda & di antara nama'], ['cl.n3', 'Nama 2 (mis. Debby)'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.fd', 'Garis pemisah di bawah'], ['cl.ft', 'Nama bawah'], ['cl.fy', 'Tahun bawah']],
+    closing: () => [['cl.orn', 'Garis & berlian di atas'], ['cl.k', 'Teks kecil'], ['cl.n1', 'Nama 1 (mis. Adi)'], ['cl.n2', 'Tanda & di antara nama'], ['cl.n3', 'Nama 2 (mis. Debby)'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.fd', 'Garis pemisah di bawah'], ['cl.ft', 'Nama bawah'], ['cl.fy', 'Tahun bawah']],
   };
   const SL_GROUP = { loader: 'cover', cover: 'cover', open: 'hero', couple: 'couple', quote: 'quote', events: 'events', story: 'story', closing: 'closing' };
   const SL_FONTS = [

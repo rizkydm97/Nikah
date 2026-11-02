@@ -91,6 +91,10 @@
   }
 
   const ICON = {
+    cam: '<svg viewBox="0 0 24 24"><path d="M9 4h6l1.6 2H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.4L9 4zm3 4.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm0 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/></svg>',
+    chk: '<svg viewBox="0 0 24 24"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg>',
+    xx: '<svg viewBox="0 0 24 24"><path d="M18.3 7.1 16.9 5.7 12 10.6 7.1 5.7 5.7 7.1l4.9 4.9-4.9 4.9 1.4 1.4 4.9-4.9 4.9 4.9 1.4-1.4-4.9-4.9z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2zm3 5v2h10V9H7zm0 4v2h7v-2H7z" transform="translate(-1 0)"/></svg>',
     dl: '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.3-3.3 1.4 1.4L12 16l-5.7-5.7 1.4-1.4L11 12.2V3zM5 18h14v2H5z"/></svg>',
     tap: '<svg viewBox="0 0 24 24"><path d="M9 11.2V6.5a2 2 0 1 1 4 0v4.3l3.7.7a2.3 2.3 0 0 1 1.9 2.6l-.7 4.7A3 3 0 0 1 14.9 21h-3.6a3 3 0 0 1-2.5-1.3L5.6 15a1.6 1.6 0 0 1 2.4-2.1L9 14V11.2z"/><path d="M7 6.5a4 4 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     heart: '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6 5c2 0 3.3 1.1 4 2.3h4C14.7 6.1 16 5 18 5c3.3 0 5.1 3.4 3.6 6.8C19.5 16.4 12 21 12 21z" transform="translate(0 -1)"/></svg>',
@@ -1238,11 +1242,11 @@
       const o = c.wishes;
       return `<section class="sec bgi wishes" style="${ov(o, 'bg')}">${bgl(o, 'bg', pick(o.bg, c.quote.bg, c.cover.photo))}${o.title ? `<h2 class="rv h-display">${esc(o.title)}</h2>` : ''}
         <div class="rv wpanel"><p class="wtxt">${br(o.text)}</p>
-        <div class="stats"><div><b id="stH">0</b><span>Hadir</span></div><div><b id="stT">0</b><span>Tidak Hadir</span></div></div>
-        <form class="wbox fm" id="wishForm"><input name="name" required maxlength="80" value="${esc(guest)}" placeholder="Nama"><textarea name="message" required minlength="2" maxlength="600" placeholder="Ucapan"></textarea>
-          <div class="wphoto"><label class="wpick" for="wishPhoto">📷 <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
+        <div class="stats"><div class="st-y">${SL ? `<i aria-hidden="true">${ICON.chk}</i>` : ''}<b id="stH">0</b><span>Hadir</span></div><div class="st-n">${SL ? `<i aria-hidden="true">${ICON.xx}</i>` : ''}<b id="stT">0</b><span>Tidak Hadir</span></div></div>
+        <form class="wbox fm" id="wishForm">${SL ? '<label class="wl-lb" for="wishName">Nama</label>' : ''}<input name="name" id="wishName" required maxlength="80" value="${esc(guest)}" placeholder="${SL ? 'Nama Anda' : 'Nama'}">${SL ? '<label class="wl-lb" for="wishMsgIn">Ucapan &amp; Doa</label>' : ''}<textarea name="message" id="wishMsgIn" required minlength="2" maxlength="600" placeholder="${SL ? 'Tulis ucapan &amp; doa terbaik untuk kedua mempelai…' : 'Ucapan'}"></textarea>${SL ? '<div class="wl-cnt" aria-hidden="true"><span id="wishCnt">0</span>/600</div>' : ''}
+          <div class="wphoto"><label class="wpick" for="wishPhoto">${SL ? ICON.cam : '📷'} <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
-        <div class="wl-head"><span>Ucapan Tamu</span><em><b id="stW">0</b> Ucapan</em></div>
+        <div class="wl-head"><span>${SL ? ICON.chat : ''}Ucapan Tamu</span><em><b id="stW">0</b> Ucapan</em></div>
         <div class="wl-list" id="wishList"></div><div class="wl-pager" id="wishPager" hidden><button type="button" id="wishOpen" class="wl-open"></button></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
     },
     closing(c) {
@@ -1844,6 +1848,7 @@
     // wishes
     const wf = $('#wishForm');
     if (wf) {
+      { const cn = $('#wishCnt', wf), ta = wf.message; if (cn && ta) { const up = () => { cn.textContent = ta.value.length; }; ta.addEventListener('input', up, { signal: AC.signal }); up(); } } // penghitung karakter (Tema 13)
       let photoData = '';
       const pin = $('#wishPhoto'), prev = $('#wishPrev'), pimg = $('#wishPrevImg'), ptxt = $('#wishPhotoTxt');
       const clearPhoto = () => { photoData = ''; pin.value = ''; prev.hidden = true; pimg.removeAttribute('src'); ptxt.textContent = 'Tambah foto profil (opsional)'; };

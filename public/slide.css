@@ -923,76 +923,6 @@ html.h-slide.stk-h,html.h-slide.stk-h body{overflow-anchor:none}
 .sl-qr-tx{text-wrap:balance}
 
 /* =====================================================================
-   v33 — PENUTUP MEWAH (Tema 13): urutan sinematik yang berkesan, tetap ringan (hanya transform/opacity/stroke)
-   0,0 dtk  foto terbuka (iris) lalu perlahan MENDEKAT terus (dolly 24 dtk)
-   0,9 dtk  cahaya hangat menyapu foto dari kiri atas
-   1,1 dtk  bingkai champagne menggambar diri → 1,7 dtk bingkai kedua di dalamnya → berlian sudut
-   0,9 dtk  MONOGRAM inisial: lingkaran tergambar → huruf muncul berkilau
-   ±2 dtk   kicker huruf demi huruf → nama disapu tulisan tangan berwarna emas foil → garis hati → ucapan kata demi kata
-   terus    bokeh emas naik pelan, kilau berkedip, sapuan cahaya berkala, monogram "bernapas"
-   ===================================================================== */
-.sl-cl{--gl1:#f6e6bd;--gl2:#c9a35a;--gl3:#fff8e3}
-/* foto: mendekat pelan terus-menerus setelah iris (lebih terasa dari Ken Burns biasa) */
-.sl-cl.sl-go .sl-pk{animation:slClDolly 24s cubic-bezier(.3,.1,.3,1) 1.2s both}
-@keyframes slClDolly{from{transform:scale(1)}to{transform:scale(1.13) translateY(-1.5%)}}
-/* cahaya hangat menyapu (light leak) */
-.sl-cl-lk{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
-.sl-cl-lk i{position:absolute;left:-70%;top:-50%;width:120%;height:120%;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(255,222,160,.42),rgba(255,200,130,.16) 55%,rgba(255,200,130,0));opacity:0}
-.sl-cl.sl-go .sl-cl-lk i{animation:slClLeak 5.5s ease-in-out .9s 1 both,slClLeak 7s ease-in-out 14s infinite}
-@keyframes slClLeak{0%{opacity:0;transform:translate(0,0)}35%{opacity:1}100%{opacity:0;transform:translate(120%,70%)}}
-/* bingkai champagne ganda */
-.sl-cl-fr i{background:linear-gradient(90deg,var(--gl2),var(--gl1),var(--gl2))}
-.sl-cl-fr i.l,.sl-cl-fr i.r{background:linear-gradient(180deg,var(--gl2),var(--gl1),var(--gl2))}
-.sl-cl-fr em{border-color:var(--gl1);background:rgba(246,230,189,.25);box-shadow:0 0 10px rgba(246,230,189,.6)}
-.sl-cl-fr2{inset:calc(env(safe-area-inset-top,0px) + 23px) 23px calc(env(safe-area-inset-bottom,0px) + 23px)}
-.sl-cl-fr2 i{opacity:0;background:rgba(246,230,189,.45)!important}
-.sl-cl.sl-go .sl-cl-fr2 i{animation:slFrT 1.6s var(--sl-ease) 1.7s both}
-.sl-cl.sl-go .sl-cl-fr2 i.l,.sl-cl.sl-go .sl-cl-fr2 i.r{animation-name:slFrL}
-@supports (zoom:1){.t-slide .sl-cl-fr2{inset:23px}}
-/* monogram */
-.sl-cl-mono{position:relative;width:clamp(58px,calc(var(--cw,3.9px)*17),76px);width:clamp(58px,17cqw,76px);aspect-ratio:1;margin:0 auto clamp(10px,2svh,16px);display:grid;place-items:center}
-.sl-cl-mono svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.sl-cl-mono circle{fill:none;stroke:var(--gl1);vector-effect:non-scaling-stroke}
-.sl-cl-mono .r1{stroke-width:1.2;stroke-dasharray:100;stroke-dashoffset:100;transform:rotate(-90deg);transform-origin:50% 50%;filter:drop-shadow(0 0 3px rgba(246,230,189,.7))}
-.sl-cl-mono .r2{stroke-width:.8;stroke-dasharray:1 3;opacity:0;transform-origin:50% 50%}
-.sl-cl-mono .m{position:relative;font-family:var(--fDisplay);font-style:italic;font-weight:500;font-size:clamp(18px,calc(var(--cw,3.9px)*5.4),24px);font-size:clamp(18px,5.4cqw,24px);letter-spacing:.04em;line-height:1;
-  color:var(--gl3);text-shadow:0 0 14px rgba(246,230,189,.55),0 2px 10px rgba(0,0,0,.5);opacity:0;transform:scale(.7)}
-.sl-cl-mono .m em{font-style:italic;font-size:.62em;margin:0 .14em;color:var(--gl1);vertical-align:.18em}
-.sl-cl.sl-go .sl-cl-mono .r1{animation:slMonoDraw calc(1.9s*var(--tk,1)) cubic-bezier(.6,.05,.3,1) calc(.9s*var(--tk,1)) both}
-.sl-cl.sl-go .sl-cl-mono .r2{animation:slMonoIn 1.2s ease calc(2.2s*var(--tk,1)) both,slMonoSpin 40s linear 2.2s infinite}
-.sl-cl.sl-go .sl-cl-mono .m{animation:slMonoTx calc(1.4s*var(--tk,1)) cubic-bezier(.2,.9,.25,1) calc(1.7s*var(--tk,1)) both,slMonoGlow 4.5s ease-in-out 4s infinite}
-@keyframes slMonoDraw{to{stroke-dashoffset:0}}
-@keyframes slMonoIn{to{opacity:.7}}
-@keyframes slMonoSpin{to{transform:rotate(360deg)}}
-@keyframes slMonoTx{0%{opacity:0;transform:scale(.7);letter-spacing:.4em}100%{opacity:1;transform:none;letter-spacing:.04em}}
-@keyframes slMonoGlow{0%,100%{text-shadow:0 0 14px rgba(246,230,189,.45),0 2px 10px rgba(0,0,0,.5)}50%{text-shadow:0 0 22px rgba(246,230,189,.95),0 2px 10px rgba(0,0,0,.5)}}
-/* nama: emas foil + kilau berjalan */
-.sl-cl-n .sl-wipe>span{background:linear-gradient(105deg,var(--gl2) 0%,var(--gl1) 22%,var(--gl3) 34%,var(--gl1) 46%,#b8904a 58%,var(--gl1) 72%,var(--gl3) 84%,var(--gl1) 100%) 0 0/220% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
-.sl-cl.sl-go .sl-cl-n .sl-wipe>span{animation:slClFoil 7s ease-in-out 3.6s infinite}
-@keyframes slClFoil{0%,100%{background-position:0 0}50%{background-position:100% 0}}
-.sl-cl-n{filter:drop-shadow(0 2px 14px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(246,230,189,.25))}
-/* hiasan emas lain */
-.sl-cl-orn i{background:linear-gradient(90deg,transparent,var(--gl1))}
-.sl-cl-orn em{border-color:var(--gl1);box-shadow:0 0 8px rgba(246,230,189,.7)}
-.sl-cl-hr i{background:linear-gradient(90deg,transparent,var(--gl1))}
-.sl-cl-hr svg{fill:var(--gl1);filter:drop-shadow(0 0 6px rgba(246,230,189,.8))}
-.sl-cl.sl-go .sl-cl-hr svg{animation:slClBeat 2.4s ease-in-out 6s infinite}
-@keyframes slClBeat{0%,60%,100%{transform:none}70%{transform:scale(1.25)}80%{transform:scale(.95)}90%{transform:scale(1.1)}}
-.sl-cl-fx b{background:var(--gl3);box-shadow:0 0 8px 2px rgba(246,230,189,.85)}
-/* bokeh emas naik */
-.sl-cl-fx s{position:absolute;width:var(--bz,30px);height:var(--bz,30px);border-radius:50%;text-decoration:none;opacity:0;
-  background:radial-gradient(circle,rgba(255,240,205,.55) 0,rgba(246,220,160,.22) 45%,rgba(246,220,160,0) 70%)}
-.sl-cl.sl-go .sl-cl-fx s{animation:slBokeh var(--bs,18s) linear calc(2.6s + var(--bd,0s)) infinite}
-@keyframes slBokeh{0%{opacity:0;transform:translate3d(0,0,0) scale(.7)}15%{opacity:.9}70%{opacity:.6}100%{opacity:0;transform:translate3d(14px,-240px,0) scale(1.15)}}
-.sl-cl.stk-hid *,.sl-closing:not(:has(.sl-go)) .sl-cl-fx *{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){
-  .sl-cl .sl-pk,.sl-cl-lk i,.sl-cl-fx s,.sl-cl-mono *{animation:none!important}
-  .sl-cl-mono .r1{stroke-dashoffset:0}.sl-cl-mono .r2{opacity:.7}.sl-cl-mono .m{opacity:1;transform:none}
-  .sl-cl-fr2 i{opacity:1!important;transform:none!important;animation:none!important}
-}
-
-/* =====================================================================
    v33 — TUMPUKAN 3D LEBIH TERASA
    - kartu masuk: naik dari posisi miring (tepi atas menjauh, perspektif) lalu tegak (--ip 0→1)
    - kartu tertutup: terdorong mundur — mengecil, miring menjauh, meredup (--cp 0→1)
@@ -1078,3 +1008,166 @@ html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.instant :is(.sl-o
 /* kilau: tepi atas/bawah memudar (bukan pita bersudut), lebih lembut */
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-gl::before{width:22%;background:linear-gradient(90deg,transparent,rgba(255,246,220,.38),transparent);
   -webkit-mask-image:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent)}
+
+/* =====================================================================
+   v35 — PENUTUP: tanpa monogram & tanpa emas (putih/perak sesuai tema), fokus pada ANIMASI TEKS yang mewah
+   - "Thank you": huruf bangkit 3D satu per satu (rotateX), jarak huruf merapat
+   - nama: TERTULIS seperti tinta — sapuan bertepi lembut (mask), bukan potongan tajam — lalu kilau perak lewat pelan
+   - "&": muncul membesar lembut; garis & hati tergambar dari tengah ke kedua sisi
+   - ucapan: kata demi kata naik pelan, lalu cahaya putih lembut sekali lewat
+   ===================================================================== */
+:root:root:root:root:root .sl-cl{--sv1:#ffffff;--sv2:#e6e9ef;--sv3:#c9ced8}
+/* bingkai & kilau kembali putih */
+:root:root:root:root:root .sl-cl-fr i{background:rgba(255,255,255,.75)}
+:root:root:root:root:root .sl-cl-fr em{border-color:rgba(255,255,255,.95);background:rgba(255,255,255,.18);box-shadow:none}
+:root:root:root:root:root .sl-cl-fx b{background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.8)}
+/* kicker: huruf 3D */
+:root:root:root:root:root .sl-cl .sl-cl-k{opacity:1!important;animation:none!important;perspective:600px}
+:root:root:root:root:root .sl-cl .sl-cl-k .sl-c{opacity:0;transform-origin:50% 100%;backface-visibility:hidden}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-k .sl-c{animation:slClK3d calc(1.5s*var(--tk,1)) cubic-bezier(.18,.85,.25,1) both!important;animation-delay:calc(var(--d,0ms)*var(--tk,1))!important}
+@keyframes slClK3d{0%{opacity:0;transform:translateY(.4em) rotateX(-85deg) scale(.92)}45%{opacity:1}100%{opacity:1;transform:none}}
+/* nama: tinta bertepi lembut */
+:root:root:root:root:root .sl-cl .sl-cl-n .sl-wipe{clip-path:none!important;opacity:0;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 44%,transparent 56%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 44%,transparent 56%,transparent 100%);
+  -webkit-mask-size:260% 100%;mask-size:260% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:100% 0;mask-position:100% 0}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-wipe{animation:slInk calc(2.1s*var(--tk,1)) cubic-bezier(.45,.05,.25,1) both!important;animation-delay:calc(var(--d,0ms)*var(--tk,1))!important}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n2 .sl-wipe{animation:slAmpIn calc(1.3s*var(--tk,1)) cubic-bezier(.2,.8,.2,1) both!important;animation-delay:calc(var(--d,0ms)*var(--tk,1))!important;-webkit-mask-image:none;mask-image:none}
+@keyframes slInk{0%{opacity:0;-webkit-mask-position:100% 0;mask-position:100% 0;transform:translateY(.08em)}10%{opacity:1}100%{opacity:1;-webkit-mask-position:0 0;mask-position:0 0;transform:none}}
+@keyframes slAmpIn{0%{opacity:0;transform:scale(.55)}60%{opacity:1}100%{opacity:1;transform:none}}
+/* kilau perak pada nama (bukan emas) */
+:root:root:root:root:root .sl-cl-n .sl-wipe>span{background:linear-gradient(105deg,var(--sv1) 0%,var(--sv1) 40%,var(--sv3) 47%,#fff 50%,var(--sv3) 53%,var(--sv1) 60%,var(--sv1) 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-wipe>span{animation:slShine 6.5s ease-in-out calc(var(--d,0ms) + 2.4s) infinite}
+:root:root:root:root:root .sl-cl-n{filter:drop-shadow(0 3px 16px rgba(0,0,0,.55)) drop-shadow(0 0 1px rgba(0,0,0,.35))}
+/* garis & hati: tergambar dari tengah */
+:root:root:root:root:root .sl-cl-hr i{background:linear-gradient(90deg,transparent,rgba(255,255,255,.85));transform-origin:100% 50%}
+:root:root:root:root:root .sl-cl-hr i:last-child{transform-origin:0 50%;background:linear-gradient(270deg,transparent,rgba(255,255,255,.85))}
+:root:root:root:root:root .sl-cl-hr svg{fill:#fff;filter:none}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-hr{animation:none!important;opacity:1!important;transform:none!important}
+:root:root:root:root:root .sl-cl .sl-cl-hr i,:root:root:root:root:root .sl-cl .sl-cl-hr svg{opacity:0}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-hr i{animation:slHrL calc(1.2s*var(--tk,1)) cubic-bezier(.6,.05,.3,1) both;animation-delay:calc(var(--hr,0ms)*var(--tk,1) + .25s)}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-hr svg{animation:slAmpIn calc(.9s*var(--tk,1)) cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(var(--hr,0ms)*var(--tk,1))}
+@keyframes slHrL{from{opacity:1;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+@keyframes slHrR{from{opacity:1;transform:scaleX(-0.001)}to{opacity:1;transform:scaleX(-1)}}
+/* ucapan: kata naik pelan, lalu cahaya putih lembut (bukan emas) */
+:root:root:root:root:root .sl-cl .sl-cl-tx .sl-wd{opacity:0}
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-tx .sl-wd{animation:slClW calc(1.6s*var(--tk,1)) cubic-bezier(.16,.84,.24,1) both!important;animation-delay:calc(var(--d,0ms)*var(--tk,1))!important}
+@keyframes slClGlow{0%,100%{text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 0 rgba(255,255,255,0)}45%{text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 14px rgba(255,255,255,.55),0 0 2px rgba(255,255,255,.6)}}
+@media (prefers-reduced-motion:reduce){
+  :root:root:root:root:root .sl-cl :is(.sl-cl-k .sl-c,.sl-cl-n .sl-wipe,.sl-cl-hr i,.sl-cl-hr svg,.sl-cl-tx .sl-wd){opacity:1!important;animation:none!important;transform:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+}
+
+/* =====================================================================
+   v35 — PEMBUKA "KLASIK" lebih mewah (slide.openFx = 'classic'), tetap bergaya sapuan tulisan:
+   0,5 dtk  huruf kecil atas muncul dari jarak lebar lalu merapat (tracking-in), satu per satu
+   1,4 dtk  nama 1 tertulis seperti tinta — tepi sapuan lembut (mask), sedikit naik → "&" muncul → nama 2
+   3,5 dtk  garis tergambar dari tengah dengan titik cahaya berjalan
+   3,9 dtk  tanggal merapat dari lebar → tagar memudar
+   lalu     kilau perak pelan lewat di nama setiap ±7 dtk
+   ===================================================================== */
+.sl-line-dot{display:none}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-k .sl-c{opacity:0}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-k{opacity:1!important;animation:none!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-k{animation:slKTrack calc(2.6s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(.4s*var(--tk,1)) both!important}
+@keyframes slKTrack{from{letter-spacing:.9em}to{letter-spacing:.34em}}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-k .sl-c{animation:slTrackIn calc(1.3s*var(--tk,1)) cubic-bezier(.2,.75,.25,1) both!important;
+  animation-delay:calc((var(--d,0ms) - 1400ms) * var(--tk,1) * .85)!important}
+@keyframes slTrackIn{0%{opacity:0;transform:translateY(.25em)}100%{opacity:1;transform:none}}
+/* nama: tinta bertepi lembut */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-wipe{clip-path:none!important;opacity:0;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 44%,transparent 56%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 44%,transparent 56%,transparent 100%);
+  -webkit-mask-size:260% 100%;mask-size:260% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:100% 0;mask-position:100% 0}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np .sl-wipe{animation:slInk calc(1.9s*var(--tk,1)) cubic-bezier(.45,.05,.25,1) both!important;animation-delay:calc(1400ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{animation:slAmpIn calc(1.2s*var(--tk,1)) cubic-bezier(.2,.8,.2,1) both!important;animation-delay:calc(2300ms*var(--tk,1))!important;-webkit-mask-image:none;mask-image:none}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-delay:calc(2600ms*var(--tk,1))!important}
+/* kilau perak berkala pada nama */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-wipe>span{color:transparent;-webkit-text-fill-color:transparent;
+  background:linear-gradient(105deg,#fff 0%,#fff 40%,#cfd4dc 47%,#fff 50%,#cfd4dc 53%,#fff 60%,#fff 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-op-n{text-shadow:none;filter:drop-shadow(0 3px 16px rgba(0,0,0,.55))}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-wipe>span{animation:slShine 7s ease-in-out calc(5.2s*var(--tk,1)) infinite}
+/* garis + titik cahaya berjalan */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-line{position:relative;transform-origin:50% 50%}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-line{animation:slDraw calc(1.5s*var(--tk,1)) cubic-bezier(.6,.05,.3,1) both!important;animation-delay:calc(3500ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open .sl-line-dot{display:block;position:absolute;top:50%;left:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px rgba(255,255,255,.85);opacity:0}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-line-dot{animation:slLineDot calc(2.6s*var(--tk,1)) ease-in-out calc(4.6s*var(--tk,1)) both}
+@keyframes slLineDot{0%{left:50%;opacity:0}15%{opacity:1}100%{left:96%;opacity:0}}
+/* tanggal: merapat dari lebar; tagar memudar */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-d{animation:slDateIn calc(1.6s*var(--tk,1)) cubic-bezier(.2,.75,.25,1) both!important;animation-delay:calc(3900ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-t{animation:slFade calc(1.6s*var(--tk,1)) ease both!important;animation-delay:calc(4500ms*var(--tk,1))!important}
+@keyframes slDateIn{0%{opacity:0;letter-spacing:.8em}100%{opacity:1;letter-spacing:.3em}}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.instant :is(.sl-op-n .sl-wipe,.sl-op-k .sl-c,.sl-op-d,.sl-op-t){opacity:1!important;transform:none!important;animation:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+@media (prefers-reduced-motion:reduce){
+  html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open :is(.sl-op-n .sl-wipe,.sl-op-k .sl-c,.sl-op-d,.sl-op-t){opacity:1!important;transform:none!important;animation:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+}
+
+/* =====================================================================
+   v35 — UCAPAN & DOA Tema 13: tampilan profesional
+   panel kaca gelap rapi · statistik berikon · form berlabel + penghitung karakter · kartu ucapan putih bersih
+   ===================================================================== */
+.t-slide .wishes .wpanel{max-width:400px;padding:24px 18px 20px;border-radius:22px;border:1px solid rgba(255,255,255,.18);background:rgba(14,14,14,.58);
+  box-shadow:0 24px 50px -24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+@media (pointer:coarse),(max-width:700px){.t-slide .wishes .wpanel{background:rgba(14,14,14,.72)}}
+.t-slide .wishes .wtxt{font-family:var(--fBody,'Poppins',sans-serif);font-weight:400;font-size:13px;line-height:1.7;max-width:300px;color:rgba(255,255,255,.86)}
+/* statistik */
+.t-slide .wishes .stats{gap:10px;margin:20px 0 6px}
+.t-slide .wishes .stats div{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;
+  padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+.t-slide .wishes .stats i{grid-row:1 / span 2;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#fff;color:#111}
+.t-slide .wishes .stats .st-n i{background:rgba(255,255,255,.14);color:#fff}
+.t-slide .wishes .stats i svg{width:18px;height:18px;fill:currentColor}
+.t-slide .wishes .stats b{font-size:22px;line-height:1;font-weight:600;color:#fff}
+.t-slide .wishes .stats span{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:3px}
+/* form */
+.t-slide .wishes .wbox{margin-top:18px;padding:16px 14px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);text-align:left}
+.t-slide .wishes .wl-lb{display:block;margin:0 0 6px 2px;font-family:var(--fBody,'Poppins',sans-serif);font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.t-slide .wishes .wl-lb+input+.wl-lb{margin-top:12px}
+.t-slide .wishes .wbox input,.t-slide .wishes .wbox textarea{width:100%;box-sizing:border-box;margin:0;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.08);color:#fff;font-family:var(--fBody,'Poppins',sans-serif);font-size:14px;line-height:1.5;transition:border-color .25s,background .25s,box-shadow .25s}
+.t-slide .wishes .wbox textarea{min-height:104px;resize:vertical}
+.t-slide .wishes .wbox input::placeholder,.t-slide .wishes .wbox textarea::placeholder{color:rgba(255,255,255,.45)}
+.t-slide .wishes .wbox input:focus,.t-slide .wishes .wbox textarea:focus{outline:0;border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.12);box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+.t-slide .wishes .wl-cnt{margin:6px 2px 0;text-align:right;font-family:var(--fBody,'Poppins',sans-serif);font-size:11px;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
+.t-slide .wishes .wphoto{margin-top:12px}
+.t-slide .wishes .wpick{gap:8px;padding:11px 12px;border-radius:12px;border:1px dashed rgba(255,255,255,.4);font-family:var(--fBody,'Poppins',sans-serif);font-weight:500;transition:background .25s,border-color .25s}
+.t-slide .wishes .wpick:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.7)}
+.t-slide .wishes .wpick svg{width:17px;height:17px;fill:currentColor;flex:none}
+.t-slide .wishes .wbox .btn{margin-top:14px;padding:13px 18px;border-radius:999px;background:#fff;color:#111;font-family:var(--fBody,'Poppins',sans-serif);font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.6);transition:transform .2s,box-shadow .2s}
+.t-slide .wishes .wbox .btn:active{transform:scale(.98)}
+.t-slide .wishes .wbox .btn svg{fill:#111}
+/* judul daftar */
+.t-slide .wishes .wl-head{margin-top:24px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.14)}
+.t-slide .wishes .wl-head span{display:inline-flex;align-items:center;gap:8px;font-family:var(--fBody,'Poppins',sans-serif);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.t-slide .wishes .wl-head span svg{width:17px;height:17px;fill:currentColor}
+.t-slide .wishes .wl-head em{font-family:var(--fBody,'Poppins',sans-serif);font-size:11.5px;font-weight:600;padding:5px 12px;background:#fff;color:#111;border:0}
+.t-slide .wishes .wl-head em b{font-size:12px}
+/* kartu ucapan */
+.t-slide :is(.wishes,.wl-sheet) .wl-item{position:relative;gap:12px;padding:14px 16px 14px 14px;margin-bottom:10px;border-radius:16px;background:#fff;color:#2b2b2b;
+  border:1px solid rgba(0,0,0,.06);box-shadow:0 10px 22px -16px rgba(0,0,0,.6)!important}
+.t-slide :is(.wishes,.wl-sheet) .wl-av{width:42px;height:42px;background:linear-gradient(145deg,#3a3633,#111);font-family:var(--fBody,'Poppins',sans-serif);font-weight:600;font-size:15px;
+  box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.12)}
+.t-slide :is(.wishes,.wl-sheet) .wl-item b{display:block;font-family:var(--fBody,'Poppins',sans-serif);font-size:14px;font-weight:600;color:#111;line-height:1.3;overflow-wrap:anywhere}
+.t-slide :is(.wishes,.wl-sheet) .wl-item small{display:flex;align-items:center;gap:5px;margin:3px 0 8px;font-family:var(--fBody,'Poppins',sans-serif);font-size:11px;color:#8a8a8a}
+.t-slide :is(.wishes,.wl-sheet) .wl-item small::before{content:"";width:12px;height:12px;flex:none;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm-1 3v6l5 3 1-1.6-4-2.4V7h-2z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm-1 3v6l5 3 1-1.6-4-2.4V7h-2z'/%3E%3C/svg%3E") center/contain no-repeat}
+.t-slide :is(.wishes,.wl-sheet) .wl-item p{position:relative;margin:0;padding:10px 0 0 14px;border-top:1px solid #f0f0f0;font-family:var(--fBody,'Poppins',sans-serif);font-size:13.5px;line-height:1.65;color:#333}
+.t-slide :is(.wishes,.wl-sheet) .wl-item p::before{content:"\201C";position:absolute;left:-2px;top:2px;font-family:Georgia,serif;font-size:28px;line-height:1;color:#c8c8c8}
+.t-slide .wishes .wl-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35)}
+.t-slide .wishes .wl-empty{padding:18px 0;font-family:var(--fBody,'Poppins',sans-serif);font-size:13px;color:rgba(255,255,255,.75)}
+.t-slide .wishes .wl-open{border-radius:999px;background:#fff;color:#111;border:0;font-family:var(--fBody,'Poppins',sans-serif);font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.t-slide .wishes .more{border-radius:999px;font-family:var(--fBody,'Poppins',sans-serif);font-weight:600}
+.t-slide .wl-sheet{background:#141414}
+.t-slide .wls-head span{font-family:var(--fBody,'Poppins',sans-serif);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.t-slide .wls-head em{font-family:var(--fBody,'Poppins',sans-serif);background:#fff;color:#111;border:0}
+/* kartu ucapan: avatar + nama/waktu sebaris, pesan memakai LEBAR PENUH kartu di bawahnya */
+.t-slide :is(.wishes,.wl-sheet) .wl-item{display:grid;grid-template-columns:42px 1fr;column-gap:12px;align-items:center}
+.t-slide :is(.wishes,.wl-sheet) .wl-av{grid-row:1 / span 2;grid-column:1}
+.t-slide :is(.wishes,.wl-sheet) .wl-bd{display:contents}
+.t-slide :is(.wishes,.wl-sheet) .wl-item b{grid-column:2;grid-row:1;align-self:end}
+.t-slide :is(.wishes,.wl-sheet) .wl-item small{grid-column:2;grid-row:2;align-self:start;margin:3px 0 0}
+.t-slide :is(.wishes,.wl-sheet) .wl-item p{grid-column:1 / -1;grid-row:3;margin-top:12px;padding:12px 2px 0 22px}
+.t-slide :is(.wishes,.wl-sheet) .wl-item p::before{left:0;top:9px}
+.t-slide :is(.wishes,.wl-sheet) .wl-item{grid-template-rows:auto auto auto;row-gap:0;align-content:start}
+.t-slide :is(.wishes,.wl-sheet) .wl-av{align-self:center}
+.t-slide :is(.wishes,.wl-sheet) .wl-item b{margin:0;line-height:1.25;padding-top:1px}
+.t-slide :is(.wishes,.wl-sheet) .wl-item small{margin:2px 0 0;line-height:1.3}
