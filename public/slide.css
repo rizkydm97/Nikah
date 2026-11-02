@@ -762,3 +762,10 @@ html.h-slide{overscroll-behavior-y:none}
 /* awal & akhir = bayangan gelap bawaan .sl-cl-in (keterbacaan di atas foto), hanya di tengah ditambah cahaya emas */
 @keyframes slClGlow{0%,100%{text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 0 rgba(255,236,190,0)}45%{text-shadow:0 2px 18px rgba(0,0,0,.6),0 0 14px rgba(255,236,190,.6),0 0 2px rgba(255,248,226,.55)}}
 @media (prefers-reduced-motion:reduce){.sl-cl.sl-go .sl-cl-tx{animation:none!important}}
+
+/* =====================================================================
+   v30 — foto kartu bertumpuk (mempelai, akad, resepsi) SELALU terlihat.
+   Dulu foto itu transparan (opacity 0) sampai kartunya naik ±38% layar & baru memudar masuk 2 dtk, sehingga kartu yang baru mengintip dari bawah
+   atau yang digulir balik dari bawah kartu ayat tampak sebagai blok hitam kosong. Animasi teks & parallax tetap berjalan.
+   ===================================================================== */
+.stk-on [data-stk] .sl-pm{opacity:1!important;transform:none!important;animation:none!important}
