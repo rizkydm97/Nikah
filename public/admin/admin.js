@@ -39,7 +39,7 @@
 
   let cfg = null, defaults = null, snap = '', current = 'home', defaultPw = false, lastSaved = null;
   // terapkan label singkat + penjelasan (ux.js)
-  SCHEMA.forEach((g) => g.fields.forEach((f) => { const fr = FRIENDLY[f.k]; if (fr) { f.l = fr[0]; if (fr[1]) f.h = fr[1]; } }));
+  SCHEMA.forEach((g) => g.fields.forEach((f) => { const fr = FRIENDLY[f.k]; if (fr && !f.own) { /* own = label khusus per tema (Tema 12/13), jangan ditimpa */ f.l = fr[0]; if (fr[1]) f.h = fr[1]; } }));
 
   // ---------- path helper ----------
   function parentOf(root, path) {
@@ -68,7 +68,7 @@
     quote: () => [['q.ar', 'Ayat Arab'], ['q.t', 'Terjemahan ayat'], ['q.src', 'Sumber ayat'], ['q.cd', 'Hitung mundur'], ['q.btn', 'Tombol Save The Date']],
     events: () => ((cfg.events && cfg.events.items) || []).flatMap((e, i) => { const n = (e && e.title) || 'Acara ' + (i + 1); return [['e' + i + '.t', n + ' — judul'], ['e' + i + '.d', n + ' — tanggal'], ['e' + i + '.h', n + ' — jam'], ['e' + i + '.pl', n + ' — nama tempat'], ['e' + i + '.ad', n + ' — alamat'], ['e' + i + '.map', n + ' — tombol peta']]; }),
     story: () => [['st.h', 'Judul Love Story'], ['ch.t', 'Judul tiap cerita'], ['ch.tx', 'Isi tiap cerita'], ['ch.y', 'Tahun tiap cerita']],
-    closing: () => [['cl.orn', 'Garis & berlian di atas'], ['cl.k', 'Teks kecil'], ['cl.n1', 'Nama 1 (mis. Adi)'], ['cl.n2', 'Tanda & di antara nama'], ['cl.n3', 'Nama 2 (mis. Debby)'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.fd', 'Garis pemisah di bawah'], ['cl.ft', 'Nama bawah'], ['cl.fy', 'Tahun bawah']],
+    closing: () => [['cl.mono', 'Monogram inisial'], ['cl.orn', 'Garis & berlian di atas'], ['cl.k', 'Teks kecil'], ['cl.n1', 'Nama 1 (mis. Adi)'], ['cl.n2', 'Tanda & di antara nama'], ['cl.n3', 'Nama 2 (mis. Debby)'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.fd', 'Garis pemisah di bawah'], ['cl.ft', 'Nama bawah'], ['cl.fy', 'Tahun bawah']],
   };
   const SL_GROUP = { loader: 'cover', cover: 'cover', open: 'hero', couple: 'couple', quote: 'quote', events: 'events', story: 'story', closing: 'closing' };
   const SL_FONTS = [
@@ -629,7 +629,7 @@
           h('b', { style: 'margin-left:6px' }, 'Kecepatan'),
           (() => { const sp = h('select', { title: 'Kecepatan animasi', onchange: (e) => { sec.speed = e.target.value; changed(true); gotoPreviewSoon(g.id); replayPreviewSoon(g.id); } }, SPEEDS.map(([v, t]) => h('option', { value: v }, t))); sp.value = SPEEDS.some((x) => x[0] === sec.speed) ? sec.speed : ''; return sp; })(),
           h('button', { class: 'btn sm', type: 'button', onclick: () => { gotoPreview(g.id); replayPreviewSoon(g.id, 900); } }, '▶ Putar ulang di pratinjau'),
-          h('small', { class: 'fh' }, g.id === 'hero' ? 'Cara bagian ini muncul. Di Tema 12, \"Lembut mewah\" = animasi bawaan pembuka (bingkai tumbuh + teks per huruf), \"Tanpa animasi\" = langsung tampil, pilihan lain = gerak masuk seluruh isi pembuka.' : 'Cara bagian ini muncul saat tamu men-scroll. Hanya berlaku untuk bagian ini.')),
+          h('small', { class: 'fh' }, g.id === 'hero' && presetNow() === 'slide' ? 'Cara bagian ini muncul. Animasi teks pembuka Tema 13 diatur di kolom "Animasi teks pembuka" di bawah.' : g.id === 'hero' && presetNow() !== 'mono' ? 'Cara bagian ini muncul saat undangan dibuka.' : g.id === 'hero' ? 'Cara bagian ini muncul. Di Tema 12, \"Lembut mewah\" = animasi bawaan pembuka (bingkai tumbuh + teks per huruf), \"Tanpa animasi\" = langsung tampil, pilihan lain = gerak masuk seluruh isi pembuka.' : 'Cara bagian ini muncul saat tamu men-scroll. Hanya berlaku untuk bagian ini.')),
         ...(sec.enabled ? [] : [h('small', { class: 'fh' }, 'Bagian ini tidak tampil di undangan. Isinya tetap tersimpan, jadi bisa diaktifkan lagi kapan saja.')]));
       if (presetNow() === 'slide') { const sp = bar.querySelector('.secpos'); if (sp) sp.remove(); }
     };
@@ -637,7 +637,10 @@
   }
   function groupView(g) {
     const hint = g.hint || GROUP_HINT[g.id];
-    const m = h('div', {}, h('h2', {}, g.title), hint ? h('p', { class: 'hint' }, hint) : null);
+    // penanda tema yang sedang diedit: kolom di halaman ini sudah disaring sesuai tema (Tema 12 & Tema 13 tidak tercampur)
+    const thName = ({ mono: 'Tema 12 — Monokrom', slide: 'Tema 13 — Slide Foto' })[presetNow()];
+    const badge = thName && !/^(general|theme|security|home|links|sections)$/.test(g.id) ? h('div', { class: 'th-badge' }, h('b', {}, 'Sedang mengedit: ' + thName), h('span', {}, 'Hanya kolom yang dipakai tema ini yang ditampilkan.')) : null;
+    const m = h('div', {}, h('h2', {}, g.title), badge, hint ? h('p', { class: 'hint' }, hint) : null);
     const sec = secOf(g.id), cards = [];
     if (sec) m.append(sectionBar(g, sec, () => cards.forEach((c) => c.classList.toggle('dim', !sec.enabled))));
     const fl = g.fields.filter(vis);

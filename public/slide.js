@@ -216,6 +216,12 @@
     const spark = [[8, 12, 0, 7], [19, 38, 1.4, 9], [31, 6, 2.8, 8], [44, 52, 0.7, 10], [57, 20, 3.6, 7.5], [68, 44, 2.1, 9.5], [79, 10, 4.4, 8], [90, 34, 1.1, 10], [14, 64, 3.1, 11], [36, 72, 4.8, 8.5], [62, 68, 0.3, 10.5], [85, 60, 2.6, 9], [50, 30, 5.2, 12], [25, 24, 3.9, 11], [74, 26, 1.8, 12]]
       .map((q) => `<b style="left:${q[0]}%;bottom:${q[1]}%;--sd:${q[2]}s;--sp:${q[3]}s"></b>`).join('');
     const nmc = splitNames(o.names);
+    // monogram inisial (A & D): diambil dari huruf pertama tiap nama penutup
+    const i1 = [...String(nmc[0] || '').trim()][0] || '', i2 = [...String(nmc[1] || '').trim()][0] || '';
+    const ini = i1 && i2 ? `${E(H, i1.toUpperCase())}<em>&amp;</em>${E(H, i2.toUpperCase())}` : '';
+    // bokeh emas: lingkaran cahaya lembut yang naik perlahan (gradien, tanpa filter blur → ringan di HP)
+    const bokeh = [[12, 26, 0, 16, 34], [30, 8, 3.5, 19, 22], [52, 18, 1.2, 17, 46], [71, 4, 5, 21, 28], [88, 22, 2.4, 18, 38], [40, 40, 7, 22, 18], [64, 46, 4.2, 20, 30]]
+      .map((q) => `<s style="left:${q[0]}%;bottom:${q[1]}%;--bd:${q[2]}s;--bs:${q[3]}s;--bz:${q[4]}px"></s>`).join('');
     // ---- jadwal animasi penutup (ms, dikali --tk dari pengaturan kecepatan teks di admin) ----
     // dihitung dari panjang teks supaya urutannya selalu rapi & tidak saling menimpa: ornamen → kicker (huruf demi huruf, pelan) → nama → garis hati → teks ucapan (kata demi kata) → kilau emas
     const nChr = (v) => [...String(v == null ? '' : v).replace(/\s+/g, '')].length, nWrd = (v) => String(v == null ? '' : v).split(/\s+/).filter(Boolean).length;
@@ -233,9 +239,12 @@
     const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>
-      <div class="sl-cl-fx" aria-hidden="true">${spark}<u></u></div>
+      <div class="sl-cl-lk" aria-hidden="true"><i></i></div>
+      <div class="sl-cl-fx" aria-hidden="true">${spark}${bokeh}<u></u></div>
       <div class="sl-cl-fr" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><em class="a"></em><em class="b"></em><em class="c"></em><em class="d"></em></div>
+      <div class="sl-cl-fr sl-cl-fr2" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i></div>
       <div class="sl-cl-in">
+        ${ini ? `<div class="sl-cl-mono" data-ad="cl.mono" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="r1" cx="50" cy="50" r="46" pathLength="100"/><circle class="r2" cx="50" cy="50" r="41" pathLength="100"/></svg><span class="m">${ini}</span></div>` : ''}
         <div class="sl-cl-orn sl-draw" style="--d:1500ms" aria-hidden="true" data-ad="cl.orn"><i></i><em></em><i></i></div>
         <div class="sl-cl-k" data-ad="cl.k"${tx('closing.kicker')}>${chars(H, o.kicker, kStep, kAt)}</div>
         <div class="sl-cl-n">${nameParts(H, nmc[0], nmc[1], 'cl', nAt, 'cl.n', ['closing.names#0', 'closing.names#1'])}</div>
@@ -381,7 +390,7 @@
     root.querySelectorAll('.sl-op-in,.sl-ptx,.sl-scroll,.sl-ph').forEach((e) => { e.style.removeProperty('--cp'); e.style.removeProperty('--ep'); });
     root.querySelectorAll('.stk-pin,.stk-in,.stk-grp,.stk-s,.stk-hid,.stk-rise,[data-stk]').forEach((e) => {
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
-      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); e.style.top = ''; e.style.transformOrigin = '';
+      e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); e.style.removeProperty('--ip'); e.classList.remove('stk-up'); e.style.top = ''; e.style.transformOrigin = '';
     });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
@@ -436,6 +445,8 @@
       });
     };
     let raf = 0, stkOb;
+    // kartu yang MASUK (menutupi kartu sebelumnya) menerima --ip 0→1: naik dari posisi miring (atas menjauh) lalu tegak saat sampai atas
+    pins.forEach((p) => { if (!p.next) return; const t = p.next.classList.contains('sl-s') || p.next.classList.contains('stk-q') ? p.next : p.next.querySelector(':scope>.sl-s'); if (t && pins.some((q) => q.el === t) && !t.classList.contains('sl-open')) p.inc = t; });
     const tick = () => {
       raf = 0; const H = VH();
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
@@ -446,7 +457,8 @@
           if (!p.kids) p.kids = [...p.el.querySelectorAll(':scope>.stk-dim,.sl-op-in,.sl-ptx,.sl-scroll')];
           const v = c.toFixed(3); p.c = c; p.el.style.setProperty('--cp', v); p.kids.forEach((k) => k.style.setProperty('--cp', v));
         }
-        const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); }
+        if (p.inc && (p.ic === undefined || Math.abs(c - p.ic) > 0.002 || ((c === 0 || c === 1) && c !== p.ic))) { p.ic = c; p.inc.style.setProperty('--ip', c.toFixed(3)); }
+        const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); if (p.inc) p.inc.classList.toggle('stk-up', act); }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // foto sudah tampil (ikut scroll); teks diputar setelah kartu naik ±45% layar. Direset hanya bila kartu keluar layar di bawah.
           if (!p.on && top < H * 0.55 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }

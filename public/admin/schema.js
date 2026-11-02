@@ -357,3 +357,37 @@ const TH_PIC = 'bali,princess,emas,biru,rimba,klasik,dayak,airterjun,istana';
   G('theme').fields.push(...clone(['slide.scriptFont', 'slide.fontFile', 'slide.scriptSize']));
   tag('theme', (f) => f.k === 'theme.fontScript', '!slide');
 })();
+
+// ====== v6: Tema 12 dan Tema 13 dipisah total di admin ======
+// Dulu beberapa kolom dipakai bersama & berlabel "Tema 12 & Tema 13" / "Tema 1-11", sehingga editor Tema 13 melihat istilah Tema 12
+// (dan sebaliknya) serta kolom yang tidak berpengaruh apa-apa. Kini: kolom yang TIDAK dipakai tema aktif disembunyikan, dan kolom bersama
+// digandakan dengan label sesuai tema (kunci data tetap sama, jadi isian lama tidak hilang).
+(function () {
+  const G = (id) => SCHEMA.find((g) => g.id === id);
+  const F = (id, k) => (G(id) ? G(id).fields.find((f) => f.k === k) : null);
+  const hide = (id, ks, th) => ks.forEach((k) => { const f = F(id, k); if (f) f.th = th; });
+  // kolom bersama → satu versi per tema dengan label sendiri
+  const split = (id, k, lab12, lab13) => {
+    const g = G(id), i = g ? g.fields.findIndex((f) => f.k === k) : -1; if (i < 0) return;
+    const f = g.fields[i];
+    g.fields.splice(i, 1, Object.assign({}, f, { th: 'mono', l: lab12, own: true }), Object.assign({}, f, { th: 'slide', l: lab13, own: true }));
+  };
+  split('gift', 'mono.giftBg', 'Latar Wedding Gift (Tema 12) — kosongkan = latar terang bawaan dengan hiasan bunga', 'Latar Wedding Gift (Tema 13) — kosongkan = latar terang bawaan dengan hiasan bunga');
+  split('rsvp', 'mono.rsvpBg', 'Latar RSVP (Tema 12) — kosongkan = latar terang bawaan dengan hiasan bunga', 'Latar RSVP (Tema 13) — kosongkan = latar terang bawaan dengan hiasan bunga');
+  // latar gift/RSVP versi Tema 1–11 tidak dipakai Tema 12/13 (mereka memakai kolom di atas)
+  hide('gift', ['gift.bg'], '!mono,slide');
+  hide('rsvp', ['rsvp.bg'], '!mono,slide');
+  { const f = F('gift', 'gift.bg'); if (f) f.l = 'Foto latar'; }
+  { const f = F('rsvp', 'rsvp.bg'); if (f) f.l = 'Foto latar'; }
+  // Tema 13: kolom yang tidak tampil di slide (judul & pengantar acara, latar acara/ayat — sudah ada "Foto slide" sendiri)
+  hide('events', ['events.bg', 'events.title', 'events.intro'], '!slide');
+  hide('quote', ['quote.bg'], '!slide');
+  // Animasi & Efek: "kamera masuk ke rumah" / "kupu-kupu & daun gugur" hanya Tema 1–11; Tema 12/13 punya label sendiri
+  split('effects', 'effects.openZoom', 'Animasi saat Buka Undangan (Tema 12): sampul naik, bingkai foto masuk', 'Animasi saat Buka Undangan (Tema 13): sampul memudar, foto pembuka & nama masuk');
+  { const g = G('effects'), base = { k: 'effects.openZoom', t: 'bool', th: '!mono,slide', l: 'Animasi kamera masuk ke rumah lalu mundur perlahan saat membuka undangan' }; if (g && !g.fields.some((f) => f.k === 'effects.openZoom' && f.th === '!mono,slide')) g.fields.splice(g.fields.findIndex((f) => f.k === 'effects.openZoom'), 0, base); }
+  hide('effects', ['effects.zoomFx'], '!mono,slide');
+  // menu "Tema 13 Slide Foto": kecepatan teks sudah ada di menu Cover / Pembuka / Penutup → tidak diulang di sini
+  { const g = G('slide'); if (g) g.fields = g.fields.filter((f) => !/^(cover|hero|closing)\.textSpeed$/.test(f.k)); }
+  // label: hilangkan kata "semua tema" yang membingungkan
+  ['cover', 'hero', 'closing'].forEach((id) => { const f = F(id, id + '.textSpeed'); if (f) f.l = f.l.replace(/\s*\(semua tema;[^)]*\)/, ''); });
+})();

@@ -91,6 +91,8 @@
   }
 
   const ICON = {
+    dl: '<svg viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.3-3.3 1.4 1.4L12 16l-5.7-5.7 1.4-1.4L11 12.2V3zM5 18h14v2H5z"/></svg>',
+    tap: '<svg viewBox="0 0 24 24"><path d="M9 11.2V6.5a2 2 0 1 1 4 0v4.3l3.7.7a2.3 2.3 0 0 1 1.9 2.6l-.7 4.7A3 3 0 0 1 14.9 21h-3.6a3 3 0 0 1-2.5-1.3L5.6 15a1.6 1.6 0 0 1 2.4-2.1L9 14V11.2z"/><path d="M7 6.5a4 4 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     heart: '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6 5c2 0 3.3 1.1 4 2.3h4C14.7 6.1 16 5 18 5c3.3 0 5.1 3.4 3.6 6.8C19.5 16.4 12 21 12 21z" transform="translate(0 -1)"/></svg>',
     pin: '<svg class="pin" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
     map: '<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
@@ -1175,10 +1177,18 @@
       // tombol buka Google Maps untuk alamat kirim kado: pakai link buatan sendiri (admin), atau otomatis dari teks alamat
       const mapHref = (() => { const m = safeUrl(o.addressMapUrl); if (m) return m; const q = String(o.address || '').replace(/\s+/g, ' ').trim(); return q ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q) : ''; })();
       const [t1, t2] = splitTitle(o.title), [f1, f2] = splitTitle(o.formTitle);
-      const banks = SL ? (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank bk-acc rv" style="--i:${i}"><button type="button" class="bk-head" aria-expanded="false">${bankMark(b)}<span class="bk-tap">Lihat Rekening</span><i class="bk-chev" aria-hidden="true"></i></button><div class="bk-body"><div class="bk-body-in"><div class="bk-no">No. Rekening<b>${esc(b.number)}</b></div><div class="bk-an">a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div></div></div>`).join('') : (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank">${bankMark(b)}<div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
+      // Tema 13: kartu bank yang JELAS bisa diketuk — tombol "Lihat Nomor Rekening" bergaya tombol sungguhan + potongan nomor (•••• 1234) sebagai isyarat ada isinya
+      const tail4 = (n) => { const d = String(n || '').replace(/\D/g, ''); return d.length >= 4 ? d.slice(-4) : ''; };
+      const banks = SL ? ((o.banks || []).length ? `<p class="bk-hint"><span class="bk-hint-i" aria-hidden="true">${ICON.tap}</span>Ketuk kartu bank untuk melihat nomor rekening</p>` : '') + (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank bk-acc rv" style="--i:${i}"><button type="button" class="bk-head" aria-expanded="false">${bankMark(b)}${b.name ? `<span class="bk-who">a.n ${esc(b.name)}</span>` : ''}${tail4(b.number) ? `<span class="bk-mask" aria-hidden="true">•••• •••• ${esc(tail4(b.number))}</span>` : ''}<span class="bk-cta"><span class="bk-cta-o">Lihat Nomor Rekening</span><span class="bk-cta-c">Sembunyikan</span><i class="bk-chev" aria-hidden="true"></i></span></button><div class="bk-body"><div class="bk-body-in"><div class="bk-no">Nomor Rekening<b>${esc(b.number)}</b></div><div class="bk-an">a.n <b>${esc(b.name)}</b></div><button class="btn pill rose bk-copy" data-copy="${esc(b.number)}" data-copy-type="rekening">${ICON.copy}<span>${esc(o.copyBank)}</span></button></div></div></div>`).join('') : (o.banks || []).map((b, i) => `${i ? heartDiv : ''}<div class="bank">${bankMark(b)}<div>No. Rekening ${esc(b.number)}</div><div>a.n <b>${esc(b.name)}</b></div><button class="btn pill rose" data-copy="${esc(b.number)}" data-copy-type="rekening">${esc(o.copyBank)} ${ICON.copy}</button></div>`).join('');
       // QR / QRIS: tombol "Buka QR" → jendela berisi QR + tombol Download & Kembali
       const qrU = safeUrl(o.qrImage);
-      const qr = qrU ? `${heartDiv}<div class="bank qr-box"><div class="bk-mark"><span class="bk-badge">${esc(o.qrTitle || 'QRIS')}</span></div><button class="btn pill rose" type="button" data-qr="${esc(qrU)}" data-qr-name="${esc(o.qrTitle || 'QR')}">${ICON.qr}${esc(o.qrButton || 'Buka QR')}</button></div>` : '';
+      const qr = qrU ? (SL
+        // Tema 13: kartu QR bergaya "bingkai pindai" — pratinjau QR asli di tengah sudut-sudut pemindai + garis pindai berjalan, keterangan & tombol jelas
+        ? `${heartDiv}<div class="bank qr-box sl-qr rv" style="--i:${(o.banks || []).length}"><div class="sl-qr-k">${ICON.qr}<span>${esc(o.qrTitle || 'QRIS')}</span></div>
+            <button type="button" class="sl-qr-fr" data-qr="${esc(qrU)}" data-qr-name="${esc(o.qrTitle || 'QR')}" aria-label="${esc(o.qrButton || 'Buka QR')}"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i><img src="${esc(qrU)}" alt="QR ${esc(o.qrTitle || '')}" loading="lazy" decoding="async"><u class="sl-qr-scan" aria-hidden="true"></u></button>
+            <p class="sl-qr-tx">Pindai lewat aplikasi bank atau e-wallet, atau buka lalu simpan QR-nya</p>
+            <button class="btn pill rose sl-qr-btn" type="button" data-qr="${esc(qrU)}" data-qr-name="${esc(o.qrTitle || 'QR')}">${ICON.qr}<span>${esc(o.qrButton || 'Buka QR')}</span></button></div>`
+        : `${heartDiv}<div class="bank qr-box"><div class="bk-mark"><span class="bk-badge">${esc(o.qrTitle || 'QRIS')}</span></div><button class="btn pill rose" type="button" data-qr="${esc(qrU)}" data-qr-name="${esc(o.qrTitle || 'QR')}">${ICON.qr}${esc(o.qrButton || 'Buka QR')}</button></div>`) : '';
       const addr = o.address ? `${heartDiv}${ICON.gift}<div class="bank"><div>${esc(o.addressTitle)}</div><div class="gap"><b>${esc(o.addressName)}</b></div><div>${br(o.address)}</div><div class="bk-acts"><button class="btn pill rose" data-copy="${esc(o.addressName + ' - ' + o.address)}" data-copy-type="alamat">${esc(o.copyAddress)} ${ICON.copy}</button>${mapHref && o.addressMap !== false ? `<a class="btn pill rose" href="${esc(mapHref)}" target="_blank" rel="noopener">${ICON.map}${esc(o.addressMapLabel || 'Buka Google Maps')}</a>` : ''}</div></div>` : '';
       const main = capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(t1.length, 6)}">${esc(t1)}</span><span class="d" style="--n:${Math.max(t2.length, 6)}">${esc(t2)}</span></h3><p class="gi">${br(o.intro)}</p>${banks}${qr}${addr}`);
       const form = o.formEnabled ? capsule('rosecap', `<h3 class="gt"><span class="s" style="--n:${Math.max(f1.length, 6)}">${esc(f1)}</span><span class="d" style="--n:${Math.max(f2.length, 6)}">${esc(f2)}</span></h3><p class="gi">${br(o.formText)}</p>
@@ -1694,7 +1704,7 @@
     const close = () => { if (!ov) return; ov.classList.remove('on'); setTimeout(() => { if (ov && !ov.classList.contains('on')) ov.hidden = true; }, 260); if (last && last.focus) try { last.focus({ preventScroll: true }); } catch (e) {} };
     const build = () => {
       ov = document.createElement('div'); ov.className = 'qr-ov'; ov.hidden = true; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
-      ov.innerHTML = '<div class="qr-card"><div class="qr-ttl"></div><div class="qr-img"><img alt="QR"></div><div class="qr-acts"><button type="button" class="btn pill rose qr-dl">Download QR</button><button type="button" class="btn pill ghost qr-bk">Kembali</button></div></div>';
+      ov.innerHTML = '<div class="qr-card"><div class="qr-ttl"></div><div class="qr-sub">Pindai dengan aplikasi bank / e-wallet</div><div class="qr-img"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i><img alt="QR"></div><div class="qr-acts"><button type="button" class="btn pill rose qr-dl">' + ICON.dl + '<span>Download QR</span></button><button type="button" class="btn pill ghost qr-bk">Kembali</button></div></div>';
       document.body.appendChild(ov);
       ov.addEventListener('click', (e) => { if (e.target === ov || e.target.closest('.qr-bk')) close(); });
       addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov && !ov.hidden) close(); });
@@ -1927,7 +1937,7 @@
     $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stW').textContent = d.total;
     if (reset && !d.items.length) list.innerHTML = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
     list.insertAdjacentHTML('beforeend', d.items.map(wItem).join(''));
-    wOff += d.items.length; $('#wishMore').hidden = wOff >= d.total;
+    wOff += d.items.length; $('#wishMore').hidden = !d.items.length || wOff >= (+d.total || 0); // tanpa ucapan baru / total tak terbaca: berhenti (dulu bisa memuat ulang tanpa henti)
     if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // belum cukup panjang untuk di-scroll: muat lagi
   }
   async function post(url, body) {

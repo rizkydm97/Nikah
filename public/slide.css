@@ -840,3 +840,176 @@ html[data-sl-sph="1"] .sl-q-ph{overflow:hidden}
 html.h-slide.stk-h,html.h-slide.stk-h body{overflow-anchor:none}
 
 @media (prefers-reduced-motion:reduce){html :is(.sl-couple,.sl-events,.sl-q-ph,.sl-ch) .sl-ph{scale:none!important;translate:none!important;opacity:1!important}}
+
+/* =====================================================================
+   v33 — WEDDING GIFT Tema 13: kartu bank jelas bisa diketuk + kartu QR "bingkai pindai"
+   ===================================================================== */
+/* elemen QR baru: hanya tampil di Tema 13 */
+.qr-sub,.qr-img>.c{display:none}
+/* petunjuk di atas daftar bank */
+.bk-hint{display:flex;align-items:center;justify-content:center;gap:8px;margin:4px auto 14px;font-size:12px;line-height:1.4;font-weight:600;letter-spacing:.02em;color:var(--ink,#111);opacity:.78}
+.bk-hint-i{display:inline-flex;width:22px;height:22px;flex:none;align-items:center;justify-content:center;border-radius:50%;background:var(--ink,#111);color:var(--paper,#fff)}
+.bk-hint-i svg{width:14px;height:14px;fill:currentColor}
+.t-slide .gift .in .bk-hint-i,.t-slide .gift .bk-hint-i{animation:bkTap 2.4s ease-in-out infinite}
+@keyframes bkTap{0%,60%,100%{transform:none}70%{transform:scale(.86)}80%{transform:scale(1.04)}}
+/* kartu bank */
+.t-slide .gift .bank.bk-acc{position:relative;padding:4px 6px;border-radius:20px;border:1px solid color-mix(in srgb,var(--ink,#111) 18%,transparent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--paper,#fff) 96%,transparent),color-mix(in srgb,var(--paper,#fff) 82%,var(--ink,#111) 3%));
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 14px 28px -18px rgba(0,0,0,.5)}
+.t-slide .gift .bank.bk-acc .bk-head{padding:14px 8px 14px;gap:2px}
+.t-slide .gift .bank.bk-acc .bk-head:active{transform:scale(.985)}
+.bk-who{display:block;font-size:12.5px;font-weight:600;opacity:.75;margin-top:2px}
+.bk-mask{display:block;margin-top:4px;font-size:13px;letter-spacing:.14em;font-variant-numeric:tabular-nums;opacity:.55}
+.bk-acc.open .bk-mask{opacity:0;height:0;margin:0;overflow:hidden;transition:opacity .3s}
+/* tombol "Lihat Nomor Rekening" = tombol sungguhan (bukan teks samar) */
+.bk-cta{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:9px 18px 9px 20px;border-radius:999px;background:var(--ink,#111);color:var(--paper,#fff);
+  font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 8px 18px -10px rgba(0,0,0,.6);transition:background .4s,color .4s,box-shadow .4s;position:relative}
+.bk-cta::after{content:"";position:absolute;inset:-4px;border-radius:inherit;border:1.5px solid var(--ink,#111);opacity:0;pointer-events:none}
+.t-slide .gift .bk-acc.in:not(.open) .bk-cta::after{animation:bkRing 2.6s ease-out calc(1s + var(--i,0)*.25s) infinite}
+@keyframes bkRing{0%{opacity:.55;transform:scale(.96)}70%,100%{opacity:0;transform:scale(1.12)}}
+.bk-cta .bk-chev{display:block;width:7px;height:7px;margin:-3px 0 0;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .45s cubic-bezier(.2,.8,.2,1);opacity:1}
+.bk-acc.open .bk-cta .bk-chev{transform:rotate(225deg);margin-top:3px}
+.bk-cta-c{display:none}
+.bk-acc.open .bk-cta{background:transparent;color:var(--ink,#111);box-shadow:inset 0 0 0 1.5px var(--ink,#111)}
+.bk-acc.open .bk-cta-o{display:none}
+.bk-acc.open .bk-cta-c{display:inline}
+.bk-tap{display:none}
+/* rincian rekening: nomor besar di "kartu" bergaris putus-putus, tombol salin penuh */
+.t-slide .gift .bk-body-in{padding:0 6px}
+.t-slide .gift .bk-acc.open .bk-body-in{padding:2px 6px 14px}
+.t-slide .gift .bk-no{margin:4px 4px 0;padding:12px 10px 10px;border:1px dashed color-mix(in srgb,var(--ink,#111) 35%,transparent);border-radius:14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:1}
+.t-slide .gift .bk-no b{font-size:22px;letter-spacing:.08em;margin-top:4px;text-transform:none}
+.t-slide .gift .bk-an{margin-top:8px}
+.t-slide .gift .bk-copy{display:inline-flex;align-items:center;gap:8px;margin-top:12px}
+.t-slide .gift .bk-copy svg{width:15px;height:15px;fill:currentColor}
+
+/* kartu QR */
+.t-slide .gift .bank.sl-qr{position:relative;padding:18px 16px 18px;border-radius:22px;border:1px solid color-mix(in srgb,var(--ink,#111) 18%,transparent);
+  background:radial-gradient(120% 80% at 50% 0%,color-mix(in srgb,var(--paper,#fff) 100%,transparent),color-mix(in srgb,var(--paper,#fff) 86%,var(--ink,#111) 4%));
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 34px -20px rgba(0,0,0,.55)}
+.t-slide .gift .bank.sl-qr.rv:not(.in){opacity:0;transform:translateY(26px) scale(.96)}
+.t-slide .gift .bank.sl-qr.rv{transition:opacity .9s ease calc(var(--i,0)*.18s),transform 1s cubic-bezier(.2,.8,.2,1) calc(var(--i,0)*.18s)}
+.sl-qr-k{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--ink,#111);color:var(--paper,#fff);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.sl-qr-k svg{width:15px;height:15px;fill:currentColor}
+.sl-qr-fr{all:unset;box-sizing:border-box;position:relative;display:block;width:min(64%,200px);aspect-ratio:1;margin:16px auto 12px;padding:14px;cursor:pointer;border-radius:14px;background:#fff;
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.06);-webkit-tap-highlight-color:transparent;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.sl-qr-fr:active{transform:scale(.97)}
+.sl-qr-fr:focus-visible{outline:2px solid var(--ink,#111);outline-offset:4px}
+.sl-qr-fr img{display:block;width:100%;height:100%;object-fit:contain;border-radius:4px}
+.sl-qr-fr .c,.qr-img>.c{position:absolute;width:22px;height:22px;border:3px solid var(--ink,#111);pointer-events:none}
+.sl-qr-fr .c.tl,.qr-img>.c.tl{top:-6px;left:-6px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+.sl-qr-fr .c.tr,.qr-img>.c.tr{top:-6px;right:-6px;border-left:0;border-bottom:0;border-radius:0 10px 0 0}
+.sl-qr-fr .c.bl,.qr-img>.c.bl{bottom:-6px;left:-6px;border-right:0;border-top:0;border-radius:0 0 0 10px}
+.sl-qr-fr .c.br,.qr-img>.c.br{bottom:-6px;right:-6px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+.sl-qr-scan{position:absolute;left:10px;right:10px;top:12%;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--ink,#111),transparent);box-shadow:0 0 12px 2px color-mix(in srgb,var(--ink,#111) 35%,transparent);opacity:0}
+.t-slide .gift .sl-qr.in .sl-qr-scan{animation:slQrScan 3.2s ease-in-out .8s infinite}
+@keyframes slQrScan{0%{top:10%;opacity:0}10%{opacity:.85}50%{top:88%;opacity:.85}60%{opacity:0}100%{top:88%;opacity:0}}
+.sl-qr-tx{margin:2px auto 12px;max-width:22em;font-size:12.5px;line-height:1.55;opacity:.8}
+.t-slide .gift .sl-qr-btn{display:inline-flex;align-items:center;gap:8px}
+.t-slide .gift .sl-qr-btn svg{width:15px;height:15px;fill:currentColor}
+/* jendela QR (Tema 13) */
+.t-slide .qr-card{border-radius:24px;padding:22px 20px 18px;box-shadow:0 30px 70px -20px rgba(0,0,0,.65);transform:translateY(24px) scale(.94)}
+.t-slide .qr-ov.on .qr-card{transform:none}
+.t-slide .qr-ttl{display:inline-flex;align-items:center;gap:8px;margin:0 0 4px;padding:6px 16px;border-radius:999px;background:#111;color:#fff;font-size:12px;letter-spacing:.22em}
+.t-slide .qr-sub{display:block;font-size:12.5px;opacity:.7;margin:4px 0 18px}
+.t-slide .qr-img{position:relative;margin:0 10px;border:0;border-radius:14px;padding:14px;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 12px 26px -16px rgba(0,0,0,.5)}
+.t-slide .qr-img>.c{display:block;border-color:#111}
+.t-slide .qr-acts{margin-top:20px}
+.t-slide .qr-acts .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px}
+.t-slide .qr-acts .btn svg{width:16px;height:16px;fill:currentColor}
+@media (prefers-reduced-motion:reduce){.bk-hint-i,.bk-cta::after,.sl-qr-scan{animation:none!important}}
+.bk-cta{white-space:nowrap;font-size:11px;letter-spacing:.08em;padding:9px 16px 9px 18px}
+.t-slide .gift .bk-no b{font-size:clamp(15px,calc(var(--cw,3.9px)*4.6),20px);letter-spacing:.04em;white-space:nowrap}
+.sl-qr-tx{text-wrap:balance}
+
+/* =====================================================================
+   v33 — PENUTUP MEWAH (Tema 13): urutan sinematik yang berkesan, tetap ringan (hanya transform/opacity/stroke)
+   0,0 dtk  foto terbuka (iris) lalu perlahan MENDEKAT terus (dolly 24 dtk)
+   0,9 dtk  cahaya hangat menyapu foto dari kiri atas
+   1,1 dtk  bingkai champagne menggambar diri → 1,7 dtk bingkai kedua di dalamnya → berlian sudut
+   0,9 dtk  MONOGRAM inisial: lingkaran tergambar → huruf muncul berkilau
+   ±2 dtk   kicker huruf demi huruf → nama disapu tulisan tangan berwarna emas foil → garis hati → ucapan kata demi kata
+   terus    bokeh emas naik pelan, kilau berkedip, sapuan cahaya berkala, monogram "bernapas"
+   ===================================================================== */
+.sl-cl{--gl1:#f6e6bd;--gl2:#c9a35a;--gl3:#fff8e3}
+/* foto: mendekat pelan terus-menerus setelah iris (lebih terasa dari Ken Burns biasa) */
+.sl-cl.sl-go .sl-pk{animation:slClDolly 24s cubic-bezier(.3,.1,.3,1) 1.2s both}
+@keyframes slClDolly{from{transform:scale(1)}to{transform:scale(1.13) translateY(-1.5%)}}
+/* cahaya hangat menyapu (light leak) */
+.sl-cl-lk{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.sl-cl-lk i{position:absolute;left:-70%;top:-50%;width:120%;height:120%;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,222,160,.42),rgba(255,200,130,.16) 55%,rgba(255,200,130,0));opacity:0}
+.sl-cl.sl-go .sl-cl-lk i{animation:slClLeak 5.5s ease-in-out .9s 1 both,slClLeak 7s ease-in-out 14s infinite}
+@keyframes slClLeak{0%{opacity:0;transform:translate(0,0)}35%{opacity:1}100%{opacity:0;transform:translate(120%,70%)}}
+/* bingkai champagne ganda */
+.sl-cl-fr i{background:linear-gradient(90deg,var(--gl2),var(--gl1),var(--gl2))}
+.sl-cl-fr i.l,.sl-cl-fr i.r{background:linear-gradient(180deg,var(--gl2),var(--gl1),var(--gl2))}
+.sl-cl-fr em{border-color:var(--gl1);background:rgba(246,230,189,.25);box-shadow:0 0 10px rgba(246,230,189,.6)}
+.sl-cl-fr2{inset:calc(env(safe-area-inset-top,0px) + 23px) 23px calc(env(safe-area-inset-bottom,0px) + 23px)}
+.sl-cl-fr2 i{opacity:0;background:rgba(246,230,189,.45)!important}
+.sl-cl.sl-go .sl-cl-fr2 i{animation:slFrT 1.6s var(--sl-ease) 1.7s both}
+.sl-cl.sl-go .sl-cl-fr2 i.l,.sl-cl.sl-go .sl-cl-fr2 i.r{animation-name:slFrL}
+@supports (zoom:1){.t-slide .sl-cl-fr2{inset:23px}}
+/* monogram */
+.sl-cl-mono{position:relative;width:clamp(58px,calc(var(--cw,3.9px)*17),76px);width:clamp(58px,17cqw,76px);aspect-ratio:1;margin:0 auto clamp(10px,2svh,16px);display:grid;place-items:center}
+.sl-cl-mono svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.sl-cl-mono circle{fill:none;stroke:var(--gl1);vector-effect:non-scaling-stroke}
+.sl-cl-mono .r1{stroke-width:1.2;stroke-dasharray:100;stroke-dashoffset:100;transform:rotate(-90deg);transform-origin:50% 50%;filter:drop-shadow(0 0 3px rgba(246,230,189,.7))}
+.sl-cl-mono .r2{stroke-width:.8;stroke-dasharray:1 3;opacity:0;transform-origin:50% 50%}
+.sl-cl-mono .m{position:relative;font-family:var(--fDisplay);font-style:italic;font-weight:500;font-size:clamp(18px,calc(var(--cw,3.9px)*5.4),24px);font-size:clamp(18px,5.4cqw,24px);letter-spacing:.04em;line-height:1;
+  color:var(--gl3);text-shadow:0 0 14px rgba(246,230,189,.55),0 2px 10px rgba(0,0,0,.5);opacity:0;transform:scale(.7)}
+.sl-cl-mono .m em{font-style:italic;font-size:.62em;margin:0 .14em;color:var(--gl1);vertical-align:.18em}
+.sl-cl.sl-go .sl-cl-mono .r1{animation:slMonoDraw calc(1.9s*var(--tk,1)) cubic-bezier(.6,.05,.3,1) calc(.9s*var(--tk,1)) both}
+.sl-cl.sl-go .sl-cl-mono .r2{animation:slMonoIn 1.2s ease calc(2.2s*var(--tk,1)) both,slMonoSpin 40s linear 2.2s infinite}
+.sl-cl.sl-go .sl-cl-mono .m{animation:slMonoTx calc(1.4s*var(--tk,1)) cubic-bezier(.2,.9,.25,1) calc(1.7s*var(--tk,1)) both,slMonoGlow 4.5s ease-in-out 4s infinite}
+@keyframes slMonoDraw{to{stroke-dashoffset:0}}
+@keyframes slMonoIn{to{opacity:.7}}
+@keyframes slMonoSpin{to{transform:rotate(360deg)}}
+@keyframes slMonoTx{0%{opacity:0;transform:scale(.7);letter-spacing:.4em}100%{opacity:1;transform:none;letter-spacing:.04em}}
+@keyframes slMonoGlow{0%,100%{text-shadow:0 0 14px rgba(246,230,189,.45),0 2px 10px rgba(0,0,0,.5)}50%{text-shadow:0 0 22px rgba(246,230,189,.95),0 2px 10px rgba(0,0,0,.5)}}
+/* nama: emas foil + kilau berjalan */
+.sl-cl-n .sl-wipe>span{background:linear-gradient(105deg,var(--gl2) 0%,var(--gl1) 22%,var(--gl3) 34%,var(--gl1) 46%,#b8904a 58%,var(--gl1) 72%,var(--gl3) 84%,var(--gl1) 100%) 0 0/220% 100% no-repeat;-webkit-background-clip:text;background-clip:text}
+.sl-cl.sl-go .sl-cl-n .sl-wipe>span{animation:slClFoil 7s ease-in-out 3.6s infinite}
+@keyframes slClFoil{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.sl-cl-n{filter:drop-shadow(0 2px 14px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(246,230,189,.25))}
+/* hiasan emas lain */
+.sl-cl-orn i{background:linear-gradient(90deg,transparent,var(--gl1))}
+.sl-cl-orn em{border-color:var(--gl1);box-shadow:0 0 8px rgba(246,230,189,.7)}
+.sl-cl-hr i{background:linear-gradient(90deg,transparent,var(--gl1))}
+.sl-cl-hr svg{fill:var(--gl1);filter:drop-shadow(0 0 6px rgba(246,230,189,.8))}
+.sl-cl.sl-go .sl-cl-hr svg{animation:slClBeat 2.4s ease-in-out 6s infinite}
+@keyframes slClBeat{0%,60%,100%{transform:none}70%{transform:scale(1.25)}80%{transform:scale(.95)}90%{transform:scale(1.1)}}
+.sl-cl-fx b{background:var(--gl3);box-shadow:0 0 8px 2px rgba(246,230,189,.85)}
+/* bokeh emas naik */
+.sl-cl-fx s{position:absolute;width:var(--bz,30px);height:var(--bz,30px);border-radius:50%;text-decoration:none;opacity:0;
+  background:radial-gradient(circle,rgba(255,240,205,.55) 0,rgba(246,220,160,.22) 45%,rgba(246,220,160,0) 70%)}
+.sl-cl.sl-go .sl-cl-fx s{animation:slBokeh var(--bs,18s) linear calc(2.6s + var(--bd,0s)) infinite}
+@keyframes slBokeh{0%{opacity:0;transform:translate3d(0,0,0) scale(.7)}15%{opacity:.9}70%{opacity:.6}100%{opacity:0;transform:translate3d(14px,-240px,0) scale(1.15)}}
+.sl-cl.stk-hid *,.sl-closing:not(:has(.sl-go)) .sl-cl-fx *{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){
+  .sl-cl .sl-pk,.sl-cl-lk i,.sl-cl-fx s,.sl-cl-mono *{animation:none!important}
+  .sl-cl-mono .r1{stroke-dashoffset:0}.sl-cl-mono .r2{opacity:.7}.sl-cl-mono .m{opacity:1;transform:none}
+  .sl-cl-fr2 i{opacity:1!important;transform:none!important;animation:none!important}
+}
+
+/* =====================================================================
+   v33 — TUMPUKAN 3D LEBIH TERASA
+   - kartu masuk: naik dari posisi miring (tepi atas menjauh, perspektif) lalu tegak (--ip 0→1)
+   - kartu tertutup: terdorong mundur — mengecil, miring menjauh, meredup (--cp 0→1)
+   - tepi atas kartu: garis kilap tipis + bayangan berlapis → sudut & ketebalan kartu terlihat
+   Semua hanya transform/opacity pada lapisan yang sudah ada (tanpa lukis ulang) → tetap mulus di HP.
+   ===================================================================== */
+@property --ip{syntax:'<number>';inherits:false;initial-value:1}
+.stk-on .stk-pin:not(.sl-open){transform:perspective(1300px) rotateX(calc((1 - var(--ip,1))*11deg + var(--cp,0)*5deg)) scale(calc(1 - var(--cp,0)*.1 - (1 - var(--ip,1))*.03))}
+.stk-on .stk-pin.stk-in{border-radius:26px 26px 0 0;
+  box-shadow:0 -1px 0 rgba(255,255,255,.55),0 -6px 14px -6px rgba(0,0,0,.35),0 -22px 44px -14px rgba(0,0,0,.42),0 -48px 90px -30px rgba(0,0,0,.35)}
+.stk-on .stk-pin.stk-in.stk-act{border-radius:26px 26px 0 0}
+/* garis kilap di tepi atas (seperti kaca/kertas tebal yang terkena cahaya) */
+.stk-on .stk-pin.stk-in::before{content:"";position:absolute;left:0;right:0;top:0;height:26px;border-radius:26px 26px 0 0;z-index:60;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0));box-shadow:inset 0 1px 0 rgba(255,255,255,.7);opacity:calc(.45 + (1 - var(--ip,1))*.55)}
+.stk-on .stk-pin.stk-in.stk-act::before{opacity:calc(.45 - var(--cp,0)*.45)}
+/* kartu tertutup meredup lebih dalam + pinggir gelap (vignette) → kesan jauh ke belakang */
+.stk-on .stk-pin>.stk-dim{opacity:calc(var(--cp,0)*.5);background:radial-gradient(120% 90% at 50% 30%,#000 40%,#000 100%)}
+/* latar di sela kartu: gelap lembut, supaya sisi kartu yang mengecil tampak seperti tumpukan di ruang gelap */
+.t-slide #app.stk-on{background:#1a1816;background:color-mix(in srgb,var(--ink,#111) 88%,var(--paper,#fff))}
+@media (prefers-reduced-motion:reduce){.stk-on .stk-pin:not(.sl-open){transform:none!important}}

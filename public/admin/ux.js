@@ -104,9 +104,10 @@ const LAYOUT = {
   ],
   gift: [
     ['Rekening', ['gift.title', 'gift.intro', 'gift.banks', 'gift.copyBank']],
-    ['Alamat kirim kado', ['gift.addressTitle', 'gift.addressName', 'gift.address', 'gift.copyAddress']],
+    ['QR / QRIS (opsional)', ['gift.qrImage', 'gift.qrTitle', 'gift.qrButton']],
+    ['Alamat kirim kado', ['gift.addressTitle', 'gift.addressName', 'gift.address', 'gift.copyAddress', 'gift.addressMap', 'gift.addressMapLabel', 'gift.addressMapUrl']],
     ['Form konfirmasi gift', ['gift.formEnabled', 'gift.sendWhatsapp', 'gift.formTitle', 'gift.formText', 'gift.formButton'], true],
-    ['Latar (opsional)', ['gift.bg'], true],
+    ['Latar (opsional)', ['gift.bg', 'mono.giftBg'], true],
   ],
 };
 
