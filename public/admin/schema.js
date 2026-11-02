@@ -332,6 +332,7 @@ const TH_PIC = 'bali,princess,emas,biru,rimba,klasik,dayak,airterjun,istana';
   tag('hero', (f) => /^slide\./.test(f.k), 'slide');
   tag('hero', (f) => /^mono\./.test(f.k), 'mono');
   G('hero').fields.unshift(adj('open', 'POSISI & UKURAN TULISAN PEMBUKA — tarik langsung di pratinjau, atau pakai penggeser'));
+  G('hero').fields.unshift(...clone(['slide.openFx'])); // pilihan animasi teks pembuka tampil paling atas di menu Pembuka (juga tetap ada di menu Tema 13)
   // MEMPELAI
   tag('couple', (f) => ['couple.bg', 'couple.flower', 'couple.connector'].includes(f.k), '!slide');
   G('couple').fields.push(...clone(['slide.groomMedia', 'slide.brideMedia', 'slide.coupleShape', 'slide.groomPos', 'slide.bridePos', 'slide.coupleAlign', 'slide.coupleNudge']),
