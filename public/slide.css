@@ -783,15 +783,11 @@ html.h-slide{overscroll-behavior-y:none}
 @property --ep{syntax:'<number>';inherits:false;initial-value:1}
 @property --ob{syntax:'<number>';inherits:false;initial-value:0}
 
-/* 1+2) foto kartu bertumpuk & kartu ayat: terlihat sejak awal (blur) -> jernih saat kartu naik */
+/* 1+2) foto kartu bertumpuk & kartu ayat memakai animasi 'mist' yang sama dengan Love Story (muncul dari bawah + zoom-out), latar cadangan abu terang (bukan hitam) */
 .stk-on [data-stk] .sl-ph,.stk-on .sl-q-ph .sl-ph{background:#d9d4cf;background:color-mix(in srgb,var(--paper,#fff) 82%,#000)}
-html .stk-on [data-stk] .sl-ph .sl-pm,html .stk-on .sl-q-ph .sl-ph .sl-pm{opacity:1;transform:scale(1.08);filter:blur(10px)}
-html .stk-on [data-stk].sl-go .sl-ph .sl-pm,html .stk-on .sl-q.sl-go .sl-ph .sl-pm{animation:slPhBlur calc(1s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) both}
-html .stk-on :is([data-stk],.sl-q) .sl-pm:is(video,iframe){filter:none;transform:none;animation:none}
-@keyframes slPhBlur{0%{filter:blur(10px);transform:scale(1.08)}100%{filter:none;transform:none}}
 
 /* teks menyusul setelah foto mulai jernih */
-.stk-on [data-stk]{--tw:800ms}
+.stk-on [data-stk]{--tw:900ms}
 .stk-on .sl-q{--tw:700ms}
 html .stk-on :is([data-stk],.sl-q).sl-go :is(.sl-c,.sl-wd,.sl-up,.sl-fade,.sl-pop,.sl-wipe,.sl-vl,.sl-draw){animation-delay:calc((var(--d,0ms) + var(--tw,0ms))*var(--tk,1))}
 html .stk-on .sl-q.sl-go .sl-ar{animation-delay:calc(.45s + var(--tw,0ms))}
@@ -805,4 +801,3 @@ html .stk-on .sl-q.sl-go .sl-sorn em{animation-delay:calc(.5s + var(--tw,0ms))}
 .stk-on .stk-pin.stk-in.stk-act{border-radius:24px 24px 26px 26px;box-shadow:0 -18px 40px -12px rgba(0,0,0,.34),0 14px 36px -12px rgba(0,0,0,.4)}
 .stk-on .sl-open.stk-pin,.stk-on .sl-open.stk-pin.stk-act{border-radius:0;box-shadow:none;transition:none}
 .stk-on .stk-hid{will-change:auto}
-@media (prefers-reduced-motion:reduce){html .stk-on :is([data-stk],.sl-q) .sl-ph .sl-pm{filter:none;transform:none;animation:none}}
