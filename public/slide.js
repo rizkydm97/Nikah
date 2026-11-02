@@ -398,7 +398,7 @@
         if (p.go && p.el.classList.contains('sl-pp')) { const e = cl(1 - top / H, 0, 1); if (p.e === undefined || Math.abs(e - p.e) > 0.004) { p.e = e; const v = e.toFixed(3); (p.phs || (p.phs = [...p.el.querySelectorAll('.sl-ph')])).forEach((k) => k.style.setProperty('--ep', v)); } }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // teks diputar ulang saat slide sudah naik ±40% layar; direset bila tertutup penuh / kembali di luar layar
-          if (!p.on && top < H * 0.62 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
+          if (!p.on && top < H * 0.92 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
           // reset HANYA bila kartu benar-benar keluar layar di bawah. Dulu juga direset saat c >= 1 (tertutup kartu berikutnya):
           // saat digulir balik ke atas, foto kartu itu tak punya sl-go (opacity 0) sampai c < 0.5 → area foto tampak hitam.
           else if (p.on && top >= H * 0.98) { p.on = false; p.el.classList.remove('sl-go'); }
