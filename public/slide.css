@@ -1171,3 +1171,43 @@ html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.instant :is(
 .t-slide :is(.wishes,.wl-sheet) .wl-av{align-self:center}
 .t-slide :is(.wishes,.wl-sheet) .wl-item b{margin:0;line-height:1.25;padding-top:1px}
 .t-slide :is(.wishes,.wl-sheet) .wl-item small{margin:2px 0 0;line-height:1.3}
+
+/* =====================================================================
+   v36 — PEMBUKA 2 FOTO: teks & geseran foto SEIRAMA (mengikuti video referensi)
+   0      foto naik masuk (slRise)            0,6–2 dtk  huruf kecil atas
+   2,0    foto 1 selesai diam → deretan MULAI bergeser, nama 1 mulai tertulis
+   2,7    "&"   3,0  nama 2 — nama selesai tepat saat geseran berhenti (±4,4 dtk)
+   4,4    garis   4,7 tanggal   5,0 tagar   → foto 2 diam & perlahan mendekat
+   (dikali kecepatan animasi --tk). Berlaku untuk gaya Elegan 3D, Klasik, dan Partikel.
+   ===================================================================== */
+.sl-open[data-two="1"].play .sl-strip.dir-r{animation:slStripR3 calc(10s*var(--tk,1)) linear both}
+.sl-open[data-two="1"].play .sl-strip.dir-l{animation:slStripL3 calc(10s*var(--tk,1)) linear both}
+@keyframes slStripR3{0%,20%{transform:translate3d(0,0,0);animation-timing-function:cubic-bezier(.5,0,.25,1)}44%,100%{transform:translate3d(-50%,0,0)}}
+@keyframes slStripL3{0%,20%{transform:translate3d(-50%,0,0);animation-timing-function:cubic-bezier(.5,0,.25,1)}44%,100%{transform:translate3d(0,0,0)}}
+/* foto 2 tetap hidup setelah berhenti: mendekat pelan */
+.sl-open[data-two="1"].play .sl-tile .sl-pk{animation:slTileZoom2 16s ease-out calc(4.4s*var(--tk,1)) both}
+@keyframes slTileZoom2{from{transform:scale(1)}to{transform:scale(1.06)}}
+
+/* ---- Elegan 3D ---- */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np .sl-wipe{animation-duration:calc(1.4s*var(--tk,1))!important;animation-delay:calc(2000ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{animation-duration:calc(1s*var(--tk,1))!important;animation-delay:calc(2700ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-delay:calc(3000ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-gl::before{animation-delay:calc(4.4s*var(--tk,1)),14s}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-line{animation-delay:calc(4400ms*var(--tk,1))!important;animation-duration:calc(1.1s*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-d{animation-delay:calc(4700ms*var(--tk,1))!important}
+html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-t{animation-delay:calc(5000ms*var(--tk,1))!important}
+
+/* ---- Klasik: nama tersapu searah geseran foto ---- */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np .sl-wipe{animation-duration:calc(1.4s*var(--tk,1))!important;animation-delay:calc(2000ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{animation-duration:calc(.9s*var(--tk,1))!important;animation-delay:calc(2700ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-delay:calc(3000ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-line{animation-delay:calc(4400ms*var(--tk,1))!important;animation-duration:calc(1.1s*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-line-dot{animation-delay:calc(5.3s*var(--tk,1))}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-d{animation-delay:calc(4700ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-t{animation-delay:calc(5000ms*var(--tk,1))!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"].play:not(.instant) .sl-op-n .sl-wipe>span{animation-delay:calc(5.6s*var(--tk,1))}
+/* foto bergeser ke kiri (dir-r) → tinta menulis dari kanan ke kiri, mengikuti arah geseran */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"][data-dir="r"] .sl-op-n .sl-wipe:not(.n2 *){
+  -webkit-mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);-webkit-mask-position:0 0;mask-position:0 0}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"][data-dir="r"].play:not(.instant) .sl-op-n .sl-np:not(.n2) .sl-wipe{animation-name:slInkRL!important}
+@keyframes slInkRL{0%{opacity:0;-webkit-mask-position:0 0;mask-position:0 0;transform:translateY(.08em)}10%{opacity:1}100%{opacity:1;-webkit-mask-position:100% 0;mask-position:100% 0;transform:none}}

@@ -79,10 +79,13 @@
       });
       const specs = [], nm = hero.querySelector('.sl-op-n'), nps = nm ? [...nm.querySelectorAll('.sl-np')] : [];
       const k = hero.querySelector('.sl-op-k'), d = hero.querySelector('.sl-op-d'), t = hero.querySelector('.sl-op-t');
-      if (k) specs.push({ el: k, delay: 0 });
-      if (nps.length) nps.forEach((e, i) => specs.push({ el: e, delay: [520, 880, 1120][Math.min(i, 2)] })); else if (nm) specs.push({ el: nm, delay: 520 });
-      if (d) specs.push({ el: d, delay: 1500 });
-      if (t) specs.push({ el: t, delay: 1650 });
+      // 2 foto: nama terbentuk SAAT deretan foto bergeser (±2–4,4 dtk), tanggal setelah foto berhenti — seirama dengan geseran
+      const two = hero.dataset && hero.dataset.two === '1';
+      const DL = two ? { k: 300, n: [1500, 2200, 2500], d: 3900, t: 4200 } : { k: 0, n: [520, 880, 1120], d: 1500, t: 1650 };
+      if (k) specs.push({ el: k, delay: DL.k });
+      if (nps.length) nps.forEach((e, i) => specs.push({ el: e, delay: DL.n[Math.min(i, 2)] })); else if (nm) specs.push({ el: nm, delay: DL.n[0] });
+      if (d) specs.push({ el: d, delay: DL.d });
+      if (t) specs.push({ el: t, delay: DL.t });
       tk = parseFloat(getComputedStyle(hero).getPropertyValue('--tk')) || 1;
 
       const mc = document.createElement('canvas').getContext('2d'), oc = document.createElement('canvas');
