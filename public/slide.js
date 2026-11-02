@@ -19,6 +19,8 @@
 
   // ---------- teks beranimasi ----------
   const ZOOMOK = !!(window.CSS && CSS.supports && CSS.supports('zoom', '1')); // kanvas tetap: nilai geser vertikal = persen tinggi kanvas, bukan tinggi layar
+  // layar loading menutup seluruh layar: di laptop 100cqw = lebar laptop sehingga geseran dari admin terlempar keluar layar → ukur dari lebar HP (maks 390px)
+  const CQW = (el, n) => (el && el.closest && el.closest('#loader') ? `calc(min(100cqw,390px)*${(n / 100).toFixed(5)})` : CQ.w(n));
   const CQ = window.CQ || { w: (n) => n + 'cqw', h: (n) => n + 'cqh' };  const U = (window.CSS && CSS.supports && CSS.supports('height', '1svh')) ? 'svh' : 'vh';
   const NU = (n) => (ZOOMOK ? `calc(var(--cvh,780px)*${(n / 100).toFixed(4)})` : n + U);
   const E = (H, s) => H.esc(s);
@@ -447,7 +449,7 @@
     // [data-adg] = pengaturan lama satu blok nama (cv.nm / op.n): tetap berlaku bagi yang sudah pernah menggeser nama
     document.querySelectorAll('[data-ad],[data-adg]').forEach((el) => {
       const a = adj[el.dataset.ad || el.dataset.adg] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
-      el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : '';
+      el.style.translate = x || y ? `${CQW(el, x)} ${CQW(el, y)}` : '';
       el.style.scale = sc !== 1 ? String(sc) : '';
       setBox(el, a);
       setFont(el, a);
@@ -467,7 +469,7 @@
     if (w > 0) {
       if (el.dataset.adD == null) el.dataset.adD = getComputedStyle(el).display;
       if (el.dataset.adD === 'inline') el.style.display = 'inline-block';
-      el.style.width = CQ.w(w); el.style.maxWidth = 'none'; el.style.boxSizing = 'border-box';
+      el.style.width = CQW(el, w); el.style.maxWidth = 'none'; el.style.boxSizing = 'border-box';
     } else {
       el.style.width = ''; el.style.maxWidth = ''; el.style.boxSizing = '';
       if (el.dataset.adD === 'inline') el.style.display = '';
@@ -516,7 +518,7 @@
     const wrapOf = (el) => el.closest('.cover,.sl-s,.sl-open,.sl-foot,#loader');
     const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
     const ts = (a) => ({ x: parseFloat(a.x) || 0, y: parseFloat(a.y) || 0 });
-    const putT = (el, x, y) => { el.style.translate = x || y ? `${CQ.w(x)} ${CQ.w(y)}` : ''; };
+    const putT = (el, x, y) => { el.style.translate = x || y ? `${CQW(el, x)} ${CQW(el, y)}` : ''; };
 
     // ----- lapisan bantu: garis sejajar/tengah (pink) + titik pegangan lebar & ukuran kotak yang sedang dipilih -----
     const ov = document.createElement('div'); ov.className = 'sl-ov';

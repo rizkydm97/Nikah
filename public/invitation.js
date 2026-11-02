@@ -181,7 +181,7 @@
     let el;
     if (yt) el = `<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=0&playsinline=1&modestbranding=1&rel=0" allow="autoplay; encrypted-media" tabindex="-1" title=""></iframe>`;
     else if (/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(u)) el = MN && safeUrl(m.coverPoster) ? `<img src="${esc(safeUrl(m.coverPoster))}" alt="" decoding="async">` : ''; // video TIDAK diputar di loader: sampul sudah memuat video yang sama -> cukup diunduh sekali (dulu 2x, bikin lambat & patah-patah)
-    else el = `<img src="${esc(u)}" alt="" decoding="async">`;
+    else el = `<img class="ld-bk" src="${esc(u)}" alt="" decoding="async" aria-hidden="true"><img class="ld-fg" src="${esc(u)}" alt="" decoding="async">`;
     return `<div class="ld-bg">${el}</div>`;
   }
 

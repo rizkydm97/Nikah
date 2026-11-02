@@ -689,3 +689,27 @@ html.h-slide{overscroll-behavior-y:none}
 .sl-ptx canvas{display:block;width:100%;height:100%}
 .stk-on .sl-open .sl-ptx{translate:0 calc(var(--cp,0)*-56px);opacity:calc(1 - var(--cp,0)*1.3)}
 @media (prefers-reduced-motion:reduce){.sl-ptx{display:none}}
+
+/* =====================================================================
+   v28 — perbaikan 3 bug (Nikah-main-partikel)
+   1) Garis hitam kedip di slide Akad/Resepsi (tata letak foto di atas, teks di bawah):
+      saat kartu Akad mengecil (scale) karena Resepsi naik menutupinya, tepi bawah bingkai foto jatuh di pecahan piksel,
+      sehingga satu baris piksel gelap (warna latar bingkai/foto) bocor di antara foto yang sudah memudar dan kertas.
+      Perbaikan: latar bingkai & foto di bagian ini = warna kertas (bukan gelap), dan blok teks di bawahnya menutup
+      beberapa piksel terbawah bingkai dengan kertas (bagian itu memang sudah memudar penuh jadi kertas).
+   ===================================================================== */
+.sl-ev.split .sl-fr,.sl-ev.split .sl-fr .sl-ph{background:var(--paper)}
+.sl-ev.split .sl-fr::after{height:6px}
+.sl-ev.split .sl-ev-in::before{content:"";position:absolute;left:0;right:0;top:-5px;height:9px;background:var(--paper);pointer-events:none;z-index:-1}
+
+/* 2) Tombol geser setelah Buka Undangan: tersembunyi sampai animasinya mulai (sebelumnya tampil 0,9 di layar gelap lalu hilang & muncul lagi).
+      Memudar saat digulir lewat filter (opacity tetap dipegang animasi masuk). */
+.stk-on .sl-open .sl-scroll{opacity:0;filter:opacity(calc(1 - var(--cp,0)*1.3))}
+
+/* 3) Foto layar loading di laptop/layar lebar tidak terpotong: foto tampil utuh, sisi kiri-kanan diisi salinan foto yang diburamkan.
+      HP (potret) tidak berubah. */
+#loader .ld-bg>img.ld-bk{display:none}
+@media (min-aspect-ratio:1/1){
+  #loader .ld-bg>img.ld-bk{display:block;object-fit:cover;filter:blur(28px) brightness(.8);transform:scale(1.12)}
+  #loader .ld-bg>img.ld-fg{object-fit:contain;object-position:50% 50%}
+}
