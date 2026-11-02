@@ -148,6 +148,7 @@
     const txt = `<div class="sl-pp-in al-${al}">
         ${lab ? up('sl-pp-l', 250, E(H, lab), null, side + '.l', tx(side === 'g' ? 'slide.groomLabel' : 'slide.brideLabel')) : ''}
         <div class="sl-pp-n" data-ad="${side}.n"${tx('couple.' + (side === 'g' ? 'groom' : 'bride') + '.fullName')}>${wipe(H, x.fullName || x.script, 500)}</div>
+        <i class="sl-pp-ln sl-draw" style="--d:1250ms" aria-hidden="true"></i>
         <div class="sl-pp-p" data-ad="${side}.p"${tx('couple.' + (side === 'g' ? 'groom' : 'bride') + '.parents', true)}>${words(H, x.parents, 36, 1300)}</div>
         ${ig}
       </div>`;
@@ -394,6 +395,9 @@
       e.classList.remove('stk-pin', 'stk-in', 'stk-grp', 'stk-s', 'stk-hid', 'stk-rise', 'stk-act', 'stk-q'); delete e.dataset.stk;
       e.style.removeProperty('--cp'); e.style.removeProperty('--rp'); e.style.removeProperty('--ep'); e.style.removeProperty('--ip'); e.classList.remove('stk-up', 'stk-back', 'stk-flat'); e.style.top = ''; e.style.transformOrigin = '';
     });
+    // v42: bersihkan timeline scroll (CSS scroll-driven) dari pemasangan sebelumnya
+    document.documentElement.classList.remove('sda'); root.style.removeProperty('timeline-scope'); root.style.removeProperty('--rh');
+    root.querySelectorAll('[data-tln],.has-tl').forEach((e) => { e.style.removeProperty('view-timeline-name'); e.style.removeProperty('--tlb'); e.classList.remove('has-tl', 'has-in'); delete e.dataset.tln; });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
     const pins = [], groups = [], rises = [], quotes = [];
@@ -438,7 +442,7 @@
     // sehingga bagian bawahnya (tombol Instagram/peta, teks posisi bawah) tak pernah terlihat dan kartu berikutnya "melompat".
     // Kini kartu menggulir sampai DASARNYA tepat di dasar layar, baru menempel; titik pusat skala = tepi atas bagian yang terlihat.
     const place = () => {
-      const H = VH();
+      const H = VH(); root.style.setProperty('--rh', H + 'px');
       const org = (el, h) => { el.style.transformOrigin = '50% ' + Math.max(0, Math.round(h - H)) + 'px'; };
       solo.forEach((p) => { const h = p.el.classList.contains('stk-q') ? p.el.offsetHeight : hgt(p.el); p.el.style.top = Math.min(0, Math.round(H - h)) + 'px'; org(p.el, h); });
       groups.forEach((g) => { // bagian berisi beberapa slide (mempelai, akad/resepsi) menempel saat slide TERAKHIRnya selesai digulir
@@ -450,6 +454,22 @@
     // kartu yang MASUK (menutupi kartu sebelumnya) menerima --ip 0→1: naik dari posisi miring (atas menjauh) lalu tegak saat sampai atas
     pins.forEach((p) => { if (!p.next) return; const t = p.next.classList.contains('sl-s') || p.next.classList.contains('stk-q') ? p.next : p.next.querySelector(':scope>.sl-s'); if (t && pins.some((q) => q.el === t) && !t.classList.contains('sl-open')) p.inc = t; });
     { const fed = new Set(pins.map((p) => p.inc).filter(Boolean)); pins.forEach((p) => { if (!fed.has(p.el)) p.el.classList.add('stk-flat'); }); } // kartu tanpa pendahulu dalam tumpukan: langsung tegak
+    // v42: TUMPUKAN 3D IKUT JARI tanpa getar — bila peramban mendukung CSS scroll-driven animations (Chrome/Edge 115+, Safari 26 / iOS 26),
+    // gerak kartu dihitung LANGSUNG oleh mesin scroll di GPU: tiap kartu yang menutupi diberi view-timeline bernama, kartu di bawahnya
+    // (dan lapisan gelap + teksnya) beranimasi mengikuti timeline itu; kartu yang masuk mengikuti view() miliknya sendiri.
+    // Peramban lama tetap memakai versi kelas + transisi (v39).
+    const SDA = !/[?&]nosda\b/.test(location.search) && !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: view()') && CSS.supports('timeline-scope: --a') && CSS.supports('animation-range: cover 0px cover 10px'));
+    if (SDA) {
+      const names = [];
+      pins.forEach((p, i) => {
+        if (!p.next) return;
+        const nm = '--stk' + i; names.push(nm);
+        p.next.style.setProperty('view-timeline-name', nm); p.next.dataset.tln = '1';
+        p.el.style.setProperty('--tlb', nm); p.el.classList.add('has-tl');
+        if (p.inc) p.inc.classList.add('has-in');
+      });
+      if (names.length) { root.style.setProperty('timeline-scope', names.join(', ')); document.documentElement.classList.add('sda'); }
+    }
     const tick = () => {
       raf = 0; const H = VH();
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
@@ -512,6 +532,7 @@
     cdFx(root, rm);
     stack(root, s.stack !== false && !rm && 'IntersectionObserver' in window);
     parallax(par, !rm && s.scrollPhoto !== false); // setelah stack(): foto di kartu bertumpuk digerakkan scroll, bukan parallax
+    dots(root, s.dots !== false);
     const els = root.querySelectorAll('.sl-s:not([data-stk]), .sl-foot');
     // bagian bawaan Tema 12 (galeri, live, gift, RSVP, ucapan): hiasan garis–berlian di atas tiap judul, ikut diputar ulang saat masuk layar
     root.querySelectorAll('[data-sid="gallery"],[data-sid="live"],[data-sid="gift"],[data-sid="rsvp"],[data-sid="wishes"]').forEach((sec) => {
@@ -744,6 +765,30 @@
       adj[key] = a; el.style.scale = a.s === 100 ? '' : String(a.s / 100); setBox(el, a);
       clearTimeout(wt); wt = setTimeout(() => done(JSON.parse(JSON.stringify(adj))), 350);
     }, { passive: false });
+  }
+
+  // ---------- v42: penanda posisi slide — titik tipis di sisi kanan (seperti website brand mewah), hanya penanda (tidak bisa diklik) ----------
+  let dotsOff = null;
+  function dots(root, on) {
+    if (dotsOff) { dotsOff(); dotsOff = null; }
+    const old = document.getElementById('slDots'); if (old) old.remove();
+    if (!on || !root) return;
+    const secs = [...root.children].filter((e) => e.matches('section.sec') && e.offsetHeight > 40);
+    if (secs.length < 3) return;
+    const host = document.getElementById('fixwrap') || document.body;
+    const nav = document.createElement('div'); nav.id = 'slDots'; nav.className = 'sl-dots'; nav.setAttribute('aria-hidden', 'true');
+    nav.innerHTML = secs.map(() => '<i></i>').join(''); host.appendChild(nav);
+    const ds = [...nav.children];
+    let raf = 0, cur = -1, shown = null;
+    const tick = () => {
+      raf = 0; const H = VH(), line = H * 0.45;
+      let k = 0; for (let i = 0; i < secs.length; i++) { if (secs[i].getBoundingClientRect().top <= line) k = i; }
+      if (k !== cur) { if (cur >= 0 && ds[cur]) ds[cur].classList.remove('on'); cur = k; ds[k].classList.add('on'); }
+      const sh = scrollY > H * 0.4 && !document.body.classList.contains('locked'); if (sh !== shown) { shown = sh; nav.classList.toggle('show', sh); }
+    };
+    const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
+    dotsOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); if (raf) cancelAnimationFrame(raf); raf = 0; };
   }
 
   // ---------- tombol ke atas (muncul setelah menggulir ke bawah) ----------

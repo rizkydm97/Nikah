@@ -348,3 +348,11 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 ## Tema 13 — v41 (2 Nov 2026): kartu QR — label berbeda dari tombol
 - Label QR (mis. "GIFT QR" / "QRIS") kini judul: ikon + teks di antara dua garis tipis, tanpa latar (tidak bisa diklik). Tombol buka QR kini tombol aksi lebar bersudut membulat dengan panah di kanan. Dulu keduanya pil hitam yang sama persis.
 - File berubah: `public/slide.css`, `lib/index.template.html`, `README.md`.
+
+## Tema 13 — v42 (2 Nov 2026): tumpukan 3D ikut jari (GPU), kedalaman, koreografi teks, penanda slide
+- **Tumpukan 3D ikut jari tanpa getar**: di peramban yang mendukung CSS scroll-driven animations (Chrome/Edge 115+, Safari 26 / iOS 26) gerak kartu dihitung langsung oleh mesin scroll di GPU (`animation-timeline: view()` + `view-timeline-name` per kartu penutup, `timeline-scope` di `#app`, kelas `html.sda`). Kartu masuk miring → tegak persis mengikuti jari; kartu tertutup mundur (miring, mengecil, tertinggal ke atas, meredup) mengikuti kartu penutupnya. Peramban lama otomatis memakai versi kelas + transisi (v39). Uji versi lama di komputer: tambahkan `?nosda` di alamat.
+- **Kedalaman**: lapisan gelap ber-vignette, bayangan jatuh berlapis di tepi atas kartu, garis tipis "tebal kertas" di tepi atas.
+- **Koreografi teks per kartu** (bahasa gerak sama dengan pembuka & penutup): mempelai — label terbuka dari sisi rata → nama tertulis seperti tinta → garis tipis tergambar → orang tua kata demi kata → tombol Instagram naik lembut; akad/resepsi — judul tertulis tinta → tanggal & jam "mendarat" → tempat → alamat → tombol peta. Arah tinta bervariasi: pria/acara kiri menulis kiri→kanan, wanita/acara kanan menulis kanan→kiri. Nama tidak lagi memakai filter bayangan + kilau berulang (lebih ringan di HP).
+- **Teks keluar halus** saat kartu mulai tertutup: memudar & naik sedikit, kembali saat digulir balik.
+- **Penanda posisi slide**: titik tipis di sisi kanan, titik aktif memanjang. Admin → Tema 13 Slide Foto → "Penanda posisi slide" (`slide.dots`, bawaan menyala).
+- File berubah: `public/slide.js`, `public/slide.css`, `public/admin/schema.js`, `public/admin/index.html`, `lib/index.template.html`, `default-config.json`, `README.md`.
