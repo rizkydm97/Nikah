@@ -356,3 +356,7 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Teks keluar halus** saat kartu mulai tertutup: memudar & naik sedikit, kembali saat digulir balik.
 - **Penanda posisi slide**: titik tipis di sisi kanan, titik aktif memanjang. Admin → Tema 13 Slide Foto → "Penanda posisi slide" (`slide.dots`, bawaan menyala).
 - File berubah: `public/slide.js`, `public/slide.css`, `public/admin/schema.js`, `public/admin/index.html`, `lib/index.template.html`, `default-config.json`, `README.md`.
+
+## Tema 13 — v43 (2 Nov 2026): pasangan nama ditulis dari luar ke tengah
+- Nama pertama (mis. Adi) ditulis kiri → kanan, nama kedua (mis. Debby) kanan → kiri, "&" muncul lembut di tengah. Berlaku di sampul (gaya Default & Elegant), pembuka Klasik (tinta) & Elegan 3D (nama 2 bangkit dari kanan), dan penutup — apa pun arah geser foto pembuka.
+- File berubah: `public/slide.css`, `lib/index.template.html`, `README.md`.

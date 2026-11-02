@@ -1419,3 +1419,28 @@ html:not(.sda) .stk-on .stk-pin.stk-back :is(.sl-pp-in,.sl-ev-in){opacity:0;tran
 .sl-dots i{display:block;width:5px;height:5px;border-radius:3px;background:rgba(20,20,20,.32);box-shadow:0 0 0 1px rgba(255,255,255,.55);transition:height .45s cubic-bezier(.2,.8,.2,1),background-color .45s ease}
 .sl-dots i.on{height:18px;background:rgba(20,20,20,.88)}
 @media (prefers-reduced-motion:reduce){.sl-dots i{transition:none}}
+
+
+/* =====================================================================
+   v43 — PASANGAN NAMA ditulis dari LUAR ke TENGAH: nama 1 (mis. Adi) kiri→kanan, nama 2 (mis. Debby) kanan→kiri
+   Berlaku di sampul, pembuka (Klasik & Elegan 3D) dan penutup, apa pun arah geser foto. "&" tetap muncul lembut di tengah.
+   ===================================================================== */
+/* sampul (sapuan potong) — gaya Default & Elegant */
+:root:root:root:root:root:root:root:root:root:root .slcv.play .sl-cv-nm .sl-np.n3 .sl-wipe{animation-name:slWipeRL!important}
+/* pembuka Klasik (tinta bertepi lembut) */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-np.n1 .sl-wipe{
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 36%,transparent 64%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 36%,transparent 64%,transparent 100%);
+  -webkit-mask-position:100% 0;mask-position:100% 0}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-np.n3 .sl-wipe{
+  -webkit-mask-image:linear-gradient(270deg,#000 0,#000 36%,transparent 64%,transparent 100%);mask-image:linear-gradient(270deg,#000 0,#000 36%,transparent 64%,transparent 100%);
+  -webkit-mask-position:0 0;mask-position:0 0}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n1 .sl-wipe{animation-name:slInk!important}
+html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-name:slInkRL!important}
+/* pembuka Elegan 3D: nama 1 bangkit dari kiri, nama 2 dari kanan */
+html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{animation-name:sl3dNameR!important}
+@keyframes sl3dNameR{0%{opacity:0;transform:translate3d(0,.45em,-60px) rotateX(-72deg) rotateY(10deg) scale(.94)}35%{opacity:1}100%{opacity:1;transform:none}}
+/* penutup (tinta) */
+:root:root:root:root:root:root:root:root:root:root .sl-cl .sl-cl-n .sl-np.n3 .sl-wipe{
+  -webkit-mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);
+  -webkit-mask-position:0 0;mask-position:0 0}
+:root:root:root:root:root:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n3 .sl-wipe{animation-name:slInkRL!important}
