@@ -363,7 +363,11 @@ const TH_PIC = 'bali,princess,emas,biru,rimba,klasik,dayak,airterjun,istana';
 (function () {
   const g = SCHEMA.find((x) => x.id === 'closing'); if (!g) return;
   const i = g.fields.findIndex((f) => f.k === 'closing.footerUrl');
-  g.fields.splice(i < 0 ? g.fields.length : i + 1, 0, { k: 'closing.credit', t: 'text', th: 'slide', l: 'Baris pembuat / hak cipta di paling bawah (mis. "© 2026 · Dibuat oleh Rizky Digital Invitation"). Kosong = otomatis "© tahun · nama"; isi tanda - (minus) untuk menyembunyikan' });
+  g.fields.splice(i < 0 ? g.fields.length : i + 1, 0, { k: 'closing.credit', t: 'text', th: 'slide', own: true, l: 'Baris hak cipta / pembuat (teks kecil paling bawah), mis. "© 2026 · Deem\'s Digital". Tampil persis seperti diketik; kosong = tidak ditampilkan' });
+  // Tema 13: label footer diperjelas agar teks & link tidak tertukar
+  const lab = (k, l) => { const f = g.fields.find((x) => x.k === k); if (!f) return; g.fields.splice(g.fields.indexOf(f) + 1, 0, Object.assign({}, f, { th: 'slide', own: true, l })); f.th = '!slide'; };
+  lab('closing.footer', 'Teks footer (tulisan tangan di bagian paling bawah, mis. nama mempelai). Kosong = tidak ditampilkan');
+  lab('closing.footerUrl', 'Link footer (opsional) — HANYA alamat web, mis. https://instagram.com/deemsdigital. Bila diisi, teks footer & baris hak cipta bisa diklik');
 })();
 // ====== v6: Tema 12 dan Tema 13 dipisah total di admin ======
 // Dulu beberapa kolom dipakai bersama & berlabel "Tema 12 & Tema 13" / "Tema 1-11", sehingga editor Tema 13 melihat istilah Tema 12

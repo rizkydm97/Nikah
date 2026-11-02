@@ -1303,3 +1303,23 @@ html[data-sl-sph="1"] :is(.sl-couple,.sl-events,.sl-q-ph,.sl-ch) .sl-ph.sph-in{s
   .stk-on .stk-pin:not(.sl-open),.stk-on .stk-pin.stk-in:not(.sl-open):not(.stk-flat),.stk-on .stk-pin.stk-back:not(.sl-open){transform:none!important;transition:none!important}
   html[data-sl-sph="1"] :is(.sl-couple,.sl-events,.sl-q-ph,.sl-ch) .sl-ph{scale:none!important;translate:none!important;transition:none!important}
 }
+/* v40: footer tanpa nama (hanya baris hak cipta) — lebih ringkas */
+.t-slide .sl-closing .sl-foot.no-name{padding-top:22px}
+.t-slide .sl-foot.no-name .sl-ft-y{margin-top:0}
+/* baris hak cipta tampil persis seperti diketik (tanpa huruf kapital paksa) */
+.t-slide .sl-foot .sl-ft-y{text-transform:none;letter-spacing:.04em;font-size:11.5px;color:#8a8a8a}
+
+/* =====================================================================
+   v41 — kartu QR: label ≠ tombol
+   Label "GIFT QR" dulu pil hitam, sama persis dengan tombol "Buka" → tamu bingung mana yang bisa diklik.
+   Kini label = judul (ikon + teks di antara dua garis tipis, tanpa latar), tombol = tombol aksi lebar dengan panah.
+   ===================================================================== */
+.t-slide .gift .sl-qr .sl-qr-k{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:0;border-radius:0;background:none;color:var(--ink,#111);
+  font-size:12px;font-weight:700;letter-spacing:.24em;pointer-events:none}
+.t-slide .gift .sl-qr .sl-qr-k::before,.t-slide .gift .sl-qr .sl-qr-k::after{content:"";flex:1;max-width:56px;height:1px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink,#111) 45%,transparent))}
+.t-slide .gift .sl-qr .sl-qr-k::after{transform:scaleX(-1)}
+.t-slide .gift .sl-qr .sl-qr-k svg{width:16px;height:16px;opacity:.85}
+.t-slide .gift .sl-qr .sl-qr-btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:min(100%,240px);margin:4px auto 0;padding:13px 44px 13px 22px;
+  border-radius:14px;font-size:13px;font-weight:600;letter-spacing:.04em;box-shadow:0 12px 24px -14px rgba(0,0,0,.7)}
+.t-slide .gift .sl-qr .sl-qr-btn::after{content:"";position:absolute;right:20px;top:50%;width:7px;height:7px;margin-top:-4px;border-right:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg)}
+.t-slide .gift .sl-qr .sl-qr-btn:active{transform:scale(.98)}

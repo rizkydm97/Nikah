@@ -338,3 +338,13 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Scroll tumpukan 3D tidak lagi patah-patah / naik-turun**. Penyebab: kemiringan & skala kartu (`--cp`, `--ip`) dan posisi foto (`--ep`) ditulis JavaScript setiap frame mengikuti scroll; di iPhone (gulir momentum) nilainya tertinggal 1–2 frame dari posisi layar → kartu & foto bergetar. Kini JS hanya mengganti kelas dengan ambang ganda (`stk-flat`: kartu masuk miring → tegak, `stk-back`: kartu tertutup mundur/mengecil/meredup, `sph-in`: foto mendarat), geraknya dijalankan transisi CSS di GPU. Parallax per frame dimatikan di layar sentuh. Kartu tanpa pendahulu (mis. setelah Sambutan) langsung tegak.
 - **Baris pembuat / hak cipta**: Admin → Penutup → "Baris pembuat / hak cipta" (`closing.credit`). Contoh: `© 2026 · Dibuat oleh Rizky Digital Invitation`. Kosong = otomatis "© tahun · nama"; isi `-` untuk menyembunyikan. Bisa juga diketik langsung di pratinjau.
 - File berubah: `public/slide.js`, `public/slide.css`, `public/admin/schema.js`, `public/admin/index.html`, `lib/index.template.html`, `default-config.json`, `README.md`.
+
+## Tema 13 — v40 (2 Nov 2026): footer penutup tampil persis seperti isian admin
+- Footer tidak lagi diisi otomatis. **Teks footer** (tulisan tangan) dan **Baris hak cipta / pembuat** tampil persis seperti diketik (tanpa huruf kapital paksa); kolom kosong = tidak ditampilkan; bila keduanya kosong, area footer abu-abu ikut hilang.
+- **Link footer** khusus alamat web (membuat footer bisa diklik). Bila kolom ini berisi teks biasa (mis. "@2026 - Deem's Digital") dan Baris hak cipta kosong, teks itu otomatis dipakai sebagai baris hak cipta.
+- Label ketiga kolom di Admin → Penutup (Tema 13) diperjelas.
+- File berubah: `public/slide.js`, `public/slide.css`, `public/admin/schema.js`, `public/admin/index.html`, `lib/index.template.html`, `README.md`.
+
+## Tema 13 — v41 (2 Nov 2026): kartu QR — label berbeda dari tombol
+- Label QR (mis. "GIFT QR" / "QRIS") kini judul: ikon + teks di antara dua garis tipis, tanpa latar (tidak bisa diklik). Tombol buka QR kini tombol aksi lebar bersudut membulat dengan panah di kanan. Dulu keduanya pil hitam yang sama persis.
+- File berubah: `public/slide.css`, `lib/index.template.html`, `README.md`.

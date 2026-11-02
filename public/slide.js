@@ -226,18 +226,19 @@
     const hrAt = nAt + 1700;                                               // garis + hati setelah nama tersapu penuh
     const tStep = Math.max(120, Math.min(260, Math.round(3200 / Math.max(tN, 1)))), tAt = hrAt + 500; // kata ucapan muncul tiap 120–260 ms (dulu 30 ms)
     const gAt = tAt + tN * tStep + 900;                                    // kilau emas lembut setelah semua kata tampil
+    // v40 footer: tampil PERSIS seperti isian admin — kosong = tidak ditampilkan (tanpa isi otomatis)
+    //   Teks footer (closing.footer)       → nama/teks dalam tulisan tangan
+    //   Baris hak cipta (closing.credit)   → teks kecil di bawahnya, mis. "© 2026 · Deem's Digital"
+    //   Link footer (closing.footerUrl)    → hanya alamat web; bila berisi teks biasa (bukan link) dan baris hak cipta kosong,
+    //                                         teks itu dipakai sebagai baris hak cipta (isian lama tidak hilang)
     const ft = String(o.footer == null ? '' : o.footer).trim();
-    const m = /^([\s\S]*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
-    const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
-    // baris hak cipta: "© tahun · nama mempelai" (tahun dari teks footer, atau dari tanggal acara); bila footer = nama mempelai, cukup "Undangan Pernikahan"
-    const nmJ = [nmc[0], nmc[1]].filter(Boolean).join(' & '), cy = fy || String((C.general && C.general.eventDate) || '').slice(0, 4).replace(/\D/g, '');
-    // baris pembuat / hak cipta bisa diisi sendiri di admin (Penutup → Baris pembuat); '-' = sembunyikan; kosong = otomatis
-    const credit = String(o.credit == null ? '' : o.credit).trim();
-    const cpN = nmJ && fn.replace(/\s+/g, ' ').toLowerCase() !== nmJ.toLowerCase() ? nmJ : 'Undangan Pernikahan';
-    // footer bergaya hak cipta yang bersih: nama dalam tulisan tangan + "© tahun · nama" kecil (dulu huruf kapital berjarak lebar + tahun bergaris → terlalu ramai)
-    const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${E(H, fn)}</div>`
-      + (credit === '-' ? '' : `<div class="sl-ft-y sl-up" style="--d:500ms" data-ad="cl.fy"${tx('closing.credit')}><span>${credit ? E(H, credit) : `&copy; ${E(H, cy)}${cy && cpN ? ' · ' : ''}${E(H, cpN)}`}</span></div>`);
-    const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
+    const fUrl = H.safeUrl(o.footerUrl), fRaw = String(o.footerUrl == null ? '' : o.footerUrl).trim();
+    let credit = String(o.credit == null ? '' : o.credit).trim();
+    if (!credit && fRaw && !fUrl) credit = fRaw;
+    if (credit === '-') credit = '';
+    const fin = (ft ? `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${E(H, ft)}</div>` : '')
+      + (credit ? `<div class="sl-ft-y sl-up" style="--d:${ft ? 500 : 150}ms" data-ad="cl.fy"${o.credit ? tx('closing.credit') : ''}><span>${E(H, credit)}</span></div>` : '');
+    const ftHtml = fin && fUrl ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>
       <div class="sl-cl-fx" aria-hidden="true">${spark}<u></u></div>
@@ -249,7 +250,7 @@
         <div class="sl-cl-hr sl-up" style="--d:${hrAt}ms;--hr:${hrAt}ms" aria-hidden="true" data-ad="cl.hr"><i></i>${H.ICON.heart}<i></i></div>
         <p class="sl-cl-tx" style="--gd:${gAt}ms" data-ad="cl.tx"${tx('closing.text', true)}>${words(H, o.text, tStep, tAt)}</p>
       </div>
-      </div><div class="footer sl-foot">${ftHtml}</div></section>`;
+      </div>${ftHtml ? `<div class="footer sl-foot${ft ? '' : ' no-name'}">${ftHtml}</div>` : ''}</section>`;
   }
 
   // ---------- 7. love story: judul → foto lebar penuh (kabut di tepi) → cerita + tahun, dipisah garis vertikal tipis ----------
