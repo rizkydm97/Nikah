@@ -322,3 +322,9 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 ## Tema 13 — v36 (2 Nov 2026): teks pembuka seirama geseran foto (mengikuti video referensi)
 - Pembuka 2 foto: foto naik masuk → foto 1 diam ±2 dtk → deretan foto bergeser (±2,0–4,4 dtk) **sambil** nama tertulis (nama 1 → & → nama 2 selesai tepat saat foto berhenti) → garis, tanggal, tagar menyusul setelah foto berhenti → foto 2 diam sambil perlahan mendekat. Berlaku untuk Elegan 3D, Klasik (tinta menulis searah geseran foto), dan Partikel (`ptext.js`). Dikali pengaturan kecepatan animasi.
 - File berubah: `public/slide.css`, `public/ptext.js`, `lib/index.template.html`, `README.md`.
+
+## Tema 13 — v37 (2 Nov 2026): tombol muat ucapan, nama penutup lebih cepat, footer hak cipta
+- **Ucapan & Doa**: "Muat ucapan lagi" diganti tombol penuh **Tampilkan ucapan lainnya** + lencana sisa ("9 lagi") + panah bawah; saat memuat, panah berubah jadi putaran. Daftar ucapan memudar di bagian bawah sebagai isyarat masih ada isi.
+- **Penutup**: nama mulai tertulis ±1 dtk setelah slide tampil (dulu ±3,4 dtk); "&" menyusul setelah nama pertama, garis hati & ucapan ikut maju.
+- **Footer**: tidak lagi huruf kapital berjarak lebar + tahun bergaris. Kini teks footer dalam tulisan tangan + satu baris kecil "© tahun · nama mempelai" (tahun dari teks footer atau tanggal acara; bila footer sudah berisi nama mempelai → "© 2026 · Undangan Pernikahan").
+- File berubah: `public/slide.js`, `public/slide.css`, `public/invitation.js`, `lib/index.template.html`, `README.md`.

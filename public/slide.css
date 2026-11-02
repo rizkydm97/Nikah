@@ -1211,3 +1211,34 @@ html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"
   -webkit-mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);-webkit-mask-position:0 0;mask-position:0 0}
 html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open[data-two="1"][data-dir="r"].play:not(.instant) .sl-op-n .sl-np:not(.n2) .sl-wipe{animation-name:slInkRL!important}
 @keyframes slInkRL{0%{opacity:0;-webkit-mask-position:0 0;mask-position:0 0;transform:translateY(.08em)}10%{opacity:1}100%{opacity:1;-webkit-mask-position:100% 0;mask-position:100% 0;transform:none}}
+
+/* =====================================================================
+   v37 — tombol "Tampilkan ucapan lainnya" (jelas tombol + sisa jumlah + putaran memuat) & footer hak cipta yang bersih
+   ===================================================================== */
+.t-slide .wishes .wl-more{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:12px 0 0;padding:13px 18px;border-radius:14px;cursor:pointer;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.32);color:#fff;font-family:var(--fBody,'Poppins',sans-serif);font-size:12.5px;font-weight:600;letter-spacing:.06em;
+  box-shadow:none;transition:background .25s,border-color .25s,transform .15s;-webkit-tap-highlight-color:transparent}
+.t-slide .wishes .wl-more[hidden]{display:none}
+.t-slide .wishes .wl-more:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.6)}
+.t-slide .wishes .wl-more:active{transform:scale(.98)}
+.t-slide .wishes .wl-more .wm-n{padding:3px 9px;border-radius:999px;background:#fff;color:#111;font-size:11px;font-weight:600;letter-spacing:0}
+.t-slide .wishes .wl-more .wm-n:empty{display:none}
+.t-slide .wishes .wl-more .wm-i{width:8px;height:8px;margin-top:-4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg)}
+.t-slide .wishes .wl-more.ld{pointer-events:none;opacity:.85}
+.t-slide .wishes .wl-more.ld .wm-i{width:14px;height:14px;margin:0;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;transform:none;animation:wmSpin .8s linear infinite}
+@keyframes wmSpin{to{transform:rotate(360deg)}}
+/* bayangan bawah daftar: isyarat masih ada ucapan di bawah */
+.t-slide .wishes .wl-list{-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 36px),transparent)}
+.t-slide .wishes .wl-list.paged,.t-slide .wishes .wl-list:empty{-webkit-mask-image:none;mask-image:none}
+
+/* footer: nama tulisan tangan + baris hak cipta kecil */
+.t-slide .sl-closing .sl-foot{padding:34px 20px calc(env(safe-area-inset-bottom,0px) + 84px);background:#f4f4f4}
+.t-slide .sl-foot .sl-ft-div{width:36px;margin:0 auto 16px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.35),transparent)}
+.t-slide .sl-foot .sl-ft-n{font-family:var(--fViv,'Vivaldi','Great Vibes',cursive);font-weight:400;font-size:calc(clamp(26px,8cqw,34px)*var(--scv,1.05));letter-spacing:0;padding:0 .1em;text-transform:none;color:#1b1b1b;line-height:1.2;opacity:0}
+.t-slide .sl-foot.sl-go .sl-ft-n{animation:slFade calc(1.4s*var(--tk,1)) ease .2s both}
+.t-slide .sl-foot .sl-ft-y{display:block;margin-top:10px;font-family:var(--fBody,'Poppins',sans-serif);font-style:normal;font-weight:500;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8d8d8d}
+.t-slide .sl-foot .sl-ft-y span{padding:0}
+.t-slide .sl-foot .sl-ft-y i{display:none}
+@supports (zoom:1){.t-slide .sl-foot .sl-ft-n{font-size:calc(8.4cqw*var(--scv,1.05))}}
+/* penutup: "&" menyusul setelah nama pertama mulai tertulis */
+:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n2 .sl-wipe{animation-delay:calc((var(--d,0ms) + 700ms)*var(--tk,1))!important}

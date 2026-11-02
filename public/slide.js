@@ -220,16 +220,21 @@
     // dihitung dari panjang teks supaya urutannya selalu rapi & tidak saling menimpa: ornamen → kicker (huruf demi huruf, pelan) → nama → garis hati → teks ucapan (kata demi kata) → kilau emas
     const nChr = (v) => [...String(v == null ? '' : v).replace(/\s+/g, '')].length, nWrd = (v) => String(v == null ? '' : v).split(/\s+/).filter(Boolean).length;
     const kN = nChr(o.kicker), tN = nWrd(o.text);
-    const kStep = kN > 20 ? 70 : 105, kAt = 2000;                         // huruf kicker muncul tiap 70–105 ms (dulu 44 ms)
-    const nAt = Math.max(3400, kAt + kN * kStep + 200);                    // nama mempelai menyusul setelah huruf kicker terakhir mulai
-    const hrAt = nAt + 2100;                                               // garis + hati setelah nama tersapu penuh
+    // v37: nama tampil lebih cepat — kicker mulai 0,9 dtk (huruf tiap 45–70 ms), nama segera menyusul (paling lambat ±1,6 dtk setelah kicker)
+    const kStep = kN > 20 ? 45 : 70, kAt = 900;
+    const nAt = kN ? Math.min(kAt + kN * kStep + 150, kAt + 1600) : 1000;
+    const hrAt = nAt + 1700;                                               // garis + hati setelah nama tersapu penuh
     const tStep = Math.max(120, Math.min(260, Math.round(3200 / Math.max(tN, 1)))), tAt = hrAt + 500; // kata ucapan muncul tiap 120–260 ms (dulu 30 ms)
     const gAt = tAt + tN * tStep + 900;                                    // kilau emas lembut setelah semua kata tampil
     const ft = String(o.footer == null ? '' : o.footer).trim();
     const m = /^([\s\S]*?)[\s·|,–—-]*((?:19|20)\d{2})$/.exec(ft);
     const fn = m ? m[1].trim() : ft, fy = m ? m[2] : '';
-    const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${chars(H, fn, 55, 350)}</div>`
-      + (fy ? `<div class="sl-ft-y sl-up" style="--d:1100ms" data-ad="cl.fy"><i></i><span>${E(H, fy)}</span><i></i></div>` : '');
+    // baris hak cipta: "© tahun · nama mempelai" (tahun dari teks footer, atau dari tanggal acara); bila footer = nama mempelai, cukup "Undangan Pernikahan"
+    const nmJ = [nmc[0], nmc[1]].filter(Boolean).join(' & '), cy = fy || String((C.general && C.general.eventDate) || '').slice(0, 4).replace(/\D/g, '');
+    const cpN = nmJ && fn.replace(/\s+/g, ' ').toLowerCase() !== nmJ.toLowerCase() ? nmJ : 'Undangan Pernikahan';
+    // footer bergaya hak cipta yang bersih: nama dalam tulisan tangan + "© tahun · nama" kecil (dulu huruf kapital berjarak lebar + tahun bergaris → terlalu ramai)
+    const fin = `<i class="sl-ft-div sl-draw" style="--d:100ms" data-ad="cl.fd" aria-hidden="true"></i><div class="sl-ft-n" data-ad="cl.ft"${tx('closing.footer')}>${E(H, fn)}</div>`
+      + `<div class="sl-ft-y sl-up" style="--d:500ms" data-ad="cl.fy"><span>&copy; ${E(H, cy)}${cy && cpN ? ' · ' : ''}${E(H, cpN)}</span></div>`;
     const ftHtml = H.safeUrl(o.footerUrl) ? `<a href="${H.link(o.footerUrl)}" target="_blank" rel="noopener">${fin}</a>` : fin;
     return `<section class="sec sl-closing" id="s-closing" style="--shd:${shade(H)}"><div class="sl-s sl-cl${tone(H)}">
       <div class="sl-ph"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh c"></i><i class="sl-vg"></i>

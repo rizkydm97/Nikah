@@ -1247,7 +1247,7 @@
           <div class="wphoto"><label class="wpick" for="wishPhoto">${SL ? ICON.cam : '📷'} <span id="wishPhotoTxt">Tambah foto profil (opsional)</span></label><input type="file" id="wishPhoto" accept="image/png,image/jpeg,image/webp" hidden><div class="wprev" id="wishPrev" hidden><img alt="" id="wishPrevImg"><button type="button" id="wishPrevX" aria-label="Hapus foto profil">✕</button></div></div>
           <button class="btn sq" type="submit">${ICON.send}${esc(o.button)}</button><div class="msg" id="wishMsg"></div></form>
         <div class="wl-head"><span>${SL ? ICON.chat : ''}Ucapan Tamu</span><em><b id="stW">0</b> Ucapan</em></div>
-        <div class="wl-list" id="wishList"></div><div class="wl-pager" id="wishPager" hidden><button type="button" id="wishOpen" class="wl-open"></button></div><div style="text-align:center"><button class="more" id="wishMore" hidden>Muat ucapan lagi</button></div></div></section>`;
+        <div class="wl-list" id="wishList"></div><div class="wl-pager" id="wishPager" hidden><button type="button" id="wishOpen" class="wl-open"></button></div><div style="text-align:center">${SL ? '<button type="button" class="more wl-more" id="wishMore" hidden><span class="wm-t">Tampilkan ucapan lainnya</span><span class="wm-n" id="wishLeft"></span><i class="wm-i" aria-hidden="true"></i></button>' : '<button class="more" id="wishMore" hidden>Muat ucapan lagi</button>'}</div></div></section>`;
     },
     closing(c) {
       const o = c.closing, s = c.scene;
@@ -1964,12 +1964,13 @@
     if (wPaged()) return loadWishPreview();
     if (wBusy && !reset) return; wBusy = true;
     if (reset) wOff = 0;
-    const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (!d || !d.items) return;
+    const mb0 = $('#wishMore'); if (mb0) mb0.classList.add('ld'); // tombol menampilkan putaran memuat
+    const d = await fetch(`/api/wishes?limit=10&offset=${wOff}`, { cache: 'no-store' }).then((r) => r.json()).catch(() => null); wBusy = false; if (mb0) mb0.classList.remove('ld'); if (!d || !d.items) return;
     if (reset) list.innerHTML = '';
     $('#stH').textContent = d.hadir; $('#stT').textContent = d.tidak; $('#stW').textContent = d.total;
     if (reset && !d.items.length) list.innerHTML = '<p class="wl-empty">Belum ada ucapan. Jadilah yang pertama! 💌</p>';
     list.insertAdjacentHTML('beforeend', d.items.map(wItem).join(''));
-    wOff += d.items.length; $('#wishMore').hidden = !d.items.length || wOff >= (+d.total || 0); // tanpa ucapan baru / total tak terbaca: berhenti (dulu bisa memuat ulang tanpa henti)
+    wOff += d.items.length; $('#wishMore').hidden = !d.items.length || wOff >= (+d.total || 0); { const wl = $('#wishLeft'); if (wl) wl.textContent = Math.max(0, (+d.total || 0) - wOff) + ' lagi'; } // tanpa ucapan baru / total tak terbaca: berhenti (dulu bisa memuat ulang tanpa henti)
     if (!$('#wishMore').hidden && list.scrollHeight <= list.clientHeight + 4) setTimeout(() => loadWishes(false), 0); // belum cukup panjang untuk di-scroll: muat lagi
   }
   async function post(url, body) {
