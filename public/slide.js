@@ -177,7 +177,7 @@
     const txt = `<div class="sl-pp-in al-${al}">
         ${lab ? up('sl-pp-l', 250, E(H, lab), null, side + '.l', tx(side === 'g' ? 'slide.groomLabel' : 'slide.brideLabel')) : ''}
         <div class="sl-pp-n" data-ad="${side}.n"${tx('couple.' + (side === 'g' ? 'groom' : 'bride') + '.fullName')}>${wipe(H, x.fullName || x.script, 500)}</div>
-        <i class="sl-pp-ln sl-draw" style="--d:1250ms" aria-hidden="true"></i>
+        <i class="sl-pp-ln sl-draw" style="--d:1250ms" data-ad="${side}.ln" aria-hidden="true"></i>
         <div class="sl-pp-p" data-ad="${side}.p"${tx('couple.' + (side === 'g' ? 'groom' : 'bride') + '.parents', true)}>${words(H, x.parents, 36, 1300)}</div>
         ${ig}
       </div>`;
