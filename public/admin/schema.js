@@ -154,6 +154,7 @@ const SCHEMA = [
     { k: 'slide.dots', l: 'PENANDA POSISI SLIDE: titik tipis di sisi kanan layar yang menunjukkan tamu sedang di bagian mana', t: 'bool', th: 'slide' },
     { k: 'slide.stack', l: 'EFEK TUMPUK 3D: slide naik menutupi slide sebelumnya (pembuka, mempelai, akad & resepsi) + penutup bangkit. Matikan bila HP terasa berat', t: 'bool', th: 'slide' },
     { k: 'slide.storyShape', l: 'LOVE STORY — Bentuk foto tiap cerita (foto lebar penuh, teks di bawah foto). Tiap cerita bisa diatur sendiri di menu Love Story', t: 'select', rr: 1, o: [['4/5', 'Potret 4:5'], ['3/4', 'Potret 3:4'], ['2/3', 'Potret tinggi 2:3'], ['1/1', 'Persegi 1:1'], ['4/3', 'Lanskap 4:3'], ['3/2', 'Lanskap 3:2'], ['16/9', 'Lanskap lebar 16:9']] },
+    { k: 'slide.storyFx', l: 'LOVE STORY — Efek animasi teks cerita (TextEffect, kata muncul bergantian)', t: 'select', o: [['blur', 'Blur — kata muncul dari buram menjadi jelas (bawaan)'], ['slide', 'Slide — naik halus dari bawah'], ['fade', 'Fade — muncul perlahan'], ['scale', 'Scale — membesar dari kecil'], ['shake', 'Shake — bergetar sebentar lalu diam']] },
     { k: 'slide.shade', l: 'Gelap-terang bayangan di atas foto (0 = tanpa bayangan, 100 = bawaan, 200 = lebih gelap)', t: 'range', min: 0, max: 200, step: 5, unit: '%', def: 100 },
     { k: 'slide.grayPhoto', l: 'Ubah semua foto/video slide jadi hitam putih (matikan agar foto tampil berwarna)', t: 'bool' },
   ] },
@@ -347,7 +348,7 @@ const TH_PIC = 'bali,princess,emas,biru,rimba,klasik,dayak,airterjun,istana';
     adj('events', 'POSISI & UKURAN TULISAN AKAD / RESEPSI — tarik langsung di pratinjau, atau pakai penggeser'));
   // LOVE STORY
   nested('story', 'story.items', 'year', 'slide');
-  G('story').fields.push(...clone(['slide.storyShape']), adj('story', 'POSISI & UKURAN TULISAN LOVE STORY'));
+  G('story').fields.push(...clone(['slide.storyShape', 'slide.storyFx']), adj('story', 'POSISI & UKURAN TULISAN LOVE STORY'));
   // PENUTUP
   G('closing').fields.push(...clone(['slide.closingMedia']), adj('closing', 'POSISI & UKURAN TULISAN PENUTUP'));
   // GIFT & RSVP: kolom latar ini dipakai Tema 12 DAN Tema 13 (Tema 13 memakai tampilan Tema 12 untuk bagian ini)

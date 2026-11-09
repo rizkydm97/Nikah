@@ -39,6 +39,35 @@
   // data-tx = alamat teks di konfigurasi (dipakai pratinjau admin: klik 2× pada tulisan untuk mengubah teksnya langsung)
   const tx = (path, ml) => ` data-tx="${path}"${ml ? ' data-ml="1"' : ''}`;
 
+
+  // ---------- TextEffect (porting vanilla dari komponen React "text-effect" motion-primitives) ----------
+  // per = 'word' → tiap kata jadi <span class="sl-wd"> yang masuk bergantian (stagger); preset = blur | slide | fade | scale | shake (gerak ada di slide.css: [data-te])
+  const TE_PRESETS = ['blur', 'slide', 'fade', 'scale', 'shake'];
+  const tePreset = (H) => { const v = String(sl(H).storyFx || 'blur'); return TE_PRESETS.indexOf(v) >= 0 ? v : 'blur'; };
+  // Pecah cerita jadi paragraf pendek: Enter di admin = paragraf baru; bila hanya satu blok panjang, dipecah otomatis per kalimat (maks. 3 paragraf, ±3–4 baris)
+  function splitParas(text) {
+    let t = String(text == null ? '' : text).replace(/\r/g, '').replace(/([a-z\u00e0-\u00ff][.!?])(?=[A-Z\u00c0-\u00dd])/g, '$1 ').trim(); // "terlupakan.Dan" → "terlupakan. Dan"
+    if (!t) return [];
+    let ps = t.split(/\n+/).map((x) => x.trim()).filter(Boolean);
+    if (ps.length > 1 || t.length < 200) return ps;
+    const sent = t.split(/(?<=[.!?])\s+/).filter(Boolean);
+    if (sent.length < 3) return [t];
+    // cari titik potong yang membuat paragraf paling seimbang (panjang terpanjang sekecil mungkin)
+    const len = (i, j) => sent.slice(i, j).join(' ').length, N = sent.length;
+    let best = null;
+    for (let i = 1; i < N - 1; i++) for (let j = i + 1; j < N; j++) {
+      const m = Math.max(len(0, i), len(i, j), len(j, N));
+      if (!best || m < best[0]) best = [m, i, j];
+    }
+    ps = [sent.slice(0, best[1]).join(' '), sent.slice(best[1], best[2]).join(' '), sent.slice(best[2]).join(' ')];
+    return ps;
+  }
+  function textEffect(H, text, start, step) {
+    let n = 0; start = start || 0; step = step || 45;
+    return splitParas(text).map((p) => `<span class="sl-ch-p">${p.split(/\s+/).filter(Boolean)
+      .map((w) => `<span class="sl-wd" aria-hidden="true" style="--d:${start + (n++) * step}ms">${E(H, w)}</span>`).join(' ')}</span>`).join('');
+  }
+
   // ---------- foto / video / YouTube ----------
   function media(H, o, k, cls) {
     const u = H.safeUrl(o && o[k]); if (!u) return '';
@@ -264,7 +293,7 @@
       return `<div class="sl-s sl-ch${tone(H)}" style="${rv(sh)}">
         <div class="sl-ch-t" data-ad="ch.t"${tx('story.items.' + i + '.title')}>${wipe(H, e.title, 150)}</div>
         <div class="sl-fr"><div class="sl-ph from-${side}"><div class="sl-pk">${ph(H, src, 'sl-pm')}</div></div><i class="sl-sh f2"></i><i class="sl-sh f"></i></div>
-        <div class="sl-ch-b"><p class="sl-ch-tx" data-ad="ch.tx"${tx('story.items.' + i + '.text', true)}>${words(H, e.text, 22, 700)}</p>${e.year ? up('sl-ch-y', 1500, E(H, e.year), null, 'ch.y', tx('story.items.' + i + '.year')) : ''}</div>
+        <div class="sl-ch-b">${e.year ? up('sl-ch-y', 500, E(H, e.year) + '<i class="sl-ch-yl sl-draw" style="--d:900ms"></i>', null, 'ch.y', tx('story.items.' + i + '.year')) : ''}<div class="sl-ch-tx" data-te="${tePreset(H)}" role="text" aria-label="${E(H, e.text)}" data-ad="ch.tx"${tx('story.items.' + i + '.text', true)}>${textEffect(H, e.text, e.year ? 1100 : 700, 45)}</div></div>
         ${i < items.length - 1 ? '<i class="sl-vl sl-draw sl-vl-e" style="--d:1900ms"></i>' : ''}</div>`;
     }).join('');
     return `<section class="sec sl-story" id="s-story">${head}${chs}</section>`;

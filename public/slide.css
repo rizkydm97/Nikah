@@ -235,9 +235,26 @@ html[data-sl-anim="fade"] :is(.sl-go,.sl-open.play,.slcv.play) .sl-pm,html[data-
 .sl-ch{display:flex;flex-direction:column;align-items:center;padding:6px 0 0}
 .sl-ch-t{font-family:var(--fScript);font-size:calc(clamp(34px,calc(var(--cw,4.2px)*11.5),52px)*var(--sc,1));font-size:calc(clamp(34px,11.5cqw,52px)*var(--sc,1));line-height:1.15;padding:.04em .1em .1em;margin:0 0 12px;color:var(--ink)}
 .sl-ch .sl-fr{background:var(--paper);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 3%,#000 97%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 3%,#000 97%,transparent 100%)}
-.sl-ch-b{width:100%;padding:10px 30px 0;max-width:32em}
-.sl-ch-tx{margin:0;font-size:13.5px;line-height:1.85;color:var(--body);text-wrap:pretty}
-.sl-ch-y{margin-top:12px;font-family:var(--fDisplay);font-style:italic;font-weight:600;font-size:18px;letter-spacing:.05em;color:var(--ink)}
+.sl-ch-b{width:85%;padding:12px 0 0;max-width:30em}
+.sl-ch-tx{margin:0;font-size:13.5px;line-height:1.8;color:var(--body);text-align:center;text-wrap:pretty}
+.sl-ch-p{display:block;margin:0 0 14px}.sl-ch-p:last-child{margin-bottom:0}
+.sl-ch-y{margin:0 0 16px;font-family:var(--fScript);font-style:normal;font-weight:400;font-size:28px;line-height:1.1;letter-spacing:.02em;color:var(--ink)}
+.sl-ch-yl{display:block;width:34px;height:1px;margin:9px auto 0;background:currentColor;opacity:.5}
+html[data-sl-font="cover"] .t-slide .sl-ch-y{font-family:var(--fViv,'Vivaldi','Great Vibes',cursive)}
+html[data-sl-font="serif"] .t-slide .sl-ch-y{font-family:var(--fDisplay);font-style:italic;font-weight:600;font-size:20px;letter-spacing:.06em}
+/* TextEffect (preset per kata) — hanya mengganti gerak kata; gaya \"Elegant Animation\" tetap menang karena animasinya !important */
+.sl-ch-tx[data-te] .sl-wd{transform:none}
+.sl-ch-tx[data-te] .sl-wd{animation-duration:calc(.6s*var(--tk,1));animation-timing-function:cubic-bezier(.22,.8,.3,1)}
+.sl-ch-tx[data-te="blur"] .sl-wd{animation-name:slTeBlur}
+.sl-ch-tx[data-te="slide"] .sl-wd{animation-name:slTeSlide}
+.sl-ch-tx[data-te="fade"] .sl-wd{animation-name:slTeFade}
+.sl-ch-tx[data-te="scale"] .sl-wd{animation-name:slTeScale}
+.sl-ch-tx[data-te="shake"] .sl-wd{animation-name:slTeShake;animation-duration:calc(.7s*var(--tk,1))}
+@keyframes slTeBlur{from{opacity:0;filter:blur(10px)}to{opacity:1;filter:blur(0)}}
+@keyframes slTeSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes slTeFade{from{opacity:0}to{opacity:1}}
+@keyframes slTeScale{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+@keyframes slTeShake{0%{opacity:0;transform:translateX(0)}20%{opacity:1;transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}100%{opacity:1;transform:none}}
 .sl-vl-e{margin-top:30px;height:64px}
 
 @media (prefers-reduced-motion:reduce){
