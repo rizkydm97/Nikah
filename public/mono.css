@@ -7,6 +7,8 @@
 .mn-c{display:inline-block;opacity:0;transform:translateY(.55em);filter:blur(6px)}
 
 /* ---------- sampul ---------- */
+/* nama mempelai: efek timbul 3D — tebal (extrude) tipis & tajam + bayangan jatuh kecil; TANPA halo hitam yang blur lebar */
+.mono .mn-nm,.mono-hero .mh-names{--mn3d:0 1px 0 rgba(28,28,28,.62),0 2px 0 rgba(28,28,28,.55),0 3px 0 rgba(28,28,28,.46),0 4px 1px rgba(0,0,0,.34),0 7px 7px rgba(0,0,0,.30),0 0 1px rgba(0,0,0,.55)}
 .cover.mono{background:#0d0d0d;color:#fff;font-family:var(--fBody)}
 .mono .mn-bg{position:absolute;inset:0;overflow:hidden;background:linear-gradient(160deg,#2a2a2a,#0c0c0c)}
 .mono .mn-kb{position:absolute;inset:0;animation:mnKb 22s ease-in-out infinite alternate;will-change:transform}
@@ -17,7 +19,7 @@
 .mono .mn-sh::after{content:"";position:absolute;inset:0;background:inherit;opacity:calc(var(--shd,1) - 1)}
 .mono .mn-top{position:absolute;left:0;right:0;top:var(--kY,calc(var(--ch,7px)*7.5));top:var(--kY,7.5cqh);text-align:center}
 .mono .mn-k{font-size:clamp(11px,calc(var(--cw,4.2px)*3.3),14px);font-size:clamp(11px,3.3cqw,14px);letter-spacing:.32em;text-transform:uppercase;font-weight:500;padding-left:.32em}
-.mono .mn-nm{position:absolute;left:0;right:0;top:var(--nmY,calc(var(--ch,7px)*15));top:var(--nmY,15cqh);text-align:center;font-family:var(--fScript);line-height:1.12;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.mono .mn-nm{position:absolute;left:0;right:0;top:var(--nmY,calc(var(--ch,7px)*15));top:var(--nmY,15cqh);text-align:center;font-family:var(--fScript);line-height:1.12;text-shadow:var(--mn3d)}
 .mono .mn-n{display:block;font-size:calc(clamp(48px,calc(var(--cw,4.2px)*17),82px)*var(--nmS,1));font-size:calc(clamp(48px,17cqw,82px)*var(--nmS,1))}
 .mono .mn-n.a{text-align:left;padding-left:16%}
 .mono .mn-n.b{text-align:right;padding-right:16%;margin-top:0}
@@ -263,7 +265,7 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .mono-hero.full .mh-ph .mn-yt{width:max(100%,177.78vh);width:max(100%,177.78svh);height:max(100%,56.25vw);min-width:0;min-height:0;aspect-ratio:auto}
 .mono-hero.full .mh-mono{color:#fff}
 .mono-hero.full .mh-k{position:absolute;top:6vh;top:6svh;left:0;right:0;color:#fff}
-.mono-hero.full .mh-names{color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.5);margin-top:0}
+.mono-hero.full .mh-names{color:#fff;text-shadow:var(--mn3d);margin-top:0}
 .mono-hero.full .mh-amp{color:rgba(255,255,255,.85)}
 .mono-hero.full .mh-orn{filter:invert(1) brightness(1.2);opacity:.9}
 .mono-hero.full .mh-date{color:#fff}
@@ -406,7 +408,7 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 @keyframes mnTrackD{from{letter-spacing:.8em;opacity:0}to{letter-spacing:.3em;opacity:1}}
 @keyframes mnAmpSpin{from{opacity:0;transform:scale(.25) rotate(-220deg)}to{opacity:.9;transform:none}}
 @keyframes mnLine{to{transform:scaleX(1)}}
-@keyframes mnGlow{0%,62%,100%{text-shadow:none}80%{text-shadow:0 0 14px rgba(255,255,255,.9),0 0 32px rgba(255,255,255,.35)}}
+@keyframes mnGlow{0%,62%,100%{text-shadow:var(--mn3d)}80%{text-shadow:var(--mn3d),0 0 10px rgba(255,255,255,.75),0 0 22px rgba(255,255,255,.28)}}
 .mono .mn-k{animation:mnTrackK calc(1.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(.2s*var(--tk,1)) both}
 .mono-hero.play .mh-k{animation:mnTrackK calc(1.9s*var(--tk,1)) cubic-bezier(.2,.7,.2,1) calc(.4s*var(--tk,1)) both}
 .mono .mn-amp{animation:mnAmpSpin calc(1.3s*var(--tk,1)) cubic-bezier(.2,.8,.2,1) calc(1.05s*var(--tk,1)) both}
