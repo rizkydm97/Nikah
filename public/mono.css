@@ -283,14 +283,15 @@ body.t-mono{background:var(--sideBg,#e6e6e6)}
 .t-mono .sec.mn-lite{background:var(--paper);color:var(--mn-bd,#111);overflow:hidden;position:relative}
 .t-mono .mn-lite>*:not(.mn-dec){position:relative;z-index:1}
 .t-mono .mn-dec{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.t-mono .mn-dc{position:absolute;height:auto;pointer-events:none}
-.t-mono .mn-dec.rect .mn-dc{width:34%}
-.t-mono .mn-dec.rect .tl{left:-6%;top:-2%;transform:rotate(180deg)}
-.t-mono .mn-dec.rect .tr{right:-6%;top:-2%;transform:scaleY(-1)}
-.t-mono .mn-dec.rect .bl{left:-6%;bottom:-2%;transform:scaleX(-1)}
-.t-mono .mn-dec.rect .br{right:-6%;bottom:-2%}
-.t-mono .mn-dec.sprig .a{left:-5%;top:0;width:22%}
-.t-mono .mn-dec.sprig .b{right:-6%;bottom:0;width:44%}
+.t-mono .mn-dw{position:absolute;pointer-events:none;will-change:transform,opacity}
+.t-mono .mn-dc{display:block;width:100%;height:auto;pointer-events:none}
+.t-mono .mn-dec.rect .mn-dw{width:34%}
+.t-mono .mn-dec.rect .mn-dw.tl{left:-6%;top:-2%}.t-mono .mn-dec.rect .mn-dc.tl{transform:rotate(180deg)}
+.t-mono .mn-dec.rect .mn-dw.tr{right:-6%;top:-2%}.t-mono .mn-dec.rect .mn-dc.tr{transform:scaleY(-1)}
+.t-mono .mn-dec.rect .mn-dw.bl{left:-6%;bottom:-2%}.t-mono .mn-dec.rect .mn-dc.bl{transform:scaleX(-1)}
+.t-mono .mn-dec.rect .mn-dw.br{right:-6%;bottom:-2%}
+.t-mono .mn-dec.sprig .mn-dw.a{left:-5%;top:0;width:22%}
+.t-mono .mn-dec.sprig .mn-dw.b{right:-6%;bottom:0;width:44%}
 /* RSVP versi terang: tulisan & kolom gelap */
 .t-mono .mn-lite.rsvp .big{color:var(--mn-hd,#111)}
 .t-mono .mn-lite.rsvp .sub{color:var(--mn-bd,#111)}

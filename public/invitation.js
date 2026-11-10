@@ -1141,8 +1141,11 @@
   const MNA = '/assets/mono/';
   function monoDeco(c) {
     const st = (c.mono && c.mono.frameStyle) || 'rect';
-    if (st === 'rect') return `<div class="mn-dec rect" aria-hidden="true">${['tl', 'tr', 'bl', 'br'].map((q) => `<img class="mn-dc ${q}" src="${MNA}rose-corner.webp" alt="" decoding="async">`).join('')}</div>`;
-    return `<div class="mn-dec sprig" aria-hidden="true"><img class="mn-dc a" src="${MNA}sprig-tall.webp" alt="" decoding="async"><img class="mn-dc b" src="${MNA}sprig-arc.webp" alt="" decoding="async"></div>`;
+    // bunga dibungkus .rv + data-a="bloom-*" (sama seperti bunga Galeri) -> masuk dari tepi & diputar ulang tiap section di-scroll.
+    // Pembungkus (.mn-dw) yang bergerak; flip/rotasi gambar tetap di <img> agar tidak bentrok dengan transform animasi.
+    const dw = (cls, anim, i, src) => `<div class="rv mn-dw ${cls}" data-a="${anim}" style="--i:${i}"><img class="mn-dc ${cls}" src="${MNA}${src}" alt="" decoding="async"></div>`;
+    if (st === 'rect') return `<div class="mn-dec rect" aria-hidden="true">${dw('tl', 'bloom-l', 0, 'rose-corner.webp')}${dw('tr', 'bloom-r', 1, 'rose-corner.webp')}${dw('bl', 'bloom-ul', 0, 'rose-corner.webp')}${dw('br', 'bloom-ur', 1, 'rose-corner.webp')}</div>`;
+    return `<div class="mn-dec sprig" aria-hidden="true">${dw('a', 'bloom-l', 0, 'sprig-tall.webp')}${dw('b', 'bloom-ur', 1, 'sprig-arc.webp')}</div>`;
   }
   function monoSecBg(c, o, key) { // -> { html, style } bila ada foto latar buatan admin; null = pakai latar bawaan tema
     const m = c.mono || {}, own = safeUrl(m[key]), u = own || safeUrl(o.bg);
