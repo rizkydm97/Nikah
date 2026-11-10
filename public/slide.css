@@ -1529,4 +1529,22 @@ html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3)
    2) di pembuka, grid dilebarkan sedikit melewati padding samping (6% kiri-kanan) supaya nama panjang tetap muat tanpa menggeser "&" jauh.
    3) kotak sapuan/tinta diberi ruang ekstra untuk ekor huruf script yang menjorok (padding + margin negatif -> posisi visual tidak berubah). */
 html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3){width:auto;margin-inline:-6%}
-:root:root .sl-op-n .sl-wipe{padding:.05em .16em .16em;margin:-.05em -.16em -.16em}
+/* (dihapus: padding di kotak luar tidak menolong karena warna dicat pada <span> lewat background-clip:text) */
+/* v46b — penutup: area nama juga dilebarkan sedikit (sama seperti pembuka). Ekor huruf sudah aman karena span nama penutup memang berpadding .14em. */
+:root:root:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3){width:auto;margin-inline:-6%}
+
+/* =====================================================================
+   v47 — Pembuka: huruf terakhir terpotong (Klasik memakai background-clip:text -> cat hanya ada di dalam kotak <span>).
+   Span nama pembuka diberi ruang untuk ekor huruf script (padding), seperti span nama penutup. Tanpa margin negatif -> jarak "&" tetap lega.
+   ===================================================================== */
+:root:root:root .sl-open .sl-op-n .sl-wipe>span{padding:.06em .13em .16em}
+
+/* =====================================================================
+   v47 — Nama tampil 3D di gaya Klasik (pembuka & penutup): huruf putih dengan ketebalan champagne bertingkat + bayangan jatuh lembut.
+   Memakai filter drop-shadow bertumpuk (bukan text-shadow) karena teks diwarnai lewat background-clip:text.
+   Gaya Elegan 3D sudah punya timbul sendiri (text-shadow) dan tidak diubah.
+   ===================================================================== */
+html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root .sl-open .sl-op-n{
+  filter:drop-shadow(0 1px 0 #efe3c6) drop-shadow(0 2px 0 #d9c69a) drop-shadow(0 3px 0 #b9a171) drop-shadow(0 7px 7px rgba(0,0,0,.42))}
+:root:root:root:root:root:root:root .sl-cl-n{
+  filter:drop-shadow(0 1px 0 #efe3c6) drop-shadow(0 2px 0 #d9c69a) drop-shadow(0 3px 0 #b9a171) drop-shadow(0 7px 7px rgba(0,0,0,.42))}
