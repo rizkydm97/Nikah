@@ -240,18 +240,45 @@
     if (!blob) throw new Error('Foto gagal dikonversi. Coba format JPG/PNG.');
     return new File([blob], file.name.replace(/\.[^.]+$/, '').replace(/[^\w.-]+/g, '_') + '.jpg', { type: 'image/jpeg' });
   }
-  async function shrink(file) {
+  // Kompres foto otomatis saat upload -> WebP (lebih kecil ±70%, tampilan hampir sama).
+  // Tingkat: std = foto biasa/galeri (lebar 1200, kualitas .78) | hi = foto layar penuh seperti cover/penutup/latar (1600, .82)
+  //          deco = hiasan/ornamen PNG transparan (2000, .90) | safe = hanya diperkecil, format tetap (preview link WhatsApp) | raw = tidak diubah (ikon tab)
+  const IMG_PRESET = { std: { w: 1200, q: 0.78 }, hi: { w: 1600, q: 0.82 }, deco: { w: 2000, q: 0.9 }, safe: { w: 1200, q: 0.82 } };
+  const fmtKB = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';
+  async function isAnimatedWebp(file) {
+    try { const b = new Uint8Array(await file.slice(0, 512).arrayBuffer()); return new TextDecoder('latin1').decode(b).includes('ANIM'); } catch { return false; }
+  }
+  async function shrink(file, kind) {
+    kind = kind || 'std';
     if (isImageFile(file) && !IMG_DIRECT.test(file.name)) file = await toJpeg(file);
-    if (!/^image\/(jpeg|webp|png)$/.test(file.type) || file.size < 700e3) return file;
+    if (kind === 'raw' || !/^image\/(jpeg|webp|png)$/.test(file.type)) return file;
+    if (file.type === 'image/webp' && await isAnimatedWebp(file)) return file; // WebP animasi: jangan dirusak
+    const { w: maxW, q } = IMG_PRESET[kind] || IMG_PRESET.std;
     try {
-      const bmp = await createImageBitmap(file); const max = 2000; const sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
-      const c = document.createElement('canvas'); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
-      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      let bmp; try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch { bmp = await createImageBitmap(file); }
+      if (file.size < 40e3 && bmp.width <= maxW) return file; // sudah kecil
+      const sc = Math.min(1, maxW / bmp.width);
+      const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(bmp.width * sc)); c.height = Math.max(1, Math.round(bmp.height * sc));
+      const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
       const isPng = file.type === 'image/png';
-      const mime = isPng ? 'image/webp' : 'image/jpeg', ext = isPng ? '.webp' : '.jpg';
-      const blob = await new Promise((r) => c.toBlob(r, mime, 0.88));
-      if (!blob || blob.type !== mime || blob.size >= file.size) return file;
-      return new File([blob], file.name.replace(/\.\w+$/, ext), { type: mime });
+      const base = file.name.replace(/\.\w+$/, '');
+      let out = null;
+      if (kind !== 'safe') { // WebP (Chrome, Edge, Firefox, Safari baru)
+        if (!isPng) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); }
+        x.drawImage(bmp, 0, 0, c.width, c.height);
+        const blob = await new Promise((r) => c.toBlob(r, 'image/webp', isPng && kind !== 'std' ? Math.max(q, 0.9) : q));
+        if (blob && blob.type === 'image/webp') out = new File([blob], base + '.webp', { type: 'image/webp' });
+      }
+      if (!out) { // cadangan: browser tidak bisa membuat WebP (Safari lama) atau mode "safe" -> format asli, hanya diperkecil
+        const mime = isPng ? 'image/png' : 'image/jpeg', ext = isPng ? '.png' : '.jpg';
+        x.clearRect(0, 0, c.width, c.height);
+        if (!isPng) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); }
+        x.drawImage(bmp, 0, 0, c.width, c.height);
+        const blob = await new Promise((r) => c.toBlob(r, mime, isPng ? undefined : q));
+        if (blob && blob.type === mime) out = new File([blob], base + ext, { type: mime });
+      }
+      if (!out || out.size >= file.size) return file; // hasil tidak lebih kecil -> pakai aslinya
+      return out;
     } catch { return file; }
   }
   // ---------- video: terima format apa saja, otomatis dikonversi ke MP4/WebM yang bisa diputar semua HP ----------
@@ -298,10 +325,12 @@
       return new File([blob], file.name.replace(/\.[^.]+$/, '') .replace(/[^\w.-]+/g, '_') + ext, { type: blob.type });
     } finally { URL.revokeObjectURL(url); v.removeAttribute('src'); v.load(); }
   }
-  async function upload(file) {
+  async function upload(file, kind) {
+    upload.note = '';
     if (isVideoFile(file)) file = await prepareVideo(file);
     if (file.size > 50e6) throw new Error('Video masih ' + (file.size / 1e6).toFixed(0) + 'MB — batas Supabase gratis 50MB. Pakai video yang lebih pendek.');
-    const f = await shrink(file);
+    const f = await shrink(file, kind);
+    if (f !== file && isImageFile(file)) upload.note = ' (foto dikompres ' + fmtKB(file.size) + ' → ' + fmtKB(f.size) + ')';
     if (f.size <= 3.8e6) { // file kecil: lewat server (paling andal)
       const r = await fetch('/api/admin/upload?name=' + encodeURIComponent(f.name), { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: f, credentials: 'same-origin' });
       const d = await r.json().catch(() => ({}));
@@ -469,7 +498,7 @@
       wrap._paint = paint;
       const apply = (u) => { tx.value = u; set(u); paint(); };
       const btns = h('div', { class: 'acts' },
-        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isMed ? 'image/*,video/*' : isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl)); toast('Terunggah ✓ — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
+        h('button', { class: 'btn sm', type: 'button', onclick: async () => { const [fl] = await pickFile(isMed ? 'image/*,video/*' : isImg ? 'image/*' : isAud ? 'audio/*' : 'video/*'); if (!fl) return; try { toast('Mengunggah…'); apply(await upload(fl, /favicon/i.test(f.k || '') ? 'raw' : /ogImage/i.test(f.k || '') ? 'safe' : f.deco ? 'deco' : (f.ar || f.bg || f.arKey) ? 'hi' : 'std')); toast('Terunggah ✓' + (upload.note || '') + ' — klik SIMPAN agar tampil di undangan'); } catch (e) { toast(e.message, true); } } }, 'Unggah'),
         h('button', { class: 'btn sm', type: 'button', onclick: async () => { const u = await openLibrary(isMed ? 'media' : isImg ? 'image' : isAud ? 'audio' : 'video'); if (u) apply(u); } }, 'Pustaka'),
         isImg && !f.deco ? h('button', { class: 'btn sm pri', type: 'button', onclick: () => /\.(mp4|webm|mov|m4v)(\?|$)|youtu/i.test(get() || '') ? toast('Video tidak perlu diatur posisinya', true) : openAdjust(f, obj, key, () => { (onChange || changed)(true); paint(); }) }, '✥ Atur posisi') : null,
         defVal !== undefined ? h('button', { class: 'btn sm', type: 'button', onclick: () => apply(defVal) }, 'Default') : null,
@@ -906,6 +935,60 @@
     gen2(); return m;
   }
 
+  // ---------- kompres foto LAMA yang masih dipakai undangan (tanpa upload ulang) ----------
+  const SB_IMG = /\/storage\/v1\/object\/public\/uploads\/[^?#"')\s]+\.(jpe?g|png|webp)(\?[^"')\s]*)?$/i;
+  function collectOldPhotos() {
+    const flat = new Map(SCHEMA.flatMap((g) => g.fields).filter((f) => f.k).map((f) => [f.k, f]));
+    const order = { raw: 0, safe: 1, deco: 2, hi: 3, std: 4 }; // satu foto dipakai di beberapa tempat -> ambil perlakuan paling hati-hati
+    const found = new Map();
+    (function walk(o, path) {
+      if (typeof o === 'string') {
+        if (!SB_IMG.test(o)) return;
+        const f = flat.get(path);
+        const kind = /favicon/i.test(path) ? 'raw' : /ogImage/i.test(path) ? 'safe' : f && f.deco ? 'deco' : f && (f.ar || f.bg || f.arKey) ? 'hi' : 'std';
+        if (!found.has(o) || order[kind] < order[found.get(o)]) found.set(o, kind);
+      } else if (Array.isArray(o)) o.forEach((v) => walk(v, path + '[]'));
+      else if (o && typeof o === 'object') Object.keys(o).forEach((k) => walk(o[k], path ? path + '.' + k : k));
+    })(cfg, '');
+    return [...found].filter(([, k]) => k !== 'raw');
+  }
+  async function compressOldPhotos(box) {
+    const items = collectOldPhotos();
+    if (!items.length) { toast('Tidak ada foto lama yang perlu dikompres'); return; }
+    if (!confirm('Ditemukan ' + items.length + ' foto yang dipakai undangan.\n\nSemuanya akan dikompres ke WebP dan link-nya diganti otomatis. Foto lama TIDAK dihapus (aman untuk jaga-jaga).\n\nSetelah selesai, klik "Simpan perubahan" agar undangan memakai foto baru. Jangan tutup halaman selama proses berjalan. Lanjutkan?')) return;
+    const st = box.querySelector('[data-st]'); st.hidden = false;
+    const say = (t) => { st.textContent = t; };
+    const swaps = []; let before = 0, after = 0, skip = 0, fail = 0;
+    for (let i = 0; i < items.length; i++) {
+      const [url, kind] = items[i];
+      say('Memproses ' + (i + 1) + ' dari ' + items.length + '… (jangan tutup halaman)');
+      try {
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok) throw new Error('unduh ' + r.status);
+        const blob = await r.blob();
+        const raw = decodeURIComponent(url.split('?')[0].split('/').pop());
+        const ext0 = (raw.match(/\.(\w+)$/) || [, 'jpg'])[1].toLowerCase();
+        const src = new File([blob], raw, { type: blob.type && /^image\//.test(blob.type) ? blob.type : 'image/' + (ext0 === 'jpg' ? 'jpeg' : ext0) });
+        if (src.size < 60e3) { skip++; continue; }
+        const out = await shrink(src, kind);
+        if (out === src || out.size > src.size * 0.85) { skip++; continue; } // tidak banyak untung -> biarkan
+        const base = raw.replace(/\.\w+$/, '').replace(/^[a-z0-9]{6,9}-/, '').replace(/[^\w-]+/g, '_').slice(0, 40) || 'foto';
+        const outExt = out.type === 'image/webp' ? '.webp' : out.type === 'image/png' ? '.png' : '.jpg';
+        const nu = await upload(new File([out], base + outExt, { type: out.type }), 'raw');
+        swaps.push([url, nu]); before += src.size; after += out.size;
+      } catch (e) { fail++; }
+    }
+    if (swaps.length) {
+      let js = JSON.stringify(cfg);
+      swaps.forEach(([a, b]) => { js = js.split(JSON.stringify(a).slice(1, -1)).join(JSON.stringify(b).slice(1, -1)); });
+      cfg = JSON.parse(js); changed(true);
+    }
+    const msg = swaps.length
+      ? 'Selesai ✓ ' + swaps.length + ' foto dikompres: ' + fmtKB(before) + ' → ' + fmtKB(after) + ' (hemat ' + Math.round((1 - after / before) * 100) + '%).' + (skip ? ' ' + skip + ' foto dilewati (sudah kecil).' : '') + (fail ? ' ' + fail + ' foto gagal diproses (tetap pakai foto lama).' : '') + ' Sekarang klik "Simpan perubahan".'
+      : 'Tidak ada foto yang perlu diganti (' + skip + ' sudah kecil' + (fail ? ', ' + fail + ' gagal diproses' : '') + ').';
+    say(msg); toast(swaps.length ? 'Foto lama dikompres — klik Simpan perubahan' : 'Selesai');
+  }
+
   function securityView() {
     const m = h('div', {}, h('h2', {}, 'Keamanan & Cadangan'));
     if (defaultPw) m.append(h('div', { class: 'warn' }, '⚠ Anda masih memakai password bawaan (admin123). Segera ganti lewat Vercel agar tidak mudah ditebak.'));
@@ -920,6 +1003,12 @@
       h('div', { class: 'row' },
         h('button', { class: 'btn', onclick: () => { const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' })), download: 'undangan-config.json' }); a.click(); } }, '⬇ Unduh konfigurasi'),
         h('button', { class: 'btn', onclick: async () => { const [f] = await pickFile('application/json'); if (!f) return; try { cfg = merge(defaults, JSON.parse(await f.text())); changed(); toast('Konfigurasi dimuat — klik Simpan untuk menerapkan'); show('general'); } catch { toast('File tidak valid', true); } } }, '⬆ Pulihkan dari file'))));
+    const cpBox = h('div', { class: 'card' },
+      h('p', { style: 'font-weight:600;margin-bottom:6px' }, 'Kompres foto lama (hemat kuota Supabase)'),
+      h('p', { class: 'hint' }, 'Memperkecil semua foto yang sudah terpasang di undangan (ke WebP) tanpa upload ulang. Link foto diganti otomatis, foto lama tidak dihapus. Setelah selesai, klik "Simpan perubahan".'),
+      h('div', { class: 'row' }, h('button', { class: 'btn pri', onclick: (e) => { const b = e.currentTarget; b.disabled = true; compressOldPhotos(cpBox).catch((er) => toast(er.message || 'Gagal', true)).finally(() => { b.disabled = false; }); } }, '⚡ Kompres semua foto lama')),
+      h('p', { class: 'hint', 'data-st': '', hidden: true, style: 'margin:10px 0 0' }));
+    m.append(cpBox);
     return m;
   }
   const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);

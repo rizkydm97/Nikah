@@ -104,7 +104,7 @@ async function route(req, res, url) {
       if (buf.length > MAX_PROOF) return send(res, 413, { error: 'Foto maksimal 2,5MB' });
       const ext = mt[1] === 'png' ? '.png' : mt[1] === 'webp' ? '.webp' : '.jpg';
       const key = `wish/${uid()}${ext}`;
-      must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: `image/${mt[1] === 'jpg' ? 'jpeg' : mt[1]}`, upsert: false }));
+      must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: `image/${mt[1] === 'jpg' ? 'jpeg' : mt[1]}`, upsert: false, cacheControl: '31536000' }));
       photo = C.publicUrl(key);
     }
     const row = { id: uid(), name, message, ts: Date.now() };
@@ -126,7 +126,7 @@ async function route(req, res, url) {
       if (buf.length > MAX_PROOF) return send(res, 413, { error: 'Bukti maksimal 2,5MB' });
       const ext = mt[1] === 'png' ? '.png' : mt[1] === 'webp' ? '.webp' : '.jpg';
       const key = `proof/${uid()}${ext}`;
-      must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: `image/${mt[1] === 'jpg' ? 'jpeg' : mt[1]}`, upsert: false }));
+      must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: `image/${mt[1] === 'jpg' ? 'jpeg' : mt[1]}`, upsert: false, cacheControl: '31536000' }));
       proof = C.publicUrl(key);
     }
     must(await sb().from('gifts').insert({ id: uid(), name, bank: clean(b.bank, 60), amount: clean(b.amount, 40), message: clean(b.message, 500), proof, ts: Date.now() }));
@@ -171,7 +171,7 @@ async function route(req, res, url) {
     if (!buf.length) return send(res, 400, { error: 'File kosong' });
     if (buf.length > 4 * 1024 * 1024) return send(res, 413, { error: 'File terlalu besar untuk jalur ini' });
     const key = `${Date.now().toString(36)}-${name}`;
-    must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: MIME[ext] || 'application/octet-stream', upsert: false }));
+    must(await sb().storage.from(BUCKET).upload(key, buf, { contentType: MIME[ext] || 'application/octet-stream', upsert: false, cacheControl: '31536000' }));
     return send(res, 200, { url: C.publicUrl(key) });
   }
   // Upload: file besar tidak lewat Vercel (batas 4,5MB). Server hanya membuat URL upload bertanda tangan,
