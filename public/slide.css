@@ -1469,3 +1469,41 @@ html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root .sl-op
 #loader .ld-logo.ld-metal{animation:lgFloat 6s ease-in-out infinite alternate}
 #loader .ld-logo.ld-metal .mp-canvas{opacity:1}
 #loader .ld-logo.ld-metal :is(.ld-lg,.ld-shine,.ld-halo){display:none}
+
+/* =====================================================================
+   Pembuka: nama mempelai seimbang kiri-kanan.
+   Sebelumnya "Nama1 & Nama2" rata tengah sebagai satu kelompok -> bila panjang nama berbeda, tanda & bergeser dari tengah layar
+   dan tampilan berat sebelah. Kini 3 kolom (1fr | & | 1fr): & selalu tepat di tengah, nama 1 merapat ke & dari kiri (rata kanan),
+   nama 2 merapat ke & dari kanan (rata kiri). Hanya bila kedua nama ada; satu nama tetap di tengah. Animasi tidak diubah.
+   ===================================================================== */
+html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3){
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:baseline;column-gap:.14em;width:100%}
+html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np{max-width:100%}
+html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n1{text-align:right;justify-self:end}
+html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n2{text-align:center;justify-self:center;padding:0 .04em}
+html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n3{text-align:left;justify-self:start}
+
+/* =====================================================================
+   v44 — Pembuka: nama 1 & nama 2 BERGERAK BERSAMAAN dari tepi kiri / kanan menuju tengah, lalu "&" muncul saat keduanya bertemu.
+   Elegan 3D: sebelumnya hanya terbit dari bawah (rotasi ±10°, tanpa geser horizontal) dan berurutan -> kini meluncur masuk dari sisi masing-masing.
+   Klasik: tinta kiri→kanan (nama 1) dan kanan→kiri (nama 2) kini mulai bersamaan, tidak lagi menunggu satu sama lain.
+   Berlaku untuk pembuka 1 foto maupun 2 foto. Garis, tanggal & tagar (mulai ≥ 4,1 dtk) tidak berubah.
+   ===================================================================== */
+@media (prefers-reduced-motion:no-preference){
+  /* --- Elegan 3D --- */
+  html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n1 .sl-wipe{
+    animation-name:sl3dNameL!important;animation-duration:calc(1.6s*var(--tk,1))!important;animation-delay:calc(2000ms*var(--tk,1))!important}
+  html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{
+    animation-name:sl3dNameR2!important;animation-duration:calc(1.6s*var(--tk,1))!important;animation-delay:calc(2120ms*var(--tk,1))!important}
+  html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{
+    animation-duration:calc(1.1s*var(--tk,1))!important;animation-delay:calc(3000ms*var(--tk,1))!important}
+  /* --- Klasik --- */
+  html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n1 .sl-wipe{
+    animation-duration:calc(1.6s*var(--tk,1))!important;animation-delay:calc(2000ms*var(--tk,1))!important}
+  html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n3 .sl-wipe{
+    animation-duration:calc(1.6s*var(--tk,1))!important;animation-delay:calc(2120ms*var(--tk,1))!important}
+  html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np.n2 .sl-wipe{
+    animation-duration:calc(1.1s*var(--tk,1))!important;animation-delay:calc(3000ms*var(--tk,1))!important}
+}
+@keyframes sl3dNameL{0%{opacity:0;transform:translate3d(-1.5em,.1em,-90px) rotateY(34deg) rotateX(-16deg) scale(.92)}30%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes sl3dNameR2{0%{opacity:0;transform:translate3d(1.5em,.1em,-90px) rotateY(-34deg) rotateX(-16deg) scale(.92)}30%{opacity:1}100%{opacity:1;transform:none}}
