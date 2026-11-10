@@ -238,15 +238,28 @@
     const logo = safeUrl(c.cover.loaderLogo), lgs = c.cover.loaderLogoSize === '' || c.cover.loaderLogoSize == null ? 100 : num(c.cover.loaderLogoSize, 100, 30, 160);
     const ad = (k) => (SL ? ` data-ad="${k}"` : '');
     // logo (mis. monogram 3D) menggantikan singkatan huruf + lingkaran bila diisi di admin → Cover → "Logo di layar loading"
-    const mid = logo ? `<div class="ld-logo"${ad('ld.lg')} style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>`
+    const mid = logo ? `<div class="ld-logo"${ad('ld.lg')}${SL && c.cover.loaderLogoMetal !== false ? ' data-metal="1"' : ''} style="--lgs:${lgs}"><i class="ld-halo"></i><img class="ld-lg" src="${esc(logo)}" alt="" decoding="async"><i class="ld-shine" style="-webkit-mask-image:${cssUrl(logo)};mask-image:${cssUrl(logo)}"></i></div>`
       : SL ? `<div class="ld-mg"${ad('ld.lg')}><div class="ld-ring"></div><div class="ld-mono">${mono}</div></div>` : `<div class="ld-ring"></div><div class="ld-mono">${mono}</div>`;
     return { lm, html: `${lm}<div class="ld-in${logo ? ' has-logo' : ''}">${mid}<div class="ld-k"${ad('ld.k')}>${esc(c.cover.kicker)}</div><div class="ld-bar"${ad('ld.bar')}><span id="ldBar"></span></div></div>` };
+  }
+  // Tema 13: logo layar loading (dari admin) dipasangi efek cairan logam (MetallicPaint). Gagal / WebGL2 tidak ada → logo biasa tetap tampil.
+  function metalLogo(ld, c) {
+    try { if (window.METAL) window.METAL.stopAll(); } catch (e) { /* abaikan */ }
+    const box = ld.querySelector('.ld-logo[data-metal]'); if (!box || !window.METAL || !SL) return;
+    const cv = c.cover, num0 = (v, d, a, b) => (v === '' || v == null || isNaN(+v) ? d : Math.min(b, Math.max(a, +v)));
+    window.METAL.mount(box, {
+      imageSrc: safeUrl(cv.loaderLogo), color: /^#[0-9a-f]{3,8}$/i.test(cv.loaderLogoTint || '') ? cv.loaderLogoTint : '#ffffff',
+      scale: 0.96, density: 2, softness: 0.1, dispersion: 0.3, distortion: 0.07, edgeBend: num0(cv.loaderLogoBend, 0.6, 0, 1),
+      speed: num0(cv.loaderLogoSpeed, 1, 0, 3), mouseTilt: 0.5, lightMode: !ld.classList.contains('has-media'), intro: true,
+      onDone: (ok) => { if (ok) box.classList.add('ld-metal'); }
+    });
   }
   // pratinjau admin (?loader=1): layar loading ditahan tampil (tanpa hitung waktu) supaya logo & tulisannya bisa dilihat dan digeser
   function loaderPreview() {
     const ld = $('#loader'), p = loaderParts(C);
     ld.innerHTML = p.html; ld.classList.toggle('has-media', !!p.lm); ld.classList.add('ready', 'ld-pv'); ld.classList.remove('off');
     const bar = $('#ldBar'); if (bar) { bar.style.transition = 'none'; bar.style.width = '62%'; }
+    metalLogo(ld, C);
   }
   function introGo() {
     const ld = $('#loader'), c = C;
@@ -254,6 +267,7 @@
     if (c.effects.intro !== false) ld.innerHTML = parts.html;
     ld.classList.toggle('has-media', !!lm); ld.classList.add('ready');
     if (SL && window.SLIDE && c.effects.intro !== false) window.SLIDE.adjust(c); // posisi & ukuran logo/teks loading yang diatur di admin
+    if (c.effects.intro !== false) metalLogo(ld, c);
     const s = c.scene;
     const urls = PT && PT.live ? [PT.bg, ...(PT.preload || ['bf_rajah', 'feather', 'leafj', 'orchid', 'cloudw1']).map((n) => /\//.test(n) ? n : PT.spr + n + '.webp')] : PT ? [PT.world, PT.spr.replace('spr/', PICT + '/ctitle.webp'), PT.spr.replace('spr/', PICT + '/cbtn.webp'), PT.spr.replace('spr/', PICT + '/depth.png'), ...(PT.entry === 'doors' ? [PT.cover] : []), ...PT.bf.map((n) => PT.spr + n + '.webp'), ...(spOn() ? [PT.bg, ...({ princess: ['princess/orn', 'spr/rose1', 'spr/rose2'], bali: ['bali/motif', 'bali/orn', 'spr/frangi1', 'spr/cloudw1'], emas: ['emas/motif', 'emas/orn'], biru: ['fx/ripple', 'fx/mist'], rimba: ['fx/mist', 'spr/bf_gold'], klasik: [] }[PICT] || []).map((n) => '/assets/t/' + n + '.webp'), ...(PICT === 'klasik' ? [GUN] : [])] : [])].map(safeUrl) : [s.sky, s.house, s.curtain, s.treeline, s.floralTop, s.floralBottom, s.column, c.effects.showTree !== false ? s.tree : '', c.cover.photo, c.cover.bg, ...CLOUDS, ...(THEME !== 'rose' && c.effects.javaFx !== false ? [GUN, ...LEAF_IMG.slice(0, 3), ...LEAVES.map((l) => `/assets/scene/leaf-${l[0]}.webp`)] : [])].map(safeUrl).filter(Boolean);
     // video sampul (+ video bingkai) ikut ditunggu: loader baru hilang setelah video punya cukup data untuk diputar mulus
@@ -289,6 +303,7 @@
     Promise.all([Promise.race([Promise.all(urls.map(one)), cap]), Promise.race([vwork, vcap]), minShow]).then(() => {
       if (bar) bar.style.width = '100%';
       ld.classList.add('off');
+      setTimeout(() => { try { if (window.METAL) window.METAL.stopAll(); } catch (e) { /* abaikan */ } }, 1300);
       const cv = $('#cover');
       if (MN && rest.length) holdOpen(rest);
       const d0 = MN ? 1000 : 250; // Tema 12: tunggu loader selesai memudar penuh, baru teks cover mulai

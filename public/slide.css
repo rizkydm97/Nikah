@@ -1461,3 +1461,9 @@ html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root .sl-op
   -webkit-mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);mask-image:linear-gradient(270deg,#000 0,#000 44%,transparent 56%,transparent 100%);
   -webkit-mask-position:0 0;mask-position:0 0}
 :root:root:root:root:root:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n3 .sl-wipe{animation-name:slInkRL!important}
+
+/* ---------- Tema 13: logo layar loading = cairan logam (MetallicPaint). Logo biasa disembunyikan hanya setelah efek siap ---------- */
+#loader .ld-logo .mp-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;display:block;opacity:0;transition:opacity .35s ease;pointer-events:none}
+#loader .ld-logo.ld-metal{animation:lgFloat 6s ease-in-out infinite alternate}
+#loader .ld-logo.ld-metal .mp-canvas{opacity:1}
+#loader .ld-logo.ld-metal :is(.ld-lg,.ld-shine,.ld-halo){display:none}

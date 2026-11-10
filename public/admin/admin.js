@@ -455,7 +455,7 @@
     const set = (v) => { obj[key] = v; (onChange || changed)(); };
     const defVal = f._def;
     if (f.t === 'bool') {
-      wrap.append(h('label', { class: 'sw' }, h('input', { type: 'checkbox', checked: !!get(), onchange: (e) => set(e.target.checked) }), h('span', {}, f.l)));
+      wrap.append(h('label', { class: 'sw' }, h('input', { type: 'checkbox', checked: get() === undefined && f.def !== undefined ? !!f.def : !!get(), onchange: (e) => set(e.target.checked) }), h('span', {}, f.l)));
     } else if (f.t === 'area') {
       wrap.append(label, h('textarea', { oninput: (e) => set(e.target.value) }, get() || ''));
       wrap.querySelector('textarea').value = get() || '';
