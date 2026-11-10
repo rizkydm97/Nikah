@@ -1575,3 +1575,9 @@ html.sl-edit [data-hid="1"]{opacity:.3!important;outline-style:dotted!important}
 .sl-xt{pointer-events:auto;max-width:100%;box-sizing:border-box;text-align:center;color:#fff;font-family:var(--fDisplay);font-size:clamp(14px,4.2cqw,20px);line-height:1.5;letter-spacing:.04em;text-shadow:0 2px 14px rgba(0,0,0,.55);overflow-wrap:anywhere}
 html:not(.sl-edit) .sl-xt{pointer-events:none}
 html:not(.sl-edit) .sl-xt a{pointer-events:auto}
+
+/* v32: elemen kosong / tertutup tetap bisa diraih di pratinjau admin */
+html.sl-edit [data-ad]:empty{position:relative}
+html.sl-edit [data-ad]:empty::after{content:"";position:absolute;left:0;right:0;top:-8px;height:16px}
+html.sl-edit :is(.sl-cl-hr,.sl-cl-orn,.sl-ft-div,.sl-line,.sl-pp-ln)[data-ad]{position:relative;z-index:6}
+html.sl-edit .sl-foot .sl-ft-div{transform:none!important;animation:none!important;width:44px}

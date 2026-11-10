@@ -733,7 +733,17 @@
     document.addEventListener('pointerdown', (e) => {
       if (e.button > 0) return;
       if (e.target.closest && e.target.closest('.sl-ov')) return; // pegangan punya pendengar sendiri
-      const el = e.target.closest && e.target.closest('[data-ad]');
+      let el = e.target.closest && e.target.closest('[data-ad]');
+      // beberapa tulisan/garis bisa bertumpuk di satu titik (mis. garis ♥ di bawah kotak teks penutup): ambil yang paling kecil supaya garis tipis tetap bisa diraih
+      if (document.elementsFromPoint) {
+        let best = null, ba = Infinity;
+        document.elementsFromPoint(e.clientX, e.clientY).forEach((n) => {
+          const d = n.closest && n.closest('[data-ad]'); if (!d || d.dataset.hid === '2') return;
+          const r = d.getBoundingClientRect(), ar = Math.max(r.width, 4) * Math.max(r.height, 4);
+          if (ar < ba) { ba = ar; best = d; }
+        });
+        if (best && (!el || best !== el)) el = best;
+      }
       if (!el) { if (selKey) { selKey = ''; if (onSel) onSel(''); } return; }
       if (e.target.closest('.sl-typing')) return; // sedang mengetik: biarkan kursor bekerja, jangan memulai geser
       const cont = wrapOf(el); if (!cont) return;
