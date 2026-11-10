@@ -70,6 +70,11 @@
     story: () => [['st.h', 'Judul Love Story'], ['ch.t', 'Judul tiap cerita'], ['ch.tx', 'Isi tiap cerita'], ['ch.y', 'Tahun tiap cerita']],
     closing: () => [['cl.orn', 'Garis & berlian di atas'], ['cl.k', 'Teks kecil'], ['cl.n1', 'Nama 1 (mis. Adi)'], ['cl.n2', 'Tanda & di antara nama'], ['cl.n3', 'Nama 2 (mis. Debby)'], ['cl.hr', 'Garis & hati'], ['cl.tx', 'Teks penutup'], ['cl.fd', 'Garis pemisah di bawah'], ['cl.ft', 'Nama bawah'], ['cl.fy', 'Tahun bawah']],
   };
+  // teks tambahan buatan admin: slide.extra = [{id, at, text, c}] ; kunci posisi = "x.<id>"
+  const XT_SECS = ['cover', 'open', 'couple', 'quote', 'events', 'story', 'closing'];
+  const xtList = (sn) => ((cfg && cfg.slide && Array.isArray(cfg.slide.extra)) ? cfg.slide.extra : []).map((x, i) => ({ x, i })).filter((o) => o.x && o.x.at === sn && /^[A-Za-z0-9]{1,16}$/.test(String(o.x.id)));
+  const xtName = (x) => 'Teks tambahan: ' + (String(x.text || '').replace(/\s+/g, ' ').trim().slice(0, 24) || '(kosong)');
+  XT_SECS.forEach((n) => { const f0 = SLADJ[n]; SLADJ[n] = () => f0().concat(xtList(n).map((o) => ['x.' + o.x.id, xtName(o.x)])); });
   const SL_GROUP = { loader: 'cover', cover: 'cover', open: 'hero', couple: 'couple', quote: 'quote', events: 'events', story: 'story', closing: 'closing' };
   const SL_FONTS = [
     ['Tulisan tangan / kaligrafi', ['Vivaldi', 'Great Vibes', 'Mrs Saint Delafield', 'Herr Von Muellerhoff', 'Monsieur La Doulaise', 'Allison', 'La Belle Aurore', 'Allura', 'Pinyon Script', 'Parisienne', 'Italianno', 'Whisper', 'Dancing Script', 'Alex Brush', 'Tangerine', 'Sacramento', 'Satisfy', 'Cookie', 'Playball', 'Rouge Script', 'Petit Formal Script', 'Marck Script', 'Kaushan Script', 'Lovers Quarrel', 'Mea Culpa', 'Ballet', 'Birthstone', 'Imperial Script', 'Ephesis', 'Square Peg', 'WindSong', 'Qwigley', 'Meddon', 'Arizonia', 'Bilbo Swash Caps', 'Yesteryear', 'Courgette', 'Niconne', 'Euphoria Script', 'Rochester', 'Style Script', 'Corinthia', 'Send Flowers', 'Fleur De Leah', 'Island Moments', 'Luxurious Script', 'Passions Conflict', 'The Nautigal', 'Hurricane', 'Licorice', 'Babylonica', 'Water Brush']],
@@ -146,7 +151,7 @@
     cfg.slide = cfg.slide || {};
     { // font per tulisan hanya diatur di admin: jangan sampai hilang bila pratinjau belum sempat menerima pilihan font terbaru saat tulisan digeser
       const inc = e.data.adj && typeof e.data.adj === 'object' ? e.data.adj : {}, old = cfg.slide.adj && typeof cfg.slide.adj === 'object' ? cfg.slide.adj : {};
-      Object.keys(old).forEach((k) => { const of = old[k] && old[k].f; if (!of) return; if (!inc[k]) inc[k] = { f: of }; else if (!inc[k].f) inc[k].f = of; });
+      Object.keys(old).forEach((k) => { const of = old[k] && old[k].f, oh = old[k] && old[k].h; if (of) { if (!inc[k]) inc[k] = { f: of }; else if (!inc[k].f) inc[k].f = of; } if (oh) { if (!inc[k]) inc[k] = { h: oh }; else if (!inc[k].h) inc[k].h = oh; } });
       cfg.slide.adj = inc;
     }
     changed(true); sendPreview();
@@ -556,7 +561,7 @@
     const sets = f.set === 'all' ? Object.keys(SLADJ) : [f.set];
     const row = (k, l) => {
       const cur = () => Object.assign({ x: 0, y: 0, s: 100, w: 0 }, store()[k] || {});
-      const put = (p, v) => { const c = cur(); c[p] = v; if (p === 'f' && !v) delete c.f; if (!(+c.x) && !(+c.y) && +c.s === 100 && !(+c.w) && !c.f) delete store()[k]; else store()[k] = c; changed(true); };
+      const put = (p, v) => { const c = cur(); c[p] = v; if (p === 'f' && !v) delete c.f; if (p === 'h' && !v) delete c.h; if (!(+c.x) && !(+c.y) && +c.s === 100 && !(+c.w) && !c.f && !c.h) delete store()[k]; else store()[k] = c; changed(true); };
       const mk = (lab, p, min, max, step, unit) => {
         const fmt = (v) => (p === 'w' && !+v ? 'otomatis' : v + unit);
         const out = h('b', { class: 'rv-out' }, fmt(cur()[p]));
@@ -567,20 +572,41 @@
         h('option', { value: '' }, 'Ikuti font bawaan bagian ini'),
         ...SL_FONTS.map(([g, list]) => h('optgroup', { label: g }, ...list.map((n) => h('option', { value: n, style: `font-family:'${n}',cursive` }, n)))));
       fsel.value = cur().f || ''; if (fsel.value !== (cur().f || '')) { fsel.append(h('option', { value: cur().f }, cur().f)); fsel.value = cur().f; }
-      const r = h('div', { class: 'sa-r', 'data-k': k }, h('div', { class: 'sa-h' }, h('b', {}, l, h('span', { class: 'sa-tag' }, '◀ dipilih di pratinjau')), h('button', { class: 'btn sm', type: 'button', onclick: () => { delete store()[k]; changed(true); draw(); } }, 'Reset')),
+      const hideCb = h('input', { type: 'checkbox', onchange: (e) => { put('h', e.target.checked ? 1 : 0); r.classList.toggle('is-hid', e.target.checked); } }); hideCb.checked = !!cur().h;
+      const r = h('div', { class: 'sa-r' + (cur().h ? ' is-hid' : ''), 'data-k': k }, h('div', { class: 'sa-h' }, h('b', {}, l, h('span', { class: 'sa-tag' }, '◀ dipilih di pratinjau')), h('span', { class: 'sa-act' }, h('label', { class: 'sa-hide', title: 'Sembunyikan tulisan/garis ini dari undangan (bisa ditampilkan lagi kapan saja)' }, hideCb, 'Sembunyikan'), h('button', { class: 'btn sm', type: 'button', onclick: () => { delete store()[k]; changed(true); draw(); } }, 'Reset'))),
         h('div', { class: 'sa-g' }, mk('Kiri ↔ Kanan', 'x', -60, 60, 0.5, ''), mk('Atas ↕ Bawah', 'y', -80, 80, 0.5, ''), mk('Ukuran', 's', 30, 300, 1, '%'), mk('Lebar kotak', 'w', 0, 100, 0.5, '%'), h('label', { class: 'sa-c sa-f' }, h('span', {}, 'Font tulisan ini'), fsel)));
       // menyentuh baris ini = tulisannya ikut terpilih (berbingkai biru) di pratinjau
       r.addEventListener('pointerdown', () => { if (slSel !== k) { slSel = k; post({ type: 'slpick', key: k }); paintSlSel(); } });
       r.addEventListener('focusin', () => { if (slSel !== k) { slSel = k; post({ type: 'slpick', key: k }); paintSlSel(); } });
       return r;
     };
+    // ---- teks tambahan: admin bisa menambah teks sendiri di tiap bagian, lalu menggesernya di pratinjau seperti tulisan lain ----
+    const xtBlock = (sn) => {
+      const wrap = h('div', { class: 'sa-xt' }, h('div', { class: 'sa-xt-h' }, h('b', {}, '➕ Teks tambahan (buatan sendiri)')));
+      xtList(sn).forEach((o, n) => {
+        const x = o.x, k = 'x.' + x.id;
+        const ta = h('textarea', { rows: 2, placeholder: 'Tulis teks Anda… (Enter = baris baru)', oninput: (e) => { x.text = e.target.value.slice(0, 600); changed(); } }); ta.value = x.text || '';
+        const col = h('input', { type: 'color', value: /^#[0-9a-fA-F]{6}$/.test(x.c || '') ? x.c : '#ffffff', title: 'Warna teks', oninput: (e) => { x.c = e.target.value; changed(); } });
+        const del = h('button', { class: 'btn danger sm', type: 'button', onclick: () => { const L = cfg.slide.extra, i = L.indexOf(x); if (i >= 0) L.splice(i, 1); delete store()[k]; changed(true); draw(); } }, 'Hapus teks ini');
+        wrap.append(h('div', { class: 'sa-xt-i' }, h('div', { class: 'sa-xt-t' }, h('b', {}, 'Teks ' + (n + 1)), h('label', { class: 'sa-xt-c' }, 'Warna ', col), del), ta, row(k, 'Posisi & ukuran — ' + xtName(x).replace('Teks tambahan: ', ''))));
+      });
+      wrap.append(h('button', { class: 'btn sm', type: 'button', onclick: () => {
+        const sl = (cfg.slide = cfg.slide || {}); if (!Array.isArray(sl.extra)) sl.extra = [];
+        if (sl.extra.length >= 30) { toast('Maksimal 30 teks tambahan'); return; }
+        const id = 'x' + Date.now().toString(36) + Math.floor(Math.random() * 36).toString(36);
+        sl.extra.push({ id, at: sn, text: 'Teks baru', c: '' }); changed(true); draw();
+      } }, '+ Tambah teks'));
+      return wrap;
+    };
     const draw = () => {
       box.textContent = '';
       box.append(h('div', { class: 'sa-now' }));
-      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan — garis pink muncul saat posisinya pas di tengah layar atau sejajar dengan tulisan lain (tahan Alt = geser bebas). Klik tulisan lalu tarik titik bulat di tepi kiri/kanan kotak untuk melebarkan/menyempitkan kotak (klik 2× titik = otomatis), titik kotak di pojok kanan-bawah sama fungsinya. Ukuran tulisan tidak ikut berubah — atur ukuran tulisan lewat slider Ukuran (atau Shift + roda mouse), lalu lebarkan kotaknya agar teks muat dalam satu baris. Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan. Setiap kali Anda mengklik tulisan di pratinjau, barisnya di bawah ini otomatis ditandai biru; font tiap tulisan dipilih di barisnya (kolom "Font tulisan ini").'));
+      box.append(h('p', { class: 'hint' }, 'Cara cepat: tarik tulisan langsung di pratinjau kanan — garis pink muncul saat posisinya pas di tengah layar atau sejajar dengan tulisan lain (tahan Alt = geser bebas). Klik tulisan lalu tarik titik bulat di tepi kiri/kanan kotak untuk melebarkan/menyempitkan kotak (klik 2× titik = otomatis), titik kotak di pojok kanan-bawah sama fungsinya. Ukuran tulisan tidak ikut berubah — atur ukuran tulisan lewat slider Ukuran (atau Shift + roda mouse), lalu lebarkan kotaknya agar teks muat dalam satu baris. Klik 2× pada tulisan di pratinjau untuk mengubah isi teksnya langsung (Enter = baris baru supaya teks bisa disusun sendiri; klik di luar atau Ctrl+Enter = simpan; Esc = batal). Angka geser memakai satuan lebar layar sehingga hasilnya sama di HP kecil maupun besar. Reset = kembali ke posisi bawaan. Centang "Sembunyikan" pada baris mana pun (atau pilih tulisan/garis di pratinjau lalu tekan Delete) untuk menyembunyikannya dari undangan — hilangkan centangnya untuk menampilkan lagi; di pratinjau, yang disembunyikan tampil pudar. Tombol "+ Tambah teks" di tiap bagian menambah teks buatan sendiri (bisa digeser, diubah ukuran/font/warna, atau dihapus). Setiap kali Anda mengklik tulisan di pratinjau, barisnya di bawah ini otomatis ditandai biru; font tiap tulisan dipilih di barisnya (kolom "Font tulisan ini").'));
       sets.forEach((sn) => {
-        const items = SLADJ[sn]();
+        const xs = new Set(xtList(sn).map((o) => 'x.' + o.x.id));
+        const items = SLADJ[sn]().filter(([k]) => !xs.has(k));
         const body = h('div', {}, items.length ? items.map(([k, l]) => row(k, l)) : h('p', { class: 'hint' }, 'Belum ada isi untuk diatur di bagian ini.'));
+        if (XT_SECS.includes(sn)) body.append(xtBlock(sn));
         if (f.set === 'all') box.append(h('details', { class: 'cardx adv' }, h('summary', {}, SLADJ_TITLE[sn]), h('div', { class: 'card' }, body)));
         else box.append(body);
       });

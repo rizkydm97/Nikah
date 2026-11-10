@@ -1561,3 +1561,17 @@ html:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3
 :root:root:root:root:root:root:root:root:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np{text-align:center;justify-self:center;align-self:center;max-width:100%}
 html:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n2,
 :root:root:root:root:root:root:root:root:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np.n2{font-size:.8em;line-height:1;margin:.04em 0}
+
+/* ---------- v31: garis tipis bisa digeser, sembunyikan tulisan/garis, teks tambahan buatan admin (Tema 13) ---------- */
+/* area klik garis tipis (hanya di pratinjau admin): garis 1px sulit diklik, jadi diberi area sentuh lebih tebal (tampilan garis tidak berubah) */
+:where(html.sl-edit) i[data-ad]{position:relative}
+html.sl-edit i[data-ad]::after{content:"";position:absolute;left:-8px;right:-8px;top:-12px;bottom:-12px;background:transparent}
+html.sl-edit .sl-cl-hr[data-ad],html.sl-edit .sl-cl-orn[data-ad]{padding-block:8px;margin-block:-8px}
+/* disembunyikan: hilang di undangan asli; di pratinjau admin tetap tampil pudar supaya masih bisa dipilih & ditampilkan lagi */
+html:not(.sl-edit) [data-hid="1"]{display:none!important}
+html.sl-edit [data-hid="1"]{opacity:.3!important;outline-style:dotted!important}
+/* teks tambahan */
+.sl-xw{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 9%;box-sizing:border-box;pointer-events:none}
+.sl-xt{pointer-events:auto;max-width:100%;box-sizing:border-box;text-align:center;color:#fff;font-family:var(--fDisplay);font-size:clamp(14px,4.2cqw,20px);line-height:1.5;letter-spacing:.04em;text-shadow:0 2px 14px rgba(0,0,0,.55);overflow-wrap:anywhere}
+html:not(.sl-edit) .sl-xt{pointer-events:none}
+html:not(.sl-edit) .sl-xt a{pointer-events:auto}

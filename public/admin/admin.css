@@ -302,3 +302,15 @@ code{background:#f3ecea;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .th-badge{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:-4px 0 12px;padding:8px 12px;border-radius:10px;background:#eef3ff;border:1px solid #c9d7ff;color:#1e3a8a;font-size:13px}
 .th-badge b{font-weight:700}
 .th-badge span{color:#3b4f86;font-size:12px}
+
+/* v31: sembunyikan + teks tambahan */
+.sladj .sa-act{display:flex;align-items:center;gap:8px}
+.sladj .sa-hide{display:inline-flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;white-space:nowrap}
+.sladj .sa-r.is-hid{opacity:.7;background:#f6f6f6}
+.sladj .sa-xt{margin-top:14px;padding:12px;border:1px dashed var(--line);border-radius:10px;background:#fafafa}
+.sladj .sa-xt-h{margin-bottom:8px}
+.sladj .sa-xt-i{margin-bottom:12px}
+.sladj .sa-xt-t{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.sladj .sa-xt-c{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.sladj .sa-xt-c input{width:34px;height:26px;padding:0;border:1px solid var(--line);border-radius:6px;background:#fff}
+.sladj .sa-xt textarea{width:100%;box-sizing:border-box;margin-bottom:8px;padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit;resize:vertical}
