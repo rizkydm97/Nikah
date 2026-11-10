@@ -977,7 +977,7 @@ html.h-slide.stk-h,html.h-slide.stk-h body{overflow-anchor:none}
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-in{perspective:900px;perspective-origin:50% 40%}
 /* kedalaman timbul (emboss) nama: lapisan bayangan champagne bertingkat + bayangan jatuh lembut */
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-n{position:relative;transform-style:preserve-3d;
-  text-shadow:0 1px 0 #f2f2f2,0 2px 0 #d4d4d4,0 3px 0 #a8a8a8,0 4px 1px rgba(40,40,40,.55),0 10px 18px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.35)}
+  text-shadow:0 1px 0 rgba(28,28,28,.62),0 2px 0 rgba(28,28,28,.55),0 3px 0 rgba(28,28,28,.46),0 4px 1px rgba(0,0,0,.34),0 7px 7px rgba(0,0,0,.30),0 0 1px rgba(0,0,0,.55)}
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-wipe{clip-path:none!important;opacity:0;transform-origin:50% 85%;backface-visibility:hidden}
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3{display:inline-block;transform-style:preserve-3d}
 html[data-sl-opfx="3d"]:root:root:root:root:root:root .sl-open.play:not(.instant) .sl-op-n .sl-np .sl-wipe{
@@ -1545,6 +1545,19 @@ html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3)
    Gaya Elegan 3D sudah punya timbul sendiri (text-shadow) dan tidak diubah.
    ===================================================================== */
 html[data-sl-opfx="classic"]:root:root:root:root:root:root:root:root .sl-open .sl-op-n{
-  filter:drop-shadow(0 1px 0 #f4f4f4) drop-shadow(0 2px 0 #d6d6d6) drop-shadow(0 3px 0 #a9a9a9) drop-shadow(0 7px 7px rgba(0,0,0,.42))}
+  filter:drop-shadow(0 1px 0 rgba(28,28,28,.6)) drop-shadow(0 2px 0 rgba(28,28,28,.5)) drop-shadow(0 6px 6px rgba(0,0,0,.3))}
 :root:root:root:root:root:root:root .sl-cl-n{
-  filter:drop-shadow(0 1px 0 #f4f4f4) drop-shadow(0 2px 0 #d6d6d6) drop-shadow(0 3px 0 #a9a9a9) drop-shadow(0 7px 7px rgba(0,0,0,.42))}
+  filter:drop-shadow(0 1px 0 rgba(28,28,28,.6)) drop-shadow(0 2px 0 rgba(28,28,28,.5)) drop-shadow(0 6px 6px rgba(0,0,0,.3))}
+
+/* =====================================================================
+   v48 — Pembuka & penutup: nama BERTUMPUK di tengah seperti sampul (Nama 1 / & / Nama 2), huruf putih timbul dengan bayangan gelap tajam
+   (tanpa halo). Menggantikan susunan 3 kolom sejajar: tidak ada lagi nama panjang terpotong / "&" bergeser.
+   Animasi tidak diubah: nama 1 masuk dari kiri, nama 2 dari kanan (bersamaan), "&" muncul di antara keduanya.
+   ===================================================================== */
+html:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3),
+:root:root:root:root:root:root:root:root:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3){
+  display:flex;flex-direction:column;flex-wrap:nowrap;align-items:center;justify-content:center;grid-template-columns:none;column-gap:0;row-gap:.02em;width:100%;margin-inline:0}
+html:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np,
+:root:root:root:root:root:root:root:root:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np{text-align:center;justify-self:center;align-self:center;max-width:100%}
+html:root:root:root:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n2,
+:root:root:root:root:root:root:root:root:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np.n2{font-size:.8em;line-height:1;margin:.04em 0}
