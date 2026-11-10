@@ -1477,7 +1477,7 @@ html[data-sl-opfx="3d"]:root:root:root:root:root:root:root:root:root:root .sl-op
    nama 2 merapat ke & dari kanan (rata kiri). Hanya bila kedua nama ada; satu nama tetap di tengah. Animasi tidak diubah.
    ===================================================================== */
 html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3){
-  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:baseline;column-gap:.14em;width:100%}
+  display:grid;grid-template-columns:minmax(min-content,1fr) auto minmax(min-content,1fr);align-items:baseline;column-gap:.14em;width:100%}
 html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np{max-width:100%}
 html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n1{text-align:right;justify-self:end}
 html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3) .sl-np.n2{text-align:center;justify-self:center;padding:0 .04em}
@@ -1507,3 +1507,26 @@ html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3)
 }
 @keyframes sl3dNameL{0%{opacity:0;transform:translate3d(-1.5em,.1em,-90px) rotateY(34deg) rotateX(-16deg) scale(.92)}30%{opacity:1}100%{opacity:1;transform:none}}
 @keyframes sl3dNameR2{0%{opacity:0;transform:translate3d(1.5em,.1em,-90px) rotateY(-34deg) rotateX(-16deg) scale(.92)}30%{opacity:1}100%{opacity:1;transform:none}}
+
+/* =====================================================================
+   v45 — Penutup ("Terima Kasih"): nama seimbang kiri-kanan & bergerak bersamaan dari tepi ke tengah (sama seperti pembuka)
+   - tata letak: 3 kolom (1fr | & | 1fr) -> "&" selalu di tengah, nama 1 rata kanan, nama 2 rata kiri (hanya bila kedua nama ada)
+   - waktu: nama 1 (tinta kiri→kanan) & nama 2 (kanan→kiri) mulai bersamaan, "&" muncul saat bertemu. --d tiap bagian: n1=awal, n2=awal+380, n3=awal+700.
+   ===================================================================== */
+:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3){display:grid;grid-template-columns:minmax(min-content,1fr) auto minmax(min-content,1fr);align-items:baseline;column-gap:.14em;width:100%}
+:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np{max-width:100%}
+:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np.n1{text-align:right;justify-self:end}
+:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np.n2{text-align:center;justify-self:center;padding:0 .04em}
+:root:root .sl-cl-n .sl-nm3:has(.sl-np.n3) .sl-np.n3{text-align:left;justify-self:start}
+@media (prefers-reduced-motion:no-preference){
+  :root:root:root:root:root:root:root:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n1 .sl-wipe{animation-duration:calc(1.9s*var(--tk,1))!important}
+  :root:root:root:root:root:root:root:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n3 .sl-wipe{animation-duration:calc(1.9s*var(--tk,1))!important;animation-delay:calc((var(--d,0ms) - 580ms)*var(--tk,1))!important}
+  :root:root:root:root:root:root:root:root:root:root:root:root .sl-cl.sl-go .sl-cl-n .sl-np.n2 .sl-wipe{animation-delay:calc((var(--d,0ms) + 1000ms)*var(--tk,1))!important}
+}
+
+/* v46 — perbaikan: huruf terakhir (mis. "y" pada Debby) terpotong.
+   1) kolom nama tidak lagi dipaksa sama lebar sempit: lebar minimal = isi nama (min-content), jadi kotak animasi tidak mengecil & tidak memotong.
+   2) di pembuka, grid dilebarkan sedikit melewati padding samping (6% kiri-kanan) supaya nama panjang tetap muat tanpa menggeser "&" jauh.
+   3) kotak sapuan/tinta diberi ruang ekstra untuk ekor huruf script yang menjorok (padding + margin negatif -> posisi visual tidak berubah). */
+html:root:root:root:root:root:root:root .sl-open .sl-op-n .sl-nm3:has(.sl-np.n3){width:auto;margin-inline:-6%}
+:root:root .sl-op-n .sl-wipe{padding:.05em .16em .16em;margin:-.05em -.16em -.16em}
