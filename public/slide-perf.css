@@ -1,0 +1,87 @@
+/* =====================================================================
+   slide-perf.css — scroll otomatis / manual TIDAK patah-patah di HP (Tema 13)
+   Dimuat PALING AKHIR (setelah slide.css, lux.css, autoscroll.css).
+
+   Temuan (rekaman layar): pembuka & awal mempelai pria 60 fps, lalu begitu masuk kartu bertumpuk
+   (mempelai → ayat → akad → resepsi) turun ke ±30 fps dengan beku 3–4 frame. Mesin gulir (autoscroll.js) sehat;
+   yang berat adalah PENGGAMBARAN kartu bertumpuk di GPU/raster HP:
+     • transform 3D (perspective + rotateX + scale) pada layar penuh → lapisan tidak bisa jalur cepat, tepi di-antialias tiap frame
+     • dua animasi timeline sekaligus + animation-composition:add pada tiap kartu
+     • bayangan 4 lapis (blur hingga 90px) + pseudo-elemen kilap (::before / ::after) berlapis di atas isi kartu
+     • lapisan gelap (dim) dengan radial-gradient layar penuh
+     • animasi teks dengan filter:blur() (per kata) tepat saat kartu naik, bersamaan dengan gulir
+
+   Dua tingkat:
+     TINGKAT 1 (otomatis di layar sentuh)  : tumpukan tetap ada (kartu naik menutupi, mengecil & menggelap) tetapi 2D, tanpa blur,
+                                             bayangan 1 lapis, tanpa kilap. Terlihat nyaris sama, jauh lebih ringan.
+     TINGKAT 2 (html.perf-low, otomatis)   : dipasang autoscroll.js bila fps sungguhan masih < ±41 selama ±3 dtk. Kartu hanya menutupi
+                                             (tanpa skala/radius/bayangan/gelap), foto diam. Dapat dipaksa lewat ?lite, dibatalkan lewat ?full.
+   ===================================================================== */
+
+/* ---------- TINGKAT 1: layar sentuh ---------- */
+@media (hover:none), (pointer:coarse) {
+  /* gerak mundur: skala + naik sedikit saja (tanpa perspektif / rotateX) */
+  @keyframes stkBackP { from { transform: none } to { transform: translateY(-2.5%) scale(.93) } }
+  @keyframes stkBack  { from { transform: none } to { transform: translateY(-2.5%) scale(.93) } }
+  /* teks & hitung mundur: tanpa filter:blur (mahal digambar ulang tiap frame) */
+  @keyframes slTeBlur { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes slCdIn   { 0% { opacity: 0; transform: translateY(28px) scale(.9) } 100% { opacity: 1; transform: none } }
+  @keyframes slCdUp   { from { transform: translateY(105%); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes slCdOut  { from { transform: none; opacity: 1 } to { transform: translateY(-105%); opacity: 0 } }
+
+  /* --- peramban dengan scroll-driven animation (html.sda): hanya SATU animasi per kartu, tanpa kartu-masuk miring --- */
+  html.sda .stk-on .stk-pin:not(.sl-open) { transform: none }
+  html.sda .stk-on .stk-pin.has-in:not(.sl-open) { animation: none }
+  html.sda .stk-on .stk-pin.has-tl:not(.sl-open) {
+    animation: stkBackP linear both; animation-composition: replace;
+    animation-timeline: var(--tlb); animation-range: cover 0px cover var(--rh, 700px);
+  }
+  html.sda .stk-on .stk-pin.has-in.has-tl:not(.sl-open) {
+    animation: stkBackP linear both; animation-composition: replace;
+    animation-timeline: var(--tlb); animation-range: cover 0px cover var(--rh, 700px);
+  }
+  html.sda .stk-on .stk-pin.has-in::before { animation: none }
+
+  /* --- peramban lama (tanpa sda): transisi kelas, 2D --- */
+  html:not(.sda) .stk-on .stk-pin:not(.sl-open) { transform: none; transition: transform .5s cubic-bezier(.2, .75, .25, 1) }
+  html:not(.sda) .stk-on .stk-pin.stk-in:not(.sl-open):not(.stk-flat) { transform: none }
+  html:not(.sda) .stk-on .stk-pin.stk-back:not(.sl-open) { transform: translateY(-2.5%) scale(.93) }
+
+  /* --- penghias berlapis di atas isi kartu: dibuang --- */
+  .stk-on .stk-pin { backface-visibility: visible; -webkit-backface-visibility: visible }
+  .stk-on .stk-pin.stk-in::before,
+  .stk-on .stk-pin.stk-in::after { content: none !important; animation: none !important }
+  .stk-on .stk-pin.stk-in,
+  .stk-on .stk-pin.stk-in.stk-act { box-shadow: 0 -8px 22px -10px rgba(0, 0, 0, .42) }
+  .stk-on .stk-pin > .stk-dim { background: #000 !important }
+
+  /* --- teks/foto masuk tanpa filter:blur --- */
+  html[data-sl-lux] .t-slide #app .rv:not(.in)[data-a] { filter: none !important }
+
+  /* --- animasi hiasan tak berujung dijeda selama gulir bergerak (autoscroll.js memasang #app.as-move) --- */
+  #app.as-move .sl-sh.f::before,
+  #app.as-move .sl-cv-kb,
+  #app.as-move .sl-scroll i,
+  #app.as-move .sl-cl-fx :is(b, u),
+  #app.as-move .sl-op-gl::before,
+  #app.as-move .sl-nm3,
+  #app.as-move .gift .sl-qr-scan { animation-play-state: paused !important }
+}
+
+/* ---------- TINGKAT 2: darurat (html.perf-low) — hanya kartu menutupi, minim efek ---------- */
+html.perf-low:root .stk-on .stk-pin:not(.sl-open) {
+  animation: none !important; transform: none !important; transition: none !important;
+  will-change: auto !important; backface-visibility: visible !important; border-radius: 0 !important; box-shadow: none !important;
+}
+html.perf-low:root .stk-on .stk-pin.stk-in:not(.sl-open) { box-shadow: 0 -6px 14px -8px rgba(0, 0, 0, .35) !important }
+html.perf-low:root .stk-on .stk-pin > .stk-dim,
+html.perf-low:root .stk-on .stk-pin.stk-in::before,
+html.perf-low:root .stk-on .stk-pin.stk-in::after { display: none !important; content: none !important; animation: none !important }
+/* foto kartu diam (tanpa zoom/geser/pudar saat mendarat) */
+html.perf-low:root[data-sl-sph="1"] .sl-ph { transition: none !important; scale: 1 !important; translate: none !important; opacity: 1 !important; will-change: auto !important }
+html.perf-low:root #app .sl-pk,
+html.perf-low:root #app .sl-cv-kb,
+html.perf-low:root #app .sl-sh.f::before,
+html.perf-low:root #app .sl-cdx .cd::before,
+html.perf-low:root #app .sl-cl-fx :is(b, u) { animation: none !important }
+html.perf-low:root #app .rv:not(.in)[data-a] { filter: none !important }

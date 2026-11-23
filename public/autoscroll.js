@@ -54,6 +54,20 @@
       wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollDelay, 0, 0, 60) * 1000, stopping: false, lastSet: -1,
     };
 
+    // ---------- penjaga kelancaran (otomatis menurunkan efek bila HP tidak sanggup 60 fps) ----------
+    // ?lite = paksa mode ringan, ?full = paksa efek penuh. Keputusan diingat selama sesi tab agar tidak mengulang dari awal.
+    try {
+      if (/[?&]full\b/.test(location.search)) { sessionStorage.removeItem('slPerf'); de.classList.remove('perf-low'); }
+      else if (/[?&]lite\b/.test(location.search) || sessionStorage.getItem('slPerf') === 'low') de.classList.add('perf-low');
+    } catch (e) { if (/[?&]lite\b/.test(location.search)) de.classList.add('perf-low'); }
+    st.gv = { n: 0, sum: 0, bad: 0, warm: 0, forced: /[?&]full\b/.test(location.search) };
+    const demote = () => {
+      if (de.classList.contains('perf-low')) return;
+      de.classList.add('perf-low');
+      try { sessionStorage.setItem('slPerf', 'low'); } catch (e) { /* abaikan */ }
+      st.last = 0;                                   // frame berikutnya mengukur ulang dt (tanpa lompatan)
+    };
+
     // ---------- DOM ----------
     const host = D.getElementById('fixwrap') || D.body;
     const root = st.root = D.createElement('div');
@@ -128,16 +142,26 @@
       D.body.appendChild(el); st.off.push(() => el.remove());
       st.pf = { el, n: 0, sum: 0, max: 0, T: 0, slow: {} };
     }
+    const hold0 = () => performance.now() < st.dwellUntil;
     const DPR = Math.max(1, window.devicePixelRatio || 1);
     const frame = (t) => {
       st.raf = 0; if (st.dead) return;
       // dt dibatasi 50 ms: bila ada frame yang tersendat, gulir tidak "melompat" mengejar ketinggalan (penyebab patah-patah di iPhone lama)
       const raw = st.last ? t - st.last : 16;
       const dt = st.last ? Math.min(0.05, Math.max(0.001, raw / 1000)) : 0.016; st.last = t;
+      // penjaga: hanya dihitung saat benar-benar menggulir (bukan saat jeda sinematik / mulai pelan) → rata-rata waktu frame per 45 frame.
+      // 2 jendela berturut-turut (±3 dtk) dengan rata-rata > 24 ms (< ±41 fps) → turunkan ke mode ringan (html.perf-low).
+      if (st.run && !st.stopping && !hold0() && st.vel > st.speed * PXS * 0.6 && !st.gv.forced && !de.classList.contains('perf-low')) {
+        const g = st.gv;
+        if (raw < 120 && st.last) {                   // abaikan frame setelah tab tersembunyi / loncatan besar
+          if (g.warm < 20) g.warm++;                   // 20 frame pertama setelah mulai: pemanasan, tidak dihitung
+          else { g.n++; g.sum += raw; if (g.n >= 45) { g.bad = g.sum / g.n > 24 ? g.bad + 1 : 0; g.n = 0; g.sum = 0; if (g.bad >= 2) demote(); } }
+        }
+      } else { st.gv.warm = 0; st.gv.n = 0; st.gv.sum = 0; }
       if (st.pf && st.run && st.vel > 20) {
         const f = st.pf; f.n++; f.sum += raw; if (raw > f.max) f.max = raw;
         if (raw > 26) f.slow[st.ci] = (f.slow[st.ci] || 0) + 1;
-        if (t - f.T > 600) { f.el.textContent = 'fps ' + Math.round(f.n / f.sum * 1000) + '  terlama ' + Math.round(f.max) + 'ms\nlambat/kartu ' + (Object.keys(f.slow).map((k) => k + ':' + f.slow[k]).join(' ') || '-'); f.T = t; f.n = 0; f.sum = 0; f.max = 0; }
+        if (t - f.T > 600) { f.el.textContent = 'fps ' + Math.round(f.n / f.sum * 1000) + '  terlama ' + Math.round(f.max) + 'ms  [' + (de.classList.contains('perf-low') ? 'RINGAN+' : 'ringan') + ']\nlambat/kartu ' + (Object.keys(f.slow).map((k) => k + ':' + f.slow[k]).join(' ') || '-'); f.T = t; f.n = 0; f.sum = 0; f.max = 0; }
       }
       // tinggi halaman di-cache (membaca scrollHeight tiap frame memaksa hitung ulang tata letak)
       if (t - st.mT > 400) { st.m = maxY(); st.mT = t; }

@@ -375,3 +375,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - Kecepatan lebih cepat (1 satuan = 2,4 px/dtk: 25 ≈ santai, 50 ≈ sedang, 70 ≈ cepat) dan **tidak lagi dikalahkan nilai lama di browser tamu**. Diatur di Admin → Animasi & Efek **dan** Tema 13 Slide Foto (`slide.autoScrollSpeed`).
 - **Sinkron animasi** (`slide.autoScrollSync`, bawaan menyala): gulir melambat ±65% selama teks/foto yang baru muncul masih beranimasi di layar. Durasi animasi mewah (`lux.css`) dipersingkat sedikit.
 - **Buat Link Tamu → Cara 3 — DM Instagram**: "Nama | @username" → tombol membuka `ig.me/m/username`; pesan + link otomatis disalin untuk ditempel.
+
+### Perbaikan scroll patah-patah di HP (slide-perf.css + autoscroll.js v9)
+- Penyebab (diukur dari rekaman layar): pembuka 60 fps, tetapi kartu bertumpuk (mempelai → ayat → akad → resepsi) hanya ±30 fps. Mesin gulir sehat; yang berat adalah penggambaran 3D kartu (perspective/rotateX, bayangan 4 lapis, kilap, blur teks).
+- `public/slide-perf.css` (dimuat terakhir): **Tingkat 1** otomatis di layar sentuh — tumpukan 2D (skala + redup), bayangan 1 lapis, tanpa kilap/blur, animasi hiasan dijeda saat bergerak. **Tingkat 2** (`html.perf-low`) — hanya kartu menutupi.
+- `public/autoscroll.js`: penjaga fps. Bila rata-rata waktu frame > 24 ms selama ±3 dtk saat menggulir, otomatis pindah ke Tingkat 2 (diingat per sesi tab). `?lite` = paksa ringan, `?full` = paksa penuh, `?perf` = kotak fps (kini menampilkan tingkat).
