@@ -15,6 +15,7 @@
 (function () {
   'use strict';
   const D = document, de = D.documentElement;
+  const STRIP_END = { slStripR2: 0.68, slStripL2: 0.68, slStripR3: 0.44, slStripL3: 0.44 };   // bagian animasi geseran foto yang benar-benar bergerak (sisanya diam)
   const PXS = 2.4;                      // 1 satuan kecepatan = 2,4 px / detik (25 ≈ 60 px/dtk, 50 ≈ 120, 70 ≈ 168, 100 = 240)
     let S = null;                         // state aktif
 
@@ -227,7 +228,7 @@
     }
     // Tunggu sampai SEMUA animasi di slide pembuka (foto bergeser, nama & teks masuk) benar-benar selesai:
     // pantau animasi CSS yang masih berjalan di dalam #s-hero (animasi tak berujung seperti melayang/kilau diabaikan),
-    // lalu harus tenang ±1,3 dtk berturut-turut (ada jeda antar tahap) sebelum tombol tampil & menggulir.
+    // lalu harus tenang ±0,5 dtk berturut-turut (ada jeda antar tahap) sebelum tombol tampil & menggulir.
     function arm() {
       if (st.armed || st.dead) return;
       if (D.body.classList.contains('locked')) return;
@@ -239,7 +240,16 @@
         if (!hero) return false;
         if (!hero.classList.contains('done')) return true;
         if (!hero.getAnimations) return performance.now() - t0 < 20000;           // peramban lama: tunggu waktu tetap
-        return hero.getAnimations({ subtree: true }).some((a) => (a.playState === 'running' || a.playState === 'pending') && finite(a));
+        return hero.getAnimations({ subtree: true }).some((a) => {
+          if (!(a.playState === 'running' || a.playState === 'pending') || !finite(a)) return false;
+          // gerak foto pembuka sangat panjang (10–26 dtk) & hanya penghias: jangan ditunggu sampai habis.
+          // Geseran foto dianggap selesai saat keyframe-nya berhenti bergerak; zoom/geser lambat sesudahnya diabaikan.
+          const nm = a.animationName || '';
+          if (nm === 'slPanR' || nm === 'slTileZoom' || nm === 'slTileZoom2') return false;
+          const fr = STRIP_END[nm];
+          if (fr) { try { const t = a.effect.getComputedTiming(); return (a.currentTime || 0) < fr * t.duration; } catch (e) { return false; } }
+          return true;
+        });
       };
       let quiet = 0;
       const iv = setInterval(() => {
@@ -247,7 +257,7 @@
         const el = performance.now() - t0;
         if (busy() && el < 60000) { quiet = 0; return; }
         quiet += 250;
-        if (quiet >= 1300 || el >= 60000) { clearInterval(iv); st.tDelay = setTimeout(reveal, st.delay); }
+        if (quiet >= 500 || el >= 60000) { clearInterval(iv); st.tDelay = setTimeout(reveal, st.delay); }
       }, 250);
       st.off.push(() => clearInterval(iv));
     }

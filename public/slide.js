@@ -526,7 +526,7 @@
         const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); if (p.inc) p.inc.classList.toggle('stk-up', act); }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
         if (p.go) { // foto sudah tampil (ikut scroll); teks diputar setelah kartu naik ±45% layar. Direset hanya bila kartu keluar layar di bawah.
-          if (!p.on && top < H * 0.55 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
+          if (!p.on && top < H * 0.8 && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); }
           else if (p.on && top >= H * 0.98) { p.on = false; p.el.classList.remove('sl-go'); }
         }
       });
