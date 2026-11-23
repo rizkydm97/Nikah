@@ -845,14 +845,19 @@
     const ds = [...nav.children];
     let raf = 0, cur = -1, shown = null;
     const tick = () => {
-      raf = 0; const H = VH(), line = H * 0.45;
+      raf = 0;
+      // auto scroll berjalan → titik/garis disembunyikan & tidak dihitung (hemat kerja per frame); muncul lagi begitu auto scroll berhenti
+      if (document.documentElement.classList.contains('as-run')) { if (shown !== false) { shown = false; nav.classList.remove('show'); } return; }
+      const H = VH(), line = H * 0.45;
       let k = 0; for (let i = 0; i < secs.length; i++) { if (secs[i].getBoundingClientRect().top <= line) k = i; }
       if (k !== cur) { if (cur >= 0 && ds[cur]) ds[cur].classList.remove('on'); cur = k; ds[k].classList.add('on'); }
       const sh = scrollY > H * 0.4 && !document.body.classList.contains('locked'); if (sh !== shown) { shown = sh; nav.classList.toggle('show', sh); }
     };
     const on_ = () => { if (!raf) raf = requestAnimationFrame(tick); };
     addEventListener('scroll', on_, { passive: true }); addEventListener('resize', on_); tick();
-    dotsOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); if (raf) cancelAnimationFrame(raf); raf = 0; };
+    const mo = window.MutationObserver ? new MutationObserver(on_) : null; // auto scroll mulai/berhenti (kelas as-run) → perbarui tampil/sembunyi
+    if (mo) mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    dotsOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', on_); if (mo) mo.disconnect(); if (raf) cancelAnimationFrame(raf); raf = 0; };
   }
 
   // ---------- tombol ke atas (muncul setelah menggulir ke bawah) ----------

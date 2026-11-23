@@ -49,7 +49,7 @@
     const rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
     const st = S = {
-      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0, slowV: 1, dwell: num(s.autoScrollDwell, 1, 0, 5) * 1000, dwellUntil: 0, cards: [], ci: 0, cT: -1e9, m: 0, mT: -1e9, lastY: -1, ringP: -1,
+      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0, slowV: 1, mv: false, pf: null, dwell: num(s.autoScrollDwell, 1, 0, 5) * 1000, dwellUntil: 0, cards: [], ci: 0, cT: -1e9, m: 0, mT: -1e9, lastY: -1, ringP: -1,
       resume: num(s.autoScrollResume, 0, 0, 60), tDelay: 0, tResume: 0, tTip: 0, tHold: 0, hold: false, off: [], mo: null, root: null, armed: false, userPaused: false, byTouch: false, rm,
       wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollDelay, 0, 0, 60) * 1000, stopping: false, lastSet: -1,
     };
@@ -117,11 +117,28 @@
       const i = st.cards.findIndex((c) => { const r = c.getBoundingClientRect(); return r.top > restOf(r) + 90; });
       st.ci = i < 0 ? st.cards.length : i; st.dwellUntil = 0;
     };
+    // Animasi hiasan tak berujung (kilau nama, Ken Burns foto, kilau hitung mundur) digambar ulang tiap frame di main-thread → bersaing dengan gulir.
+    // Dijeda SELAMA bergerak, jalan lagi saat gulir berhenti (jeda sinematik). Hanya mengubah kelas di #app saat berganti status.
+    const setMove = (v) => { if (v !== st.mv) { st.mv = v; if (appEl) appEl.classList.toggle('as-move', v); } };
+    st.off.push(() => { if (appEl) appEl.classList.remove('as-move'); });
+    // ?perf di alamat → kotak kecil: fps, frame terlama, dan jumlah frame lambat per kartu (untuk mencari bagian yang berat)
+    if (/[?&]perf\b/.test(location.search)) {
+      const el = D.createElement('div');
+      el.style.cssText = 'position:fixed;left:6px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:99999;background:rgba(0,0,0,.75);color:#9f9;font:600 11px/1.35 ui-monospace,Menlo,monospace;padding:5px 8px;border-radius:7px;pointer-events:none;white-space:pre';
+      D.body.appendChild(el); st.off.push(() => el.remove());
+      st.pf = { el, n: 0, sum: 0, max: 0, T: 0, slow: {} };
+    }
     const DPR = Math.max(1, window.devicePixelRatio || 1);
     const frame = (t) => {
       st.raf = 0; if (st.dead) return;
       // dt dibatasi 50 ms: bila ada frame yang tersendat, gulir tidak "melompat" mengejar ketinggalan (penyebab patah-patah di iPhone lama)
-      const dt = st.last ? Math.min(0.05, Math.max(0.001, (t - st.last) / 1000)) : 0.016; st.last = t;
+      const raw = st.last ? t - st.last : 16;
+      const dt = st.last ? Math.min(0.05, Math.max(0.001, raw / 1000)) : 0.016; st.last = t;
+      if (st.pf && st.run && st.vel > 20) {
+        const f = st.pf; f.n++; f.sum += raw; if (raw > f.max) f.max = raw;
+        if (raw > 26) f.slow[st.ci] = (f.slow[st.ci] || 0) + 1;
+        if (t - f.T > 600) { f.el.textContent = 'fps ' + Math.round(f.n / f.sum * 1000) + '  terlama ' + Math.round(f.max) + 'ms\nlambat/kartu ' + (Object.keys(f.slow).map((k) => k + ':' + f.slow[k]).join(' ') || '-'); f.T = t; f.n = 0; f.sum = 0; f.max = 0; }
+      }
       // tinggi halaman di-cache (membaca scrollHeight tiap frame memaksa hitung ulang tata letak)
       if (t - st.mT > 400) { st.m = maxY(); st.mT = t; }
       // sinkron dengan animasi teks: melambat HALUS (bukan menyentak) selama ada teks/foto yang sedang muncul
@@ -141,6 +158,7 @@
       // percepatan awal cepat tapi halus (±0,2 dtk), perlambatan saat dihentikan lebih panjang
       const k = st.target > st.vel ? 0.2 : 0.28;
       st.vel += (st.target - st.vel) * (1 - Math.exp(-dt / k));
+      setMove(st.run && !st.stopping && (st.mv ? st.vel > 15 : st.vel > 40));
       if (st.run) {
         // posisi bergeser di luar kendali kita (bilah alamat iOS naik/turun, tinggi kartu berubah setelah font/foto termuat):
         // IKUTI posisi baru, jangan berhenti. Gulir dari jari/roda/keyboard sudah ditangani langsung lewat event sentuh (berhenti seketika).
@@ -177,7 +195,7 @@
     function halt(soft, byTouch) {
       if (!st.run) { if (byTouch) st.userPaused = true; return; }
       if (soft === true) { st.stopping = true; paintState(); kick(); return; }
-      st.run = false; st.stopping = false; st.vel = 0; st.userPaused = true; st.byTouch = !!byTouch;
+      st.run = false; st.stopping = false; st.vel = 0; st.userPaused = true; st.byTouch = !!byTouch; setMove(false);
       paintState(); showTip('Mulai Auto Scroll');
       if (byTouch && st.resume > 0) { clearTimeout(st.tResume); st.tResume = setTimeout(() => start('silent'), st.resume * 1000); }
     }

@@ -50,3 +50,13 @@ html.as-hold,html.as-hold body{touch-action:none;overscroll-behavior:none}
 /* saat menggulir sendiri: jangan ada smooth-scroll bawaan yang menimpa tiap langkah, dan ring progres tanpa transisi tumpang tindih */
 html.as-run{scroll-behavior:auto!important}
 .as-wrap.run .as-ring-fg{transition:none}
+
+/* titik/garis navigasi bagian: tidak tampil saat auto scroll berjalan (muncul lagi bila auto scroll dimatikan) */
+html.as-run .sl-dots{opacity:0!important}
+/* selama gulir bergerak: jeda animasi hiasan tak berujung (kilau nama, Ken Burns, kilau & kedip hitung mundur) → main-thread bebas untuk menggulir */
+#app.as-move .sl-go .sl-pk,
+#app.as-move .sl-go .sl-pp-n .sl-wipe>span,
+#app.as-move .sl-go .sl-ev-t .sl-wipe>span,
+#app.as-move .sl-go .sl-cdx .cd::before,
+#app.as-move .sl-go .sl-cdx .sep::before,
+#app.as-move .sl-go .sl-cdx .sep::after{animation-play-state:paused!important}
