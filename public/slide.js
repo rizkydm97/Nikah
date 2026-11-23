@@ -567,6 +567,7 @@
     de.dataset.slOpfx = openFx;
     const par = s.parallax !== false && !rm; de.dataset.slPar = par ? '1' : '0';
     de.dataset.slLux = s.lux !== false && !rm ? '1' : '0'; // animasi masuk mewah (lux.css)
+    de.dataset.slCfx = s.cardFx !== false && !rm ? '1' : '0'; // kilau tepi kartu + kedalaman teks (slide.css, akhir berkas)
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
     de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d
     { const rt = parseFloat(s.stageRatio); de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }

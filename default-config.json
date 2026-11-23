@@ -452,6 +452,8 @@
     "autoScroll": true,
     "autoScrollStart": true,
     "autoScrollDelay": 0,
+    "autoScrollDwell": 1,
+    "cardFx": true,
     "autoScrollSpeed": 25,
     "autoScrollSync": true,
     "autoScrollResume": "0"

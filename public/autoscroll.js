@@ -8,6 +8,7 @@
    Konfigurasi (cfg.slide):
      autoScroll        bool    (bawaan true)  — tampilkan fitur
      autoScrollStart   bool    (bawaan true)  — mulai sendiri setelah Buka Undangan
+     autoScrollDwell   detik   (bawaan 1)     — jeda sinematik tiap kartu bertumpuk (0 = mati)
      autoScrollDelay   detik   (bawaan 0)     — jeda tambahan SETELAH animasi pembuka (nama & teks) selesai
      autoScrollSpeed   1–100   (bawaan 25)    — kecepatan awal
      autoScrollResume  detik   (bawaan 0)     — lanjut sendiri setelah tamu diam N detik (0 = tidak)
@@ -48,7 +49,7 @@
     const rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
     const st = S = {
-      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0, slowV: 1, m: 0, mT: -1e9, lastY: -1, ringP: -1,
+      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0, slowV: 1, dwell: num(s.autoScrollDwell, 1, 0, 5) * 1000, dwellUntil: 0, cards: [], ci: 0, cT: -1e9, m: 0, mT: -1e9, lastY: -1, ringP: -1,
       resume: num(s.autoScrollResume, 0, 0, 60), tDelay: 0, tResume: 0, tTip: 0, tHold: 0, hold: false, off: [], mo: null, root: null, armed: false, userPaused: false, byTouch: false, rm,
       wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollDelay, 0, 0, 60) * 1000, stopping: false, lastSet: -1,
     };
@@ -107,6 +108,14 @@
     };
 
     // ---------- mesin gulir ----------
+    // ---------- jeda sinematik: tiap kartu bertumpuk (mempelai, akad, resepsi, ayat) berhenti sejenak setelah menutup penuh ----------
+    // Kartu yang sudah terlewati (sudah menempel di atas) ditandai dulu; sisanya ditunggu satu per satu.
+    const restOf = (r) => Math.min(0, innerHeight - r.height);          // posisi atas kartu saat menempel & menutup layar penuh
+    const syncCards = () => {
+      st.cards = [...D.querySelectorAll('#app .stk-pin:not(.sl-open)')]; st.cT = performance.now();
+      const i = st.cards.findIndex((c) => { const r = c.getBoundingClientRect(); return r.top > restOf(r) + 90; });
+      st.ci = i < 0 ? st.cards.length : i; st.dwellUntil = 0;
+    };
     const DPR = Math.max(1, window.devicePixelRatio || 1);
     const frame = (t) => {
       st.raf = 0; if (st.dead) return;
@@ -115,9 +124,19 @@
       // tinggi halaman di-cache (membaca scrollHeight tiap frame memaksa hitung ulang tata letak)
       if (t - st.mT > 400) { st.m = maxY(); st.mT = t; }
       // sinkron dengan animasi teks: melambat HALUS (bukan menyentak) selama ada teks/foto yang sedang muncul
+      // jeda sinematik: mulai memperlambat sebelum kartu menutup penuh (jarak = kecepatan × 0,28 dtk) agar berhenti tepat di posisi tempel
+      let hold = performance.now() < st.dwellUntil;
+      if (st.dwell > 0 && st.run && !st.stopping && !hold) {
+        if (!st.cards.length && t - st.cT > 1000) syncCards();           // bagian dirender bertahap
+        const c = st.cards[st.ci];
+        if (c) {
+          const r = c.getBoundingClientRect();
+          if (r.top <= restOf(r) + st.vel * 0.28 + 4) { st.ci++; st.dwellUntil = performance.now() + 800 + st.dwell; hold = true; }
+        }
+      }
       const wantSlow = st.sync && performance.now() < st.busyUntil ? 0.65 : 1;
       st.slowV += (wantSlow - st.slowV) * (1 - Math.exp(-dt / 0.7));
-      st.target = st.run && !st.stopping ? st.speed * PXS * st.slowV : 0;
+      st.target = st.run && !st.stopping && !hold ? st.speed * PXS * st.slowV : 0;
       // percepatan awal cepat tapi halus (±0,2 dtk), perlambatan saat dihentikan lebih panjang
       const k = st.target > st.vel ? 0.2 : 0.28;
       st.vel += (st.target - st.vel) * (1 - Math.exp(-dt / k));
@@ -148,7 +167,7 @@
       if (atEnd()) { scrollTo({ top: 0, left: 0, behavior: 'instant' }); }
       st.m = maxY(); st.mT = performance.now();
       st.pos = cy(); st.lastSet = st.pos; st.lastY = -1; st.run = true; st.stopping = false; st.userPaused = false;
-      st.slowV = 1;
+      st.slowV = 1; if (st.dwell > 0) syncCards();
       if (st.rm) st.vel = st.speed * PXS;
       else if (fromUser === 'now') st.vel = st.speed * PXS * 0.45;      // mulai otomatis setelah pembuka: langsung bergerak, tanpa jeda merangkak
       paintState(); kick(); if (fromUser !== 'silent') showTip('Berhenti Scroll');
