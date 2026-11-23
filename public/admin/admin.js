@@ -958,7 +958,43 @@
       h('div', { class: 'row', style: 'flex-wrap:wrap' }, h('button', { class: 'btn pri', onclick: gen2 }, 'Buat daftar kirim'),
         h('button', { class: 'btn', onclick: () => { if (!confirm('Kosongkan tanda "Terkirim"?')) return; sentSet.clear(); saveSent(); gen2(); } }, 'Reset tanda terkirim'),
         h('button', { class: 'btn danger', onclick: () => { if (!list2.value.trim() || !confirm('Hapus SEMUA tamu dari daftar ini?')) return; list2.value = ''; sentSet.clear(); saveSent(); gen2(); } }, '🗑 Hapus semua daftar'))), out2);
-    gen2(); return m;
+    gen2();
+
+    // ----- Cara 3: Instagram DM — "Nama | @username" -> tombol membuka DM langsung ke akun itu (ig.me/m/username) -----
+    const igUser = (raw) => { const m = /(?:instagram\.com\/|ig\.me\/(?:m\/)?|@)?([A-Za-z0-9._]{1,30})\/?\s*$/.exec(String(raw || '').trim().replace(/[?#].*$/, '')); return m ? m[1].replace(/^\.+|\.+$/g, '') : ''; };
+    const sent3 = new Set((() => { try { return JSON.parse(ls('lk3_sent', '[]')); } catch { return []; } })());
+    const save3 = () => lsSet('lk3_sent', JSON.stringify([...sent3].slice(-2000)));
+    const list3 = h('textarea', { placeholder: 'Rizky | @dm_rizky\nBapak Budi & Keluarga | @budi.keluarga\n@ibu_sari', style: 'min-height:110px' }, ls('lk3_list', ''));
+    const tpl3 = h('textarea', { style: 'min-height:130px' }, ls('lk3_tpl', ls('lk_tpl', TPL)));
+    const out3 = h('div');
+    const gen3 = () => {
+      lsSet('lk3_list', list3.value); lsSet('lk3_tpl', tpl3.value); out3.textContent = '';
+      list3.value.split('\n').map((l) => l.trim()).filter(Boolean).forEach((line) => {
+        const mm = /^(.*?)\s*(?:\||;|\t|,)\s*(\S+)$/.exec(line), nm = mm ? mm[1].trim() : '', u = igUser(mm ? mm[2] : line), name = nm || u;
+        const row = h('div', { class: 'linkrow' });
+        if (!u) { row.append(h('span', {}, line, h('br'), h('small', { class: 'lkbad' }, 'Tulis: Nama | @username'))); out3.append(row); return; }
+        const key = name + '|' + u, msg = fill(tpl3.value, name);
+        const a = h('a', { class: 'btn sm pri', href: 'https://ig.me/m/' + u, target: '_blank', rel: 'noopener' }, 'Buka DM @' + u);
+        const badge = h('button', { class: 'sentbadge', type: 'button', title: 'Klik untuk ubah tanda manual' });
+        const paint = () => { const d = sent3.has(key); row.classList.toggle('sent', d); badge.classList.toggle('on', d); badge.textContent = d ? '✓ Sudah terkirim' : '○ Belum terkirim'; };
+        badge.onclick = () => { sent3.has(key) ? sent3.delete(key) : sent3.add(key); save3(); paint(); };
+        // Instagram tidak bisa mengisi pesan otomatis → pesan disalin dulu, tinggal tempel (paste) di kolom DM
+        a.addEventListener('click', () => { copyTxt(msg, 'Pesan disalin — tempel (paste) di DM Instagram'); sent3.add(key); save3(); paint(); });
+        paint();
+        row.append(h('span', {}, name, h('br'), h('small', { class: 'lkst' }, '@' + u)), badge,
+          h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus dari daftar', onclick: () => { const L = list3.value.split('\n'); const i = L.findIndex((l) => l.trim() === line); if (i >= 0) L.splice(i, 1); list3.value = L.join('\n'); sent3.delete(key); save3(); gen3(); } }, '🗑'),
+          h('button', { class: 'btn sm', onclick: () => copyTxt(msg, 'Pesan berhasil disalin!') }, 'Salin pesan'), a);
+        out3.append(row);
+      });
+    };
+    m.append(h('div', { class: 'card', style: 'margin-top:14px' }, h('h3', { style: 'margin:0 0 8px' }, 'Cara 3 — Kirim lewat DM Instagram'),
+      h('p', { class: 'hint', style: 'margin:0 0 8px' }, 'Satu per baris: "Nama | @username" (boleh hanya @username atau link profil Instagram). Klik "Buka DM" → Instagram langsung membuka DM ke akun itu, pesan + link otomatis tersalin, tinggal tempel lalu kirim. (Instagram tidak mengizinkan pesan terisi otomatis.)'),
+      h('div', { class: 'fld' }, h('label', {}, 'Daftar tamu Instagram'), list3),
+      h('div', { class: 'fld' }, h('label', {}, 'Template pesan (gunakan {nama} dan {link})'), tpl3),
+      h('div', { class: 'row', style: 'flex-wrap:wrap' }, h('button', { class: 'btn pri', onclick: gen3 }, 'Buat daftar DM'),
+        h('button', { class: 'btn', onclick: () => { if (!confirm('Kosongkan tanda "Terkirim"?')) return; sent3.clear(); save3(); gen3(); } }, 'Reset tanda terkirim'),
+        h('button', { class: 'btn danger', onclick: () => { if (!list3.value.trim() || !confirm('Hapus SEMUA dari daftar ini?')) return; list3.value = ''; sent3.clear(); save3(); gen3(); } }, '🗑 Hapus semua daftar'))), out3);
+    gen3(); return m;
   }
 
   // ---------- kompres foto LAMA yang masih dipakai undangan (tanpa upload ulang) ----------

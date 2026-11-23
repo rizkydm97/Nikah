@@ -8,16 +8,15 @@
    Konfigurasi (cfg.slide):
      autoScroll        bool    (bawaan true)  — tampilkan fitur
      autoScrollStart   bool    (bawaan true)  — mulai sendiri setelah Buka Undangan
-     autoScrollDelay   detik   (bawaan 8)     — jeda sebelum mulai (agar pembuka sempat terlihat)
+     autoScrollWait    detik   (bawaan 1)     — jeda tambahan SETELAH animasi pembuka (nama & teks) selesai
      autoScrollSpeed   1–100   (bawaan 25)    — kecepatan awal
      autoScrollResume  detik   (bawaan 0)     — lanjut sendiri setelah tamu diam N detik (0 = tidak)
    =================================================================== */
 (function () {
   'use strict';
   const D = document, de = D.documentElement;
-  const PXS = 1.5;                      // 1 satuan kecepatan = 1,5 px / detik
-  const KEY = 'asSpeed';
-  let S = null;                         // state aktif
+  const PXS = 2.4;                      // 1 satuan kecepatan = 2,4 px / detik (25 ≈ 60 px/dtk, 50 ≈ 120, 70 ≈ 168, 100 = 240)
+    let S = null;                         // state aktif
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const num = (v, d, a, b) => { const n = parseFloat(v); return Number.isFinite(n) ? clamp(n, a, b) : d; };
@@ -47,11 +46,10 @@
     if (opt && opt.preview) return;                       // panel admin: jangan menggulir sendiri saat mengedit
     const rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-    let saved = 0; try { saved = parseFloat(sessionStorage.getItem(KEY)) || 0; } catch (e) { /* abaikan */ }
     const st = S = {
-      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(saved || num(s.autoScrollSpeed, 25, 1, 100)), 1, 100),
+      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0,
       resume: num(s.autoScrollResume, 0, 0, 60), tDelay: 0, tResume: 0, tTip: 0, off: [], mo: null, root: null, armed: false, userPaused: false, byTouch: false, rm,
-      wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollDelay, 8, 0, 60) * 1000, stopping: false, lastSet: -1,
+      wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollWait, 1, 0, 60) * 1000, stopping: false, lastSet: -1,
     };
 
     // ---------- DOM ----------
@@ -91,7 +89,6 @@
     };
     const setSpeed = (v) => {
       st.speed = clamp(Math.round(v), 1, 100); paintSpeed();
-      try { sessionStorage.setItem(KEY, String(st.speed)); } catch (e) { /* abaikan */ }
     };
     const atEnd = () => cy() >= maxY() - 2;
     const paintState = () => {
@@ -111,7 +108,9 @@
     const frame = (t) => {
       st.raf = 0; if (st.dead) return;
       const dt = st.last ? Math.min(0.064, (t - st.last) / 1000) : 0.016; st.last = t;
-      st.target = st.run && !st.stopping ? st.speed * PXS : 0;
+      // sinkron dengan animasi teks: selama ada teks/foto yang sedang muncul di layar, gulir melambat agar animasinya selesai terlihat
+      const slow = st.sync && performance.now() < st.busyUntil ? 0.35 : 1;
+      st.target = st.run && !st.stopping ? st.speed * PXS * slow : 0;
       // percepatan halus (mulai ±0,6 dtk), perlambatan lebih panjang saat dihentikan lewat tombol
       const k = st.target > st.vel ? 0.45 : 0.28;
       st.vel += (st.target - st.vel) * (1 - Math.exp(-dt / k));
@@ -201,15 +200,56 @@
     st.mo.observe(de, { attributes: true, attributeFilter: ['class'] });
     if (lb) st.mo.observe(lb, { attributes: true, attributeFilter: ['hidden', 'class'] });
 
-    // ---------- tampil setelah undangan dibuka ----------
+    // ---------- sinkron animasi: pantau elemen yang baru "masuk" (kelas in / sl-go / on / play / shown) di dalam layar ----------
+    if (st.sync) {
+      const app = D.getElementById('app');
+      const hit = /(^|\s)(in|sl-go|on|play|shown)(\s|$)/;
+      if (app) {
+        const mo3 = new MutationObserver((list) => {
+          if (!st.run) return;
+          for (const m of list) {
+            const t = m.target, cl = t.getAttribute && t.getAttribute('class') || '';
+            if (hit.test(m.oldValue || '') || !hit.test(cl)) continue;
+            const r = t.getBoundingClientRect();
+            if (r.height > 0 && r.bottom > 0 && r.top < innerHeight * 0.92) { st.busyUntil = performance.now() + 1900; break; }
+          }
+        });
+        mo3.observe(app, { subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true });
+        st.off.push(() => mo3.disconnect());
+      }
+    }
+
+    // ---------- tombol baru tampil SETELAH animasi pembuka selesai (agar tidak menutupi teks nama) ----------
+    function reveal() {
+      if (st.dead) return;
+      root.classList.add('ready');
+      if (st.wantStart && !st.userPaused && cy() < innerHeight * 0.6) start(true); else showTip('Mulai Auto Scroll', 3200);
+    }
+    // Tunggu sampai SEMUA animasi di slide pembuka (foto bergeser, nama & teks masuk) benar-benar selesai:
+    // pantau animasi CSS yang masih berjalan di dalam #s-hero (animasi tak berujung seperti melayang/kilau diabaikan),
+    // lalu harus tenang ±1,3 dtk berturut-turut (ada jeda antar tahap) sebelum tombol tampil & menggulir.
     function arm() {
       if (st.armed || st.dead) return;
       if (D.body.classList.contains('locked')) return;
-      st.armed = true; de.classList.add('as-on'); root.classList.add('ready');
+      st.armed = true; de.classList.add('as-on');
       paintSpeed(); paintState(); paintRing();
-      if (st.wantStart) {
-        st.tDelay = setTimeout(() => { if (!st.userPaused) start(true); }, st.delay);
-      } else showTip('Mulai Auto Scroll', 3200);
+      const hero = D.getElementById('s-hero'), t0 = performance.now();
+      const finite = (a) => { try { return isFinite(a.effect.getComputedTiming().endTime); } catch (e) { return false; } };
+      const busy = () => {
+        if (!hero) return false;
+        if (!hero.classList.contains('done')) return true;
+        if (!hero.getAnimations) return performance.now() - t0 < 20000;           // peramban lama: tunggu waktu tetap
+        return hero.getAnimations({ subtree: true }).some((a) => (a.playState === 'running' || a.playState === 'pending') && finite(a));
+      };
+      let quiet = 0;
+      const iv = setInterval(() => {
+        if (st.dead) { clearInterval(iv); return; }
+        const el = performance.now() - t0;
+        if (busy() && el < 60000) { quiet = 0; return; }
+        quiet += 250;
+        if (quiet >= 1300 || el >= 60000) { clearInterval(iv); st.tDelay = setTimeout(reveal, st.delay); }
+      }, 250);
+      st.off.push(() => clearInterval(iv));
     }
     paintSpeed(); paintState(); arm();
   }

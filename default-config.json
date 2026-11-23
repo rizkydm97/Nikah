@@ -451,8 +451,9 @@
     "lux": true,
     "autoScroll": true,
     "autoScrollStart": true,
-    "autoScrollDelay": 8,
+    "autoScrollWait": 1,
     "autoScrollSpeed": 25,
+    "autoScrollSync": true,
     "autoScrollResume": "0"
   }
 }
