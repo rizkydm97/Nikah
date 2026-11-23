@@ -110,7 +110,8 @@
     // ---------- mesin gulir ----------
     // ---------- jeda sinematik: tiap kartu bertumpuk (mempelai, akad, resepsi, ayat) berhenti sejenak setelah menutup penuh ----------
     // Kartu yang sudah terlewati (sudah menempel di atas) ditandai dulu; sisanya ditunggu satu per satu.
-    const restOf = (r) => Math.min(0, innerHeight - r.height);          // posisi atas kartu saat menempel & menutup layar penuh
+    const appEl = D.getElementById('app');
+    const restOf = (r) => Math.min(0, (parseFloat(appEl && appEl.style.getPropertyValue('--rh')) || innerHeight) - r.height);          // posisi atas kartu saat menempel & menutup layar penuh
     const syncCards = () => {
       st.cards = [...D.querySelectorAll('#app .stk-pin:not(.sl-open)')]; st.cT = performance.now();
       const i = st.cards.findIndex((c) => { const r = c.getBoundingClientRect(); return r.top > restOf(r) + 90; });
@@ -258,6 +259,7 @@
           if (!st.run) return;
           for (const m of list) {
             const t = m.target, cl = t.getAttribute && t.getAttribute('class') || '';
+            if (st.dwell > 0 && t.closest && t.closest('.stk-pin')) continue;      // kartu bertumpuk diatur jeda sinematik; jangan ikut memperlambat (kecepatan jadi naik-turun)
             if (hit.test(m.oldValue || '') || !hit.test(cl)) continue;
             const r = t.getBoundingClientRect();
             if (r.height > 0 && r.bottom > 0 && r.top < innerHeight * 0.92) { st.busyUntil = performance.now() + 1900; break; }
