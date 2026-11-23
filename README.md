@@ -380,5 +380,3 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - Penyebab (diukur dari rekaman layar): pembuka 60 fps, tetapi kartu bertumpuk (mempelai → ayat → akad → resepsi) hanya ±30 fps. Mesin gulir sehat; yang berat adalah penggambaran 3D kartu (perspective/rotateX, bayangan 4 lapis, kilap, blur teks).
 - `public/slide-perf.css` (dimuat terakhir): **Tingkat 1** otomatis di layar sentuh — tumpukan 2D (skala + redup), bayangan 1 lapis, tanpa kilap/blur, animasi hiasan dijeda saat bergerak. **Tingkat 2** (`html.perf-low`) — hanya kartu menutupi.
 - `public/autoscroll.js`: penjaga fps. Bila rata-rata waktu frame > 24 ms selama ±3 dtk saat menggulir, otomatis pindah ke Tingkat 2 (diingat per sesi tab). `?lite` = paksa ringan, `?full` = paksa penuh, `?perf` = kotak fps (kini menampilkan tingkat).
-
-- v10: layar sentuh (HP) kini langsung memakai mode ringan (`html.perf-low`) sebagai bawaan. `?full` mengembalikan efek penuh untuk perbandingan.

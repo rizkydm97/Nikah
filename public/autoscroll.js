@@ -58,8 +58,8 @@
     // ?lite = paksa mode ringan, ?full = paksa efek penuh. Keputusan diingat selama sesi tab agar tidak mengulang dari awal.
     try {
       if (/[?&]full\b/.test(location.search)) { sessionStorage.removeItem('slPerf'); de.classList.remove('perf-low'); }
-      else if (/[?&]lite\b/.test(location.search) || sessionStorage.getItem('slPerf') === 'low' || matchMedia('(hover:none),(pointer:coarse)').matches) de.classList.add('perf-low');   // HP / layar sentuh: mode ringan bawaan
-    } catch (e) { if (/[?&]lite\b/.test(location.search) || matchMedia('(hover:none),(pointer:coarse)').matches) de.classList.add('perf-low'); }
+      else if (/[?&]lite\b/.test(location.search) || sessionStorage.getItem('slPerf') === 'low') de.classList.add('perf-low');
+    } catch (e) { if (/[?&]lite\b/.test(location.search)) de.classList.add('perf-low'); }
     st.gv = { n: 0, sum: 0, bad: 0, warm: 0, forced: /[?&]full\b/.test(location.search) };
     const demote = () => {
       if (de.classList.contains('perf-low')) return;
@@ -161,7 +161,7 @@
       if (st.pf && st.run && st.vel > 20) {
         const f = st.pf; f.n++; f.sum += raw; if (raw > f.max) f.max = raw;
         if (raw > 26) f.slow[st.ci] = (f.slow[st.ci] || 0) + 1;
-        if (t - f.T > 600) { f.el.textContent = 'fps ' + Math.round(f.n / f.sum * 1000) + '  terlama ' + Math.round(f.max) + 'ms\nas-v11 | ' + (de.classList.contains('perf-low') ? 'MODE: RINGAN PENUH (aktif)' : 'MODE: efek penuh/tingkat 1 (BUKAN ringan penuh)') + '\nlambat/kartu ' + (Object.keys(f.slow).map((k) => k + ':' + f.slow[k]).join(' ') || '-'); f.T = t; f.n = 0; f.sum = 0; f.max = 0; }
+        if (t - f.T > 600) { f.el.textContent = 'fps ' + Math.round(f.n / f.sum * 1000) + '  terlama ' + Math.round(f.max) + 'ms  [' + (de.classList.contains('perf-low') ? 'RINGAN+' : 'ringan') + ']\nlambat/kartu ' + (Object.keys(f.slow).map((k) => k + ':' + f.slow[k]).join(' ') || '-'); f.T = t; f.n = 0; f.sum = 0; f.max = 0; }
       }
       // tinggi halaman di-cache (membaca scrollHeight tiap frame memaksa hitung ulang tata letak)
       if (t - st.mT > 400) { st.m = maxY(); st.mT = t; }
