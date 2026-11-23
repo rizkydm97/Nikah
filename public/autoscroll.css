@@ -43,3 +43,6 @@
 html.wl-sheet-on .as-wrap{display:none}
 @media print{.as-wrap{display:none}}
 @media (prefers-reduced-motion:reduce){.as-wrap,.as-panel,.as-tip,.as-btn{transition:none}.as-ic svg{animation:none!important}}
+
+/* selama animasi pembuka berjalan, gulir tamu ditahan (dilepas saat auto scroll siap jalan) */
+html.as-hold,html.as-hold body{touch-action:none;overscroll-behavior:none}

@@ -8,7 +8,7 @@
    Konfigurasi (cfg.slide):
      autoScroll        bool    (bawaan true)  — tampilkan fitur
      autoScrollStart   bool    (bawaan true)  — mulai sendiri setelah Buka Undangan
-     autoScrollWait    detik   (bawaan 1)     — jeda tambahan SETELAH animasi pembuka (nama & teks) selesai
+     autoScrollWait    detik   (bawaan 0,3)   — jeda tambahan SETELAH animasi pembuka (nama & teks) selesai
      autoScrollSpeed   1–100   (bawaan 25)    — kecepatan awal
      autoScrollResume  detik   (bawaan 0)     — lanjut sendiri setelah tamu diam N detik (0 = tidak)
    =================================================================== */
@@ -36,7 +36,7 @@
     S.off.forEach((f) => { try { f(); } catch (e) { /* abaikan */ } });
     if (S.mo) S.mo.disconnect();
     if (S.root && S.root.parentNode) S.root.parentNode.removeChild(S.root);
-    de.classList.remove('as-on', 'as-run');
+    clearTimeout(S.tHold); de.classList.remove('as-on', 'as-run', 'as-hold');
     S = null;
   }
 
@@ -49,8 +49,8 @@
 
     const st = S = {
       dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0,
-      resume: num(s.autoScrollResume, 0, 0, 60), tDelay: 0, tResume: 0, tTip: 0, off: [], mo: null, root: null, armed: false, userPaused: false, byTouch: false, rm,
-      wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollWait, 1, 0, 60) * 1000, stopping: false, lastSet: -1,
+      resume: num(s.autoScrollResume, 0, 0, 60), tDelay: 0, tResume: 0, tTip: 0, tHold: 0, hold: false, off: [], mo: null, root: null, armed: false, userPaused: false, byTouch: false, rm,
+      wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollWait, 0.3, 0, 60) * 1000, stopping: false, lastSet: -1,
     };
 
     // ---------- DOM ----------
@@ -155,6 +155,23 @@
       if (st.run) halt(false, true);
     };
 
+    // ---------- kunci gulir selama animasi pembuka ----------
+    // Setelah Buka Undangan, tamu menonton dulu animasi foto & teks pembuka: gulir sentuh / roda / keyboard ditahan sampai auto scroll siap jalan.
+    // Sesudah itu tamu bebas menggulir ke atas atau ke bawah. Aman: dilepas otomatis oleh reveal() / teardown() / batas waktu.
+    const holdKeys = /^(ArrowUp|ArrowDown|PageUp|PageDown|Home|End| |Spacebar)$/;
+    const holdBlock = (e) => { if (!st.hold || inUi(e)) return; if (e.cancelable) e.preventDefault(); };
+    const holdKey = (e) => { if (!st.hold || inUi(e)) return; if (holdKeys.test(e.key) && e.cancelable) e.preventDefault(); };
+    const holdOn = () => {
+      if (st.hold || st.dead) return;
+      st.hold = true; de.classList.add('as-hold');
+      on(D, 'touchmove', holdBlock, { passive: false, capture: true });
+      on(D, 'wheel', holdBlock, { passive: false, capture: true });
+      on(D, 'keydown', holdKey, { capture: true });
+      st.tHold = setTimeout(holdOff, 65000);              // pengaman: jangan pernah terkunci selamanya
+    };
+    const holdOff = () => { clearTimeout(st.tHold); st.hold = false; de.classList.remove('as-hold'); };
+    st.holdOff = holdOff;
+
     // ---------- tombol ----------
     on(btn, 'click', (e) => {
       e.stopPropagation();
@@ -223,6 +240,7 @@
     // ---------- tombol baru tampil SETELAH animasi pembuka selesai (agar tidak menutupi teks nama) ----------
     function reveal() {
       if (st.dead) return;
+      holdOff();
       root.classList.add('ready');
       if (st.wantStart && !st.userPaused && cy() < innerHeight * 0.6) start(true); else showTip('Mulai Auto Scroll', 3200);
     }
@@ -232,7 +250,7 @@
     function arm() {
       if (st.armed || st.dead) return;
       if (D.body.classList.contains('locked')) return;
-      st.armed = true; de.classList.add('as-on');
+      st.armed = true; de.classList.add('as-on'); holdOn();
       paintSpeed(); paintState(); paintRing();
       const hero = D.getElementById('s-hero'), t0 = performance.now();
       const finite = (a) => { try { return isFinite(a.effect.getComputedTiming().endTime); } catch (e) { return false; } };
@@ -257,7 +275,7 @@
         const el = performance.now() - t0;
         if (busy() && el < 60000) { quiet = 0; return; }
         quiet += 250;
-        if (quiet >= 500 || el >= 60000) { clearInterval(iv); st.tDelay = setTimeout(reveal, st.delay); }
+        if (quiet >= 300 || el >= 60000) { clearInterval(iv); st.tDelay = setTimeout(reveal, st.delay); }
       }, 250);
       st.off.push(() => clearInterval(iv));
     }

@@ -29,8 +29,11 @@
     return d;
   };
   // salin ke papan klip dengan notifikasi toast terpusat (/toast.js): sukses hanya bila benar-benar tersalin
-  function copyTxt(txt, okMsg) {
+  function copyTxt(txt, okMsg, syncFirst) {
     const ok = () => window.Toast.success(okMsg), fail = () => window.Toast.error('Gagal menyalin, silakan coba lagi.');
+    // syncFirst: untuk tombol yang langsung pindah ke aplikasi lain (Instagram) — salin SEKARANG juga (sinkron) sebelum halaman ditinggalkan,
+    // karena penyalinan async bisa gagal / terpotong saat iPhone berpindah ke aplikasi lain
+    if (syncFirst) { let d = false; try { const t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px'; document.body.appendChild(t); t.focus(); t.select(); t.setSelectionRange(0, txt.length); d = document.execCommand('copy'); t.remove(); } catch (e) { d = false; } if (d) { ok(); return; } }
     const fb = () => { const t = document.createElement('textarea'); t.value = txt; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(t); t.select(); let d = false; try { d = document.execCommand('copy'); } catch (e) {} t.remove(); d ? ok() : fail(); };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok, fb); else fb();
   }
@@ -979,7 +982,7 @@
         const paint = () => { const d = sent3.has(key); row.classList.toggle('sent', d); badge.classList.toggle('on', d); badge.textContent = d ? '✓ Sudah terkirim' : '○ Belum terkirim'; };
         badge.onclick = () => { sent3.has(key) ? sent3.delete(key) : sent3.add(key); save3(); paint(); };
         // Instagram tidak bisa mengisi pesan otomatis → pesan disalin dulu, tinggal tempel (paste) di kolom DM
-        a.addEventListener('click', () => { copyTxt(msg, 'Pesan disalin — tempel (paste) di DM Instagram'); sent3.add(key); save3(); paint(); });
+        a.addEventListener('click', () => { copyTxt(msg, 'Pesan disalin — tempel (paste) di DM Instagram', true); sent3.add(key); save3(); paint(); });
         paint();
         row.append(h('span', {}, name, h('br'), h('small', { class: 'lkst' }, '@' + u)), badge,
           h('button', { class: 'btn sm danger', type: 'button', title: 'Hapus dari daftar', onclick: () => { const L = list3.value.split('\n'); const i = L.findIndex((l) => l.trim() === line); if (i >= 0) L.splice(i, 1); list3.value = L.join('\n'); sent3.delete(key); save3(); gen3(); } }, '🗑'),
