@@ -46,3 +46,7 @@ html.wl-sheet-on .as-wrap{display:none}
 
 /* selama animasi pembuka berjalan, gulir tamu ditahan (dilepas saat auto scroll siap jalan) */
 html.as-hold,html.as-hold body{touch-action:none;overscroll-behavior:none}
+
+/* saat menggulir sendiri: jangan ada smooth-scroll bawaan yang menimpa tiap langkah, dan ring progres tanpa transisi tumpang tindih */
+html.as-run{scroll-behavior:auto!important}
+.as-wrap.run .as-ring-fg{transition:none}

@@ -8,7 +8,7 @@
    Konfigurasi (cfg.slide):
      autoScroll        bool    (bawaan true)  — tampilkan fitur
      autoScrollStart   bool    (bawaan true)  — mulai sendiri setelah Buka Undangan
-     autoScrollWait    detik   (bawaan 0,3)   — jeda tambahan SETELAH animasi pembuka (nama & teks) selesai
+     autoScrollDelay   detik   (bawaan 0)     — jeda tambahan SETELAH animasi pembuka (nama & teks) selesai
      autoScrollSpeed   1–100   (bawaan 25)    — kecepatan awal
      autoScrollResume  detik   (bawaan 0)     — lanjut sendiri setelah tamu diam N detik (0 = tidak)
    =================================================================== */
@@ -48,9 +48,9 @@
     const rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
     const st = S = {
-      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0,
+      dead: false, raf: 0, last: 0, pos: 0, vel: 0, run: false, target: 0, speed: clamp(Math.round(num(s.autoScrollSpeed, 25, 1, 100)), 1, 100), sync: s.autoScrollSync !== false, busyUntil: 0, slowV: 1, m: 0, mT: -1e9, lastY: -1, ringP: -1,
       resume: num(s.autoScrollResume, 0, 0, 60), tDelay: 0, tResume: 0, tTip: 0, tHold: 0, hold: false, off: [], mo: null, root: null, armed: false, userPaused: false, byTouch: false, rm,
-      wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollWait, 0.3, 0, 60) * 1000, stopping: false, lastSet: -1,
+      wantStart: s.autoScrollStart !== false && !rm, delay: num(s.autoScrollDelay, 0, 0, 60) * 1000, stopping: false, lastSet: -1,
     };
 
     // ---------- DOM ----------
@@ -100,29 +100,38 @@
       btn.setAttribute('aria-label', running ? 'Berhenti scroll' : 'Mulai auto scroll');
       ic.innerHTML = running ? ICON_PAUSE : (atEnd() && maxY() > 0 ? ICON_UP : ICON_DOWN);
     };
-    const paintRing = () => {
-      const m = maxY(), p = m > 0 ? clamp(cy() / m, 0, 1) : 0;
-      ringFg.style.strokeDashoffset = (C * (1 - p)).toFixed(2);
+    const paintRing = (force) => {
+      const m = st.m || maxY(), p = m > 0 ? clamp(cy() / m, 0, 1) : 0;
+      if (!force && Math.abs(p - st.ringP) < 0.004) return;       // tulis style hanya bila berubah nyata → tidak ada repaint SVG tiap frame
+      st.ringP = p; ringFg.style.strokeDashoffset = (C * (1 - p)).toFixed(2);
     };
 
     // ---------- mesin gulir ----------
+    const DPR = Math.max(1, window.devicePixelRatio || 1);
     const frame = (t) => {
       st.raf = 0; if (st.dead) return;
-      const dt = st.last ? Math.min(0.064, (t - st.last) / 1000) : 0.016; st.last = t;
-      // sinkron dengan animasi teks: selama ada teks/foto yang sedang muncul di layar, gulir melambat agar animasinya selesai terlihat
-      const slow = st.sync && performance.now() < st.busyUntil ? 0.35 : 1;
-      st.target = st.run && !st.stopping ? st.speed * PXS * slow : 0;
-      // percepatan halus (mulai ±0,6 dtk), perlambatan lebih panjang saat dihentikan lewat tombol
-      const k = st.target > st.vel ? 0.45 : 0.28;
+      // dt dibatasi 50 ms: bila ada frame yang tersendat, gulir tidak "melompat" mengejar ketinggalan (penyebab patah-patah di iPhone lama)
+      const dt = st.last ? Math.min(0.05, Math.max(0.001, (t - st.last) / 1000)) : 0.016; st.last = t;
+      // tinggi halaman di-cache (membaca scrollHeight tiap frame memaksa hitung ulang tata letak)
+      if (t - st.mT > 400) { st.m = maxY(); st.mT = t; }
+      // sinkron dengan animasi teks: melambat HALUS (bukan menyentak) selama ada teks/foto yang sedang muncul
+      const wantSlow = st.sync && performance.now() < st.busyUntil ? 0.65 : 1;
+      st.slowV += (wantSlow - st.slowV) * (1 - Math.exp(-dt / 0.7));
+      st.target = st.run && !st.stopping ? st.speed * PXS * st.slowV : 0;
+      // percepatan awal cepat tapi halus (±0,2 dtk), perlambatan saat dihentikan lebih panjang
+      const k = st.target > st.vel ? 0.2 : 0.28;
       st.vel += (st.target - st.vel) * (1 - Math.exp(-dt / k));
       if (st.run) {
-        // gulir dari luar (scrollbar, tombol ke atas, dsb.) → serahkan ke tamu
-        if (st.lastSet >= 0 && Math.abs(cy() - st.lastSet) > 6) { halt(false); return; }
+        // posisi bergeser di luar kendali kita (bilah alamat iOS naik/turun, tinggi kartu berubah setelah font/foto termuat):
+        // IKUTI posisi baru, jangan berhenti. Gulir dari jari/roda/keyboard sudah ditangani langsung lewat event sentuh (berhenti seketika).
+        if (st.lastSet >= 0 && Math.abs(cy() - st.lastSet) > 3) { st.pos = cy(); st.lastSet = st.pos; st.lastY = -1; }
         if (st.vel > 0.05) {
-          const m = maxY();
+          const m = st.m;
           st.pos = Math.min(m, Math.max(0, st.pos + st.vel * dt));
-          scrollTo({ top: st.pos, left: 0, behavior: 'instant' }); st.lastSet = cy();
-          if (st.pos >= m - 1) { st.run = false; st.stopping = false; st.vel = 0; paintState(); showTip('Selesai', 1800); }
+          // dibulatkan ke piksel perangkat (iPhone @2x = 0,5 px) → langkah gulir rata, tidak bergantian 3px/4px
+          const y = Math.round(st.pos * DPR) / DPR;
+          if (y !== st.lastY) { window.scrollTo(0, y); st.lastY = y; st.lastSet = cy(); }
+          if (st.pos >= m - 1) { st.run = false; st.stopping = false; st.vel = 0; paintState(); paintRing(true); showTip('Selesai', 1800); }
         }
         if (st.stopping && st.vel < 1) { st.run = false; st.stopping = false; st.vel = 0; paintState(); }
       }
@@ -137,8 +146,11 @@
       if (D.hidden || D.body.classList.contains('locked')) return;
       if (maxY() <= 0) return;
       if (atEnd()) { scrollTo({ top: 0, left: 0, behavior: 'instant' }); }
-      st.pos = cy(); st.lastSet = st.pos; st.run = true; st.stopping = false; st.userPaused = false;
+      st.m = maxY(); st.mT = performance.now();
+      st.pos = cy(); st.lastSet = st.pos; st.lastY = -1; st.run = true; st.stopping = false; st.userPaused = false;
+      st.slowV = 1;
       if (st.rm) st.vel = st.speed * PXS;
+      else if (fromUser === 'now') st.vel = st.speed * PXS * 0.45;      // mulai otomatis setelah pembuka: langsung bergerak, tanpa jeda merangkak
       paintState(); kick(); if (fromUser !== 'silent') showTip('Berhenti Scroll');
     }
     // berhenti: now = seketika (disentuh), false/'ease' = melambat halus (tombol)
@@ -205,7 +217,7 @@
     }, { capture: true });
     on(D, 'focusin', (e) => { const t = e.target; if (st.run && t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) halt(false); });
     on(D, 'visibilitychange', () => { if (D.hidden && st.run) halt(false); });
-    on(window, 'resize', () => { paintRing(); });
+    on(window, 'resize', () => { st.mT = -1e9; paintRing(true); });
     on(window, 'scroll', () => { if (!st.raf) paintRing(); }, { passive: true });
     // lightbox / lembar ucapan terbuka → jeda
     const lb = D.getElementById('lightbox');
@@ -242,7 +254,7 @@
       if (st.dead) return;
       holdOff();
       root.classList.add('ready');
-      if (st.wantStart && !st.userPaused && cy() < innerHeight * 0.6) start(true); else showTip('Mulai Auto Scroll', 3200);
+      if (st.wantStart && !st.userPaused && cy() < innerHeight * 0.6) start('now'); else showTip('Mulai Auto Scroll', 3200);
     }
     // Tunggu sampai SEMUA animasi di slide pembuka (foto bergeser, nama & teks masuk) benar-benar selesai:
     // pantau animasi CSS yang masih berjalan di dalam #s-hero (animasi tak berujung seperti melayang/kilau diabaikan),
@@ -251,7 +263,7 @@
       if (st.armed || st.dead) return;
       if (D.body.classList.contains('locked')) return;
       st.armed = true; de.classList.add('as-on'); holdOn();
-      paintSpeed(); paintState(); paintRing();
+      paintSpeed(); paintState(); paintRing(true);
       const hero = D.getElementById('s-hero'), t0 = performance.now();
       const finite = (a) => { try { return isFinite(a.effect.getComputedTiming().endTime); } catch (e) { return false; } };
       const busy = () => {
@@ -269,17 +281,20 @@
           return true;
         });
       };
+      // Tahap terakhir pembuka = kapsul bulat (.sl-scroll) yang memudar masuk setelah tanggal & garis. Animasinya sudah terdaftar sejak
+      // pembuka mulai (termasuk masa tunda-nya), jadi busy() tetap true tanpa celah sampai kapsul itu tampil penuh → tidak perlu masa
+      // "tenang" tambahan. Pantau tiap 60 ms dan mulai gulir begitu selesai.
       let quiet = 0;
       const iv = setInterval(() => {
         if (st.dead) { clearInterval(iv); return; }
         const el = performance.now() - t0;
         if (busy() && el < 60000) { quiet = 0; return; }
-        quiet += 250;
-        if (quiet >= 300 || el >= 60000) { clearInterval(iv); st.tDelay = setTimeout(reveal, st.delay); }
-      }, 250);
+        quiet += 60;
+        if (quiet >= 60 || el >= 60000) { clearInterval(iv); if (st.delay > 0) st.tDelay = setTimeout(reveal, st.delay); else reveal(); }
+      }, 60);
       st.off.push(() => clearInterval(iv));
     }
-    paintSpeed(); paintState(); arm();
+    paintSpeed(); paintState(); paintRing(true); arm();
   }
 
   window.AUTOSCROLL = {

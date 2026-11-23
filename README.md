@@ -371,7 +371,7 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - File berubah/baru: `public/autoscroll.js`, `public/autoscroll.css`, `public/lux.css`, `public/slide.js`, `public/invitation.js`, `public/admin/schema.js`, `default-config.json`, `lib/index.template.html` (`slide.js?v=43`, `invitation.js?v=117`), `README.md`.
 
 ## Tema 13 — v45 (23 Nov 2026): auto scroll disempurnakan + DM Instagram
-- Tombol auto scroll **disembunyikan selama animasi pembuka** (tidak menutupi nama); baru tampil & mulai menggulir `autoScrollWait` detik (bawaan 1) setelah SEMUA animasi pembuka (nama & teks masuk) selesai — dipantau lewat `getAnimations()` pada `#s-hero`.
+- Tombol auto scroll **disembunyikan selama animasi pembuka** (tidak menutupi nama); baru tampil & mulai menggulir `autoScrollDelay` detik (bawaan 1) setelah SEMUA animasi pembuka (nama & teks masuk) selesai — dipantau lewat `getAnimations()` pada `#s-hero`.
 - Kecepatan lebih cepat (1 satuan = 2,4 px/dtk: 25 ≈ santai, 50 ≈ sedang, 70 ≈ cepat) dan **tidak lagi dikalahkan nilai lama di browser tamu**. Diatur di Admin → Animasi & Efek **dan** Tema 13 Slide Foto (`slide.autoScrollSpeed`).
 - **Sinkron animasi** (`slide.autoScrollSync`, bawaan menyala): gulir melambat ±65% selama teks/foto yang baru muncul masih beranimasi di layar. Durasi animasi mewah (`lux.css`) dipersingkat sedikit.
 - **Buat Link Tamu → Cara 3 — DM Instagram**: "Nama | @username" → tombol membuka `ig.me/m/username`; pesan + link otomatis disalin untuk ditempel.
