@@ -360,3 +360,12 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 ## Tema 13 — v43 (2 Nov 2026): pasangan nama ditulis dari luar ke tengah
 - Nama pertama (mis. Adi) ditulis kiri → kanan, nama kedua (mis. Debby) kanan → kiri, "&" muncul lembut di tengah. Berlaku di sampul (gaya Default & Elegant), pembuka Klasik (tinta) & Elegan 3D (nama 2 bangkit dari kanan), dan penutup — apa pun arah geser foto pembuka.
 - File berubah: `public/slide.css`, `lib/index.template.html`, `README.md`.
+
+## Tema 13 — v44 (23 Nov 2026): Auto Scroll + Animasi masuk mewah
+- **Auto Scroll** (`public/autoscroll.js` + `public/autoscroll.css`, mengikuti video referensi): tombol bulat di sisi kanan layar dengan cincin progres halaman. Saat berjalan tampil ikon pause + penggeser kecepatan vertikal (1–100) dengan tombol + / −; saat berhenti tampil panah bawah berdenyut. Label kecil "Berhenti Scroll" / "Mulai Auto Scroll" muncul di kiri tombol.
+  - **Sentuh / geser / roda mouse / tombol keyboard = berhenti seketika.** Tekan tombol panah = lanjut menggulir. Menekan tombol pause = melambat halus lalu berhenti.
+  - Mulai & berhenti memakai percepatan halus; berhenti otomatis di akhir halaman ("Selesai"); jeda otomatis saat lightbox/lembar ucapan terbuka, kolom isian difokuskan, atau tab disembunyikan.
+  - Tidak berjalan di pratinjau admin (agar tidak mengganggu saat mengedit) — uji lewat link undangan asli.
+  - **Admin → Tema 13 Slide Foto**: saklar *AUTO SCROLL* (matikan = tombol tidak tampil sama sekali), *Mulai sendiri setelah Buka Undangan*, *Jeda sebelum mulai* (detik), *Kecepatan awal*, dan *Lanjut sendiri setelah tamu diam* (tidak / 5 / 8 / 12 / 20 dtk). Kunci: `slide.autoScroll`, `slide.autoScrollStart`, `slide.autoScrollDelay`, `slide.autoScrollSpeed`, `slide.autoScrollResume`.
+- **Animasi masuk mewah** (`public/lux.css`, saklar `slide.lux`, bawaan menyala): teks, foto, kartu, bunga & ornamen muncul lebih halus — naik pelan dari buram dengan perlambatan panjang; bunga tumbuh dari sudut sambil membuka dan sedikit berputar. Hanya mengatur waktu & kelembutan transisi `.rv`; galeri, gift, tumpukan 3D, pembuka & penutup tidak diubah. Matikan di Admin → Tema 13 Slide Foto → *ANIMASI MASUK MEWAH* untuk kembali seperti semula. Dihormati `prefers-reduced-motion`.
+- File berubah/baru: `public/autoscroll.js`, `public/autoscroll.css`, `public/lux.css`, `public/slide.js`, `public/invitation.js`, `public/admin/schema.js`, `default-config.json`, `lib/index.template.html` (`slide.js?v=43`, `invitation.js?v=117`), `README.md`.

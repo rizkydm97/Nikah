@@ -447,6 +447,12 @@
     "stack": true,
     "parallax": true,
     "storyShape": "4/5",
-    "dots": true
+    "dots": true,
+    "lux": true,
+    "autoScroll": true,
+    "autoScrollStart": true,
+    "autoScrollDelay": 8,
+    "autoScrollSpeed": 25,
+    "autoScrollResume": "0"
   }
 }

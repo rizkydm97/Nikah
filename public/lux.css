@@ -1,0 +1,38 @@
+/* ===================================================================
+   LUX — animasi masuk lebih mewah & halus (Tema 13)
+   Aktif bila  <html data-sl-lux="1">  (Admin → Tema 13 Slide Foto → "Animasi masuk mewah").
+   Hanya mengatur WAKTU & KELEMBUTAN transisi elemen .rv (teks, foto, bunga, ornamen).
+   Tidak mengubah susunan, ukuran, posisi, maupun gaya khusus (galeri, gift, tumpukan 3D, pembuka, penutup).
+   Matikan saklar di admin = kembali persis seperti sebelumnya.
+   =================================================================== */
+@media (prefers-reduced-motion:no-preference){
+html[data-sl-lux="1"] .t-slide{--lx-silk:cubic-bezier(.16,1,.3,1);--lx-glide:cubic-bezier(.25,.8,.25,1)}
+
+/* 1. teks, foto & kartu: naik pelan dari buram, perlambatan panjang seperti kain sutra */
+html[data-sl-lux="1"] .t-slide #app .rv:not(.gi):not(.mi):not(.bk-acc):not(.fl-acc):not([data-a^=bloom]){
+  transition:opacity calc(var(--dur)*2.1) var(--lx-glide),transform calc(var(--dur)*2.4) var(--lx-silk),filter calc(var(--dur)*1.9) var(--lx-glide);
+  transition-delay:calc(var(--i,0)*.18s)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=fade-up],
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=soft]{transform:translateY(46px) scale(.985);filter:blur(7px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=fade-in]{filter:blur(6px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=zoom-in]{transform:scale(.93);filter:blur(8px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=fade-left]{transform:translateX(-46px);filter:blur(6px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=fade-right]{transform:translateX(46px);filter:blur(6px)}
+
+/* 2. bunga & hiasan: tumbuh pelan dari sudut — membuka, sedikit berputar, buram → jernih */
+html[data-sl-lux="1"] .t-slide #app .rv:is(.fl-acc,[data-a^=bloom]){
+  transition:opacity calc(var(--dur)*2.4) var(--lx-glide),transform calc(var(--dur)*3.4) var(--lx-silk),filter calc(var(--dur)*2.4) var(--lx-glide);
+  transition-delay:calc(var(--i,0)*.22s + .15s)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=bloom]{transform:translate(30%,24%) scale(.5) rotate(-12deg);filter:blur(10px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=bloom-ul]{transform:translate(-30%,36%) scale(.82) rotate(-3deg);filter:blur(8px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=bloom-ur]{transform:translate(30%,36%) scale(.82) rotate(3deg);filter:blur(8px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=bloom-l]{transform:translateX(-60%) scale(.94);filter:blur(8px)}
+html[data-sl-lux="1"] .t-slide #app .rv:not(.in)[data-a=bloom-r]{transform:translateX(60%) scale(.94);filter:blur(8px)}
+
+/* 3. garis ornamen: terbuka dari tengah dengan jeda sedikit lebih panjang */
+html[data-sl-lux="1"] .t-slide #app .sl-sorn i{transition-duration:1.6s;transition-timing-function:var(--lx-silk)}
+html[data-sl-lux="1"] .t-slide #app .sl-sorn em{transition-duration:1.2s;transition-timing-function:var(--lx-silk)}
+
+/* 4. kilau lembut sekali saat foto selesai muncul */
+html[data-sl-lux="1"] .t-slide #app .rv.in:is(.pho,.cpho)::after{animation-duration:2.4s}
+}

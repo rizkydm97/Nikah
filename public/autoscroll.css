@@ -1,0 +1,45 @@
+/* ===================================================================
+   AUTO SCROLL (Tema 13) — tombol pause/panah + cincin progres + penggeser kecepatan
+   Hanya transform/opacity yang beranimasi → ringan di HP.
+   =================================================================== */
+.as-wrap{position:absolute;right:12px;bottom:calc(128px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none;opacity:0;transform:translateY(14px) scale(.92);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1);--as-c:var(--primary,#12384f)}
+.as-wrap.ready{opacity:1;transform:none}
+.as-wrap>*{pointer-events:auto}
+.as-wrap button{-webkit-tap-highlight-color:transparent;font:inherit}
+
+/* tombol utama */
+.as-btn{position:relative;width:46px;height:46px;padding:0;border-radius:50%;border:2px solid #fff;background:var(--as-c);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.28),0 0 0 6px rgba(255,255,255,.86);transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .35s ease}
+.as-btn:active{transform:scale(.92)}
+.as-ring{position:absolute;inset:-9px;width:calc(100% + 18px);height:calc(100% + 18px);transform:rotate(-90deg);pointer-events:none;overflow:visible}
+.as-ring circle{fill:none;stroke-width:2.6}
+.as-ring-bg{stroke:rgba(0,0,0,.1)}
+.as-ring-fg{stroke:var(--as-c);stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+.as-ic{display:grid;place-items:center;line-height:0}
+.as-ic svg{display:block;animation:asIc .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes asIc{from{opacity:0;transform:scale(.6) rotate(-20deg)}to{opacity:1;transform:none}}
+/* panah bawah berdenyut halus saat berhenti = ajakan melanjutkan */
+.as-wrap:not(.run) .as-btn .as-ic svg{animation:asIc .45s cubic-bezier(.16,1,.3,1) both,asNudge 2.2s ease-in-out .6s infinite}
+@keyframes asNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+.as-wrap.run .as-btn{box-shadow:0 8px 22px rgba(0,0,0,.3),0 0 0 6px rgba(255,255,255,.86),0 0 0 6px rgba(255,255,255,0)}
+
+/* label kecil di kiri tombol */
+.as-tip{position:absolute;right:calc(100% + 14px);top:7px;white-space:nowrap;background:rgba(18,18,22,.92);color:#fff;font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.01em;padding:9px 13px;border-radius:9px;box-shadow:0 6px 16px rgba(0,0,0,.25);opacity:0;transform:translateX(10px);transition:opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1);pointer-events:none!important}
+.as-tip::after{content:"";position:absolute;left:100%;top:50%;margin-top:-5px;border:5px solid transparent;border-left-color:rgba(18,18,22,.92)}
+.as-wrap.tip .as-tip{opacity:1;transform:none}
+
+/* penggeser kecepatan — tampil hanya saat scroll berjalan */
+.as-panel{width:42px;padding:10px 0 8px;border-radius:24px;background:rgba(255,255,255,.94);box-shadow:0 10px 26px rgba(0,0,0,.22);display:flex;flex-direction:column;align-items:center;gap:8px;transform-origin:50% 0;opacity:0;transform:translateY(-10px) scaleY(.7);max-height:0;padding-top:0;padding-bottom:0;overflow:hidden;pointer-events:none!important;transition:opacity .4s ease,transform .5s cubic-bezier(.16,1,.3,1),max-height .5s cubic-bezier(.16,1,.3,1),padding .5s cubic-bezier(.16,1,.3,1)}
+.as-wrap.run .as-panel{opacity:1;transform:none;max-height:240px;padding-top:12px;padding-bottom:8px;pointer-events:auto!important}
+.as-track{position:relative;width:26px;height:112px;cursor:pointer;touch-action:none;outline:none;border-radius:13px}
+.as-track::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:7px;margin-left:-3.5px;border-radius:4px;background:#e3e3e8}
+.as-fill{position:absolute;left:50%;bottom:0;top:0;width:7px;margin-left:-3.5px;border-radius:4px;background:var(--as-c);transform-origin:50% 100%;transform:scaleY(.25);will-change:transform}
+.as-thumb{box-sizing:border-box;position:absolute;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:var(--as-c);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.as-track:focus-visible .as-thumb{box-shadow:0 0 0 3px rgba(80,140,255,.6),0 2px 8px rgba(0,0,0,.35)}
+.as-val{min-width:26px;height:20px;padding:0 6px;border-radius:10px;background:#eceef4;color:#222;font:600 11px/20px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:center;font-variant-numeric:tabular-nums}
+.as-step{width:30px;height:30px;padding:0;border-radius:50%;border:0;background:#eceef4;color:#222;font-size:19px;line-height:30px;cursor:pointer;display:grid;place-items:center;transition:transform .2s ease,background .2s ease}
+.as-step:active{transform:scale(.88);background:#dfe2ec}
+
+/* sembunyi bila lembar ucapan / lightbox / cetak */
+html.wl-sheet-on .as-wrap{display:none}
+@media print{.as-wrap{display:none}}
+@media (prefers-reduced-motion:reduce){.as-wrap,.as-panel,.as-tip,.as-btn{transition:none}.as-ic svg{animation:none!important}}
