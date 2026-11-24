@@ -385,3 +385,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - **Posisi berhenti kartu** (slide.js `cutOf`): bagian kartu yang lebih tinggi dari layar kini dibagi atas/bawah (bukan semua dari atas), dengan batas agar blok teks selalu utuh. Admin → Tema 13 → "Posisi berhenti kartu" (0 = atas/kepala paling terlihat, 100 = seperti dulu).
 - **Teks sejalan dengan gulir**: pemicu teks dihitung dari kecepatan auto scroll (tiba ±1,5 dtk sebelum kartu menempel), jadwal teks ×0,72 saat auto scroll, jeda sinematik 0,6 dtk + pengaturan admin. Blok teks ikut gulir (parallax tipis, hanya `translate`).
 - **Sub judul** timbul perlahan (pudar + naik tipis), bukan sapuan samping; sapuan tinta hanya untuk nama.
+
+### Tombol auto-hide & kilau penutup di HP (v58)
+- `public/idlehide.js` (baru) + akhir `public/autoscroll.css`: tombol auto scroll / ke atas / musik memudar (opasitas .08) ±2,5 dtk setelah tamu berhenti menyentuh atau menggulir; muncul lagi saat disentuh/digulir. Gulir otomatis tidak dihitung aktivitas. Ubah `IDLE_MS` di `idlehide.js` untuk durasi.
+- `public/slide-perf.css` (akhir): di mode ringan (`html.perf-low`, otomatis di banyak HP) penutup kini tetap punya 7 butir kilau + 1× sapuan cahaya versi murah (transform/opacity saja). Sebelumnya dimatikan total sehingga tak terlihat.
+- `lib/index.template.html`: `autoscroll.css?v=5`, `slide-perf.css?v=3`, `idlehide.js?v=1`.

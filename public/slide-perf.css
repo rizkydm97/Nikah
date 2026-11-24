@@ -83,7 +83,7 @@ html.perf-low:root #app .sl-pk,
 html.perf-low:root #app .sl-cv-kb,
 html.perf-low:root #app .sl-sh.f::before,
 html.perf-low:root #app .sl-cdx .cd::before,
-html.perf-low:root #app .sl-cl-fx :is(b, u) { animation: none !important }
+html.perf-low:root #app .sl-cdx .cd::after { animation: none !important }
 html.perf-low:root #app .rv:not(.in)[data-a] { filter: none !important }
 
 /* =====================================================================
@@ -115,3 +115,19 @@ html.perf-low:root #app .rv:not(.in)[data-a] { filter: none !important }
 @media (prefers-reduced-motion: reduce) { html.sda .stk-on .stk-pin.has-in :is(.sl-pp-in, .sl-ev-in) { animation: none !important } }
 /* pengukuran sesaat posisi berhenti kartu (slide.js cutOf): tanpa geseran sama sekali, tidak mengulang animasi */
 .stk-m, .stk-m :is(.sl-pp-in, .sl-ev-in), .stk-m :is(.sl-pp-in, .sl-ev-in) * { transform: none !important; translate: none !important }
+
+/* =====================================================================
+   v58 — PENUTUP di HP / mode ringan: kilau melayang + sapuan cahaya TETAP ada, versi murah
+   Dulu perf-low mematikan animasinya → butir (opacity 0 bawaan) jadi tak terlihat sama sekali di HP.
+   Kini: hanya 7 butir, tanpa box-shadow glow (pakai gradien), hanya transform + opacity (jalur GPU);
+   sapuan cahaya 1× saja dan memakai transform (bukan left). prefers-reduced-motion tetap menyembunyikannya.
+   ===================================================================== */
+@keyframes slSparkLite { 0% { opacity: 0; transform: translate3d(0, 0, 0) } 25% { opacity: .9 } 100% { opacity: 0; transform: translate3d(0, -110px, 0) } }
+@keyframes slSweepLite { 0% { opacity: 0; transform: translateX(0) skewX(-14deg) } 15% { opacity: 1 } 100% { opacity: 0; transform: translateX(480%) skewX(-14deg) } }
+html.perf-low:root #app .sl-cl-fx b:nth-of-type(n+8) { display: none }
+html.perf-low:root #app .sl-cl.sl-go .sl-cl-fx b {
+  width: 8px; height: 8px; box-shadow: none;
+  background: radial-gradient(circle, #fff 0 28%, rgba(255, 244, 214, .6) 52%, rgba(255, 244, 214, 0) 72%);
+  animation: slSparkLite var(--sp, 9s) ease-in-out calc(2.4s + var(--sd, 0s)) infinite !important;
+}
+html.perf-low:root #app .sl-cl.sl-go .sl-cl-fx u { animation: slSweepLite 2.6s ease-in-out 2.2s 1 both !important }
