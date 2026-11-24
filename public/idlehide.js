@@ -1,11 +1,19 @@
 /* idlehide.js — tombol melayang (auto scroll, ke atas, musik) memudar saat tamu diam ±2,5 dtk, muncul lagi saat disentuh/digulir.
-   Kelasnya html.ih-idle; gayanya di autoscroll.css. Gulir otomatis (html.as-run) tidak dihitung sebagai aktivitas tamu. */
+   Kelas .ih-off dipasang pada tombolnya sendiri; gayanya di autoscroll.css. Gulir otomatis (html.as-run) tidak dihitung sebagai aktivitas tamu.
+   ?noih di alamat = matikan fitur ini (untuk membandingkan kehalusan gulir). */
 (function () {
   'use strict';
-  var de = document.documentElement, IDLE_MS = 2500, t = 0, idle = false;
-  function sleep() { if (document.hidden) return; idle = true; de.classList.add('ih-idle'); }
+  if (/[?&]noih\b/.test(location.search)) return;
+  var de = document.documentElement, IDLE_MS = 2500, t = 0, idle = false, raf = 0;
+  function paint() {
+    raf = 0;
+    var els = document.querySelectorAll('.as-wrap,.sl-top,.music');
+    for (var i = 0; i < els.length; i++) els[i].classList.toggle('ih-off', idle);
+  }
+  function apply() { if (!raf) raf = requestAnimationFrame(paint); }
+  function sleep() { if (document.hidden) return; idle = true; apply(); }
   function wake() {
-    if (idle) { idle = false; de.classList.remove('ih-idle'); }
+    if (idle) { idle = false; apply(); }
     clearTimeout(t); t = setTimeout(sleep, IDLE_MS);
   }
   var o = { passive: true, capture: true };

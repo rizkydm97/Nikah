@@ -63,10 +63,10 @@ html.as-run .sl-dots{opacity:0!important}
 
 /* ---------- AUTO-HIDE tombol saat diam (idlehide.js) ----------
    Tombol auto scroll, ke atas & musik memudar ±2,5 dtk setelah tamu berhenti menyentuh/menggulir → layar bersih untuk membaca.
-   Muncul lagi begitu layar disentuh / digulir. Saat pudar, sentuhan menembus ke halaman (sentuhan pertama = membangunkan tombol). */
-.as-wrap,.sl-top,.music{transition-property:opacity,transform}
+   Muncul lagi begitu layar disentuh / digulir. Saat pudar, sentuhan menembus ke halaman (sentuhan pertama = membangunkan tombol).
+   Kelas .ih-off dipasang LANGSUNG pada ketiga tombol (bukan pada <html>) agar tidak memicu hitung ulang gaya satu halaman saat auto scroll berjalan. */
 .music{transition:opacity .6s ease}
-html.ih-idle .as-wrap.ready{opacity:.08}
-html.ih-idle .as-wrap>*{pointer-events:none!important}
-html.ih-idle .sl-top.on{opacity:.08;pointer-events:none}
-html.ih-idle .music{opacity:.08;pointer-events:none}
+.as-wrap.ready.ih-off{opacity:.08}
+.as-wrap.ih-off>*{pointer-events:none!important}
+.sl-top.on.ih-off{opacity:.08;pointer-events:none}
+.music.ih-off{opacity:.08;pointer-events:none}
