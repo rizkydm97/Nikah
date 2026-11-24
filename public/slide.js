@@ -538,6 +538,11 @@
       });
       if (names.length) { root.style.setProperty('timeline-scope', names.join(', ')); document.documentElement.classList.add('sda'); }
     }
+    // v59: kecepatan teks dasar (--tk) tiap kartu dibaca SEKALI di luar gulir (bukan getComputedStyle saat teks mulai bergerak → itu memaksa hitung ulang gaya
+    // satu frame penuh di tengah gulir, sumber patah-patah kecil di HP lemah saat masuk Mempelai / Akad). Dibangun ulang tiap stack() dipasang ulang.
+    const tkBase = (p) => { let v = 1; try { v = parseFloat(getComputedStyle(p.el).getPropertyValue('--tk')) || 1; } catch (e) { /* abaikan */ } return (p.tk0 = v); };
+    const tkWarm = () => { pins.forEach((p) => { if (p.go && !p.tkSet && !p.tk0) tkBase(p); }); };
+    const tkT = setTimeout(() => { (window.requestIdleCallback || setTimeout)(tkWarm); }, 900);
     const tick = () => {
       raf = 0; const H = VH();
       const rd = pins.map((p) => [p, p.next ? cl(1 - p.next.getBoundingClientRect().top / H, 0, 1) : 0, p.go ? p.el.getBoundingClientRect().top : 0]);
@@ -560,7 +565,7 @@
           const lead = ar ? cl((window.__asVel || 0) * 1.5, H * 0.4, H * 0.92) : H * 0.8;
           if (!p.on && top - rest < lead && c < 0.5) {
             p.on = true;
-            if (ar) { p.tkOld = p.el.style.getPropertyValue('--tk'); const t0 = parseFloat(getComputedStyle(p.el).getPropertyValue('--tk')) || 1; p.el.style.setProperty('--tk', (t0 * 0.72).toFixed(3)); p.tkSet = true; }
+            if (ar) { p.tkOld = p.el.style.getPropertyValue('--tk'); const t0 = p.tk0 || tkBase(p); p.el.style.setProperty('--tk', (t0 * 0.72).toFixed(3)); p.tkSet = true; }   // v59: --tk dasar di-cache (tkBase) → tak ada getComputedStyle (paksa hitung gaya) tepat saat teks kartu mulai beranimasi sambil menggulir
             p.el.classList.add('sl-go');
           }
           else if (p.on && top >= H * 0.98) {
@@ -594,7 +599,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(reSoon).catch(() => {});
     const t1 = setTimeout(reSoon, 400), t2 = setTimeout(reSoon, 1800);
     VH(true); place(); tick();
-    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', rs); removeEventListener('load', reSoon); clearTimeout(t1); clearTimeout(t2); if (ro) ro.disconnect(); if (raf) cancelAnimationFrame(raf); if (rq) cancelAnimationFrame(rq); raf = 0; rq = 0; };
+    stkOff = () => { removeEventListener('scroll', on_); removeEventListener('resize', rs); removeEventListener('load', reSoon); clearTimeout(t1); clearTimeout(t2); clearTimeout(tkT); if (ro) ro.disconnect(); if (raf) cancelAnimationFrame(raf); if (rq) cancelAnimationFrame(rq); raf = 0; rq = 0; };
   }
   function fx(root, cfg) {
     root = root || document.getElementById('app'); if (!root) return;
