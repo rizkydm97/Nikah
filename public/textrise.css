@@ -14,6 +14,9 @@
 
 .t-slide{--tr-ease:cubic-bezier(.22,.8,.24,1)}
 @keyframes trRise{from{opacity:0;translate:0 var(--tr-y,14px)}to{opacity:1;translate:0 0}}
+/* v2: khusus elemen yang posisinya DIGESER admin (data-ad: tanggal, jam, tempat, tombol peta) memakai `top` — bukan `translate` —
+   karena animasi dengan fill 'both' pada `translate` menimpa geseran admin (teks jadi tidak bisa digeser & posisi tersimpan diabaikan). */
+@keyframes trRiseT{from{opacity:0;top:var(--tr-y,14px)}to{opacity:1;top:0}}
 
 /* ---------- 1. LOVE STORY — judul bagian: kata demi kata naik berurutan ---------- */
 :root:root:root:root:root:root:root:root .t-slide .sl-ch-ht{clip-path:none!important;opacity:1!important;animation:none!important}
@@ -39,8 +42,8 @@
 
 /* ---------- 4. AKAD / RESEPSI — tanggal, jam, tempat, alamat, Google Maps (judul acara tetap) ---------- */
 :root:root:root:root:root:root:root:root .t-slide .sl-go :is(.sl-ev-d,.sl-ev-h,.sl-ev-pl,.sl-map){
-  transform:none!important;filter:none!important;--tr-y:14px;
-  animation:trRise calc(1s*var(--tk,1)) var(--tr-ease) both!important}
+  transform:none!important;filter:none!important;--tr-y:14px;position:relative;
+  animation:trRiseT calc(1s*var(--tk,1)) var(--tr-ease) both!important}
 :root:root:root:root:root:root:root:root .t-slide .sl-go .sl-ev-d{animation-delay:calc((1400ms + var(--tw,0ms))*var(--tk,1))!important}
 :root:root:root:root:root:root:root:root .t-slide .sl-go .sl-ev-h{animation-delay:calc((1550ms + var(--tw,0ms))*var(--tk,1))!important}
 :root:root:root:root:root:root:root:root .t-slide .sl-go .sl-ev-pl{animation-delay:calc((1700ms + var(--tw,0ms))*var(--tk,1))!important}
