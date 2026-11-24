@@ -1428,6 +1428,7 @@
     }
     applyTextSpeed(); setTimeout(applyTextSpeed, 1500);
     if (window.ELEGANT) { window.ELEGANT.refresh(); setTimeout(window.ELEGANT.refresh, 400); }
+    if (window.TEXTRISE) { window.TEXTRISE.refresh(); setTimeout(window.TEXTRISE.refresh, 400); }
     if (PREVIEW && q.has('loader')) loaderPreview();
     if (SL) {
       window.SLIDE.adjust(cfg); window.SLIDE.toTop(true);
