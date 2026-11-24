@@ -380,3 +380,8 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - Penyebab (diukur dari rekaman layar): pembuka 60 fps, tetapi kartu bertumpuk (mempelai → ayat → akad → resepsi) hanya ±30 fps. Mesin gulir sehat; yang berat adalah penggambaran 3D kartu (perspective/rotateX, bayangan 4 lapis, kilap, blur teks).
 - `public/slide-perf.css` (dimuat terakhir): **Tingkat 1** otomatis di layar sentuh — tumpukan 2D (skala + redup), bayangan 1 lapis, tanpa kilap/blur, animasi hiasan dijeda saat bergerak. **Tingkat 2** (`html.perf-low`) — hanya kartu menutupi.
 - `public/autoscroll.js`: penjaga fps. Bila rata-rata waktu frame > 24 ms selama ±3 dtk saat menggulir, otomatis pindah ke Tingkat 2 (diingat per sesi tab). `?lite` = paksa ringan, `?full` = paksa penuh, `?perf` = kotak fps (kini menampilkan tingkat).
+
+## Pembaruan v57 — tumpukan kartu Tema 13: teks & auto scroll sejalan, kepala tidak terpotong
+- **Posisi berhenti kartu** (slide.js `cutOf`): bagian kartu yang lebih tinggi dari layar kini dibagi atas/bawah (bukan semua dari atas), dengan batas agar blok teks selalu utuh. Admin → Tema 13 → "Posisi berhenti kartu" (0 = atas/kepala paling terlihat, 100 = seperti dulu).
+- **Teks sejalan dengan gulir**: pemicu teks dihitung dari kecepatan auto scroll (tiba ±1,5 dtk sebelum kartu menempel), jadwal teks ×0,72 saat auto scroll, jeda sinematik 0,6 dtk + pengaturan admin. Blok teks ikut gulir (parallax tipis, hanya `translate`).
+- **Sub judul** timbul perlahan (pudar + naik tipis), bukan sapuan samping; sapuan tinta hanya untuk nama.

@@ -453,6 +453,7 @@
     "autoScrollStart": true,
     "autoScrollDelay": 0,
     "autoScrollDwell": 1,
+    "stackAlign": 35,
     "cardFx": true,
     "autoScrollSpeed": 25,
     "autoScrollSync": true,

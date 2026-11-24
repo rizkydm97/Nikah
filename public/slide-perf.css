@@ -85,3 +85,33 @@ html.perf-low:root #app .sl-sh.f::before,
 html.perf-low:root #app .sl-cdx .cd::before,
 html.perf-low:root #app .sl-cl-fx :is(b, u) { animation: none !important }
 html.perf-low:root #app .rv:not(.in)[data-a] { filter: none !important }
+
+/* =====================================================================
+   v57 — TEKS & GULIR SEJALAN (tumpukan kartu Tema 13)
+   Temuan (rekaman layar + pengukuran): seluruh koreografi teks satu kartu ±3,5 dtk, tetapi dulu baru dipicu ±0,5 dtk sebelum gulir berhenti
+   dan jeda hanya ±1,8 dtk → teks muncul SESUDAH berhenti dan masih berjalan saat gulir lanjut. Kini (lihat slide.js tick):
+     • pemicu teks dihitung dari kecepatan gulir (teks mulai ±1,5 dtk sebelum kartu tiba), jadwal teks ×0,72 selama auto scroll;
+     • blok teks ikut gulir (parallax tipis: tertinggal ±34 px lalu mendarat tepat saat kartu menempel) — hanya `translate`, jalur GPU;
+     • sub judul ("Putra ke-2 dari …") tidak lagi tersapu dari samping, tetapi timbul perlahan (pudar + naik tipis). Sapuan samping
+       (mask-position) digambar ulang tiap frame dan bersaing dengan gerak vertikal kartu; sapuan hanya dipertahankan untuk NAMA.
+   ===================================================================== */
+@keyframes slLblSoft { 0% { opacity: 0; transform: translateY(10px) } 100% { opacity: 1; transform: none } }
+:root:root:root:root:root:root:root .stk-on [data-stk] .sl-pp-l { -webkit-mask-image: none; mask-image: none; -webkit-mask-size: auto; mask-size: auto; opacity: 0 }
+:root:root:root:root:root:root:root .stk-on [data-stk].sl-go .sl-pp-l {
+  animation: slLblSoft calc(1.3s * var(--tk, 1)) cubic-bezier(.22, .7, .2, 1) both !important;
+  animation-delay: calc((var(--d, 0ms) + var(--tw, 0ms)) * var(--tk, 1)) !important;
+}
+@keyframes stkTxIn { from { translate: 0 34px } to { translate: 0 0 } }
+@supports (animation-timeline: view()) {
+  html.sda .stk-on .stk-pin.has-in :is(.sl-pp-in, .sl-ev-in) {
+    transition: none; animation: stkTxIn linear backwards; animation-timeline: var(--tin);
+    animation-range: cover 0px cover calc(var(--rh, 700px) * .9);
+  }
+  html.sda .stk-on .stk-pin.has-in.has-tl :is(.sl-pp-in, .sl-ev-in) {
+    transition: none; animation: stkTxIn linear backwards, stkTxOut2 linear forwards; animation-timeline: var(--tin), var(--tlb);
+    animation-range: cover 0px cover calc(var(--rh, 700px) * .9), cover calc(var(--rh, 700px) * .08) cover calc(var(--rh, 700px) * .5);
+  }
+}
+@media (prefers-reduced-motion: reduce) { html.sda .stk-on .stk-pin.has-in :is(.sl-pp-in, .sl-ev-in) { animation: none !important } }
+/* pengukuran sesaat posisi berhenti kartu (slide.js cutOf): tanpa geseran sama sekali, tidak mengulang animasi */
+.stk-m, .stk-m :is(.sl-pp-in, .sl-ev-in), .stk-m :is(.sl-pp-in, .sl-ev-in) * { transform: none !important; translate: none !important }

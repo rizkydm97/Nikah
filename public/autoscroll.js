@@ -31,7 +31,7 @@
 
   function teardown() {
     if (!S) return;
-    S.dead = true;
+    S.dead = true; window.__asVel = 0;
     if (S.raf) cancelAnimationFrame(S.raf);
     clearTimeout(S.tDelay); clearTimeout(S.tResume); clearTimeout(S.tTip);
     S.off.forEach((f) => { try { f(); } catch (e) { /* abaikan */ } });
@@ -125,10 +125,15 @@
     // ---------- jeda sinematik: tiap kartu bertumpuk (mempelai, akad, resepsi, ayat) berhenti sejenak setelah menutup penuh ----------
     // Kartu yang sudah terlewati (sudah menempel di atas) ditandai dulu; sisanya ditunggu satu per satu.
     const appEl = D.getElementById('app');
-    const restOf = (r) => Math.min(0, (parseFloat(appEl && appEl.style.getPropertyValue('--rh')) || innerHeight) - r.height);          // posisi atas kartu saat menempel & menutup layar penuh
+    // posisi atas kartu saat menempel & menutup layar penuh = −(bagian kartu yang terpotong). slide.js menghitungnya per kartu (--stk-cut) agar KEPALA di foto
+    // tidak terpotong dan teks tetap utuh; bila belum ada, pakai cara lama (dasar kartu = dasar layar).
+    const restOf = (r, c) => {
+      const cut = c ? parseFloat(c.style.getPropertyValue('--stk-cut')) : NaN;
+      return Number.isFinite(cut) ? -cut : Math.min(0, (parseFloat(appEl && appEl.style.getPropertyValue('--rh')) || innerHeight) - r.height);
+    };
     const syncCards = () => {
       st.cards = [...D.querySelectorAll('#app .stk-pin:not(.sl-open)')]; st.cT = performance.now();
-      const i = st.cards.findIndex((c) => { const r = c.getBoundingClientRect(); return r.top > restOf(r) + 90; });
+      const i = st.cards.findIndex((c) => { const r = c.getBoundingClientRect(); return r.top > restOf(r, c) + 90; });
       st.ci = i < 0 ? st.cards.length : i; st.dwellUntil = 0;
     };
     // Animasi hiasan tak berujung (kilau nama, Ken Burns foto, kilau hitung mundur) digambar ulang tiap frame di main-thread → bersaing dengan gulir.
@@ -173,7 +178,7 @@
         const c = st.cards[st.ci];
         if (c) {
           const r = c.getBoundingClientRect();
-          if (r.top <= restOf(r) + st.vel * 0.28 + 4) { st.ci++; st.dwellUntil = performance.now() + 800 + st.dwell; hold = true; }
+          if (r.top <= restOf(r, c) + st.vel * 0.28 + 4) { st.ci++; st.dwellUntil = performance.now() + 600 + st.dwell; hold = true; }       // teks kartu sudah hampir selesai saat tiba (slide.js memicunya dari kecepatan gulir) → jeda tetap 450 ms + pengaturan admin
         }
       }
       const wantSlow = st.sync && performance.now() < st.busyUntil ? 0.65 : 1;
@@ -182,6 +187,7 @@
       // percepatan awal cepat tapi halus (±0,2 dtk), perlambatan saat dihentikan lebih panjang
       const k = st.target > st.vel ? 0.2 : 0.28;
       st.vel += (st.target - st.vel) * (1 - Math.exp(-dt / k));
+      window.__asVel = st.run && !st.stopping ? Math.max(st.vel, st.speed * PXS * 0.5) : 0;      // px/dtk, dibaca slide.js agar teks tiba bersamaan dengan kartu
       setMove(st.run && !st.stopping && (st.mv ? st.vel > 15 : st.vel > 40));
       if (st.run) {
         // posisi bergeser di luar kendali kita (bilah alamat iOS naik/turun, tinggi kartu berubah setelah font/foto termuat):

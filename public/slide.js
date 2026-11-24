@@ -427,7 +427,7 @@
   // (--cp) ke slide di bawahnya: mengecil, menggelap, lalu disembunyikan saat tertutup penuh (hemat baterai).
   // Ayat+hitung mundur dan penutup tidak menempel, tapi "bangkit" miring→tegak saat naik (--rp).
   let stkOff = null;
-  function stack(root, on) {
+  function stack(root, on, align) {
     if (stkOff) { stkOff(); stkOff = null; }
     root.classList.remove('stk-on'); document.documentElement.classList.remove('stk-h');
     root.style.removeProperty('--ob'); root.classList.remove('stk-ob');
@@ -439,7 +439,7 @@
     });
     // v42: bersihkan timeline scroll (CSS scroll-driven) dari pemasangan sebelumnya
     document.documentElement.classList.remove('sda'); root.style.removeProperty('timeline-scope'); root.style.removeProperty('--rh');
-    root.querySelectorAll('[data-tln],.has-tl').forEach((e) => { e.style.removeProperty('view-timeline-name'); e.style.removeProperty('--tlb'); e.classList.remove('has-tl', 'has-in'); delete e.dataset.tln; });
+    root.querySelectorAll('[data-tln],.has-tl,.has-in').forEach((e) => { e.style.removeProperty('view-timeline-name'); e.style.removeProperty('--tlb'); e.style.removeProperty('--tin'); e.style.removeProperty('--stk-cut'); e.classList.remove('has-tl', 'has-in'); delete e.dataset.tln; });
     if (!on) return;
     const secs = [...root.children].filter((e) => e.matches('section.sec'));
     const pins = [], groups = [], rises = [], quotes = [];
@@ -483,13 +483,39 @@
     // Kanvas slide (390 × 780, diperbesar mengikuti lebar) biasanya LEBIH TINGGI dari layar HP (±660–750px). Dulu kartu menempel di top:0,
     // sehingga bagian bawahnya (tombol Instagram/peta, teks posisi bawah) tak pernah terlihat dan kartu berikutnya "melompat".
     // Kini kartu menggulir sampai DASARNYA tepat di dasar layar, baru menempel; titik pusat skala = tepi atas bagian yang terlihat.
+    // POSISI BERHENTI KARTU (v57): dulu dasar kartu selalu dirapatkan ke dasar layar → bagian ATAS kartu (kepala di foto) terpotong sebesar
+    // (tinggi kartu − tinggi layar), bisa 70–200 px. Kini bagian yang terpotong DIBAGI: ambil sedikit dari atas (condong ke atas = kepala aman)
+    // dan sisanya dari bawah, tetapi dibatasi supaya blok teks (nama, orang tua, tombol, alamat) selalu tetap utuh di layar.
+    // Bila teks memang tak muat bersamaan (HP sangat pendek), dasar teks yang dimenangkan seperti sebelumnya.
+    // Admin → Tema 13 → "Posisi berhenti kartu" (0 = kepala/atas paling terlihat … 100 = seperti dulu, dasar rapat). Hasil: --stk-cut (px) per kartu → dibaca autoscroll.js.
+    const alignPref = (Number.isFinite(align) ? cl(align, 0, 100) : 35) / 100;
+    const scaleY = (el) => { try { const t = getComputedStyle(el).transform; if (t && t !== 'none') return Math.abs(new DOMMatrixReadOnly(t).d) || 1; } catch (e) { /* abaikan */ } return 1; };
+    const cutOf = (el, h, H) => {
+      const over = Math.max(0, h - H); if (over < 2) return 0;
+      let lo = 0, hi = over;
+      const tx = el.querySelector(':scope > .sl-pp-in, :scope > .sl-ev-in');
+      if (tx && !el.classList.contains('split')) {
+        // ukur tanpa transform/translate (teks yang belum selesai masuk bergeser 10–34 px; kartu yang sedang naik miring) — animasi TIDAK diulang karena hanya properti geser yang ditimpa sebentar
+        el.classList.add('stk-m');
+        const cr = el.getBoundingClientRect(), sc = scaleY(el); let t0 = 1e9, t1 = -1e9;
+        [...tx.children].forEach((k) => { const r = k.getBoundingClientRect(); if (r.height < 1) return; t0 = Math.min(t0, (r.top - cr.top) / sc); t1 = Math.max(t1, (r.bottom - cr.top) / sc); });
+        el.classList.remove('stk-m');
+        if (t1 > t0) { lo = Math.max(0, t1 + 18 - H); hi = Math.min(over, t0 - 18); }
+      }
+      const want = over * alignPref;
+      return Math.round(lo <= hi ? cl(want, lo, hi) : cl(lo, 0, over));
+    };
     const place = () => {
       const H = VH(); root.style.setProperty('--rh', H + 'px');
-      const org = (el, h) => { el.style.transformOrigin = '50% ' + Math.max(0, Math.round(h - H)) + 'px'; };
-      solo.forEach((p) => { const h = p.el.classList.contains('stk-q') ? p.el.offsetHeight : hgt(p.el); p.el.style.top = Math.min(0, Math.round(H - h)) + 'px'; org(p.el, h); });
+      const org = (el, cut) => { el.style.transformOrigin = '50% ' + cut + 'px'; el.style.setProperty('--stk-cut', cut + 'px'); };
+      solo.forEach((p) => {
+        const q = p.el.classList.contains('stk-q'), h = q ? p.el.offsetHeight : hgt(p.el);
+        const cut = q || p.el.classList.contains('sl-open') ? Math.max(0, Math.round(h - H)) : cutOf(p.el, h, H);
+        p.el.style.top = -cut + 'px'; org(p.el, cut);
+      });
       groups.forEach((g) => { // bagian berisi beberapa slide (mempelai, akad/resepsi) menempel saat slide TERAKHIRnya selesai digulir
-        const hl = hgt(g.last), x = g.sec.offsetHeight - hl;
-        g.sec.style.top = Math.round(-Math.max(0, x) + Math.min(0, H - hl)) + 'px'; org(g.last, hl);
+        const hl = hgt(g.last), x = g.sec.offsetHeight - hl, cut = cutOf(g.last, hl, H);
+        g.sec.style.top = Math.round(-Math.max(0, x) - cut) + 'px'; org(g.last, cut);
       });
     };
     let raf = 0, stkOb;
@@ -508,7 +534,7 @@
         const nm = '--stk' + i; names.push(nm);
         p.next.style.setProperty('view-timeline-name', nm); p.next.dataset.tln = '1';
         p.el.style.setProperty('--tlb', nm); p.el.classList.add('has-tl');
-        if (p.inc) p.inc.classList.add('has-in');
+        if (p.inc) { p.inc.classList.add('has-in'); p.inc.style.setProperty('--tin', nm); }   // --tin = timeline kartu yang MASUK: blok teksnya ikut gulir (slide-perf.css, stkTxIn)
       });
       if (names.length) { root.style.setProperty('timeline-scope', names.join(', ')); document.documentElement.classList.add('sda'); }
     }
@@ -525,9 +551,22 @@
         if (p.inc) { const fl = p.fl ? c > 0.12 : c > 0.28; if (fl !== !!p.fl) { p.fl = fl; p.inc.classList.toggle('stk-flat', fl); } }
         const act = c > 0 && c < 1; if (act !== !!p.act) { p.act = act; p.el.classList.toggle('stk-act', act); if (p.inc) p.inc.classList.toggle('stk-up', act); }
         const hid = c >= 1; if (hid !== !!p.hid) { p.hid = hid; p.el.classList.toggle('stk-hid', hid); }
-        if (p.go) { // foto sudah tampil (ikut scroll); teks diputar setelah kartu naik ±45% layar. Direset hanya bila kartu keluar layar di bawah.
-          if (!p.on && top < H * (document.documentElement.classList.contains('as-run') ? 0.12 : 0.8) && c < 0.5) { p.on = true; p.el.classList.add('sl-go'); } // auto scroll jalan: teks menunggu kartu hampir menempel (gulir berhenti sejenak) → animasi teks tidak bertabrakan dengan gulir
-          else if (p.on && top >= H * 0.98) { p.on = false; p.el.classList.remove('sl-go'); }
+        if (p.go) { // foto sudah tampil (ikut scroll); teks diputar saat kartu naik. Direset hanya bila kartu keluar layar di bawah.
+          // v57 — SINKRON DENGAN AUTO SCROLL: dulu teks baru dipicu saat kartu hampir menempel (±0,5 dtk sebelum gulir berhenti) padahal seluruh
+          // koreografi teks 3–3,7 dtk → teks muncul SESUDAH gulir berhenti, bahkan masih berjalan saat gulir lanjut. Kini pemicu dihitung dari
+          // KECEPATAN gulir: teks mulai tepat sekitar 1,5 dtk sebelum kartu tiba (jarak = kecepatan × 1,5 dtk, dibatasi 40–92% tinggi layar) dan
+          // seluruh jadwal teks dipercepat ×0,72 selama auto scroll → nama selesai menulis saat kartu menempel, sisanya selesai di jeda sinematik.
+          const ar = document.documentElement.classList.contains('as-run'), rest = -(parseFloat(p.el.style.getPropertyValue('--stk-cut')) || 0);
+          const lead = ar ? cl((window.__asVel || 0) * 1.5, H * 0.4, H * 0.92) : H * 0.8;
+          if (!p.on && top - rest < lead && c < 0.5) {
+            p.on = true;
+            if (ar) { p.tkOld = p.el.style.getPropertyValue('--tk'); const t0 = parseFloat(getComputedStyle(p.el).getPropertyValue('--tk')) || 1; p.el.style.setProperty('--tk', (t0 * 0.72).toFixed(3)); p.tkSet = true; }
+            p.el.classList.add('sl-go');
+          }
+          else if (p.on && top >= H * 0.98) {
+            p.on = false; p.el.classList.remove('sl-go');
+            if (p.tkSet) { p.tkSet = false; if (p.tkOld) p.el.style.setProperty('--tk', p.tkOld); else p.el.style.removeProperty('--tk'); }
+          }
         }
       });
       { // latar di belakang pembuka: gelap HANYA saat pembuka → mempelai pria, normal lagi sesudahnya
@@ -574,7 +613,7 @@
     root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
     if (io) { io.disconnect(); io = null; }
     cdFx(root, rm);
-    stack(root, s.stack !== false && !rm && 'IntersectionObserver' in window);
+    stack(root, s.stack !== false && !rm && 'IntersectionObserver' in window, parseFloat(s.stackAlign));
     parallax(par, !rm && s.scrollPhoto !== false); // setelah stack(): foto di kartu bertumpuk digerakkan scroll, bukan parallax
     dots(root, s.dots !== false);
     const els = root.querySelectorAll('.sl-s:not([data-stk]), .sl-foot');
