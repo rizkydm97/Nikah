@@ -1,0 +1,6 @@
+/* fitcol.css — Tema 13 di komputer: kolom undangan ikut TINGGI layar.
+   Kanvas slide berbanding 1 : 2 (lebar 390 × tinggi 780) lalu diskalakan ke lebar kolom (maks 480 px). Di layar laptop yang pendek,
+   kolom 480 px berarti slide setinggi ±960 px → melebihi layar sehingga teks & tombol terpotong (zoom 100%); baru pas bila zoom
+   diperkecil. /fitcol.js mengisi --fitw = tinggi layar ÷ rasio kanvas (hanya di layar lebar ≥ 700 px); kolom tidak pernah lebih lebar
+   dari itu, jadi satu slide selalu pas satu layar di zoom berapa pun. HP tidak berubah (--fitw tidak dipasang). */
+html.h-slide .col,html.h-slide .cover,html.h-slide .fixwrap{max-width:min(var(--col),var(--fitw,100vw))}
