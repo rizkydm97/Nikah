@@ -732,8 +732,19 @@
     const hL = ov.querySelector('.hl'), hR = ov.querySelector('.hr'), hS = ov.querySelector('.hs');
     let selKey = '', lastSel = null;
     const selEl = () => (selKey ? document.querySelector('[data-ad="' + selKey.replace(/"/g, '\\"') + '"]') : null);
+    // kartu/bagian tempat sebuah tulisan berada (kartu bertumpuk = .stk-pin, selain itu = bagian .sec)
+    const scopeOf = (n) => (n && n.closest ? (n.closest('.stk-pin') || n.closest('section.sec')) : null);
+    // v59: tulisan yang tertutup kartu lain (mis. Akad di bawah Resepsi) → pegangan/garis bantunya jangan dimunculkan di atas kartu yang menutupinya
+    const covered = (el) => {
+      try {
+        const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + Math.min(r.height / 2, 12);
+        if (cx < 0 || cy < 0 || cx > innerWidth || cy > innerHeight) return false;
+        const t = document.elementFromPoint(cx, cy), a = scopeOf(t), b = scopeOf(el);
+        return !!(a && b && a !== b);
+      } catch (e) { return false; }
+    };
     const place = () => {
-      const el = selEl(), ok = el && el.isConnected && !el.classList.contains('sl-typing');
+      const el = selEl(), ok = el && el.isConnected && !el.classList.contains('sl-typing') && !covered(el);
       ov.classList.toggle('has', !!ok);
       if (lastSel && lastSel !== el) lastSel.classList.remove('sl-sel');
       lastSel = ok ? el : null; if (ok) el.classList.add('sl-sel');
@@ -783,8 +794,14 @@
       // beberapa tulisan/garis bisa bertumpuk di satu titik (mis. garis ♥ di bawah kotak teks penutup): ambil yang paling kecil supaya garis tipis tetap bisa diraih
       if (document.elementsFromPoint) {
         let best = null, ba = Infinity;
-        document.elementsFromPoint(e.clientX, e.clientY).forEach((n) => {
+        const pts = document.elementsFromPoint(e.clientX, e.clientY);
+        // v59: kartu bertumpuk (Akad ← Resepsi, Mempelai pria ← wanita) saling menutupi, tetapi elementsFromPoint tetap mengembalikan tulisan di kartu YANG TERTUTUP.
+        // Dulu tulisan tersembunyi itu ikut dipilih/digeser (di admin terpilih "Akad Nikah — alamat" padahal yang terlihat "Resepsi") → geseran tak sesuai pratinjau.
+        // Kini hanya tulisan di kartu/bagian PALING ATAS di titik itu yang boleh dipilih.
+        const topN = pts.find((n) => scopeOf(n)), topScope = topN ? scopeOf(topN) : null;
+        pts.forEach((n) => {
           const d = n.closest && n.closest('[data-ad]'); if (!d || d.dataset.hid === '2') return;
+          if (topScope && scopeOf(d) !== topScope) return;
           const r = d.getBoundingClientRect(), ar = Math.max(r.width, 4) * Math.max(r.height, 4);
           if (ar < ba) { ba = ar; best = d; }
         });
@@ -863,7 +880,10 @@
       a.h = 1; adj[key] = a; el.dataset.hid = '1'; done(JSON.parse(JSON.stringify(adj)));
     });
     let wt = 0;
-    pickFn = (key) => { selKey = key || ''; const el = selEl(); if (el) { try { const r = el.getBoundingClientRect(); if (r.top < 60 || r.bottom > innerHeight - 60) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (er) { /* abaikan */ } } };
+    pickFn = (key) => { selKey = key || ''; const el = selEl(); if (el) { try { const r = el.getBoundingClientRect(); if (covered(el)) { // v59: tulisan ada di kartu yang sedang TERTUTUP kartu berikutnya → gulir ke atas sampai kartu berikutnya di bawah layar, supaya kartunya tampil utuh
+          const card = scopeOf(el), nx = card && (card.nextElementSibling || (card.closest('section.sec') || card).nextElementSibling);
+          if (nx) { const d = nx.getBoundingClientRect().top - innerHeight; if (d < 0) scrollBy({ top: d - 4, behavior: 'smooth' }); }
+        } else if (r.top < 60 || r.bottom > innerHeight - 60) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (er) { /* abaikan */ } } };
     document.addEventListener('wheel', (e) => {
       if (!e.shiftKey) return;
       const el = e.target.closest && e.target.closest('[data-ad]'); if (!el) return;

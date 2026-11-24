@@ -199,9 +199,9 @@
           // dibulatkan ke piksel perangkat (iPhone @2x = 0,5 px) → langkah gulir rata, tidak bergantian 3px/4px
           const y = Math.round(st.pos * DPR) / DPR;
           if (y !== st.lastY) { window.scrollTo(0, y); st.lastY = y; st.lastSet = cy(); }
-          if (st.pos >= m - 1) { st.run = false; st.stopping = false; st.vel = 0; paintState(); paintRing(true); showTip('Selesai', 1800); }
+          if (st.pos >= m - 1) { st.run = false; st.stopping = false; st.vel = 0; setMove(false); paintState(); paintRing(true); showTip('Selesai', 1800); }   // v59: setMove(false) — dulu kelas as-move tertinggal saat gulir mencapai dasar, sehingga kilau & cahaya penutup (dan kilau nama) terjeda selamanya = tak terlihat
         }
-        if (st.stopping && st.vel < 1) { st.run = false; st.stopping = false; st.vel = 0; paintState(); }
+        if (st.stopping && st.vel < 1) { st.run = false; st.stopping = false; st.vel = 0; setMove(false); paintState(); }
       }
       paintRing();
       if (st.run || st.vel > 0.05) st.raf = requestAnimationFrame(frame);
