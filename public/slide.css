@@ -1593,3 +1593,10 @@ html[data-sl-cfx="1"]:not(.sl-edit) .stk-on .stk-pin.stk-in.stk-up::after{will-c
 html[data-sl-cfx="1"]:not(.sl-edit) .stk-on .stk-pin :is(.sl-pp-in,.sl-ev-in,.sl-q-in){translate:0 0;transition:translate 1.15s cubic-bezier(.2,.75,.25,1) .1s}
 html[data-sl-cfx="1"]:not(.sl-edit) .stk-on .stk-pin.stk-in:not(.stk-flat) :is(.sl-pp-in,.sl-ev-in,.sl-q-in){translate:0 46px}
 @media (prefers-reduced-motion:reduce){html[data-sl-cfx] .stk-on .stk-pin :is(.sl-pp-in,.sl-ev-in,.sl-q-in){translate:none!important;transition:none!important}}
+
+/* Foto layar loading: ikuti zoom/geser/mode dari admin (cover.loaderMediaAdj) di HP DAN laptop.
+   Hanya aktif bila admin sudah mengatur posisi foto (kelas .ld-adj); jika belum, perilaku bawaan di atas tetap berlaku. */
+#loader .ld-bg.ld-adj>img.ld-fg{object-fit:cover}
+#loader .ld-bg.ld-adj.ld-contain>img.ld-fg{object-fit:contain}
+#loader .ld-bg.ld-adj.ld-cover>img.ld-bk{display:none}
+#loader .ld-bg.ld-adj.ld-contain>img.ld-bk{display:block;object-fit:cover;filter:blur(28px) brightness(.8);transform:scale(1.12)}
