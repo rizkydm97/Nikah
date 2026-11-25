@@ -1,40 +1,58 @@
-/* wide.css — Tema 13 di layar lebar (laptop / komputer / tablet mendatar).
-   Sisi kiri: panel foto besar + tulisan (diatur admin → Cover → "PANEL SAMPING"); sisi kanan: undangan di kolom seperti di HP.
-   Aktif hanya bila <html class="wide-on"> (Tema 13 + saklar panel samping menyala) dan layar ≥ 760 px & mendatar.
-   HP / pratinjau admin / tablet berdiri tidak berubah. Lebar kolom memakai rumus yang sama dengan /fitcol.css. */
-#wide{display:none}
+/* wide.css — Tema 13 di layar lebar. Aktif hanya bila <html class="wide-on"> (Tema 13 + saklar "panel samping" menyala) dan layar ≥ 560 px.
+   • Layar MENDATAR (laptop, komputer, tablet / HP dimiringkan): panel foto + tulisan di sisi kiri, undangan di kolom kanan.
+   • Layar BERDIRI ≥ 600 px (tablet berdiri, HP lipat terbuka): undangan tetap di tengah, sisi kiri-kanan diisi foto yang diburamkan.
+   • HP berdiri (< 600 px): tidak ada perubahan sama sekali.
+   Lebar kolom memakai rumus yang sama dengan /fitcol.css. Ukuran tulisan mengikuti lebar DAN tinggi panel (satuan cqw/cqh). */
+#wide{display:none;container-type:size}
 
-@media (min-width:760px) and (min-aspect-ratio:1/1){
+/* ---------- isi panel (dipakai kedua tampilan) ---------- */
+.wd{position:absolute;inset:0}
+.wd-ph,.wd-s{position:absolute;inset:0}
+.wd-s{opacity:0;transform:scale(1.07);transition:opacity 1.4s ease,transform 9s linear}
+.wd-s.on{opacity:1;transform:scale(1)}
+.wd-sh{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(0deg,rgba(0,0,0,calc(.66 * var(--wsh,1))) 0%,rgba(0,0,0,calc(.2 * var(--wsh,1))) 48%,rgba(0,0,0,calc(.26 * var(--wsh,1))) 100%)}
+.wd-tx{position:absolute;z-index:3;left:max(7%,calc(env(safe-area-inset-left,0px) + 20px));right:7%;bottom:var(--wy,12%);display:flex;flex-direction:column;gap:calc(var(--wsz,1) * max(3px,1.1cqh));text-shadow:0 2px 22px rgba(0,0,0,.5)}
+.wd.al-center .wd-tx{align-items:center;text-align:center}
+.wd-k{font-family:var(--fScript,cursive);line-height:1.3;padding-bottom:.08em;
+  font-size:calc(var(--wsz,1) * clamp(22px,4.3vw,70px));font-size:calc(var(--wsz,1) * max(18px,min(5.6cqw,8.4cqh)))}
+.wd-n{font-family:var(--fHeading,Georgia,serif);font-weight:600;letter-spacing:.07em;line-height:1.15;text-wrap:balance;
+  font-size:calc(var(--wsz,1) * clamp(24px,4.9vw,84px));font-size:calc(var(--wsz,1) * max(18px,min(6.4cqw,9.5cqh)))}
+.wd-n i{font-family:var(--fScript,cursive);font-style:normal;font-weight:400;font-size:.8em;margin:0 .2em;opacity:.92}
+.wd-d{font-family:var(--fHeading,Georgia,serif);letter-spacing:.2em;text-transform:uppercase;
+  font-size:calc(var(--wsz,1) * clamp(11px,1.55vw,26px));font-size:calc(var(--wsz,1) * max(10px,min(2.1cqw,3.2cqh)))}
+.wd-t{max-width:34em;font-family:var(--fBody,sans-serif);line-height:1.7;opacity:.92;
+  font-size:calc(var(--wsz,1) * clamp(12px,1.2vw,20px));font-size:calc(var(--wsz,1) * max(11px,min(1.7cqw,2.6cqh)))}
+.wd-tx>*{opacity:0;transform:translateY(24px);transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.22,.8,.24,1)}
+#loader.off~#wide .wd-tx>*{opacity:1;transform:none}
+#loader.off~#wide .wd-tx>:nth-child(2){transition-delay:.3s}
+#loader.off~#wide .wd-tx>:nth-child(3){transition-delay:.6s}
+#loader.off~#wide .wd-tx>:nth-child(4){transition-delay:.9s}
+
+/* tombol layar penuh (pojok kanan bawah panel) */
+.wd-fs{position:absolute;right:max(18px,calc(env(safe-area-inset-right,0px) + 12px));bottom:max(18px,calc(env(safe-area-inset-bottom,0px) + 12px));z-index:4;width:44px;height:44px;padding:0;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.85);background:rgba(20,20,20,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;
+  display:grid;place-items:center;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.wd-fs svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wd-fs .x{display:none}
+#wide.fs-on .wd-fs .e{display:none}
+#wide.fs-on .wd-fs .x{display:block}
+
+/* ---------- 1) layar MENDATAR: panel kiri + kolom kanan ---------- */
+@media (min-width:560px) and (min-aspect-ratio:1/1){
   html.wide-on #wide{display:block;position:fixed;left:0;top:0;bottom:0;width:calc(100% - min(var(--col,480px),var(--fitw,100vw)));z-index:0;overflow:hidden;background:var(--ink,#141210);color:#fff;pointer-events:none}
-
   /* kolom undangan pindah ke kanan (bawaan: di tengah layar) */
   html.wide-on .col,html.wide-on .cover,html.wide-on .fixwrap,html.wide-on .wl-sheet{margin-left:auto;margin-right:0}
   html.wide-on .sl-hint{left:calc(100% - min(var(--col,480px),var(--fitw,100vw)) / 2)}
-
-  /* foto */
-  .wd{position:absolute;inset:0}
-  .wd-ph,.wd-s{position:absolute;inset:0}
-  .wd-s{opacity:0;transform:scale(1.07);transition:opacity 1.4s ease,transform 9s linear}
-  .wd-s.on{opacity:1;transform:scale(1)}
-  .wd-sh{position:absolute;inset:0;z-index:2;pointer-events:none;
-    background:linear-gradient(0deg,rgba(0,0,0,calc(.66 * var(--wsh,1))) 0%,rgba(0,0,0,calc(.2 * var(--wsh,1))) 48%,rgba(0,0,0,calc(.26 * var(--wsh,1))) 100%)}
-
-  /* tulisan */
-  .wd-tx{position:absolute;z-index:3;left:7%;right:7%;bottom:var(--wy,12%);display:flex;flex-direction:column;gap:.7vw;text-shadow:0 2px 22px rgba(0,0,0,.5)}
-  .wd.al-center .wd-tx{align-items:center;text-align:center}
-  .wd-k{font-family:var(--fScript,cursive);font-size:calc(var(--wsz,1) * clamp(28px,4.3vw,84px));line-height:1.1}
-  .wd-n{font-family:var(--fHeading,Georgia,serif);font-weight:600;letter-spacing:.07em;font-size:calc(var(--wsz,1) * clamp(30px,4.9vw,96px));line-height:1.12}
-  .wd-n i{font-family:var(--fScript,cursive);font-style:normal;font-weight:400;font-size:.8em;margin:0 .2em;opacity:.92}
-  .wd-d{margin-top:.5vw;font-family:var(--fHeading,Georgia,serif);letter-spacing:.2em;text-transform:uppercase;font-size:calc(var(--wsz,1) * clamp(12px,1.55vw,30px))}
-  .wd-t{margin-top:.6vw;max-width:34em;font-family:var(--fBody,sans-serif);line-height:1.7;opacity:.92;font-size:calc(var(--wsz,1) * clamp(13px,1.2vw,22px))}
-
-  /* tulisan muncul halus satu per satu setelah layar loading selesai */
-  .wd-tx>*{opacity:0;transform:translateY(24px);transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.22,.8,.24,1)}
-  #loader.off~#wide .wd-tx>*{opacity:1;transform:none}
-  #loader.off~#wide .wd-tx>:nth-child(2){transition-delay:.3s}
-  #loader.off~#wide .wd-tx>:nth-child(3){transition-delay:.6s}
-  #loader.off~#wide .wd-tx>:nth-child(4){transition-delay:.9s}
 }
+
+/* ---------- 2) layar BERDIRI lebar (tablet berdiri, HP lipat terbuka): foto buram mengisi sisi kiri-kanan ---------- */
+@media (min-width:600px) and (max-aspect-ratio:99/100){
+  html.wide-on #wide{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--ink,#141210);pointer-events:none}
+  html.wide-on .wd-ph{filter:blur(24px) brightness(.55) saturate(1.1);transform:scale(1.12)}
+  html.wide-on .wd-sh,html.wide-on .wd-tx{display:none}
+}
+
 @media (prefers-reduced-motion:reduce){
   .wd-s{transition:opacity .01s;transform:none}
   .wd-tx>*{transition:none}

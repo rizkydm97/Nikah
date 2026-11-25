@@ -198,7 +198,7 @@
   }
 
   // ---------- Tema 13, layar lebar: panel foto + tulisan di sisi kiri (diatur di admin → Cover → "PANEL SAMPING"); undangan tetap di kolom kanan ----------
-  const WIDE_MQ = window.matchMedia ? window.matchMedia('(min-width:760px) and (min-aspect-ratio:1/1)') : null;
+  const WIDE_MQ = window.matchMedia ? window.matchMedia('(min-width:560px)') : null;
   let wdTimer = 0;
   function wideHtml(c) {
     const s = c.slide || {}, o = c.cover || {}, VID = /\.(mp4|webm|mov|m4v)(\?|#|$)|youtu/i;
@@ -214,14 +214,30 @@
     const parts = names.split(/\s*&\s*|\s+dan\s+/i).filter(Boolean);
     const nm = parts.length === 2 ? `${esc(parts[0])} <i>&amp;</i> ${esc(parts[1])}` : esc(names);
     const vars = `--wsh:${num(s.wideShade, 100, 0, 200) / 100};--wsz:${num(s.wideSize, 100, 50, 150) / 100};--wy:${num(s.wideY, 12, 2, 80)}%`;
+    const FS = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+    const fsb = FS ? '<button type="button" class="wd-fs" aria-label="Layar penuh"><svg class="e" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>' : '';
     return `<div class="wd ${s.wideAlign === 'center' ? 'al-center' : 'al-left'}" style="${vars}">
       <div class="wd-ph">${list.map((x, i) => `<div class="wd-s${i === 0 ? ' on' : ''}">${photo(x.o, x.k)}</div>`).join('')}</div><i class="wd-sh"></i>
-      <div class="wd-tx">${kick ? `<div class="wd-k">${esc(kick)}</div>` : ''}${nm ? `<div class="wd-n">${nm}</div>` : ''}${date ? `<div class="wd-d">${esc(date)}</div>` : ''}${extra ? `<div class="wd-t">${esc(extra).replace(/\n/g, '<br>')}</div>` : ''}</div>
+      <div class="wd-tx">${kick ? `<div class="wd-k">${esc(kick)}</div>` : ''}${nm ? `<div class="wd-n">${nm}</div>` : ''}${date ? `<div class="wd-d">${esc(date)}</div>` : ''}${extra ? `<div class="wd-t">${esc(extra).replace(/\n/g, '<br>')}</div>` : ''}</div>${fsb}
     </div>`;
   }
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+  function toggleFs() {
+    try {
+      if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+      else { const de = document.documentElement; (de.requestFullscreen || de.webkitRequestFullscreen).call(de); }
+    } catch (e) { /* peramban tidak mendukung */ }
+  }
+  let fsBound = false;
   function renderWide() {
     clearInterval(wdTimer);
     const box = $('#wide'); if (!box) return;
+    if (!fsBound) {
+      fsBound = true;
+      box.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('.wd-fs')) toggleFs(); });
+      const sync = () => box.classList.toggle('fs-on', !!fsEl());
+      ['fullscreenchange', 'webkitfullscreenchange'].forEach((n) => document.addEventListener(n, sync));
+    }
     const on = !!(SL && C && C.slide && C.slide.wideOn !== false);
     document.documentElement.classList.toggle('wide-on', on);
     // foto panel hanya dibuat bila layar memang lebar (HP tidak ikut mengunduh foto ini)

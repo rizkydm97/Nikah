@@ -1,11 +1,11 @@
 /* fitcol.js — pelengkap /fitcol.css (Tema 13, komputer): hitung lebar kolom agar satu slide pas satu layar.
-   --fitw = ceil(tinggi layar ÷ rasio kanvas). Aktif hanya bila <html class="h-slide"> dan lebar layar ≥ 700 px (HP / pratinjau admin tidak berubah).
+   --fitw = ceil(tinggi layar ÷ rasio kanvas). Aktif hanya bila <html class="h-slide"> dan (lebar layar ≥ 700 px atau layar mendatar); HP berdiri / pratinjau admin tidak berubah.
    Berjalan ulang saat ukuran jendela / zoom berubah (zoom Chrome mengubah innerHeight) dan saat rasio kanvas (--cvh) atau tema berganti. */
 (function () {
   'use strict';
   var r = document.documentElement, last = '', key = '';
   function calc() {
-    if (!r.classList.contains('h-slide') || innerWidth < 700) return '';
+    if (!r.classList.contains('h-slide') || (innerWidth < 700 && innerWidth <= innerHeight)) return ''; // HP berdiri tidak berubah; HP mendatar ikut dihitung
     var cs = getComputedStyle(r);
     var ratio = (parseFloat(cs.getPropertyValue('--cvh')) || 780) / 390;
     var col = parseFloat(cs.getPropertyValue('--col')) || 480;
