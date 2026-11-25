@@ -1594,9 +1594,11 @@ html[data-sl-cfx="1"]:not(.sl-edit) .stk-on .stk-pin :is(.sl-pp-in,.sl-ev-in,.sl
 html[data-sl-cfx="1"]:not(.sl-edit) .stk-on .stk-pin.stk-in:not(.stk-flat) :is(.sl-pp-in,.sl-ev-in,.sl-q-in){translate:0 46px}
 @media (prefers-reduced-motion:reduce){html[data-sl-cfx] .stk-on .stk-pin :is(.sl-pp-in,.sl-ev-in,.sl-q-in){translate:none!important;transition:none!important}}
 
-/* Foto layar loading: ikuti zoom/geser/mode dari admin (cover.loaderMediaAdj) di HP DAN laptop.
-   Hanya aktif bila admin sudah mengatur posisi foto (kelas .ld-adj); jika belum, perilaku bawaan di atas tetap berlaku. */
-#loader .ld-bg.ld-adj>img.ld-fg{object-fit:cover}
-#loader .ld-bg.ld-adj.ld-contain>img.ld-fg{object-fit:contain}
-#loader .ld-bg.ld-adj.ld-cover>img.ld-bk{display:none}
-#loader .ld-bg.ld-adj.ld-contain>img.ld-bk{display:block;object-fit:cover;filter:blur(28px) brightness(.8);transform:scale(1.12)}
+/* Foto layar loading: ikuti zoom/geser/mode dari admin (cover.loaderMediaAdj).
+   Foto ditaruh di bingkai berbentuk HP (rasio 9:19) di tengah layar, persis seperti pratinjau admin, supaya di laptop/tablet
+   zoom & posisinya sama dengan di HP (tidak terpotong aneh). Sisi kiri-kanan diisi salinan foto yang diburamkan.
+   Hanya aktif bila admin sudah mengatur posisi foto (kelas .ld-adj). */
+#loader .ld-bg.ld-adj>img.ld-bk{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(28px) brightness(.8);transform:scale(1.12)}
+#loader .ld-bg.ld-adj>.ld-fr{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);height:100%;aspect-ratio:9/19;max-width:100%;overflow:hidden;animation:ldFade .6s ease both}
+#loader .ld-bg.ld-adj .ld-fr>img.ld-fg{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;object-fit:cover}
+#loader .ld-bg.ld-adj.ld-contain .ld-fr>img.ld-fg{object-fit:contain}

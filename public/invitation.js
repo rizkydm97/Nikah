@@ -191,7 +191,7 @@
       // pengaturan dari admin (cover.loaderMediaAdj = {x,y,z,fit}) dipakai di SEMUA perangkat; bila belum pernah diatur -> perilaku lama (HP: penuh, laptop: utuh + blur)
       const has = !!(c.cover && c.cover.loaderMediaAdj), a = adj(c.cover, 'loaderMedia');
       const st = has ? ` style="${adjStyle(a)}"` : '';
-      el = `<img class="ld-bk" src="${esc(u)}" alt="" decoding="async" aria-hidden="true"><img class="ld-fg" src="${esc(u)}" alt="" decoding="async"${st}>`;
+      el = `<img class="ld-bk" src="${esc(u)}" alt="" decoding="async" aria-hidden="true"><div class="ld-fr"><img class="ld-fg" src="${esc(u)}" alt="" decoding="async"${st}></div>`;
       return `<div class="ld-bg${has ? ' ld-adj ' + (a.fit === 'contain' ? 'ld-contain' : 'ld-cover') : ''}">${el}</div>`;
     }
     return `<div class="ld-bg">${el}</div>`;
