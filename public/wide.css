@@ -1,0 +1,41 @@
+/* wide.css — Tema 13 di layar lebar (laptop / komputer / tablet mendatar).
+   Sisi kiri: panel foto besar + tulisan (diatur admin → Cover → "PANEL SAMPING"); sisi kanan: undangan di kolom seperti di HP.
+   Aktif hanya bila <html class="wide-on"> (Tema 13 + saklar panel samping menyala) dan layar ≥ 760 px & mendatar.
+   HP / pratinjau admin / tablet berdiri tidak berubah. Lebar kolom memakai rumus yang sama dengan /fitcol.css. */
+#wide{display:none}
+
+@media (min-width:760px) and (min-aspect-ratio:1/1){
+  html.wide-on #wide{display:block;position:fixed;left:0;top:0;bottom:0;width:calc(100% - min(var(--col,480px),var(--fitw,100vw)));z-index:0;overflow:hidden;background:var(--ink,#141210);color:#fff;pointer-events:none}
+
+  /* kolom undangan pindah ke kanan (bawaan: di tengah layar) */
+  html.wide-on .col,html.wide-on .cover,html.wide-on .fixwrap,html.wide-on .wl-sheet{margin-left:auto;margin-right:0}
+  html.wide-on .sl-hint{left:calc(100% - min(var(--col,480px),var(--fitw,100vw)) / 2)}
+
+  /* foto */
+  .wd{position:absolute;inset:0}
+  .wd-ph,.wd-s{position:absolute;inset:0}
+  .wd-s{opacity:0;transform:scale(1.07);transition:opacity 1.4s ease,transform 9s linear}
+  .wd-s.on{opacity:1;transform:scale(1)}
+  .wd-sh{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(0deg,rgba(0,0,0,calc(.66 * var(--wsh,1))) 0%,rgba(0,0,0,calc(.2 * var(--wsh,1))) 48%,rgba(0,0,0,calc(.26 * var(--wsh,1))) 100%)}
+
+  /* tulisan */
+  .wd-tx{position:absolute;z-index:3;left:7%;right:7%;bottom:var(--wy,12%);display:flex;flex-direction:column;gap:.7vw;text-shadow:0 2px 22px rgba(0,0,0,.5)}
+  .wd.al-center .wd-tx{align-items:center;text-align:center}
+  .wd-k{font-family:var(--fScript,cursive);font-size:calc(var(--wsz,1) * clamp(28px,4.3vw,84px));line-height:1.1}
+  .wd-n{font-family:var(--fHeading,Georgia,serif);font-weight:600;letter-spacing:.07em;font-size:calc(var(--wsz,1) * clamp(30px,4.9vw,96px));line-height:1.12}
+  .wd-n i{font-family:var(--fScript,cursive);font-style:normal;font-weight:400;font-size:.8em;margin:0 .2em;opacity:.92}
+  .wd-d{margin-top:.5vw;font-family:var(--fHeading,Georgia,serif);letter-spacing:.2em;text-transform:uppercase;font-size:calc(var(--wsz,1) * clamp(12px,1.55vw,30px))}
+  .wd-t{margin-top:.6vw;max-width:34em;font-family:var(--fBody,sans-serif);line-height:1.7;opacity:.92;font-size:calc(var(--wsz,1) * clamp(13px,1.2vw,22px))}
+
+  /* tulisan muncul halus satu per satu setelah layar loading selesai */
+  .wd-tx>*{opacity:0;transform:translateY(24px);transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.22,.8,.24,1)}
+  #loader.off~#wide .wd-tx>*{opacity:1;transform:none}
+  #loader.off~#wide .wd-tx>:nth-child(2){transition-delay:.3s}
+  #loader.off~#wide .wd-tx>:nth-child(3){transition-delay:.6s}
+  #loader.off~#wide .wd-tx>:nth-child(4){transition-delay:.9s}
+}
+@media (prefers-reduced-motion:reduce){
+  .wd-s{transition:opacity .01s;transform:none}
+  .wd-tx>*{transition:none}
+}

@@ -197,6 +197,44 @@
     return `<div class="ld-bg">${el}</div>`;
   }
 
+  // ---------- Tema 13, layar lebar: panel foto + tulisan di sisi kiri (diatur di admin → Cover → "PANEL SAMPING"); undangan tetap di kolom kanan ----------
+  const WIDE_MQ = window.matchMedia ? window.matchMedia('(min-width:760px) and (min-aspect-ratio:1/1)') : null;
+  let wdTimer = 0;
+  function wideHtml(c) {
+    const s = c.slide || {}, o = c.cover || {}, VID = /\.(mp4|webm|mov|m4v)(\?|#|$)|youtu/i;
+    const list = [];
+    if (safeUrl(s.widePhoto) && !VID.test(s.widePhoto)) list.push({ o: s, k: 'widePhoto' });
+    else if (safeUrl(s.coverMedia) && !VID.test(s.coverMedia)) list.push({ o: s, k: 'coverMedia' });
+    else if (safeUrl(o.photo) && !/\/assets\/default\//.test(o.photo)) list.push({ o, k: 'photo' });
+    (Array.isArray(s.widePhotos) ? s.widePhotos : []).forEach((it) => { if (it && safeUrl(it.image) && !VID.test(it.image)) list.push({ o: it, k: 'image' }); });
+    const kick = String(s.wideKicker || '').trim() || o.kicker || '';
+    const names = String(s.wideNames || '').trim() || o.names || '';
+    const date = String(s.wideDate || '').trim() || (c.hero && c.hero.dateText) || '';
+    const extra = String(s.wideText || '').trim();
+    const parts = names.split(/\s*&\s*|\s+dan\s+/i).filter(Boolean);
+    const nm = parts.length === 2 ? `${esc(parts[0])} <i>&amp;</i> ${esc(parts[1])}` : esc(names);
+    const vars = `--wsh:${num(s.wideShade, 100, 0, 200) / 100};--wsz:${num(s.wideSize, 100, 50, 150) / 100};--wy:${num(s.wideY, 12, 2, 80)}%`;
+    return `<div class="wd ${s.wideAlign === 'center' ? 'al-center' : 'al-left'}" style="${vars}">
+      <div class="wd-ph">${list.map((x, i) => `<div class="wd-s${i === 0 ? ' on' : ''}">${photo(x.o, x.k)}</div>`).join('')}</div><i class="wd-sh"></i>
+      <div class="wd-tx">${kick ? `<div class="wd-k">${esc(kick)}</div>` : ''}${nm ? `<div class="wd-n">${nm}</div>` : ''}${date ? `<div class="wd-d">${esc(date)}</div>` : ''}${extra ? `<div class="wd-t">${esc(extra).replace(/\n/g, '<br>')}</div>` : ''}</div>
+    </div>`;
+  }
+  function renderWide() {
+    clearInterval(wdTimer);
+    const box = $('#wide'); if (!box) return;
+    const on = !!(SL && C && C.slide && C.slide.wideOn !== false);
+    document.documentElement.classList.toggle('wide-on', on);
+    // foto panel hanya dibuat bila layar memang lebar (HP tidak ikut mengunduh foto ini)
+    if (!on || (WIDE_MQ && !WIDE_MQ.matches)) { box.innerHTML = ''; return; }
+    box.innerHTML = wideHtml(C);
+    const sl = $$('.wd-s', box);
+    if (sl.length > 1) {
+      let i = 0; const ms = num(C.slide.wideSec, 6, 3, 20) * 1000;
+      wdTimer = setInterval(() => { sl[i].classList.remove('on'); i = (i + 1) % sl.length; sl[i].classList.add('on'); }, ms);
+    }
+  }
+  if (WIDE_MQ) { const wch = () => { if (C) renderWide(); }; try { WIDE_MQ.addEventListener('change', wch); } catch (e) { try { WIDE_MQ.addListener(wch); } catch (e2) { /* abaikan */ } } }
+
   // ---------- Tema 12: tombol "Buka Undangan" menunggu semua gambar siap (tampil persen), supaya setelah dibuka tidak ada yang menyusul ----------
   function holdOpen(list) {
     const btn = $('#openBtn'); if (!btn) return;
@@ -214,8 +252,8 @@
     const IMG = /\.(png|jpe?g|webp|gif|avif|svg|bmp)(\?|#|$)/i, NOT = /\.(mp4|webm|mov|m4v|mkv|mp3|m4a|ogg|wav|aac)(\?|#|$)|youtu/i;
     const set = new Set(), add = (u) => { u = safeUrl(u); if (u && !NOT.test(u) && (IMG.test(u) || /\/storage\/v1\/object\/public\//.test(u))) set.add(u); };
     // 1) yang benar-benar tampil di halaman (gambar lazy dipaksa langsung dimuat)
-    $$('#cover img, #app img').forEach((im) => { try { im.loading = 'eager'; } catch (e) { /* abaikan */ } add(im.getAttribute('src')); add(im.getAttribute('data-src')); });
-    $$('#cover [style*="url("], #app [style*="url("]').forEach((el) => { String(el.getAttribute('style')).replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g, (_, u) => { add(u); return _; }); });
+    $$('#cover img, #app img, #wide img').forEach((im) => { try { im.loading = 'eager'; } catch (e) { /* abaikan */ } add(im.getAttribute('src')); add(im.getAttribute('data-src')); });
+    $$('#cover [style*="url("], #app [style*="url("], #wide [style*="url("]').forEach((el) => { String(el.getAttribute('style')).replace(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g, (_, u) => { add(u); return _; }); });
     // 2) foto buatan sendiri di konfigurasi (unggahan / link luar) milik bagian yang aktif — termasuk yang baru dipasang saat undangan dibuka (galeri, lightbox, dst.)
     const off = new Set((c.sections || []).filter((s) => !s.enabled).map((s) => s.id)), skip = new Set(['general', 'theme', 'effects', 'scene', 'scene2', 'sections']);
     const walk = (v, d) => { if (v == null || d > 7) return; if (typeof v === 'string') { if (!/^\/assets\//.test(v)) add(v); } else if (Array.isArray(v)) v.forEach((x) => walk(x, d + 1)); else if (typeof v === 'object') Object.keys(v).forEach((k) => walk(v[k], d + 1)); };
@@ -1405,6 +1443,7 @@
     observers.forEach((o) => o.disconnect()); observers = [];
     clearInterval(cdsTimer);
     applyTheme(cfg);
+    renderWide();
     const order = (SL ? window.SLIDE.order(cfg.sections) : (cfg.sections || [])).filter((s) => s.enabled && R[s.id]);
     $('#app').innerHTML = order.map((s) => R[s.id](cfg).replace('<section ', `<section data-sid="${s.id}" `)).join('');
     if (MN && window.MONO.fx) { window.MONO.fx($('#app')); window.MONO.closingFx($('#app')); }
