@@ -95,7 +95,9 @@
 
     const showTip = (txt, ms) => {
       clearTimeout(st.tTip); tip.textContent = txt; root.classList.add('tip');
-      st.tTip = setTimeout(() => root.classList.remove('tip'), ms || 2200);
+      // HP mendatar (layar pendek): tooltip cukup sebentar karena menutupi isi kolom yang sempit
+      const lp = innerWidth > innerHeight && innerHeight <= 560;
+      st.tTip = setTimeout(() => root.classList.remove('tip'), lp ? Math.min(ms || 2200, 1200) : (ms || 2200));
     };
     const paintSpeed = () => {
       const p = (st.speed - 1) / 99;

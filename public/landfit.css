@@ -85,3 +85,18 @@
   html.h-slide .t-slide .sl-pp-p{max-width:100%;overflow-wrap:break-word}
   html.h-slide .t-slide .sl-ig{max-width:100%}
 }
+
+
+/* =====================================================================
+   v3 — layar loading HP mendatar: logo + tulisan + bilah selalu tampak di tengah.
+   Layar mendatar HP pendek (±283–393 px); posisi geser logo/tulisan dari admin dibuat untuk layar berdiri (tinggi 780) sehingga di sini
+   bisa terlempar keluar layar (loading kosong tanpa logo). Di HP mendatar: posisi geser diabaikan, ukuran logo mengikuti TINGGI layar.
+   Hanya layar mendatar pendek; laptop / tablet / HP berdiri tidak berubah.
+   ===================================================================== */
+@media (min-aspect-ratio:1/1) and (max-height:560px){
+  #loader{--lh:calc(var(--ch,3px) * 100)}
+  #loader .ld-in,#loader .ld-in.has-logo{width:min(54vw,220px,calc(var(--lh,100vh) * .5))}
+  #loader .ld-in [data-ad]{translate:none!important;scale:none!important}
+  #loader .ld-in.has-logo .ld-k{margin-top:calc(var(--lh,100vh) * .035);font-size:min(12px,calc(var(--lh,100vh) * .04));letter-spacing:.24em;white-space:nowrap;margin-left:-20%;margin-right:-20%}
+  #loader .ld-in .ld-bar{margin-top:calc(var(--lh,100vh) * .03)}
+}

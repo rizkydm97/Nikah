@@ -21,8 +21,11 @@
     var cs = getComputedStyle(r);
     var ratio = (parseFloat(cs.getPropertyValue('--cvh')) || 780) / 390;
     var col = parseFloat(cs.getPropertyValue('--col')) || 480;
-    var fw = Math.ceil(stableH() / ratio);
-    return fw < col ? Math.max(200, fw) + 'px' : '';
+    var sh = stableH(), fw = Math.ceil(sh / ratio);
+    // v4: HP mendatar (tinggi ≤ 560) — batas minimum 200 px dulu membuat kolom LEBIH TINGGI dari layar yang tampak (mis. Safari dengan bilah tab: tinggi ±283 px → kolom 200 px = kanvas 400 px).
+    //     Kanvas terpotong, kartu ayat / nama / cover bertabrakan. Di HP mendatar kolom kini persis tinggi layar ÷ rasio kanvas (komputer / tablet tidak berubah: tetap min 200).
+    var floor = (innerWidth > innerHeight && sh <= 560) ? 100 : 200;
+    return fw < col ? Math.max(floor, fw) + 'px' : '';
   }
   function fit(notify) {
     var w = calc();
