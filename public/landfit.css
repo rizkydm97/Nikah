@@ -1,0 +1,54 @@
+/* landfit.css — Tema 13 saat HP DIMIRINGKAN (layar mendatar pendek).
+   Masalah: kolom undangan menyempit mengikuti tinggi layar (±200 px pada HP 390 px tinggi) dan slide diskalakan lewat --zs,
+   tetapi bagian Salam, Galeri, Live, Gift, RSVP, Ucapan, sampul, tombol melayang (auto scroll, musik, titik navigasi), petunjuk dan toast
+   tetap berukuran piksel penuh → tombol terlihat raksasa dan tulisan keluar kotak.
+   Di sini semuanya ikut skala kolom yang sama (--zs = lebar kolom ÷ 390), jadi tampilannya = desain laptop, hanya lebih kecil.
+   Hanya aktif pada layar mendatar dengan tinggi ≤ 560 px (HP). Laptop / tablet / HP berdiri TIDAK berubah sama sekali. */
+
+@media (min-aspect-ratio:1/1) and (max-height:560px){
+
+  /* ---------- 1) bagian isi yang sebelumnya tidak diskalakan ---------- */
+  @supports (zoom:1){
+    html.h-slide .t-slide :is(#s-greeting,#s-gallery,#s-live,#s-gift,#s-rsvp,#s-wishes){zoom:var(--zs,1)}
+  }
+
+  /* ---------- 2) sampul: ukuran murni mengikuti lebar/tinggi kolom (tanpa batas px minimum, tanpa aturan max-height) ---------- */
+  html.h-slide .cover .sl-cv-in{padding:calc(env(safe-area-inset-top,0px) + 16px*var(--zs,1)) calc(22px*var(--zs,1)) calc(env(safe-area-inset-bottom,0px) + 24px*var(--zs,1))}
+  html.h-slide .cover .sl-cv-hd{font-size:2.9cqw;gap:calc(8px*var(--zs,1))}
+  html.h-slide .cover .sl-cv-hd .loc svg{width:calc(12px*var(--zs,1));height:calc(12px*var(--zs,1))}
+  html.h-slide .cover .sl-cv-k{margin-top:5cqh;font-size:calc(10cqw*var(--scv,1.05))}
+  html.h-slide .cover .sl-cv-nm{font-size:calc(15cqw*var(--scv,1.05))}
+  html.h-slide .cover .sl-cv-to{margin-top:2cqh}
+  html.h-slide .cover .sl-cv-dear{font-size:calc(5cqw*var(--sc,1))}
+  html.h-slide .cover .sl-cv-g{font-size:7.4cqw;margin-top:calc(2px*var(--zs,1))}
+  html.h-slide .cover .sl-cv-tx{display:block;margin:2.4cqh auto 0;font-size:3.1cqw;line-height:1.6}
+  html.h-slide .cover .sl-cv-btn{margin-top:3.2cqh;gap:calc(8px*var(--zs,1));border-radius:calc(6px*var(--zs,1));font-size:calc(13px*var(--zs,1));padding:calc(13px*var(--zs,1)) calc(22px*var(--zs,1))}
+  html.h-slide .cover .sl-cv-btn svg{width:calc(15px*var(--zs,1));height:calc(15px*var(--zs,1))}
+
+  /* ---------- 3) tombol & petunjuk melayang: ikut skala kolom ---------- */
+  /* auto scroll (tombol + panel kecepatan) — menempel di pojok kanan bawah kolom */
+  html.h-slide .as-wrap{right:calc(12px*var(--zs,1));bottom:calc(128px*var(--zs,1) + env(safe-area-inset-bottom,0px));scale:var(--zs,1);transform-origin:100% 100%}
+  html.h-slide .as-tip{font-size:12px}
+  /* musik */
+  html.h-slide .music{right:calc(14px*var(--zs,1));bottom:calc(16px*var(--zs,1));scale:var(--zs,1);transform-origin:100% 100%}
+  /* titik navigasi kanan */
+  html.h-slide .sl-dots{right:calc(9px*var(--zs,1));scale:var(--zs,1);transform-origin:100% 50%}
+  /* petunjuk "geser ke atas" di dasar layar */
+  html.h-slide .sl-hint{bottom:calc(env(safe-area-inset-bottom,0px) + 14px*var(--zs,1));scale:var(--zs,1);transform-origin:50% 100%}
+  /* notifikasi toast: di tengah kolom, bukan di tengah seluruh layar */
+  html.h-slide .tst-stack{top:calc(env(safe-area-inset-top,0px) + 14px*var(--zs,1));scale:var(--zs,1);transform-origin:50% 0;width:min(calc(var(--fitw,100vw) - 24px),400px)}
+  html.wide-on.h-slide .tst-stack{left:calc(100% - min(var(--col,480px),var(--fitw,100vw)) / 2)}
+
+  /* ---------- 4) jendela pop-up (RSVP terkirim, QR, dll.) ---------- */
+  @supports (zoom:1){
+    html.h-slide .pop>*,html.h-slide .qr-ov>*{zoom:var(--zs,1)}
+  }
+
+  /* ---------- 5) judul yang memakai satuan lebar layar (vw / min(100vw, kolom)): samakan dengan kanvas 390 px (HP berdiri) ---------- */
+  html[data-sl-font="cover"] .t-slide .sec h2.h-display,html[data-sl-font="cover"] .t-slide .sec h2.h-head,html[data-sl-font="cover"] .t-slide .sec h2.script-h{font-size:48.75px}
+  html[data-sl-font="serif"] .t-slide .sec h2.h-display,html[data-sl-font="serif"] .t-slide .sec h2.h-head,html[data-sl-font="serif"] .t-slide .sec h2.script-h{font-size:29.25px}
+  html.h-slide .t-slide .script-h{font-size:50.7px}
+  html.h-slide .t-slide .rsvp .big{font-size:66.3px}
+  html.h-slide .t-slide .cap-in h3{font-size:25.7px}
+  html.h-slide .t-slide .live{min-height:429px}
+}
