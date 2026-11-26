@@ -51,4 +51,11 @@
   html.h-slide .t-slide .rsvp .big{font-size:66.3px}
   html.h-slide .t-slide .cap-in h3{font-size:25.7px}
   html.h-slide .t-slide .live{min-height:429px}
+
+  /* ---------- 6) tombol "kembali ke atas" + ukuran yang dihitung dari lebar kolom (bukan lebar layar) ---------- */
+  html.h-slide .sl-top{right:calc(14px*var(--zs,1));bottom:calc(72px*var(--zs,1));scale:var(--zs,1);transform-origin:100% 100%}
+  /* rumus ayat memakai min(100vw, --col): di layar miring --col (480) ≠ kanvas HP (390) → ayat membesar & menimpa terjemahan */
+  html.h-slide{--col:390px!important}
+  html.h-slide .t-slide .sl-q-in{padding-top:67px}
+  html.h-slide .t-slide .sl-q-ph{min-height:371px}
 }
