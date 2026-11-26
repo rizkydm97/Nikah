@@ -59,3 +59,29 @@
   html.h-slide .t-slide .sl-q-in{padding-top:67px}
   html.h-slide .t-slide .sl-q-ph{min-height:371px}
 }
+
+/* =====================================================================
+   v2 — perbaikan HP mendatar (Safari iPhone): nama mempelai terpecah huruf-per-huruf, ayat & terjemahan saling menindih
+   ===================================================================== */
+
+/* A) text-wrap:balance / pretty salah menghitung tinggi blok di Safari iOS (terutama di dalam zoom): barisnya digambar lebih banyak daripada
+      tinggi kotak → terjemahan menimpa ayat Arab, "QS …" menimpa terjemahan, hitung mundur menimpa teks. Dimatikan hanya di layar HP mendatar;
+      tampilan lain tidak berubah. */
+@media (min-aspect-ratio:1/1) and (max-height:560px){
+  html.h-slide .t-slide :is(.sl-q .qar,.sl-q .qt,.sl-ch-tx,.sl-qr-tx,.sl-pp-p,.sl-ev-ad,.sl-cl-tx,.sl-cv-tx){text-wrap:wrap!important}
+  html.h-slide .t-slide .sl-q-in{display:block;height:auto!important;max-height:none!important;overflow:visible}
+  html.h-slide .t-slide .sl-q-in>:is(.qar,.qt,.src,.cds){position:relative;display:block;width:100%;max-width:100%;height:auto!important;max-height:none!important;box-sizing:border-box;transform:none}
+  html.h-slide .t-slide .sl-q-in>.cds{display:flex}
+  html.h-slide .t-slide .sl-q-in>.src{display:flex}
+  html.h-slide .t-slide .sl-q .qar{margin-bottom:6px;overflow:visible}
+  html.h-slide .t-slide .sl-q .qt{margin-top:2px}
+
+  /* B) kotak nama (mempelai / acara / cerita): selalu selebar kolom, tidak menyusut mengikuti huruf terpanjang → tidak terpecah "Debb·y·Fitri·yani" */
+  html.h-slide .t-slide :is(.sl-pp-n,.sl-ev-t,.sl-ch-t,.sl-ch-ht){align-self:stretch;width:100%;max-width:100%;box-sizing:border-box;overflow-wrap:break-word;word-break:normal;hyphens:none;text-wrap:wrap}
+  html.h-slide .t-slide .sl-pp-in:not(.al-center):not(.al-right) :is(.sl-pp-n){text-align:left}
+  html.h-slide .t-slide .sl-pp-in.al-right :is(.sl-pp-n){text-align:right}
+  html.h-slide .t-slide .sl-pp-in.al-center :is(.sl-pp-n){text-align:center}
+  html.h-slide .t-slide .sl-pp-in{min-width:0;box-sizing:border-box}
+  html.h-slide .t-slide .sl-pp-p{max-width:100%;overflow-wrap:break-word}
+  html.h-slide .t-slide .sl-ig{max-width:100%}
+}

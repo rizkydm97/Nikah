@@ -1,0 +1,14 @@
+{
+  "name": "Undangan Pernikahan",
+  "short_name": "Undangan",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/assets/mono/logo-ad.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" }
+  ]
+}

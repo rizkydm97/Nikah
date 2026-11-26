@@ -215,7 +215,10 @@
     const nm = parts.length === 2 ? `${esc(parts[0])} <i>&amp;</i> ${esc(parts[1])}` : esc(names);
     const vars = `--wsh:${num(s.wideShade, 100, 0, 200) / 100};--wsz:${num(s.wideSize, 100, 50, 150) / 100};--wy:${num(s.wideY, 12, 2, 80)}%`;
     const FS = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
-    const fsb = FS ? '<button type="button" class="wd-fs" aria-label="Layar penuh"><svg class="e" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>' : '';
+    // iPhone Safari tidak punya Fullscreen API untuk halaman web → tombol yang sama menjelaskan cara layar penuh permanen (Tambah ke Layar Utama)
+    const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const STAND = !!(navigator.standalone || (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches)));
+    const fsb = (FS || (IOS && !STAND)) ? '<button type="button" class="wd-fs" aria-label="Layar penuh"><svg class="e" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>' : '';
     return `<div class="wd ${s.wideAlign === 'center' ? 'al-center' : 'al-left'}" style="${vars}">
       <div class="wd-ph">${list.map((x, i) => `<div class="wd-s${i === 0 ? ' on' : ''}">${photo(x.o, x.k)}</div>`).join('')}</div><i class="wd-sh"></i>
       <div class="wd-tx">${kick ? `<div class="wd-k">${esc(kick)}</div>` : ''}${nm ? `<div class="wd-n">${nm}</div>` : ''}${date ? `<div class="wd-d">${esc(date)}</div>` : ''}${extra ? `<div class="wd-t">${esc(extra).replace(/\n/g, '<br>')}</div>` : ''}</div>${fsb}
@@ -225,7 +228,11 @@
   function toggleFs() {
     try {
       if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
-      else { const de = document.documentElement; (de.requestFullscreen || de.webkitRequestFullscreen).call(de); }
+      else {
+        const de = document.documentElement, rq = de.requestFullscreen || de.webkitRequestFullscreen;
+        if (rq) rq.call(de);
+        else if (window.Toast) Toast.info('Layar penuh permanen di iPhone: ketuk ikon Bagikan di Safari → "Tambah ke Layar Utama", lalu buka undangan dari ikon di layar utama.', { duration: 10000 });
+      }
     } catch (e) { /* peramban tidak mendukung */ }
   }
   let fsBound = false;
