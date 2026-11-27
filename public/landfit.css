@@ -100,3 +100,15 @@
   #loader .ld-in.has-logo .ld-k{margin-top:20px;font-size:12px;letter-spacing:.32em;white-space:nowrap;margin-left:-20%;margin-right:-20%}
   #loader .ld-in .ld-bar{margin-top:14px}
 }
+
+
+/* =====================================================================
+   v5 — (a) nama mempelai di HP mendatar = sama dengan tampilan laptop: kotak nama & bungkus animasinya dibuat block selebar kotak
+        (dulu inline-block yang lebarnya dihitung ulang peramban → nama menyempit / bergeser dari tepi kanan, tidak sejajar dengan "Putri Ke-2 dari…")
+        (b) tombol "layar penuh" di panel foto dihapus di HP mendatar (tidak berguna di layar sekecil itu)
+   ===================================================================== */
+@media (min-aspect-ratio:1/1) and (max-height:560px){
+  html.h-slide .t-slide .sl-pp-n .sl-wipe{display:block;width:100%;max-width:100%}
+  html.h-slide .t-slide .sl-pp-n .sl-wipe>span{display:block;max-width:100%}
+  .wd-fs,#wide .wd-fs{display:none!important}
+}

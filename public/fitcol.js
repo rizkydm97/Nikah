@@ -57,6 +57,8 @@
     el.style.removeProperty('font-size');
     if (!land()) return;
     var box = el.getBoundingClientRect().width; if (!box) return;
+    // v5: kotak hasil geser/lebar dari admin bisa sempit; yang dijaga adalah kolom (induk), bukan kotak itu → ukuran huruf tidak ikut menciut dibanding laptop
+    var pr = el.parentElement ? el.parentElement.getBoundingClientRect().width : 0; if (pr) box = Math.max(box, pr * 0.86);
     var worst = 0, w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
     while ((n = w.nextNode())) {
       var t = n.nodeValue, re = /\S+/g, m;
