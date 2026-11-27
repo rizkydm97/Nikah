@@ -154,8 +154,9 @@
 /* v14: pembantu satuan untuk nilai yang ditulis lewat JS (geser/ukuran dari admin). Browser lama tanpa cqw/cqh memakai --cw/--ch. */
 (function () {
   var ok = false; try { ok = !!(window.CSS && CSS.supports && CSS.supports('width', '1cqw')); } catch (e) {}
+  // v5: window.CQFIX (cqfix.js) = peramban salah menghitung cqw/cqh di dalam zoom (Safari / iPhone mendatar) → pakai --cw / --ch (px kanvas)
   window.CQ = {
-    w: function (n) { return ok ? n + 'cqw' : 'calc(var(--cw,4.2px)*' + n + ')'; },
-    h: function (n) { return ok ? n + 'cqh' : 'calc(var(--ch,7px)*' + n + ')'; }
+    w: function (n) { return ok && !window.CQFIX ? n + 'cqw' : 'calc(var(--cw,4.2px)*' + n + ')'; },
+    h: function (n) { return ok && !window.CQFIX ? n + 'cqh' : 'calc(var(--ch,7px)*' + n + ')'; }
   };
 })();

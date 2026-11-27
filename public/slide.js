@@ -648,8 +648,10 @@
   // ---------- posisi & ukuran tulisan (diatur di admin: slide.adj = { "cv.nm": {x, y, s} }) ----------
   // x, y = geser dalam % lebar layar (satuan cqw, jadi sama persis di HP kecil maupun besar); s = ukuran dalam % (100 = bawaan).
   // Memakai properti `translate` & `scale` (terpisah dari `transform`) agar tidak bentrok dengan animasi teks masuk.
+  let adjCfg = null;
   function adjust(cfg) {
-    const adj = (cfg && cfg.slide && cfg.slide.adj) || {};
+    adjCfg = cfg || adjCfg;
+    const adj = (adjCfg && adjCfg.slide && adjCfg.slide.adj) || {};
     // [data-adg] = pengaturan lama satu blok nama (cv.nm / op.n): tetap berlaku bagi yang sudah pernah menggeser nama
     document.querySelectorAll('[data-ad],[data-adg]').forEach((el) => {
       const a = adj[el.dataset.ad || el.dataset.adg] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
@@ -680,6 +682,8 @@
       if (el.dataset.adD === 'inline') el.style.display = '';
     }
   }
+  // v5: HP diputar (berdiri ↔ mendatar) → satuan geser/lebar dari admin berganti (cqw ↔ --cw): hitung ulang tanpa memuat ulang halaman
+  window.addEventListener('cqfixchange', () => { if (adjCfg) adjust(adjCfg); });
   // pratinjau admin: tulisan bisa ditarik langsung (geser) dan Shift + roda mouse = besar/kecil; hasil dikirim ke admin lewat done(adj)
   let editOn = false, lastDrag = 0, pickFn = null;
   function edit(getAdj, done, onText, getText, onSel) {

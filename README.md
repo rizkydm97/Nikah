@@ -390,3 +390,9 @@ Admin → Tema → "Tema undangan" → **Tema 12 — Monokrom**. Tanpa kupu-kupu
 - `public/idlehide.js` (baru) + akhir `public/autoscroll.css`: tombol auto scroll / ke atas / musik memudar (opasitas .08) ±2,5 dtk setelah tamu berhenti menyentuh atau menggulir; muncul lagi saat disentuh/digulir. Gulir otomatis tidak dihitung aktivitas. Ubah `IDLE_MS` di `idlehide.js` untuk durasi.
 - `public/slide-perf.css` (akhir): di mode ringan (`html.perf-low`, otomatis di banyak HP) penutup kini tetap punya 7 butir kilau + 1× sapuan cahaya versi murah (transform/opacity saja). Sebelumnya dimatikan total sehingga tak terlihat.
 - `lib/index.template.html`: `autoscroll.css?v=5`, `slide-perf.css?v=3`, `idlehide.js?v=1`.
+
+## v5 — perbaikan HP mendatar (Safari/iPhone)
+- Penyebab: kanvas slide diperkecil dengan `zoom` (±0,37 di HP mendatar). Safari menghitung satuan `cqw`/`cqh` di dalam zoom dengan skala ganda → huruf penutup mengecil/hilang, lebar kotak & geseran dari admin menyusut (nama mempelai pecah, nama cover miring).
+- `public/cqfix.js` (dimuat paling awal) mendeteksi kesalahan itu → `<html class="cq-fix">`. `public/cqfix.css` (dibuat `python3 tools/gen-cqfix.py`, ulangi bila slide.css/landfit.css berubah) menulis ulang ukuran cqw/cqh dengan `--cw/--ch`. `themes.js` (`CQ.w/CQ.h`) memakai hal yang sama untuk geseran/lebar admin.
+- Notifikasi: lebar 366px kanvas lalu diskalakan. Loading: ukuran & posisi admin berlaku, hanya diskalakan `--zs`.
+- Uji manual: tambah `?cqfix` (paksa hidup) atau `?nocqfix` (paksa mati) pada alamat undangan.
