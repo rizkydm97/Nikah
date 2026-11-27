@@ -7,6 +7,8 @@
   'use strict';
   var ua = navigator.userAgent || '';
   if (!/iPhone|iPod/.test(ua)) return;
+  // v2: hanya Safari. Chrome / Firefox / Edge / Opera di iPhone (CriOS, FxiOS, EdgiOS, OPiOS) tetap memakai tampilan mendatar biasa.
+  if (/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua)) return;
   var r = document.documentElement, el = null;
   var css = '.ios-rot{display:none;touch-action:none;position:fixed;inset:0;z-index:2147483000;background:#111;color:#fff;align-items:center;justify-content:center;flex-direction:row;gap:22px;padding:0 28px;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;text-align:left}' +
     '@media (min-aspect-ratio:1/1) and (max-height:560px){.ios-rot{display:flex}}' +
