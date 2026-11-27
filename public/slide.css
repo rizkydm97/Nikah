@@ -1149,6 +1149,9 @@ html[data-sl-opfx="classic"]:root:root:root:root:root:root .sl-open.instant :is(
 .t-slide .wishes .wpick{gap:8px;padding:11px 12px;border-radius:12px;border:1px dashed rgba(255,255,255,.4);font-family:var(--fBody,'Poppins',sans-serif);font-weight:500;transition:background .25s,border-color .25s}
 .t-slide .wishes .wpick:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.7)}
 .t-slide .wishes .wpick svg{width:17px;height:17px;fill:currentColor;flex:none}
+.t-slide .wishes .wpick{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.55)!important;min-height:44px}
+.t-slide .wishes .wpick:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.85)!important}
+.t-slide .wishes .wpick:active{background:rgba(255,255,255,.3)}
 .t-slide .wishes .wpick svg.camicon{width:clamp(16px,1.5em,22px);height:clamp(16px,1.5em,22px);fill:none!important;stroke:currentColor}
 .t-slide .wishes .wbox .btn{margin-top:14px;padding:13px 18px;border-radius:999px;background:#fff;color:#111;font-family:var(--fBody,'Poppins',sans-serif);font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
   box-shadow:0 10px 24px -12px rgba(0,0,0,.6);transition:transform .2s,box-shadow .2s}
