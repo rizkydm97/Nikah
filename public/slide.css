@@ -1615,9 +1615,9 @@ html[data-sl-cfx="1"]:not(.sl-edit) .stk-on .stk-pin.stk-in:not(.stk-flat) :is(.
 }
 
 /* v60 — TINGGI SLIDE OTOMATIS (admin → Tinggi slide → "Otomatis"): hanya HP berdiri. Kanvas 390px tetap diskalakan ke lebar layar (--zs), tinggi kanvas = tinggi layar kecil (svh)
-   ÷ skala, dibatasi rasio 1,6–2,4 → satu slide ≈ satu layar di HP kecil maupun besar. Peramban tanpa svh/clamp tidak memasang data-sl-auto (JS), jadi tetap rasio tetap. */
+   ÷ skala, dibatasi 780px (tinggi rancangan isi slide; tidak pernah lebih pendek supaya isi tidak terpotong di HP pendek) sampai 936px (HP sangat panjang). Peramban tanpa svh/clamp tidak memasang data-sl-auto (JS), jadi tetap rasio tetap. */
 @supports (zoom:1) and (height:clamp(1px,calc(100svh / 2),3px)){
   @media (max-aspect-ratio:1/1) and (max-width:700px){
-    html[data-sl-auto="1"]:root:root{--cvh:clamp(624px,calc(100svh / var(--zs,1)),936px)}
+    html[data-sl-auto="1"]:root:root{--cvh:clamp(780px,calc(100svh / var(--zs,1)),936px)}
   }
 }
