@@ -409,6 +409,15 @@ a{color:inherit}
 .wl-empty{text-align:center;font-size:12px;opacity:.85;padding:8px 0}
 .wphoto{margin-top:8px}
 .wpick{display:flex!important;align-items:center;justify-content:center;gap:6px;margin:0!important;padding:9px 11px;border:1px dashed rgba(255,255,255,.7);border-radius:7px;color:#fff;font-size:12px!important;cursor:pointer;text-align:center}
+.wpick{flex-wrap:nowrap;line-height:1.3}
+.wpick span{min-width:0}
+.wpick svg.camicon{width:clamp(16px,1.5em,22px);height:clamp(16px,1.5em,22px);flex:none;fill:none!important;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.wpick svg.camicon .camlens{transform-box:fill-box;transform-origin:center}
+@keyframes camSnap{0%{transform:scale(1)}30%{transform:scale(.45)}65%{transform:scale(1.15)}100%{transform:scale(1)}}
+@media (hover:hover){.wpick:hover .camlens{animation:camSnap .8s cubic-bezier(.34,1.4,.64,1)}}
+.wpick:active .camlens,.wpick:focus-within .camlens{animation:camSnap .8s cubic-bezier(.34,1.4,.64,1)}
+@media (prefers-reduced-motion:reduce){.wpick .camlens{animation:none!important}}
+@media (max-width:360px){.wpick{gap:5px;padding:8px 9px}}
 .wprev{position:relative;display:inline-block;margin-top:8px}
 .wprev[hidden]{display:none}
 .wprev img{display:block;width:88px;height:88px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,255,255,.8)}
