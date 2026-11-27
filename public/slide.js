@@ -614,7 +614,11 @@
     de.dataset.slCfx = s.cardFx !== false && !rm ? '1' : '0'; // kilau tepi kartu + kedalaman teks (slide.css, akhir berkas)
     de.dataset.slFont = ['cover', 'serif', 'tema'].includes(s.titleFont) ? s.titleFont : 'cover';
     de.dataset.slGal = ['flip3d', 'tilt3d', 'depth3d', 'tirai', 'zoom', 'fade', 'none'].includes(s.galleryAnim) ? s.galleryAnim : 'flip3d'; // 'zoomparallax' lama otomatis jatuh ke flip3d
-    { const rt = parseFloat(s.stageRatio); de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }
+    { // v16: stageRatio = 'auto' → tinggi kanvas slide mengikuti tinggi layar tiap HP berdiri (diatur di slide.css lewat data-sl-auto); selain itu rasio tetap seperti dulu
+      const rt = parseFloat(s.stageRatio), auto = String(s.stageRatio) === 'auto' && ZOOMOK && !!(window.CSS && CSS.supports && CSS.supports('height', 'clamp(1px,calc(100svh / 2),3px)'));
+      if (auto) { de.dataset.slAuto = '1'; de.style.removeProperty('--cvh'); }
+      else { delete de.dataset.slAuto; de.style.setProperty('--cvh', Math.round(390 * (rt >= 1.6 && rt <= 2.4 ? rt : 2)) + 'px'); }
+    }
     root.querySelectorAll('.sl-zp').forEach((e) => e.remove());
     if (io) { io.disconnect(); io = null; }
     cdFx(root, rm);
@@ -649,14 +653,37 @@
   // x, y = geser dalam % lebar layar (satuan cqw, jadi sama persis di HP kecil maupun besar); s = ukuran dalam % (100 = bawaan).
   // Memakai properti `translate` & `scale` (terpisah dari `transform`) agar tidak bentrok dengan animasi teks masuk.
   let adjCfg = null;
+  // v16: peramban lama (WebView Android lama, iOS < 14.5) tidak mengenal properti `translate` / `scale` terpisah → geseran & ukuran nama dari admin diabaikan
+  // (nama kembali kecil & di tempat bawaan). Cadangan: bagian nama (.sl-np; animasinya ada di anak .sl-wipe, jadi `transform` bebas) memakai transform;
+  // tulisan lain digeser lewat position:relative + left/top (tidak bentrok dengan animasi transform-nya). Ukuran tulisan non-nama tidak didukung di peramban lama.
+  const TSUP = !!(window.CSS && CSS.supports && CSS.supports('translate', '1px') && CSS.supports('scale', '1'));
+  function adjOld(el, x, y, sc) {
+    if (el.classList.contains('sl-np')) {
+      const t = [];
+      if (x || y) t.push(`translate(${CQW(el, x)},${CQW(el, y)})`);
+      if (sc !== 1) t.push(`scale(${sc})`);
+      el.style.transform = t.join(' ');
+      return;
+    }
+    if (x || y) {
+      if (el.dataset.adP == null) el.dataset.adP = getComputedStyle(el).position;
+      if (el.dataset.adP === 'static') el.style.position = 'relative';
+      if (el.dataset.adP === 'static' || el.dataset.adP === 'relative') { el.style.left = CQW(el, x); el.style.top = CQW(el, y); }
+    } else {
+      el.style.left = ''; el.style.top = '';
+      if (el.dataset.adP === 'static') el.style.position = '';
+    }
+  }
   function adjust(cfg) {
     adjCfg = cfg || adjCfg;
     const adj = (adjCfg && adjCfg.slide && adjCfg.slide.adj) || {};
     // [data-adg] = pengaturan lama satu blok nama (cv.nm / op.n): tetap berlaku bagi yang sudah pernah menggeser nama
     document.querySelectorAll('[data-ad],[data-adg]').forEach((el) => {
       const a = adj[el.dataset.ad || el.dataset.adg] || {}, x = parseFloat(a.x) || 0, y = parseFloat(a.y) || 0, sc = parseFloat(a.s) > 0 ? parseFloat(a.s) / 100 : 1;
-      el.style.translate = x || y ? `${CQW(el, x)} ${CQW(el, y)}` : '';
-      el.style.scale = sc !== 1 ? String(sc) : '';
+      if (TSUP) {
+        el.style.translate = x || y ? `${CQW(el, x)} ${CQW(el, y)}` : '';
+        el.style.scale = sc !== 1 ? String(sc) : '';
+      } else adjOld(el, x, y, sc);
       setBox(el, a);
       setFont(el, a);
       if (a.h) el.dataset.hid = '1'; else delete el.dataset.hid; // disembunyikan di admin (di pratinjau admin tetap tampil pudar supaya bisa ditampilkan lagi)

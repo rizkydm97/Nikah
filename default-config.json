@@ -441,7 +441,7 @@
     "scriptSize": 100,
     "openFx": "3d",
     "animStyle": "mist",
-    "stageRatio": "2",
+    "stageRatio": "auto",
     "titleFont": "cover",
     "galleryAnim": "flip3d",
     "stack": true,
