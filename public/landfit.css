@@ -112,3 +112,10 @@
   html.h-slide .t-slide .sl-pp-n .sl-wipe>span{display:block;max-width:100%}
   .wd-fs,#wide .wd-fs{display:none!important}
 }
+
+/* v6 — layar loading HP mendatar: tulisan "THE WEDDING OF" yang diberi LEBAR di admin tergeser ke kiri dari logo & garis.
+   Penyebab: aturan v4 memberi margin kiri/kanan −20% (untuk tulisan tanpa lebar); pada kotak ber-lebar margin kanan diabaikan sehingga kotak
+   menempel ke kiri. Kotak ber-lebar kini diratakan tengah (margin auto) dan boleh melipat baris seperti di laptop / pratinjau admin. */
+@media (min-aspect-ratio:1/1) and (max-height:560px){
+  #loader .ld-in .ld-k[style*="width"]{margin-left:auto!important;margin-right:auto!important;white-space:normal}
+}

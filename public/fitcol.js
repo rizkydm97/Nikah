@@ -51,7 +51,7 @@
    Diukur langsung dari hasil gambar di peramban tamu (getBoundingClientRect), jadi benar juga di Safari iOS yang menghitung zoom berbeda. */
 (function () {
   'use strict';
-  var r = document.documentElement, SEL = '.sl-pp-n,.sl-ev-t,.sl-ch-t,.sl-ch-ht', busy = false, tm = 0;
+  var r = document.documentElement, SEL = '.sl-ev-t,.sl-ch-t,.sl-ch-ht' /* v6: .sl-pp-n dikeluarkan: ukurannya mengecil salah di iPhone mendatar (diukur ulang di bawah) */, busy = false, tm = 0;
   function land() { return innerWidth > innerHeight && innerHeight <= 560; }
   function fit(el) {
     el.style.removeProperty('font-size');
@@ -75,6 +75,70 @@
   function run() { if (busy || !r.classList.contains('h-slide')) return; busy = true; try { document.querySelectorAll(SEL).forEach(fit); } catch (e) { /* abaikan */ } busy = false; }
   function q() { clearTimeout(tm); tm = setTimeout(run, 120); }
   addEventListener('resize', q); addEventListener('orientationchange', q); addEventListener('load', function () { q(); setTimeout(run, 1200); setTimeout(run, 3500); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(q);
+  try { var a = document.getElementById('app'); if (a) new MutationObserver(q).observe(a, { childList: true, subtree: false }); } catch (e) { /* abaikan */ }
+})();
+
+
+/* v6 — nama mempelai (HP mendatar): pastikan ujung tulisan nama SEJAJAR dengan teks "Putri Ke-2 dari…" di bawahnya (seperti di laptop).
+   Di iPhone (Chrome/Safari) mendatar nama bisa tergeser dari tepi kolom karena peramban menghitung zoom berbeda. Penyebabnya tak bisa diukur di sini,
+   jadi koreksinya DIUKUR LANGSUNG dari hasil gambar: selisih tepi nama vs tepi teks orang tua → digeser lewat `left` sampai sejajar (maks 3 putaran).
+   Tambahkan ?dbg ke alamat untuk menampilkan angka ukur di layar (bantu diagnosa). */
+(function () {
+  'use strict';
+  var r = document.documentElement, tm = 0, dbg = /[?&]dbg(=|&|$)/.test(location.search), box = null, info = {};
+  function land() { return innerWidth > innerHeight && innerHeight <= 560; }
+  function ext(el) { // tepi kiri / kanan tulisan yang benar-benar tergambar (per kata, bukan kotaknya)
+    var l = 1e9, rr = -1e9, w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
+    while ((n = w.nextNode())) {
+      if (!/\S/.test(n.nodeValue)) continue;
+      var rg = document.createRange(); rg.selectNodeContents(n);
+      var rs = rg.getClientRects();
+      for (var i = 0; i < rs.length; i++) { if (rs[i].width < 1) continue; if (rs[i].left < l) l = rs[i].left; if (rs[i].right > rr) rr = rs[i].right; }
+    }
+    return rr > l ? { l: l, r: rr } : null;
+  }
+  function zs() { return parseFloat(r.style.getPropertyValue('--zs')) || 1; }
+  function fix(n) {
+    var inn = n.parentElement, par = inn && inn.querySelector('.sl-pp-p');
+    if (!inn || !par) return;
+    var right = inn.classList.contains('al-right'), left = !right && !inn.classList.contains('al-center');
+    n.style.removeProperty('left');
+    var a = ext(n), b = ext(par); info.n = a; info.p = b;
+    if (!a || !b || (!right && !left)) return;
+    var z = zs(), gap = 8 * z;
+    var want = function (x) { return right ? (b.r - gap) - x.r : (b.l - 0) - x.l; };
+    var d0 = want(a), thr = (right ? 2 : 14) * z;
+    info.d0 = d0;
+    if (Math.abs(d0) < thr) return;
+    var x1 = d0 / z, setL = function (v) { n.style.setProperty('position', 'relative', 'important'); n.style.setProperty('left', v.toFixed(2) + 'px', 'important'); };
+    setL(x1); var d1 = want(ext(n) || a); info.d1 = d1;
+    if (Math.abs(d1) < thr) return;
+    var gain = (d0 - d1) / x1;
+    if (gain > 0.05) { var x2 = Math.max(-300, Math.min(300, x1 + d1 / gain)); setL(x2); info.d2 = want(ext(n) || a); info.x = x2; }
+    else n.style.removeProperty('left');
+  }
+  function run() {
+    if (!r.classList.contains('h-slide')) return;
+    try {
+      var ns = document.querySelectorAll('.sl-pp-n');
+      if (!land()) { ns.forEach(function (n) { n.style.removeProperty('left'); }); }
+      else ns.forEach(fix);
+      if (dbg) show();
+    } catch (e) { /* abaikan */ }
+  }
+  function show() {
+    var n = document.querySelector('.sl-pp.b .sl-pp-n') || document.querySelector('.sl-pp-n'); if (!n) return;
+    if (!box) { box = document.createElement('pre'); box.style.cssText = 'position:fixed;left:4px;top:4px;z-index:2147483647;margin:0;padding:6px;background:rgba(0,0,0,.8);color:#0f0;font:10px/1.3 monospace;max-width:60vw;white-space:pre-wrap;pointer-events:none'; document.body.appendChild(box); }
+    var cs = getComputedStyle(n), rc = n.getBoundingClientRect(), f = function (v) { return v == null ? '-' : (typeof v === 'number' ? v.toFixed(1) : v); };
+    box.textContent = ['win ' + innerWidth + 'x' + innerHeight, 'zs ' + r.style.getPropertyValue('--zs') + ' fitw ' + r.style.getPropertyValue('--fitw'), 'cls ' + r.className.replace(/\s+/g, ','),
+      'fs ' + cs.fontSize + ' inl[' + n.getAttribute('style') + ']', 'rect w ' + f(rc.width) + ' l ' + f(rc.left) + ' r ' + f(rc.right),
+      'txt ' + (info.n ? f(info.n.l) + '..' + f(info.n.r) : '-') + ' par ' + (info.p ? f(info.p.l) + '..' + f(info.p.r) : '-'),
+      'd0 ' + f(info.d0) + ' d1 ' + f(info.d1) + ' d2 ' + f(info.d2) + ' x ' + f(info.x)].join('\n');
+  }
+  function q() { clearTimeout(tm); tm = setTimeout(run, 150); }
+  addEventListener('resize', q); addEventListener('orientationchange', q);
+  addEventListener('load', function () { q(); setTimeout(run, 1000); setTimeout(run, 2500); setTimeout(run, 5000); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(q);
   try { var a = document.getElementById('app'); if (a) new MutationObserver(q).observe(a, { childList: true, subtree: false }); } catch (e) { /* abaikan */ }
 })();
